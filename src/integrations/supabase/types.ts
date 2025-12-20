@@ -711,6 +711,73 @@ export type Database = {
           },
         ]
       }
+      lead_ai_interactions: {
+        Row: {
+          agency_id: string
+          ai_response: string | null
+          created_at: string | null
+          id: string
+          interaction_type: string
+          lead_id: string
+          metadata: Json | null
+          model: string | null
+          prompt: string | null
+          tokens_used: number | null
+          user_id: string | null
+          user_name: string | null
+        }
+        Insert: {
+          agency_id: string
+          ai_response?: string | null
+          created_at?: string | null
+          id?: string
+          interaction_type: string
+          lead_id: string
+          metadata?: Json | null
+          model?: string | null
+          prompt?: string | null
+          tokens_used?: number | null
+          user_id?: string | null
+          user_name?: string | null
+        }
+        Update: {
+          agency_id?: string
+          ai_response?: string | null
+          created_at?: string | null
+          id?: string
+          interaction_type?: string
+          lead_id?: string
+          metadata?: Json | null
+          model?: string | null
+          prompt?: string | null
+          tokens_used?: number | null
+          user_id?: string | null
+          user_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_ai_interactions_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_ai_interactions_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_ai_interactions_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_expanded"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_custom_fields: {
         Row: {
           agency_id: string
