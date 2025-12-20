@@ -81,7 +81,9 @@ Deno.serve(async (req) => {
   try {
     // Security: Require bootstrap token to prevent unauthorized access
     const bootstrapToken = Deno.env.get("BOOTSTRAP_TOKEN");
-    const providedToken = req.headers.get("X-Bootstrap-Token");
+    const providedToken = req.headers.get("X-Bootstrap-Token") || req.headers.get("x-bootstrap-token");
+    
+    console.log("Bootstrap token check - Token configured:", !!bootstrapToken, "Token provided:", !!providedToken);
     
     if (!bootstrapToken) {
       console.log("BOOTSTRAP_TOKEN not configured - endpoint disabled for security");
@@ -93,8 +95,8 @@ Deno.serve(async (req) => {
       );
     }
     
-    if (!providedToken || providedToken !== bootstrapToken) {
-      console.log("Invalid or missing bootstrap token attempt");
+    if (!providedToken || providedToken.trim() !== bootstrapToken.trim()) {
+      console.log("Token mismatch - provided length:", providedToken?.length, "expected length:", bootstrapToken?.length);
       return new Response(
         JSON.stringify({
           error: "Invalid or missing bootstrap token. Access denied.",
