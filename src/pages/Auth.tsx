@@ -76,7 +76,7 @@ export default function Auth() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <img src={alcateiaLogo} alt="Alcateia Lobos do Google" className="h-14 mx-auto mb-6" />
+          <img src={alcateiaLogo} alt="Alcateia Lobos do Google" className="h-24 mx-auto mb-6" />
           <h1 className="text-2xl font-bold text-foreground">Plataforma Operacional Alcateia</h1>
           <p className="text-muted-foreground text-sm mt-2 max-w-xs mx-auto">Gestão de clientes, processos e execução diária — tudo em um só lugar.</p>
         </div>
