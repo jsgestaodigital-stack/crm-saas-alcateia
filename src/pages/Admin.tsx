@@ -60,7 +60,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { formatDateTime } from "@/lib/clientUtils";
-import rankeiaLogo from "@/assets/rankeia-logo.png";
+import alcateiaLogo from "@/assets/alcateia-logo.png";
 import { Database } from "@/integrations/supabase/types";
 
 type AppRole = Database["public"]["Enums"]["app_role"];
@@ -494,7 +494,7 @@ export default function Admin() {
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <img src={rankeiaLogo} alt="RANKEIA" className="h-8" />
+            <img src={alcateiaLogo} alt="Alcateia" className="h-8" />
             <div className="h-6 w-px bg-border/50" />
             <h1 className="text-lg font-semibold text-foreground flex items-center gap-2">
               <Shield className="w-5 h-5 text-primary" />

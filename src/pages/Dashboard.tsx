@@ -294,7 +294,7 @@ const Dashboard = () => {
               "ml-3 font-semibold",
               isSalesMode ? "text-amber-400" : "text-primary"
             )}>
-              RANKEIA
+              Alcateia
             </span>
           </div>
         </div>
