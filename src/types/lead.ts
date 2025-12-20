@@ -74,9 +74,12 @@ export interface LeadActivity {
   type: LeadActivityType;
   content: string;
   link: string | null;
+  notes: string | null;
+  ai_insight: string | null;
   created_by: string;
   created_by_name: string;
   created_at: string;
+  updated_at: string | null;
 }
 
 export interface RaioxAnalysis {
