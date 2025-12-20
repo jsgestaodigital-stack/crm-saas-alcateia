@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { LayoutGrid, Table, Calendar, Clock, LayoutDashboard, ClipboardList, Plus, Shield, ChevronLeft, ChevronRight, Zap, Target, AlertTriangle, TrendingUp, X, DollarSign, MessageCircleQuestion, Flame, CalendarClock, Search, FileText, CalendarCheck, RefreshCw, CheckCircle2, Users, Lightbulb } from "lucide-react";
+import { LayoutGrid, Table, Calendar, Clock, LayoutDashboard, ClipboardList, Plus, Shield, ChevronLeft, ChevronRight, Zap, Target, AlertTriangle, TrendingUp, X, DollarSign, MessageCircleQuestion, Flame, CalendarClock, Search, FileText, CalendarCheck, RefreshCw, CheckCircle2, Users, Lightbulb, Bell, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useClientStore } from "@/stores/clientStore";
@@ -605,6 +605,40 @@ export function AppSidebar({
                 <p className="text-xs text-muted-foreground">Visão completa do desempenho da equipe</p>
               </TooltipContent>
             </Tooltip>}
+
+          {/* Logs de Auditoria - Admin only */}
+          {canAccessAdmin && <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" className={cn("w-full gap-2 h-11 border-slate-500/30 hover:bg-slate-500/10 hover:text-slate-400 transition-all", collapsed ? "px-3" : "px-4", location.pathname === "/admin/audit" && "bg-slate-500/10 text-slate-400 border-slate-500/50")} onClick={() => {
+              navigate("/admin/audit");
+              onMobileOpenChange(false);
+            }}>
+                  <History className="h-5 w-5 shrink-0" />
+                  {!collapsed && <span className="animate-fade-in">Logs de Auditoria</span>}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="glass">
+                <p className="font-medium">Logs de Auditoria</p>
+                <p className="text-xs text-muted-foreground">Histórico de ações na agência</p>
+              </TooltipContent>
+            </Tooltip>}
+
+          {/* Notificações */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="outline" className={cn("w-full gap-2 h-11 border-orange-500/30 hover:bg-orange-500/10 hover:text-orange-400 transition-all", collapsed ? "px-3" : "px-4", location.pathname === "/notifications" && "bg-orange-500/10 text-orange-400 border-orange-500/50")} onClick={() => {
+                navigate("/notifications");
+                onMobileOpenChange(false);
+              }}>
+                <Bell className="h-5 w-5 shrink-0" />
+                {!collapsed && <span className="animate-fade-in">Notificações</span>}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="glass">
+              <p className="font-medium">Notificações</p>
+              <p className="text-xs text-muted-foreground">Alertas de segurança e avisos</p>
+            </TooltipContent>
+          </Tooltip>
 
           {/* Sugestões - Available to all authenticated users */}
           <Tooltip>

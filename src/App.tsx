@@ -26,6 +26,8 @@ import Suggestions from "./pages/Suggestions";
 import SuperAdmin from "./pages/SuperAdmin";
 import Register from "./pages/Register";
 import AgencyPlan from "./pages/AgencyPlan";
+import AuditLogs from "./pages/AuditLogs";
+import Notifications from "./pages/Notifications";
 import NotFound from "./pages/NotFound";
 import { ImpersonateBanner } from "@/components/ImpersonateBanner";
 
@@ -58,6 +60,8 @@ const App = () => (
                       <Route path="/admin" element={<Admin />} />
                       <Route path="/admin/users" element={<AdminUsers />} />
                       <Route path="/admin/plan" element={<AgencyPlan />} />
+                      <Route path="/admin/audit" element={<AuditLogs />} />
+                      <Route path="/notifications" element={<Notifications />} />
                       <Route path="/super-admin" element={<SuperAdmin />} />
                       <Route path="/commissions" element={<Commissions />} />
                       <Route path="/duvidas" element={<Questions />} />
