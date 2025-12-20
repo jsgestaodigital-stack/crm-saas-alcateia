@@ -11,6 +11,7 @@ import { ClientsProvider } from "@/components/ClientsProvider";
 import { QADebugDrawer, QADebugTrigger } from "@/components/QADebugDrawer";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
+import AdminUsers from "./pages/AdminUsers";
 import Dashboard from "./pages/Dashboard";
 import Commissions from "./pages/Commissions";
 import Questions from "./pages/Questions";
@@ -22,6 +23,7 @@ import ManagerReport from "./pages/ManagerReport";
 import Recorrencia from "./pages/Recorrencia";
 import Suggestions from "./pages/Suggestions";
 import SuperAdmin from "./pages/SuperAdmin";
+import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import { ImpersonateBanner } from "@/components/ImpersonateBanner";
 
@@ -49,7 +51,9 @@ const App = () => (
                     <Route path="/relatorio-gestor" element={<ManagerReport />} />
                     <Route path="/recorrencia" element={<Recorrencia />} />
                     <Route path="/auth" element={<Auth />} />
+                    <Route path="/register" element={<Register />} />
                     <Route path="/admin" element={<Admin />} />
+                    <Route path="/admin/users" element={<AdminUsers />} />
                     <Route path="/super-admin" element={<SuperAdmin />} />
                     <Route path="/commissions" element={<Commissions />} />
                     <Route path="/duvidas" element={<Questions />} />
