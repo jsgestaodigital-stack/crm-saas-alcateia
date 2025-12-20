@@ -18,7 +18,9 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          logo_url: string | null
           name: string
+          settings: Json | null
           slug: string
           status: string
           updated_at: string
@@ -26,7 +28,9 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          logo_url?: string | null
           name: string
+          settings?: Json | null
           slug: string
           status?: string
           updated_at?: string
@@ -34,12 +38,64 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          logo_url?: string | null
           name?: string
+          settings?: Json | null
           slug?: string
           status?: string
           updated_at?: string
         }
         Relationships: []
+      }
+      agency_limits: {
+        Row: {
+          agency_id: string
+          created_at: string
+          features: Json | null
+          id: string
+          max_clients: number
+          max_leads: number
+          max_recurring_clients: number
+          max_users: number
+          notes: string | null
+          storage_mb: number
+          updated_at: string
+        }
+        Insert: {
+          agency_id: string
+          created_at?: string
+          features?: Json | null
+          id?: string
+          max_clients?: number
+          max_leads?: number
+          max_recurring_clients?: number
+          max_users?: number
+          notes?: string | null
+          storage_mb?: number
+          updated_at?: string
+        }
+        Update: {
+          agency_id?: string
+          created_at?: string
+          features?: Json | null
+          id?: string
+          max_clients?: number
+          max_leads?: number
+          max_recurring_clients?: number
+          max_users?: number
+          notes?: string | null
+          storage_mb?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agency_limits_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: true
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       agency_members: {
         Row: {
@@ -68,6 +124,53 @@ export type Database = {
             foreignKeyName: "agency_members_agency_id_fkey"
             columns: ["agency_id"]
             isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      agency_usage: {
+        Row: {
+          agency_id: string
+          created_at: string
+          current_clients: number
+          current_leads: number
+          current_recurring_clients: number
+          current_users: number
+          id: string
+          last_calculated_at: string
+          storage_used_mb: number
+          updated_at: string
+        }
+        Insert: {
+          agency_id: string
+          created_at?: string
+          current_clients?: number
+          current_leads?: number
+          current_recurring_clients?: number
+          current_users?: number
+          id?: string
+          last_calculated_at?: string
+          storage_used_mb?: number
+          updated_at?: string
+        }
+        Update: {
+          agency_id?: string
+          created_at?: string
+          current_clients?: number
+          current_leads?: number
+          current_recurring_clients?: number
+          current_users?: number
+          id?: string
+          last_calculated_at?: string
+          storage_used_mb?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agency_usage_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: true
             referencedRelation: "agencies"
             referencedColumns: ["id"]
           },
@@ -1537,6 +1640,27 @@ export type Database = {
         Args: { _registration_id: string; _temp_password?: string }
         Returns: Json
       }
+      calculate_agency_usage: {
+        Args: { _agency_id: string }
+        Returns: {
+          agency_id: string
+          created_at: string
+          current_clients: number
+          current_leads: number
+          current_recurring_clients: number
+          current_users: number
+          id: string
+          last_calculated_at: string
+          storage_used_mb: number
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "agency_usage"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       can_access_admin: { Args: { _user_id: string }; Returns: boolean }
       can_access_agency: {
         Args: { _agency_id: string; _user_id: string }
@@ -1546,6 +1670,10 @@ export type Database = {
       can_access_ops: { Args: { _user_id: string }; Returns: boolean }
       can_access_recurring: { Args: { _user_id: string }; Returns: boolean }
       can_access_sales: { Args: { _user_id: string }; Returns: boolean }
+      check_limit: {
+        Args: { _agency_id: string; _increment?: number; _resource: string }
+        Returns: Json
+      }
       create_agency_with_owner: {
         Args: { _name: string; _owner_user_id: string; _slug: string }
         Returns: string

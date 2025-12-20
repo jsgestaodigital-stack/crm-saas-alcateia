@@ -17,6 +17,7 @@ import { useClientStore } from "@/stores/clientStore";
 import { calculateProgress, getDaysSinceUpdate } from "@/lib/clientUtils";
 import { Client } from "@/types/client";
 import { cn } from "@/lib/utils";
+import { UsageOverview } from "@/components/UsageOverview";
 
 // Simple funnel row
 function FunnelRow({ 
@@ -289,6 +290,9 @@ export function ManagerOverview() {
               </CardContent>
             </Card>
           )}
+
+          {/* Usage Overview - Limites do Plano */}
+          <UsageOverview />
         </div>
       </div>
     </div>

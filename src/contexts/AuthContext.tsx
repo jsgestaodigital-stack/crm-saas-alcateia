@@ -31,6 +31,7 @@ interface AuthContextType {
   isAdmin: boolean;
   permissions: UserPermissions;
   derived: DerivedPermissions;
+  currentAgencyId: string | null;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   refreshPermissions: () => Promise<void>;
@@ -53,6 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [userRole, setUserRole] = useState<AppRole | null>(null);
   const [permissions, setPermissions] = useState<UserPermissions>(defaultPermissions);
+  const [currentAgencyId, setCurrentAgencyId] = useState<string | null>(null);
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -66,10 +68,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setTimeout(() => {
             fetchUserRole(session.user.id);
             fetchUserPermissions(session.user.id);
+            fetchCurrentAgencyId(session.user.id);
           }, 0);
         } else {
           setUserRole(null);
           setPermissions(defaultPermissions);
+          setCurrentAgencyId(null);
         }
       }
     );
@@ -81,6 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (session?.user) {
         fetchUserRole(session.user.id);
         fetchUserPermissions(session.user.id);
+        fetchCurrentAgencyId(session.user.id);
       }
       setIsLoading(false);
     });
@@ -159,6 +164,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const fetchCurrentAgencyId = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("current_agency_id")
+        .eq("id", userId)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Error fetching current agency:", error);
+        setCurrentAgencyId(null);
+        return;
+      }
+
+      setCurrentAgencyId(data?.current_agency_id ?? null);
+    } catch (err) {
+      console.error("Error fetching current agency:", err);
+      setCurrentAgencyId(null);
+    }
+  };
+
   const refreshPermissions = async () => {
     if (user) {
       await fetchUserPermissions(user.id);
@@ -193,6 +219,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSession(null);
     setUserRole(null);
     setPermissions(defaultPermissions);
+    setCurrentAgencyId(null);
   };
 
   const isAdminFlag = userRole === "admin";
@@ -216,6 +243,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAdmin: isAdminFlag,
         permissions,
         derived,
+        currentAgencyId,
         signIn,
         signOut,
         refreshPermissions,

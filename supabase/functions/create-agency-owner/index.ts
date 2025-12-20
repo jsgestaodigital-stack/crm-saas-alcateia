@@ -144,6 +144,27 @@ Deno.serve(async (req) => {
       is_super_admin: false,
     }, { onConflict: "user_id" });
 
+    // Create default agency limits
+    await supabaseClient.from("agency_limits").upsert({
+      agency_id: agencyId,
+      max_users: 5,
+      max_leads: 500,
+      max_clients: 100,
+      max_recurring_clients: 50,
+      storage_mb: 1000,
+      features: { ai_agents: true, exports: true, api_access: false },
+    }, { onConflict: "agency_id" });
+
+    // Initialize agency usage
+    await supabaseClient.from("agency_usage").upsert({
+      agency_id: agencyId,
+      current_users: 1,
+      current_leads: 0,
+      current_clients: 0,
+      current_recurring_clients: 0,
+      storage_used_mb: 0,
+    }, { onConflict: "agency_id" });
+
     // Log the action
     await supabaseClient.from("super_admin_actions").insert({
       super_admin_user_id: userData.user.id,
