@@ -24,6 +24,7 @@ import Recorrencia from "./pages/Recorrencia";
 import Suggestions from "./pages/Suggestions";
 import SuperAdmin from "./pages/SuperAdmin";
 import Register from "./pages/Register";
+import AgencyPlan from "./pages/AgencyPlan";
 import NotFound from "./pages/NotFound";
 import { ImpersonateBanner } from "@/components/ImpersonateBanner";
 
@@ -54,6 +55,7 @@ const App = () => (
                     <Route path="/register" element={<Register />} />
                     <Route path="/admin" element={<Admin />} />
                     <Route path="/admin/users" element={<AdminUsers />} />
+                    <Route path="/admin/plan" element={<AgencyPlan />} />
                     <Route path="/super-admin" element={<SuperAdmin />} />
                     <Route path="/commissions" element={<Commissions />} />
                     <Route path="/duvidas" element={<Questions />} />
