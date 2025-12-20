@@ -697,6 +697,60 @@ export type Database = {
           },
         ]
       }
+      lead_messages: {
+        Row: {
+          agency_id: string
+          created_at: string | null
+          id: string
+          is_private: boolean | null
+          lead_id: string
+          message: string
+          message_type: string | null
+          updated_at: string | null
+          user_id: string | null
+          user_name: string
+        }
+        Insert: {
+          agency_id: string
+          created_at?: string | null
+          id?: string
+          is_private?: boolean | null
+          lead_id: string
+          message: string
+          message_type?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          user_name?: string
+        }
+        Update: {
+          agency_id?: string
+          created_at?: string | null
+          id?: string
+          is_private?: boolean | null
+          lead_id?: string
+          message?: string
+          message_type?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          user_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_messages_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_messages_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_sources: {
         Row: {
           active: boolean
@@ -2179,6 +2233,15 @@ export type Database = {
           _metadata?: Json
           _new_value?: Json
           _old_value?: Json
+        }
+        Returns: string
+      }
+      log_lead_message: {
+        Args: {
+          _is_private?: boolean
+          _lead_id: string
+          _message: string
+          _message_type?: string
         }
         Returns: string
       }
