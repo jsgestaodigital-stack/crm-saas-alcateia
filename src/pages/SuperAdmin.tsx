@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 import { 
   Building2, 
   Users, 
@@ -27,7 +28,9 @@ import {
   RefreshCw,
   UserPlus,
   Mail,
-  Phone
+  Phone,
+  Loader2,
+  Copy
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -48,6 +51,23 @@ export default function SuperAdmin() {
     reactivateAgency,
     impersonateAgency,
   } = useSuperAdmin();
+
+  const {
+    registrations,
+    isLoading: isLoadingRegistrations,
+    fetchRegistrations,
+    approveRegistration,
+    rejectRegistration,
+  } = usePendingRegistrations();
+
+  // Dialog states
+  const [approveDialogOpen, setApproveDialogOpen] = useState(false);
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+  const [selectedRegistration, setSelectedRegistration] = useState<any>(null);
+  const [tempPassword, setTempPassword] = useState("");
+  const [rejectReason, setRejectReason] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [approvalResult, setApprovalResult] = useState<{ email: string; password: string } | null>(null);
 
   // Check if user is super admin
   useEffect(() => {
@@ -80,6 +100,10 @@ export default function SuperAdmin() {
         return <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">Ativa</Badge>;
       case "pending":
         return <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">Pendente</Badge>;
+      case "approved":
+        return <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">Aprovada</Badge>;
+      case "rejected":
+        return <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Rejeitada</Badge>;
       case "suspended":
         return <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Suspensa</Badge>;
       default:
@@ -94,9 +118,51 @@ export default function SuperAdmin() {
       reactivate_agency: "Reativou agência",
       impersonate_agency: "Entrou como agência",
       exit_impersonate: "Saiu do modo impersonate",
+      approve_registration: "Aprovou solicitação",
+      reject_registration: "Rejeitou solicitação",
+      create_agency_owner: "Criou owner da agência",
     };
     return labels[action] || action;
   };
+
+  const handleApprove = async () => {
+    if (!selectedRegistration) return;
+    setIsProcessing(true);
+    try {
+      const result = await approveRegistration(selectedRegistration.id, tempPassword || undefined);
+      setApprovalResult({
+        email: result.owner_email,
+        password: result.temp_password,
+      });
+      refetchAgencies();
+    } catch (error) {
+      // Error handled in hook
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleReject = async () => {
+    if (!selectedRegistration) return;
+    setIsProcessing(true);
+    try {
+      await rejectRegistration(selectedRegistration.id, rejectReason || "Não aprovado");
+      setRejectDialogOpen(false);
+      setSelectedRegistration(null);
+      setRejectReason("");
+    } catch (error) {
+      // Error handled in hook
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success("Copiado!");
+  };
+
+  const pendingRegistrations = registrations.filter(r => r.status === "pending");
 
   if (isAuthLoading) {
     return (
@@ -127,6 +193,7 @@ export default function SuperAdmin() {
               onClick={() => {
                 refetchAgencies();
                 refetchLogs();
+                fetchRegistrations();
               }}
             >
               <RefreshCw className="h-4 w-4 mr-2" />
@@ -154,10 +221,10 @@ export default function SuperAdmin() {
           <Card className="bg-card/50 border-border/40">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <Clock className="h-5 w-5 text-amber-500" />
+                <UserPlus className="h-5 w-5 text-orange-500" />
                 <div>
-                  <p className="text-2xl font-bold">{stats.pending}</p>
-                  <p className="text-xs text-muted-foreground">Pendentes</p>
+                  <p className="text-2xl font-bold">{pendingRegistrations.length}</p>
+                  <p className="text-xs text-muted-foreground">Solicitações</p>
                 </div>
               </div>
             </CardContent>
@@ -225,12 +292,130 @@ export default function SuperAdmin() {
         </div>
 
         {/* Main Content */}
-        <Tabs defaultValue="agencies" className="space-y-6">
+        <Tabs defaultValue="registrations" className="space-y-6">
           <TabsList className="bg-muted/50">
+            <TabsTrigger value="registrations" className="relative">
+              Solicitações
+              {pendingRegistrations.length > 0 && (
+                <span className="ml-2 px-2 py-0.5 text-xs bg-orange-500 text-white rounded-full">
+                  {pendingRegistrations.length}
+                </span>
+              )}
+            </TabsTrigger>
             <TabsTrigger value="agencies">Agências</TabsTrigger>
             <TabsTrigger value="logs">Logs de Auditoria</TabsTrigger>
           </TabsList>
 
+          {/* Solicitações Pendentes */}
+          <TabsContent value="registrations" className="space-y-4">
+            <Card className="border-border/40">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <UserPlus className="h-5 w-5" />
+                  Solicitações de Cadastro
+                </CardTitle>
+                <CardDescription>
+                  Novas agências aguardando aprovação
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isLoadingRegistrations ? (
+                  <div className="space-y-3">
+                    {[1, 2, 3].map((i) => (
+                      <Skeleton key={i} className="h-16 w-full" />
+                    ))}
+                  </div>
+                ) : registrations.length === 0 ? (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <UserPlus className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>Nenhuma solicitação encontrada</p>
+                    <p className="text-sm mt-1">Novas agências aparecerão aqui quando se cadastrarem em /register</p>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Agência</TableHead>
+                        <TableHead>Responsável</TableHead>
+                        <TableHead>Contato</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Solicitado em</TableHead>
+                        <TableHead className="text-right">Ações</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {registrations.map((reg) => (
+                        <TableRow key={reg.id}>
+                          <TableCell>
+                            <div>
+                              <p className="font-medium">{reg.agency_name}</p>
+                              <p className="text-xs text-muted-foreground">/{reg.agency_slug}</p>
+                            </div>
+                          </TableCell>
+                          <TableCell>{reg.owner_name}</TableCell>
+                          <TableCell>
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-1 text-sm">
+                                <Mail className="h-3 w-3" />
+                                {reg.owner_email}
+                              </div>
+                              {reg.owner_phone && (
+                                <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                                  <Phone className="h-3 w-3" />
+                                  {reg.owner_phone}
+                                </div>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>{getStatusBadge(reg.status)}</TableCell>
+                          <TableCell>
+                            {format(new Date(reg.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center justify-end gap-2">
+                              {reg.status === "pending" && (
+                                <>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="text-emerald-500 border-emerald-500/30 hover:bg-emerald-500/10"
+                                    onClick={() => {
+                                      setSelectedRegistration(reg);
+                                      setTempPassword("");
+                                      setApprovalResult(null);
+                                      setApproveDialogOpen(true);
+                                    }}
+                                  >
+                                    <CheckCircle className="h-4 w-4 mr-1" />
+                                    Aprovar
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="text-red-500 border-red-500/30 hover:bg-red-500/10"
+                                    onClick={() => {
+                                      setSelectedRegistration(reg);
+                                      setRejectReason("");
+                                      setRejectDialogOpen(true);
+                                    }}
+                                  >
+                                    <XCircle className="h-4 w-4 mr-1" />
+                                    Rejeitar
+                                  </Button>
+                                </>
+                              )}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Agências */}
           <TabsContent value="agencies" className="space-y-4">
             <Card className="border-border/40">
               <CardHeader>
@@ -343,6 +528,7 @@ export default function SuperAdmin() {
             </Card>
           </TabsContent>
 
+          {/* Logs */}
           <TabsContent value="logs" className="space-y-4">
             <Card className="border-border/40">
               <CardHeader>
@@ -399,6 +585,154 @@ export default function SuperAdmin() {
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Approve Dialog */}
+      <Dialog open={approveDialogOpen} onOpenChange={(open) => {
+        if (!open) {
+          setApproveDialogOpen(false);
+          setSelectedRegistration(null);
+          setApprovalResult(null);
+          setTempPassword("");
+        }
+      }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Aprovar Solicitação</DialogTitle>
+            <DialogDescription>
+              {approvalResult 
+                ? "Agência aprovada com sucesso! Guarde as credenciais abaixo."
+                : `Aprovar a agência "${selectedRegistration?.agency_name}"?`
+              }
+            </DialogDescription>
+          </DialogHeader>
+          
+          {approvalResult ? (
+            <div className="space-y-4 py-4">
+              <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4 space-y-3">
+                <div className="flex items-center gap-2 text-emerald-500">
+                  <CheckCircle className="h-5 w-5" />
+                  <span className="font-medium">Credenciais do Owner</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between bg-background/50 rounded px-3 py-2">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Email</p>
+                      <p className="font-mono text-sm">{approvalResult.email}</p>
+                    </div>
+                    <Button size="icon" variant="ghost" onClick={() => copyToClipboard(approvalResult.email)}>
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="flex items-center justify-between bg-background/50 rounded px-3 py-2">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Senha Temporária</p>
+                      <p className="font-mono text-sm">{approvalResult.password}</p>
+                    </div>
+                    <Button size="icon" variant="ghost" onClick={() => copyToClipboard(approvalResult.password)}>
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Envie essas credenciais para o responsável da agência.
+                </p>
+              </div>
+              <DialogFooter>
+                <Button onClick={() => {
+                  setApproveDialogOpen(false);
+                  setSelectedRegistration(null);
+                  setApprovalResult(null);
+                }}>
+                  Fechar
+                </Button>
+              </DialogFooter>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-4 py-4">
+                <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                  <p className="text-sm"><strong>Agência:</strong> {selectedRegistration?.agency_name}</p>
+                  <p className="text-sm"><strong>Responsável:</strong> {selectedRegistration?.owner_name}</p>
+                  <p className="text-sm"><strong>Email:</strong> {selectedRegistration?.owner_email}</p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="tempPassword">Senha Temporária (opcional)</Label>
+                  <Input
+                    id="tempPassword"
+                    type="text"
+                    placeholder="Deixe vazio para gerar automaticamente"
+                    value={tempPassword}
+                    onChange={(e) => setTempPassword(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Se não informada, uma senha aleatória será gerada.
+                  </p>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setApproveDialogOpen(false)}>
+                  Cancelar
+                </Button>
+                <Button onClick={handleApprove} disabled={isProcessing} className="bg-emerald-600 hover:bg-emerald-700">
+                  {isProcessing ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Aprovando...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      Aprovar Agência
+                    </>
+                  )}
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Reject Dialog */}
+      <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Rejeitar Solicitação</DialogTitle>
+            <DialogDescription>
+              Rejeitar a agência "{selectedRegistration?.agency_name}"?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="rejectReason">Motivo da Rejeição</Label>
+              <Textarea
+                id="rejectReason"
+                placeholder="Ex: Dados incompletos, empresa não verificada..."
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                rows={3}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRejectDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleReject} disabled={isProcessing} variant="destructive">
+              {isProcessing ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Rejeitando...
+                </>
+              ) : (
+                <>
+                  <XCircle className="h-4 w-4 mr-2" />
+                  Rejeitar
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
