@@ -16,7 +16,8 @@ import {
 import { useClientStore } from "@/stores/clientStore";
 import { useAuth } from "@/contexts/AuthContext";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { NotificationBell } from "@/components/NotificationBell";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { QuestionsBell } from "@/components/QuestionsBell";
 import alcateiaLogo from "@/assets/alcateia-logo.png";
 import { cn } from "@/lib/utils";
 
@@ -199,6 +200,7 @@ export function Header({ onNewClient }: HeaderProps) {
 
           {/* Notification Bell */}
           <NotificationBell />
+          <QuestionsBell />
 
           {/* Theme Toggle */}
           <ThemeToggle />

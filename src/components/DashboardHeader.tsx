@@ -14,6 +14,7 @@ import {
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { UndoRedoButtons } from "@/components/UndoRedoButtons";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -71,6 +72,9 @@ export function DashboardHeader() {
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Undo/Redo Buttons */}
           <UndoRedoButtons />
+
+          {/* Notification Bell */}
+          <NotificationBell />
 
           {/* Theme Toggle */}
           <ThemeToggle />
