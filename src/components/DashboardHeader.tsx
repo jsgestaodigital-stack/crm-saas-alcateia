@@ -47,7 +47,7 @@ export function DashboardHeader() {
 
         {/* Mobile menu placeholder */}
         <div className="sm:hidden">
-          <span className="text-sm font-medium text-foreground">RANKEIA</span>
+          <span className="text-sm font-medium text-foreground">Alcateia</span>
         </div>
 
         {/* Search */}

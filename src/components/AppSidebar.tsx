@@ -12,7 +12,7 @@ import { useRecurring } from "@/hooks/useRecurring";
 import { calculateProgress, getDaysSinceUpdate } from "@/lib/clientUtils";
 import { TOOLTIP_CONTENT } from "@/lib/tooltipContent";
 import { FunnelToggleCompact } from "@/components/FunnelToggle";
-import rankeiLogo from "@/assets/rankeia-logo.png";
+import alcateiaLogo from "@/assets/alcateia-logo.png";
 import { cn } from "@/lib/utils";
 import { isBefore, parseISO, isToday } from "date-fns";
 import { AgenteSEOModal, AgenteSuspensoesModal, AgenteRaioXModal, AgenteRelatorioModal } from "@/components/agents";
@@ -172,7 +172,7 @@ export function AppSidebar({
   const sidebarContent = <>
       {/* Logo */}
       <div className="h-16 flex items-center justify-between px-4 border-b border-sidebar-border/50">
-        {!collapsed && <img src={rankeiLogo} alt="RANKEIA" className="h-8 w-auto animate-fade-in" />}
+        {!collapsed && <img src={alcateiaLogo} alt="Alcateia" className="h-8 w-auto animate-fade-in" />}
         <Button variant="ghost" size="icon" onClick={() => onCollapsedChange(!collapsed)} className="h-8 w-8 hover:bg-primary/10 hover:text-primary transition-all hidden lg:flex">
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </Button>

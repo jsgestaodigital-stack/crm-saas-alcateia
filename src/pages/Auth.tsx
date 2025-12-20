@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import rankeiaLogo from "@/assets/rankeia-logo.png";
+import alcateiaLogo from "@/assets/alcateia-logo.png";
 import { supabase } from "@/integrations/supabase/client";
 
 const loginSchema = z.object({
@@ -76,8 +76,8 @@ export default function Auth() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <img src={rankeiaLogo} alt="RANKEIA" className="h-12 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-foreground">Painel Operacional</h1>
+          <img src={alcateiaLogo} alt="Alcateia Lobos do Google" className="h-12 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-foreground">Sistema de Gestão</h1>
           <p className="text-muted-foreground text-sm mt-2">Faça login para acessar o sistema</p>
         </div>
 
@@ -156,7 +156,7 @@ export default function Auth() {
         </div>
 
         <p className="text-center text-xs text-muted-foreground mt-6">
-          © {new Date().getFullYear()} RANKEIA. Todos os direitos reservados.
+          © {new Date().getFullYear()} Alcateia Lobos do Google. Todos os direitos reservados.
         </p>
       </div>
     </div>

@@ -17,7 +17,7 @@ import { useClientStore } from "@/stores/clientStore";
 import { useAuth } from "@/contexts/AuthContext";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { NotificationBell } from "@/components/NotificationBell";
-import rankeiLogo from "@/assets/rankeia-logo.png";
+import alcateiaLogo from "@/assets/alcateia-logo.png";
 import { cn } from "@/lib/utils";
 
 const VIEW_OPTIONS = [
@@ -68,7 +68,7 @@ export function Header({ onNewClient }: HeaderProps) {
           <SheetContent side="left" className="w-72 p-4 bg-surface-1 border-primary/20">
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <img src={rankeiLogo} alt="RANKEIA" className="h-8 w-auto" />
+                <img src={alcateiaLogo} alt="Alcateia" className="h-8 w-auto" />
                 <ThemeToggle />
               </div>
               
@@ -116,7 +116,7 @@ export function Header({ onNewClient }: HeaderProps) {
 
         {/* Logo */}
         <div className="flex items-center gap-2 sm:gap-4">
-          <img src={rankeiLogo} alt="RANKEIA" className="h-6 sm:h-8 w-auto hidden sm:block" />
+          <img src={alcateiaLogo} alt="Alcateia" className="h-6 sm:h-8 w-auto hidden sm:block" />
           <div className="h-6 w-px bg-border/50 hidden lg:block" />
           <span className="text-xs sm:text-sm text-muted-foreground font-medium hidden lg:block">Painel Operacional</span>
         </div>
