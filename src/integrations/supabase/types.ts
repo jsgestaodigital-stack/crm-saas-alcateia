@@ -697,6 +697,108 @@ export type Database = {
           },
         ]
       }
+      lead_custom_fields: {
+        Row: {
+          agency_id: string
+          created_at: string | null
+          field_key: string
+          field_type: string
+          id: string
+          is_required: boolean | null
+          is_searchable: boolean | null
+          name: string
+          options: string[] | null
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          agency_id: string
+          created_at?: string | null
+          field_key: string
+          field_type?: string
+          id?: string
+          is_required?: boolean | null
+          is_searchable?: boolean | null
+          name: string
+          options?: string[] | null
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          agency_id?: string
+          created_at?: string | null
+          field_key?: string
+          field_type?: string
+          id?: string
+          is_required?: boolean | null
+          is_searchable?: boolean | null
+          name?: string
+          options?: string[] | null
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_custom_fields_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_field_values: {
+        Row: {
+          agency_id: string
+          created_at: string | null
+          field_id: string
+          id: string
+          lead_id: string
+          updated_at: string | null
+          value: string | null
+        }
+        Insert: {
+          agency_id: string
+          created_at?: string | null
+          field_id: string
+          id?: string
+          lead_id: string
+          updated_at?: string | null
+          value?: string | null
+        }
+        Update: {
+          agency_id?: string
+          created_at?: string | null
+          field_id?: string
+          id?: string
+          lead_id?: string
+          updated_at?: string | null
+          value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_field_values_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_field_values_field_id_fkey"
+            columns: ["field_id"]
+            isOneToOne: false
+            referencedRelation: "lead_custom_fields"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_field_values_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_messages: {
         Row: {
           agency_id: string
@@ -776,6 +878,84 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "lead_sources_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_tag_assignments: {
+        Row: {
+          agency_id: string
+          created_at: string | null
+          id: string
+          lead_id: string
+          tag_id: string
+        }
+        Insert: {
+          agency_id: string
+          created_at?: string | null
+          id?: string
+          lead_id: string
+          tag_id: string
+        }
+        Update: {
+          agency_id?: string
+          created_at?: string | null
+          id?: string
+          lead_id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_tag_assignments_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_tag_assignments_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_tag_assignments_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "lead_tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_tags: {
+        Row: {
+          agency_id: string
+          color: string | null
+          created_at: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          agency_id: string
+          color?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          agency_id?: string
+          color?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_tags_agency_id_fkey"
             columns: ["agency_id"]
             isOneToOne: false
             referencedRelation: "agencies"
