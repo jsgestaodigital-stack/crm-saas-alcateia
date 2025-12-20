@@ -2524,6 +2524,7 @@ export type Database = {
         Args: { _registration_id: string; _temp_password?: string }
         Returns: Json
       }
+      build_suggestion_prompt: { Args: { _lead_id: string }; Returns: string }
       calculate_agency_usage: {
         Args: { _agency_id: string }
         Returns: {
@@ -2634,6 +2635,7 @@ export type Database = {
           whatsapp: string
         }[]
       }
+      generate_lead_summary: { Args: { _lead_id: string }; Returns: string }
       get_agency_features: { Args: { _agency_id: string }; Returns: Json }
       get_all_agencies_with_stats: {
         Args: never
@@ -2740,6 +2742,18 @@ export type Database = {
       }
       request_user_deletion: {
         Args: { _deletion_type?: string; _notes?: string; _user_id: string }
+        Returns: string
+      }
+      save_ai_interaction: {
+        Args: {
+          _ai_response: string
+          _interaction_type: string
+          _lead_id: string
+          _metadata?: Json
+          _model?: string
+          _prompt: string
+          _tokens_used?: number
+        }
         Returns: string
       }
       search_leads: {
