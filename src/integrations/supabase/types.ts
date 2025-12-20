@@ -889,6 +889,66 @@ export type Database = {
         }
         Relationships: []
       }
+      plans: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string | null
+          features: Json
+          id: string
+          max_clients: number
+          max_leads: number
+          max_recurring_clients: number
+          max_users: number
+          name: string
+          price_monthly: number
+          price_yearly: number | null
+          slug: string
+          sort_order: number
+          storage_mb: number
+          trial_days: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          features?: Json
+          id?: string
+          max_clients?: number
+          max_leads?: number
+          max_recurring_clients?: number
+          max_users?: number
+          name: string
+          price_monthly?: number
+          price_yearly?: number | null
+          slug: string
+          sort_order?: number
+          storage_mb?: number
+          trial_days?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          features?: Json
+          id?: string
+          max_clients?: number
+          max_leads?: number
+          max_recurring_clients?: number
+          max_users?: number
+          name?: string
+          price_monthly?: number
+          price_yearly?: number | null
+          slug?: string
+          sort_order?: number
+          storage_mb?: number
+          trial_days?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -1241,6 +1301,140 @@ export type Database = {
             columns: ["routine_id"]
             isOneToOne: false
             referencedRelation: "recurring_routines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscription_history: {
+        Row: {
+          agency_id: string
+          changed_by: string | null
+          created_at: string
+          id: string
+          new_plan_id: string | null
+          new_status: string | null
+          old_plan_id: string | null
+          old_status: string | null
+          reason: string | null
+          subscription_id: string
+        }
+        Insert: {
+          agency_id: string
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          new_plan_id?: string | null
+          new_status?: string | null
+          old_plan_id?: string | null
+          old_status?: string | null
+          reason?: string | null
+          subscription_id: string
+        }
+        Update: {
+          agency_id?: string
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          new_plan_id?: string | null
+          new_status?: string | null
+          old_plan_id?: string | null
+          old_status?: string | null
+          reason?: string | null
+          subscription_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_history_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscription_history_new_plan_id_fkey"
+            columns: ["new_plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscription_history_old_plan_id_fkey"
+            columns: ["old_plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscription_history_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscriptions: {
+        Row: {
+          agency_id: string
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          created_at: string
+          current_period_end: string | null
+          current_period_start: string
+          external_subscription_id: string | null
+          id: string
+          metadata: Json | null
+          payment_method: string | null
+          plan_id: string
+          status: string
+          trial_ends_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          agency_id: string
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string
+          external_subscription_id?: string | null
+          id?: string
+          metadata?: Json | null
+          payment_method?: string | null
+          plan_id: string
+          status?: string
+          trial_ends_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          agency_id?: string
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string
+          external_subscription_id?: string | null
+          id?: string
+          metadata?: Json | null
+          payment_method?: string | null
+          plan_id?: string
+          status?: string
+          trial_ends_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: true
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
             referencedColumns: ["id"]
           },
         ]
@@ -1670,6 +1864,15 @@ export type Database = {
       can_access_ops: { Args: { _user_id: string }; Returns: boolean }
       can_access_recurring: { Args: { _user_id: string }; Returns: boolean }
       can_access_sales: { Args: { _user_id: string }; Returns: boolean }
+      change_agency_plan: {
+        Args: {
+          _agency_id: string
+          _new_plan_id: string
+          _new_status?: string
+          _reason?: string
+        }
+        Returns: undefined
+      }
       check_limit: {
         Args: { _agency_id: string; _increment?: number; _resource: string }
         Returns: Json
@@ -1678,9 +1881,14 @@ export type Database = {
         Args: { _name: string; _owner_user_id: string; _slug: string }
         Returns: string
       }
+      create_trial_subscription: {
+        Args: { _agency_id: string; _plan_slug?: string }
+        Returns: string
+      }
       current_agency_id: { Args: never; Returns: string }
       delete_lead: { Args: { _lead_id: string }; Returns: undefined }
       exit_impersonate: { Args: never; Returns: undefined }
+      get_agency_features: { Args: { _agency_id: string }; Returns: Json }
       get_all_agencies_with_stats: {
         Args: never
         Returns: {
@@ -1742,6 +1950,10 @@ export type Database = {
       }
       set_current_agency: { Args: { _agency_id: string }; Returns: undefined }
       suspend_agency: { Args: { _agency_id: string }; Returns: undefined }
+      sync_agency_limits_from_plan: {
+        Args: { _agency_id: string }
+        Returns: undefined
+      }
       tenant_healthcheck: {
         Args: never
         Returns: {
@@ -1753,6 +1965,7 @@ export type Database = {
         }[]
       }
       try_uuid: { Args: { _val: string }; Returns: string }
+      update_expired_subscriptions: { Args: never; Returns: number }
     }
     Enums: {
       app_role: "admin" | "operador" | "visualizador"
