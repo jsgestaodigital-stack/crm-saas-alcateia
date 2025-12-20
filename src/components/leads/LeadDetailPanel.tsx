@@ -45,6 +45,7 @@ import { LeadActivityTab } from './LeadActivityTab';
 import { LeadProposalTab } from './LeadProposalTab';
 import { LeadConversionTab } from './LeadConversionTab';
 import { LeadRaioXTab } from './LeadRaioXTab';
+import { LeadCopilotTab } from './LeadCopilotTab';
 
 interface LeadDetailPanelProps {
   lead: Lead | null;
@@ -138,7 +139,7 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
           <div className="px-6 pt-4 border-b border-border/30">
-            <TabsList className="grid w-full grid-cols-5 bg-muted/30">
+            <TabsList className="grid w-full grid-cols-6 bg-muted/30">
               <TabsTrigger value="resumo" className="text-sm data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400">
                 Resumo
               </TabsTrigger>
@@ -150,6 +151,9 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
               </TabsTrigger>
               <TabsTrigger value="raiox" className="text-sm data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400">
                 Raio-X
+              </TabsTrigger>
+              <TabsTrigger value="copilot" className="text-sm data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
+                🤖 Copiloto
               </TabsTrigger>
               <TabsTrigger value="conversao" className="text-sm data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400">
                 Ganho/Perda
@@ -395,6 +399,11 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
               {/* Raio-X Tab */}
               <TabsContent value="raiox" className="m-0">
                 <LeadRaioXTab leadId={lead.id} />
+              </TabsContent>
+
+              {/* Copilot Tab */}
+              <TabsContent value="copilot" className="m-0">
+                <LeadCopilotTab leadId={lead.id} />
               </TabsContent>
 
               {/* Conversão Tab */}
