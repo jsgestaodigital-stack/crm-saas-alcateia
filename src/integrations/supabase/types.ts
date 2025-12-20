@@ -638,6 +638,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "commissions_v2_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_expanded"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "commissions_v2_recipient_role_id_fkey"
             columns: ["recipient_role_id"]
             isOneToOne: false
@@ -693,6 +700,13 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_activities_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_expanded"
             referencedColumns: ["id"]
           },
         ]
@@ -797,6 +811,13 @@ export type Database = {
             referencedRelation: "leads"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "lead_field_values_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_expanded"
+            referencedColumns: ["id"]
+          },
         ]
       }
       lead_messages: {
@@ -849,6 +870,13 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_messages_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_expanded"
             referencedColumns: ["id"]
           },
         ]
@@ -920,6 +948,13 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_tag_assignments_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_expanded"
             referencedColumns: ["id"]
           },
           {
@@ -1429,6 +1464,13 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "raiox_analyses_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_expanded"
             referencedColumns: ["id"]
           },
         ]
@@ -2268,6 +2310,146 @@ export type Database = {
           },
         ]
       }
+      leads_expanded: {
+        Row: {
+          agency_id: string | null
+          city: string | null
+          company_name: string | null
+          contact_name: string | null
+          converted_at: string | null
+          converted_client_id: string | null
+          created_at: string | null
+          created_by: string | null
+          custom_fields: Json | null
+          email: string | null
+          estimated_value: number | null
+          id: string | null
+          last_activity_at: string | null
+          lost_notes: string | null
+          lost_reason_id: string | null
+          main_category: string | null
+          next_action: string | null
+          next_action_date: string | null
+          notes: string | null
+          phone: string | null
+          pipeline_stage:
+            | Database["public"]["Enums"]["lead_pipeline_stage"]
+            | null
+          probability: number | null
+          proposal_notes: string | null
+          proposal_status: Database["public"]["Enums"]["proposal_status"] | null
+          proposal_url: string | null
+          responsible: string | null
+          source_custom: string | null
+          source_id: string | null
+          status: Database["public"]["Enums"]["lead_status"] | null
+          tags: Json | null
+          temperature: Database["public"]["Enums"]["lead_temperature"] | null
+          updated_at: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          agency_id?: string | null
+          city?: string | null
+          company_name?: string | null
+          contact_name?: string | null
+          converted_at?: string | null
+          converted_client_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          custom_fields?: never
+          email?: string | null
+          estimated_value?: number | null
+          id?: string | null
+          last_activity_at?: string | null
+          lost_notes?: string | null
+          lost_reason_id?: string | null
+          main_category?: string | null
+          next_action?: string | null
+          next_action_date?: string | null
+          notes?: string | null
+          phone?: string | null
+          pipeline_stage?:
+            | Database["public"]["Enums"]["lead_pipeline_stage"]
+            | null
+          probability?: number | null
+          proposal_notes?: string | null
+          proposal_status?:
+            | Database["public"]["Enums"]["proposal_status"]
+            | null
+          proposal_url?: string | null
+          responsible?: string | null
+          source_custom?: string | null
+          source_id?: string | null
+          status?: Database["public"]["Enums"]["lead_status"] | null
+          tags?: never
+          temperature?: Database["public"]["Enums"]["lead_temperature"] | null
+          updated_at?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          agency_id?: string | null
+          city?: string | null
+          company_name?: string | null
+          contact_name?: string | null
+          converted_at?: string | null
+          converted_client_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          custom_fields?: never
+          email?: string | null
+          estimated_value?: number | null
+          id?: string | null
+          last_activity_at?: string | null
+          lost_notes?: string | null
+          lost_reason_id?: string | null
+          main_category?: string | null
+          next_action?: string | null
+          next_action_date?: string | null
+          notes?: string | null
+          phone?: string | null
+          pipeline_stage?:
+            | Database["public"]["Enums"]["lead_pipeline_stage"]
+            | null
+          probability?: number | null
+          proposal_notes?: string | null
+          proposal_status?:
+            | Database["public"]["Enums"]["proposal_status"]
+            | null
+          proposal_url?: string | null
+          responsible?: string | null
+          source_custom?: string | null
+          source_id?: string | null
+          status?: Database["public"]["Enums"]["lead_status"] | null
+          tags?: never
+          temperature?: Database["public"]["Enums"]["lead_temperature"] | null
+          updated_at?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_lost_reason_id_fkey"
+            columns: ["lost_reason_id"]
+            isOneToOne: false
+            referencedRelation: "lost_reasons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "lead_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       approve_agency: { Args: { _agency_id: string }; Returns: undefined }
@@ -2318,6 +2500,18 @@ export type Database = {
         Args: { _agency_id: string; _increment?: number; _resource: string }
         Returns: Json
       }
+      count_leads: {
+        Args: {
+          _custom_field_filters?: Json
+          _pipeline_stage?: string
+          _responsible?: string
+          _search?: string
+          _status?: string
+          _tags?: string[]
+          _temperature?: string
+        }
+        Returns: number
+      }
       create_agency_with_owner: {
         Args: { _name: string; _owner_user_id: string; _slug: string }
         Returns: string
@@ -2345,6 +2539,34 @@ export type Database = {
         Returns: string
       }
       exit_impersonate: { Args: never; Returns: undefined }
+      export_leads: {
+        Args: {
+          _pipeline_stage?: string
+          _search?: string
+          _status?: string
+          _tags?: string[]
+          _temperature?: string
+        }
+        Returns: {
+          city: string
+          company_name: string
+          contact_name: string
+          created_at: string
+          custom_fields: Json
+          email: string
+          estimated_value: number
+          id: string
+          notes: string
+          phone: string
+          pipeline_stage: string
+          responsible: string
+          status: string
+          tags: string
+          temperature: string
+          updated_at: string
+          whatsapp: string
+        }[]
+      }
       get_agency_features: { Args: { _agency_id: string }; Returns: Json }
       get_all_agencies_with_stats: {
         Args: never
@@ -2452,6 +2674,38 @@ export type Database = {
       request_user_deletion: {
         Args: { _deletion_type?: string; _notes?: string; _user_id: string }
         Returns: string
+      }
+      search_leads: {
+        Args: {
+          _custom_field_filters?: Json
+          _limit?: number
+          _offset?: number
+          _pipeline_stage?: string
+          _responsible?: string
+          _search?: string
+          _status?: string
+          _tags?: string[]
+          _temperature?: string
+        }
+        Returns: {
+          company_name: string
+          contact_name: string
+          created_at: string
+          custom_fields: Json
+          email: string
+          estimated_value: number
+          id: string
+          next_action: string
+          next_action_date: string
+          phone: string
+          pipeline_stage: Database["public"]["Enums"]["lead_pipeline_stage"]
+          responsible: string
+          status: Database["public"]["Enums"]["lead_status"]
+          tags: Json
+          temperature: Database["public"]["Enums"]["lead_temperature"]
+          updated_at: string
+          whatsapp: string
+        }[]
       }
       set_current_agency: { Args: { _agency_id: string }; Returns: undefined }
       suspend_agency: { Args: { _agency_id: string }; Returns: undefined }
