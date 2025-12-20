@@ -741,6 +741,51 @@ export type Database = {
           },
         ]
       }
+      pending_registrations: {
+        Row: {
+          agency_name: string
+          agency_slug: string
+          created_at: string
+          id: string
+          owner_email: string
+          owner_name: string
+          owner_phone: string | null
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          agency_name: string
+          agency_slug: string
+          created_at?: string
+          id?: string
+          owner_email: string
+          owner_name: string
+          owner_phone?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          agency_name?: string
+          agency_slug?: string
+          created_at?: string
+          id?: string
+          owner_email?: string
+          owner_name?: string
+          owner_phone?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -1488,6 +1533,10 @@ export type Database = {
     }
     Functions: {
       approve_agency: { Args: { _agency_id: string }; Returns: undefined }
+      approve_registration: {
+        Args: { _registration_id: string; _temp_password?: string }
+        Returns: Json
+      }
       can_access_admin: { Args: { _user_id: string }; Returns: boolean }
       can_access_agency: {
         Args: { _agency_id: string; _user_id: string }
@@ -1518,6 +1567,19 @@ export type Database = {
           updated_at: string
         }[]
       }
+      get_pending_registrations: {
+        Args: never
+        Returns: {
+          agency_name: string
+          agency_slug: string
+          created_at: string
+          id: string
+          owner_email: string
+          owner_name: string
+          owner_phone: string
+          status: string
+        }[]
+      }
       get_super_admin_logs: {
         Args: { _limit?: number }
         Returns: {
@@ -1546,6 +1608,10 @@ export type Database = {
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
       reactivate_agency: { Args: { _agency_id: string }; Returns: undefined }
+      reject_registration: {
+        Args: { _reason?: string; _registration_id: string }
+        Returns: undefined
+      }
       set_current_agency: { Args: { _agency_id: string }; Returns: undefined }
       suspend_agency: { Args: { _agency_id: string }; Returns: undefined }
       tenant_healthcheck: {
