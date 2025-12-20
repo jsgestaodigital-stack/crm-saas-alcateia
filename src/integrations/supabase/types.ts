@@ -2693,6 +2693,13 @@ export type Database = {
       }
     }
     Views: {
+      activities_last_30_days: {
+        Row: {
+          day: string | null
+          total_activities: number | null
+        }
+        Relationships: []
+      }
       client_commission_summary: {
         Row: {
           client_id: string | null
@@ -2801,6 +2808,19 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      lead_metrics_by_stage: {
+        Row: {
+          cold_leads: number | null
+          hot_leads: number | null
+          pipeline_stage:
+            | Database["public"]["Enums"]["lead_pipeline_stage"]
+            | null
+          total_leads: number | null
+          total_value: number | null
+          warm_leads: number | null
+        }
+        Relationships: []
       }
       leads_expanded: {
         Row: {
@@ -2942,6 +2962,13 @@ export type Database = {
           },
         ]
       }
+      tasks_summary_by_status: {
+        Row: {
+          status: Database["public"]["Enums"]["task_status"] | null
+          total_tasks: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       add_client_recurring: {
@@ -3043,6 +3070,7 @@ export type Database = {
         Returns: string
       }
       current_agency_id: { Args: never; Returns: string }
+      dashboard_summary: { Args: never; Returns: Json }
       decrypt_sensitive_data: {
         Args: { _encrypted: string; _key?: string }
         Returns: string
