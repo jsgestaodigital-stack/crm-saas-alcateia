@@ -21,7 +21,9 @@ import Historico from "./pages/Historico";
 import ManagerReport from "./pages/ManagerReport";
 import Recorrencia from "./pages/Recorrencia";
 import Suggestions from "./pages/Suggestions";
+import SuperAdmin from "./pages/SuperAdmin";
 import NotFound from "./pages/NotFound";
+import { ImpersonateBanner } from "@/components/ImpersonateBanner";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +38,7 @@ const App = () => (
             <UndoRedoProvider>
               <ClientsProvider>
                 <QADebugProvider>
+                  <ImpersonateBanner />
                   <Routes>
                     <Route path="/" element={<Dashboard />} />
                     <Route path="/dashboard" element={<Dashboard />} />
@@ -47,6 +50,7 @@ const App = () => (
                     <Route path="/recorrencia" element={<Recorrencia />} />
                     <Route path="/auth" element={<Auth />} />
                     <Route path="/admin" element={<Admin />} />
+                    <Route path="/super-admin" element={<SuperAdmin />} />
                     <Route path="/commissions" element={<Commissions />} />
                     <Route path="/duvidas" element={<Questions />} />
                     <Route path="/sugestoes" element={<Suggestions />} />

@@ -11,6 +11,7 @@ export interface UserPermissions {
   canAdmin: boolean;
   canFinance: boolean;
   canRecurring: boolean;
+  isSuperAdmin: boolean;
 }
 
 // Derived permission helpers
@@ -41,6 +42,7 @@ const defaultPermissions: UserPermissions = {
   canAdmin: false,
   canFinance: false,
   canRecurring: false,
+  isSuperAdmin: false,
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -111,7 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const { data, error } = await supabase
         .from("user_permissions")
-        .select("can_sales, can_ops, can_admin, can_finance, can_recurring")
+        .select("can_sales, can_ops, can_admin, can_finance, can_recurring, is_super_admin")
         .eq("user_id", userId)
         .maybeSingle();
 
@@ -131,6 +133,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             canAdmin: true,
             canFinance: true,
             canRecurring: true,
+            isSuperAdmin: false,
           });
         } else {
           setPermissions(defaultPermissions);
@@ -144,7 +147,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           canOps: data.can_ops ?? false,
           canAdmin: data.can_admin ?? false,
           canFinance: data.can_finance ?? false,
-          canRecurring: (data as any).can_recurring ?? false,
+          canRecurring: data.can_recurring ?? false,
+          isSuperAdmin: data.is_super_admin ?? false,
         });
       } else {
         setPermissions(defaultPermissions);

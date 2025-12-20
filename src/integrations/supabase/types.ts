@@ -1150,6 +1150,41 @@ export type Database = {
           },
         ]
       }
+      super_admin_actions: {
+        Row: {
+          action: string
+          agency_id: string | null
+          created_at: string
+          id: string
+          metadata: Json | null
+          super_admin_user_id: string
+        }
+        Insert: {
+          action: string
+          agency_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          super_admin_user_id: string
+        }
+        Update: {
+          action?: string
+          agency_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          super_admin_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "super_admin_actions_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       task_time_entries: {
         Row: {
           agency_id: string
@@ -1452,6 +1487,7 @@ export type Database = {
       }
     }
     Functions: {
+      approve_agency: { Args: { _agency_id: string }; Returns: undefined }
       can_access_admin: { Args: { _user_id: string }; Returns: boolean }
       can_access_agency: {
         Args: { _agency_id: string; _user_id: string }
@@ -1467,6 +1503,34 @@ export type Database = {
       }
       current_agency_id: { Args: never; Returns: string }
       delete_lead: { Args: { _lead_id: string }; Returns: undefined }
+      exit_impersonate: { Args: never; Returns: undefined }
+      get_all_agencies_with_stats: {
+        Args: never
+        Returns: {
+          clients_count: number
+          created_at: string
+          id: string
+          leads_count: number
+          members_count: number
+          name: string
+          slug: string
+          status: string
+          updated_at: string
+        }[]
+      }
+      get_super_admin_logs: {
+        Args: { _limit?: number }
+        Returns: {
+          action: string
+          agency_id: string
+          agency_name: string
+          created_at: string
+          id: string
+          metadata: Json
+          super_admin_name: string
+          super_admin_user_id: string
+        }[]
+      }
       has_agency_role: {
         Args: { _agency_id: string; _role: string; _user_id: string }
         Returns: boolean
@@ -1478,9 +1542,12 @@ export type Database = {
         }
         Returns: boolean
       }
+      impersonate_agency: { Args: { _agency_id: string }; Returns: undefined }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
+      reactivate_agency: { Args: { _agency_id: string }; Returns: undefined }
       set_current_agency: { Args: { _agency_id: string }; Returns: undefined }
+      suspend_agency: { Args: { _agency_id: string }; Returns: undefined }
       tenant_healthcheck: {
         Args: never
         Returns: {
