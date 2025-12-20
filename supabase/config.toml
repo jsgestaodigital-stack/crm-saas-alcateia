@@ -5,3 +5,39 @@ verify_jwt = false
 
 [functions.create-agency-owner]
 verify_jwt = true
+
+[functions.analyze-raiox]
+verify_jwt = true
+
+[functions.analyze-recurrence]
+verify_jwt = true
+
+[functions.analyze-seo]
+verify_jwt = true
+
+[functions.analyze-suspensao]
+verify_jwt = true
+
+[functions.convert-lead-to-client]
+verify_jwt = true
+
+[functions.create-user]
+verify_jwt = true
+
+[functions.generate-manager-report]
+verify_jwt = true
+
+[functions.generate-recurring-tasks]
+verify_jwt = true
+
+[functions.process-voice-command]
+verify_jwt = true
+
+[functions.reset-user-password]
+verify_jwt = true
+
+[functions.voice-to-text]
+verify_jwt = true
+
+[functions.lead-copilot]
+verify_jwt = true
