@@ -46,6 +46,7 @@ import { LeadProposalTab } from './LeadProposalTab';
 import { LeadConversionTab } from './LeadConversionTab';
 import { LeadRaioXTab } from './LeadRaioXTab';
 import { LeadCopilotTab } from './LeadCopilotTab';
+import { LeadTasksTab } from './LeadTasksTab';
 
 interface LeadDetailPanelProps {
   lead: Lead | null;
@@ -139,12 +140,15 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
           <div className="px-6 pt-4 border-b border-border/30">
-            <TabsList className="grid w-full grid-cols-6 bg-muted/30">
+            <TabsList className="grid w-full grid-cols-7 bg-muted/30">
               <TabsTrigger value="resumo" className="text-sm data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400">
                 Resumo
               </TabsTrigger>
               <TabsTrigger value="atividades" className="text-sm data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400">
-                Atividades
+                📌 Atividades
+              </TabsTrigger>
+              <TabsTrigger value="tarefas" className="text-sm data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400">
+                📅 Tarefas
               </TabsTrigger>
               <TabsTrigger value="proposta" className="text-sm data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400">
                 Proposta
@@ -389,6 +393,11 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
               {/* Atividades Tab */}
               <TabsContent value="atividades" className="m-0">
                 <LeadActivityTab leadId={lead.id} />
+              </TabsContent>
+
+              {/* Tarefas Tab */}
+              <TabsContent value="tarefas" className="m-0">
+                <LeadTasksTab leadId={lead.id} />
               </TabsContent>
 
               {/* Proposta Tab */}

@@ -89,10 +89,9 @@ export function LeadActivityTab({ leadId }: LeadActivityTabProps) {
             </Badge>
           </div>
           <Textarea
-            placeholder="O que aconteceu? (Enter para enviar)"
+            placeholder="O que aconteceu?"
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            onKeyDown={handleKeyDown}
             className="min-h-[60px]"
             autoFocus
           />
@@ -153,6 +152,20 @@ export function LeadActivityTab({ leadId }: LeadActivityTabProps) {
                     </span>
                   </div>
                   <p className="text-sm text-foreground">{activity.content}</p>
+                  {activity.notes && (
+                    <p className="text-xs text-muted-foreground mt-1 italic">
+                      📝 {activity.notes}
+                    </p>
+                  )}
+                  {activity.ai_insight && (
+                    <div className="mt-2 p-2 rounded bg-purple-500/10 border border-purple-500/20">
+                      <p className="text-xs text-purple-400 flex items-center gap-1">
+                        <span>🤖</span>
+                        <span className="font-semibold">Insight IA:</span>
+                      </p>
+                      <p className="text-xs text-purple-300 mt-1">{activity.ai_insight}</p>
+                    </div>
+                  )}
                   {activity.link && (
                     <a 
                       href={activity.link} 
