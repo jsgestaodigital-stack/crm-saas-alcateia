@@ -273,6 +273,171 @@ export type Database = {
           },
         ]
       }
+      client_invoices: {
+        Row: {
+          agency_id: string
+          amount: number
+          client_id: string
+          created_at: string
+          description: string | null
+          due_date: string
+          id: string
+          invoice_number: string
+          metadata: Json | null
+          notes: string | null
+          paid_amount: number | null
+          paid_at: string | null
+          payment_method: string | null
+          recurring_id: string | null
+          status: Database["public"]["Enums"]["invoice_status"]
+          stripe_invoice_id: string | null
+          stripe_payment_intent_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          agency_id: string
+          amount: number
+          client_id: string
+          created_at?: string
+          description?: string | null
+          due_date: string
+          id?: string
+          invoice_number: string
+          metadata?: Json | null
+          notes?: string | null
+          paid_amount?: number | null
+          paid_at?: string | null
+          payment_method?: string | null
+          recurring_id?: string | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          stripe_invoice_id?: string | null
+          stripe_payment_intent_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          agency_id?: string
+          amount?: number
+          client_id?: string
+          created_at?: string
+          description?: string | null
+          due_date?: string
+          id?: string
+          invoice_number?: string
+          metadata?: Json | null
+          notes?: string | null
+          paid_amount?: number | null
+          paid_at?: string | null
+          payment_method?: string | null
+          recurring_id?: string | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          stripe_invoice_id?: string | null
+          stripe_payment_intent_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_invoices_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_invoices_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients_v2"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_invoices_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients_v2_expanded"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_invoices_recurring_id_fkey"
+            columns: ["recurring_id"]
+            isOneToOne: false
+            referencedRelation: "client_recurring_history"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_recurring_history: {
+        Row: {
+          agency_id: string
+          amount: number
+          billing_cycle: string | null
+          cancelled_at: string | null
+          cancelled_reason: string | null
+          client_id: string
+          created_at: string
+          end_date: string | null
+          id: string
+          notes: string | null
+          plan_name: string
+          start_date: string
+          status: Database["public"]["Enums"]["recurring_status"]
+          updated_at: string
+        }
+        Insert: {
+          agency_id: string
+          amount?: number
+          billing_cycle?: string | null
+          cancelled_at?: string | null
+          cancelled_reason?: string | null
+          client_id: string
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          notes?: string | null
+          plan_name: string
+          start_date?: string
+          status?: Database["public"]["Enums"]["recurring_status"]
+          updated_at?: string
+        }
+        Update: {
+          agency_id?: string
+          amount?: number
+          billing_cycle?: string | null
+          cancelled_at?: string | null
+          cancelled_reason?: string | null
+          client_id?: string
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          notes?: string | null
+          plan_name?: string
+          start_date?: string
+          status?: Database["public"]["Enums"]["recurring_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_recurring_history_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_recurring_history_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients_v2"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_recurring_history_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients_v2_expanded"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clients: {
         Row: {
           agency_id: string
@@ -385,6 +550,89 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "clients_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clients_v2: {
+        Row: {
+          agency_id: string
+          city: string | null
+          company_name: string
+          contact_name: string | null
+          created_at: string
+          custom_fields: Json | null
+          deleted_at: string | null
+          email: string | null
+          end_date: string | null
+          google_profile_url: string | null
+          id: string
+          main_category: string | null
+          monthly_value: number | null
+          notes: string | null
+          phone: string | null
+          plan_name: string | null
+          responsible: string | null
+          start_date: string | null
+          status: Database["public"]["Enums"]["client_status_v2"]
+          tags: Json | null
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          agency_id: string
+          city?: string | null
+          company_name: string
+          contact_name?: string | null
+          created_at?: string
+          custom_fields?: Json | null
+          deleted_at?: string | null
+          email?: string | null
+          end_date?: string | null
+          google_profile_url?: string | null
+          id?: string
+          main_category?: string | null
+          monthly_value?: number | null
+          notes?: string | null
+          phone?: string | null
+          plan_name?: string | null
+          responsible?: string | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["client_status_v2"]
+          tags?: Json | null
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          agency_id?: string
+          city?: string | null
+          company_name?: string
+          contact_name?: string | null
+          created_at?: string
+          custom_fields?: Json | null
+          deleted_at?: string | null
+          email?: string | null
+          end_date?: string | null
+          google_profile_url?: string | null
+          id?: string
+          main_category?: string | null
+          monthly_value?: number | null
+          notes?: string | null
+          phone?: string | null
+          plan_name?: string | null
+          responsible?: string | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["client_status_v2"]
+          tags?: Json | null
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clients_v2_agency_id_fkey"
             columns: ["agency_id"]
             isOneToOne: false
             referencedRelation: "agencies"
@@ -2377,6 +2625,95 @@ export type Database = {
           },
         ]
       }
+      clients_v2_expanded: {
+        Row: {
+          agency_id: string | null
+          city: string | null
+          company_name: string | null
+          contact_name: string | null
+          created_at: string | null
+          custom_fields: Json | null
+          deleted_at: string | null
+          email: string | null
+          end_date: string | null
+          google_profile_url: string | null
+          id: string | null
+          invoices_count: number | null
+          main_category: string | null
+          monthly_value: number | null
+          notes: string | null
+          phone: string | null
+          plan_name: string | null
+          recurring_count: number | null
+          responsible: string | null
+          start_date: string | null
+          status: Database["public"]["Enums"]["client_status_v2"] | null
+          tags: Json | null
+          updated_at: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          agency_id?: string | null
+          city?: string | null
+          company_name?: string | null
+          contact_name?: string | null
+          created_at?: string | null
+          custom_fields?: Json | null
+          deleted_at?: string | null
+          email?: string | null
+          end_date?: string | null
+          google_profile_url?: string | null
+          id?: string | null
+          invoices_count?: never
+          main_category?: string | null
+          monthly_value?: number | null
+          notes?: string | null
+          phone?: string | null
+          plan_name?: string | null
+          recurring_count?: never
+          responsible?: string | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["client_status_v2"] | null
+          tags?: Json | null
+          updated_at?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          agency_id?: string | null
+          city?: string | null
+          company_name?: string | null
+          contact_name?: string | null
+          created_at?: string | null
+          custom_fields?: Json | null
+          deleted_at?: string | null
+          email?: string | null
+          end_date?: string | null
+          google_profile_url?: string | null
+          id?: string | null
+          invoices_count?: never
+          main_category?: string | null
+          monthly_value?: number | null
+          notes?: string | null
+          phone?: string | null
+          plan_name?: string | null
+          recurring_count?: never
+          responsible?: string | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["client_status_v2"] | null
+          tags?: Json | null
+          updated_at?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clients_v2_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads_expanded: {
         Row: {
           agency_id: string | null
@@ -2519,6 +2856,17 @@ export type Database = {
       }
     }
     Functions: {
+      add_client_recurring: {
+        Args: {
+          _amount: number
+          _billing_cycle?: string
+          _client_id: string
+          _notes?: string
+          _plan_name: string
+          _start_date?: string
+        }
+        Returns: string
+      }
       approve_agency: { Args: { _agency_id: string }; Returns: undefined }
       approve_registration: {
         Args: { _registration_id: string; _temp_password?: string }
@@ -2555,6 +2903,10 @@ export type Database = {
       can_access_ops: { Args: { _user_id: string }; Returns: boolean }
       can_access_recurring: { Args: { _user_id: string }; Returns: boolean }
       can_access_sales: { Args: { _user_id: string }; Returns: boolean }
+      cancel_client_recurring: {
+        Args: { _client_id: string; _reason?: string }
+        Returns: undefined
+      }
       change_agency_plan: {
         Args: {
           _agency_id: string
@@ -2567,6 +2919,18 @@ export type Database = {
       check_limit: {
         Args: { _agency_id: string; _increment?: number; _resource: string }
         Returns: Json
+      }
+      count_clients_v2: {
+        Args: {
+          _custom_field_filters?: Json
+          _responsible?: string
+          _search?: string
+          _start_date_from?: string
+          _start_date_to?: string
+          _status?: string
+          _tags?: string[]
+        }
+        Returns: number
       }
       count_leads: {
         Args: {
@@ -2607,6 +2971,29 @@ export type Database = {
         Returns: string
       }
       exit_impersonate: { Args: never; Returns: undefined }
+      export_clients_v2: {
+        Args: { _search?: string; _status?: string; _tags?: string[] }
+        Returns: {
+          city: string
+          company_name: string
+          contact_name: string
+          created_at: string
+          custom_fields: Json
+          email: string
+          end_date: string
+          id: string
+          monthly_value: number
+          notes: string
+          phone: string
+          plan_name: string
+          responsible: string
+          start_date: string
+          status: string
+          tags: string
+          updated_at: string
+          whatsapp: string
+        }[]
+      }
       export_leads: {
         Args: {
           _pipeline_stage?: string
@@ -2635,7 +3022,18 @@ export type Database = {
           whatsapp: string
         }[]
       }
+      generate_invoice_number: { Args: { _agency_id: string }; Returns: string }
       generate_lead_summary: { Args: { _lead_id: string }; Returns: string }
+      generate_manual_invoice: {
+        Args: {
+          _amount: number
+          _client_id: string
+          _description?: string
+          _due_date: string
+          _notes?: string
+        }
+        Returns: string
+      }
       get_agency_features: { Args: { _agency_id: string }; Returns: Json }
       get_all_agencies_with_stats: {
         Args: never
@@ -2735,6 +3133,14 @@ export type Database = {
         }
         Returns: string
       }
+      mark_invoice_paid: {
+        Args: {
+          _invoice_id: string
+          _paid_amount?: number
+          _payment_method?: string
+        }
+        Returns: undefined
+      }
       reactivate_agency: { Args: { _agency_id: string }; Returns: undefined }
       reject_registration: {
         Args: { _reason?: string; _registration_id: string }
@@ -2755,6 +3161,39 @@ export type Database = {
           _tokens_used?: number
         }
         Returns: string
+      }
+      search_clients_v2: {
+        Args: {
+          _custom_field_filters?: Json
+          _limit?: number
+          _offset?: number
+          _responsible?: string
+          _search?: string
+          _start_date_from?: string
+          _start_date_to?: string
+          _status?: string
+          _tags?: string[]
+        }
+        Returns: {
+          city: string
+          company_name: string
+          contact_name: string
+          created_at: string
+          custom_fields: Json
+          email: string
+          end_date: string
+          id: string
+          monthly_value: number
+          notes: string
+          phone: string
+          plan_name: string
+          responsible: string
+          start_date: string
+          status: Database["public"]["Enums"]["client_status_v2"]
+          tags: Json
+          updated_at: string
+          whatsapp: string
+        }[]
       }
       search_leads: {
         Args: {
@@ -2810,6 +3249,7 @@ export type Database = {
     Enums: {
       app_role: "admin" | "operador" | "visualizador"
       client_status: "on_track" | "delayed" | "pending_client"
+      client_status_v2: "active" | "paused" | "cancelled"
       column_id:
         | "pipeline"
         | "onboarding"
@@ -2827,6 +3267,7 @@ export type Database = {
         | "designer"
         | "freelancer"
       commission_status: "pending" | "paid" | "cancelled"
+      invoice_status: "draft" | "pending" | "paid" | "overdue" | "cancelled"
       lead_activity_type:
         | "whatsapp"
         | "call"
@@ -2857,6 +3298,7 @@ export type Database = {
         | "approved"
         | "rejected"
       question_status: "pending" | "answered" | "resolved"
+      recurring_status: "active" | "paused" | "cancelled" | "completed"
       user_status: "ativo" | "suspenso" | "excluido"
     }
     CompositeTypes: {
@@ -2987,6 +3429,7 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "operador", "visualizador"],
       client_status: ["on_track", "delayed", "pending_client"],
+      client_status_v2: ["active", "paused", "cancelled"],
       column_id: [
         "pipeline",
         "onboarding",
@@ -3006,6 +3449,7 @@ export const Constants = {
         "freelancer",
       ],
       commission_status: ["pending", "paid", "cancelled"],
+      invoice_status: ["draft", "pending", "paid", "overdue", "cancelled"],
       lead_activity_type: [
         "whatsapp",
         "call",
@@ -3039,6 +3483,7 @@ export const Constants = {
         "rejected",
       ],
       question_status: ["pending", "answered", "resolved"],
+      recurring_status: ["active", "paused", "cancelled", "completed"],
       user_status: ["ativo", "suspenso", "excluido"],
     },
   },
