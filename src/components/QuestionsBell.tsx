@@ -17,7 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { TOOLTIP_CONTENT } from '@/lib/tooltipContent';
 import { cn } from '@/lib/utils';
 
-export function NotificationBell() {
+export function QuestionsBell() {
   const { questions, pendingCount, answerQuestion, markAsResolved } = useQuestions();
   const { isAdmin } = useAuth();
   const [open, setOpen] = useState(false);
