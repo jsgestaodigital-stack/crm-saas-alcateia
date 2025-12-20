@@ -79,9 +79,12 @@ Deno.serve(async (req) => {
   }
 
   try {
+    const body = await req.json();
+    const { users, token: bodyToken } = body as { users: ProvisionUser[]; token?: string };
+    
     // Security: Require bootstrap token to prevent unauthorized access
     const bootstrapToken = Deno.env.get("BOOTSTRAP_TOKEN");
-    const providedToken = req.headers.get("X-Bootstrap-Token") || req.headers.get("x-bootstrap-token");
+    const providedToken = req.headers.get("X-Bootstrap-Token") || req.headers.get("x-bootstrap-token") || bodyToken;
     
     console.log("Bootstrap token check - Token configured:", !!bootstrapToken, "Token provided:", !!providedToken);
     
@@ -104,8 +107,6 @@ Deno.serve(async (req) => {
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
-
-    const { users } = (await req.json()) as { users: ProvisionUser[] };
 
     const validation = validateUsers(users);
     if (!validation.valid) {
