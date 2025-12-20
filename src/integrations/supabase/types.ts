@@ -904,6 +904,7 @@ export type Database = {
       lead_activities: {
         Row: {
           agency_id: string
+          ai_insight: string | null
           content: string
           created_at: string
           created_by: string
@@ -911,10 +912,13 @@ export type Database = {
           id: string
           lead_id: string
           link: string | null
+          notes: string | null
           type: Database["public"]["Enums"]["lead_activity_type"]
+          updated_at: string | null
         }
         Insert: {
           agency_id?: string
+          ai_insight?: string | null
           content: string
           created_at?: string
           created_by: string
@@ -922,10 +926,13 @@ export type Database = {
           id?: string
           lead_id: string
           link?: string | null
+          notes?: string | null
           type: Database["public"]["Enums"]["lead_activity_type"]
+          updated_at?: string | null
         }
         Update: {
           agency_id?: string
+          ai_insight?: string | null
           content?: string
           created_at?: string
           created_by?: string
@@ -933,7 +940,9 @@ export type Database = {
           id?: string
           lead_id?: string
           link?: string | null
+          notes?: string | null
           type?: Database["public"]["Enums"]["lead_activity_type"]
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -1973,6 +1982,85 @@ export type Database = {
           },
         ]
       }
+      scheduled_tasks: {
+        Row: {
+          agency_id: string
+          client_id: string | null
+          completed_at: string | null
+          completed_by: string | null
+          completed_by_name: string | null
+          created_at: string
+          description: string | null
+          due_date: string
+          id: string
+          lead_id: string | null
+          priority: Database["public"]["Enums"]["task_priority"]
+          status: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at: string
+          user_id: string | null
+          user_name: string
+        }
+        Insert: {
+          agency_id?: string
+          client_id?: string | null
+          completed_at?: string | null
+          completed_by?: string | null
+          completed_by_name?: string | null
+          created_at?: string
+          description?: string | null
+          due_date: string
+          id?: string
+          lead_id?: string | null
+          priority?: Database["public"]["Enums"]["task_priority"]
+          status?: Database["public"]["Enums"]["task_status"]
+          title: string
+          updated_at?: string
+          user_id?: string | null
+          user_name?: string
+        }
+        Update: {
+          agency_id?: string
+          client_id?: string | null
+          completed_at?: string | null
+          completed_by?: string | null
+          completed_by_name?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string
+          id?: string
+          lead_id?: string | null
+          priority?: Database["public"]["Enums"]["task_priority"]
+          status?: Database["public"]["Enums"]["task_status"]
+          title?: string
+          updated_at?: string
+          user_id?: string | null
+          user_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scheduled_tasks_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scheduled_tasks_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scheduled_tasks_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_expanded"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       security_alerts: {
         Row: {
           agency_id: string | null
@@ -2872,6 +2960,7 @@ export type Database = {
         Args: { _registration_id: string; _temp_password?: string }
         Returns: Json
       }
+      auto_overdue_tasks: { Args: never; Returns: number }
       build_suggestion_prompt: { Args: { _lead_id: string }; Returns: string }
       calculate_agency_usage: {
         Args: { _agency_id: string }
@@ -2920,6 +3009,7 @@ export type Database = {
         Args: { _agency_id: string; _increment?: number; _resource: string }
         Returns: Json
       }
+      complete_task: { Args: { p_task_id: string }; Returns: boolean }
       count_clients_v2: {
         Args: {
           _custom_field_filters?: Json
@@ -3105,6 +3195,16 @@ export type Database = {
         }
         Returns: string
       }
+      log_lead_activity: {
+        Args: {
+          p_content: string
+          p_lead_id: string
+          p_link?: string
+          p_notes?: string
+          p_type: Database["public"]["Enums"]["lead_activity_type"]
+        }
+        Returns: string
+      }
       log_lead_message: {
         Args: {
           _is_private?: boolean
@@ -3228,6 +3328,7 @@ export type Database = {
         }[]
       }
       set_current_agency: { Args: { _agency_id: string }; Returns: undefined }
+      suggest_next_task: { Args: { p_lead_id: string }; Returns: Json }
       suspend_agency: { Args: { _agency_id: string }; Returns: undefined }
       sync_agency_limits_from_plan: {
         Args: { _agency_id: string }
@@ -3299,6 +3400,8 @@ export type Database = {
         | "rejected"
       question_status: "pending" | "answered" | "resolved"
       recurring_status: "active" | "paused" | "cancelled" | "completed"
+      task_priority: "low" | "medium" | "high" | "urgent"
+      task_status: "pending" | "completed" | "overdue" | "cancelled"
       user_status: "ativo" | "suspenso" | "excluido"
     }
     CompositeTypes: {
@@ -3484,6 +3587,8 @@ export const Constants = {
       ],
       question_status: ["pending", "answered", "resolved"],
       recurring_status: ["active", "paused", "cancelled", "completed"],
+      task_priority: ["low", "medium", "high", "urgent"],
+      task_status: ["pending", "completed", "overdue", "cancelled"],
       user_status: ["ativo", "suspenso", "excluido"],
     },
   },
