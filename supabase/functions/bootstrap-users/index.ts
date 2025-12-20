@@ -10,11 +10,13 @@ interface ProvisionUser {
   password: string;
   full_name: string;
   role?: "admin" | "operador" | "visualizador";
+  is_super_admin?: boolean;
   permissions?: {
     can_sales?: boolean;
     can_ops?: boolean;
     can_admin?: boolean;
     can_finance?: boolean;
+    can_recurring?: boolean;
   };
 }
 
@@ -198,12 +200,14 @@ Deno.serve(async (req) => {
         if (roleError) throw roleError;
 
         // Set permissions based on role or custom permissions
-        let permissions = {
+        let permissions: Record<string, unknown> = {
           user_id: userId,
           can_admin: role === "admin",
           can_sales: role === "admin",
           can_ops: role === "admin" || role === "operador",
           can_finance: role === "admin",
+          can_recurring: role === "admin",
+          is_super_admin: u.is_super_admin ?? false,
         };
 
         // Override with custom permissions if provided
@@ -214,6 +218,7 @@ Deno.serve(async (req) => {
             can_sales: u.permissions.can_sales ?? permissions.can_sales,
             can_ops: u.permissions.can_ops ?? permissions.can_ops,
             can_finance: u.permissions.can_finance ?? permissions.can_finance,
+            can_recurring: u.permissions.can_recurring ?? permissions.can_recurring,
           };
         }
 
