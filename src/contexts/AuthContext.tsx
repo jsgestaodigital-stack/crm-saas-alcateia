@@ -197,7 +197,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password,
     });
 
-    // Update last_login (based on the current authenticated user)
+    // Update last_login and log login event
     if (!error) {
       const { data } = await supabase.auth.getUser();
       const userId = data.user?.id;
@@ -207,7 +207,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .from("profiles")
           .update({ last_login: new Date().toISOString() })
           .eq("id", userId);
+
+        // Log successful login
+        try {
+          await supabase.rpc('log_login_event', {
+            _success: true,
+            _failure_reason: null,
+            _ip_address: null, // Will be captured in the RPC if possible
+            _user_agent: navigator.userAgent,
+          });
+        } catch (logError) {
+          console.warn('Failed to log login event:', logError);
+        }
       }
+    } else {
+      // Log failed login attempt (can't use RPC without auth, so skip)
+      console.warn('Login failed:', error.message);
     }
 
     return { error };

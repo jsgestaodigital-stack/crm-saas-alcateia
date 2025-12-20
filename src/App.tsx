@@ -9,6 +9,7 @@ import { FunnelModeProvider } from "@/contexts/FunnelModeContext";
 import { QADebugProvider } from "@/contexts/QADebugContext";
 import { ClientsProvider } from "@/components/ClientsProvider";
 import { QADebugDrawer, QADebugTrigger } from "@/components/QADebugDrawer";
+import { ConsentGuard } from "@/components/ConsentGuard";
 import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import AdminUsers from "./pages/AdminUsers";
@@ -41,31 +42,33 @@ const App = () => (
             <UndoRedoProvider>
               <ClientsProvider>
                 <QADebugProvider>
-                  <ImpersonateBanner />
-                  <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/raio-x" element={<RaioX />} />
-                    <Route path="/agente-seo" element={<AgenteSEO />} />
-                    <Route path="/agente-suspensoes" element={<AgenteSuspensoes />} />
-                    <Route path="/historico" element={<Historico />} />
-                    <Route path="/relatorio-gestor" element={<ManagerReport />} />
-                    <Route path="/recorrencia" element={<Recorrencia />} />
-                    <Route path="/auth" element={<Auth />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/admin" element={<Admin />} />
-                    <Route path="/admin/users" element={<AdminUsers />} />
-                    <Route path="/admin/plan" element={<AgencyPlan />} />
-                    <Route path="/super-admin" element={<SuperAdmin />} />
-                    <Route path="/commissions" element={<Commissions />} />
-                    <Route path="/duvidas" element={<Questions />} />
-                    <Route path="/sugestoes" element={<Suggestions />} />
-                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                  {/* QA Debug Tools */}
-                  <QADebugTrigger />
-                  <QADebugDrawer />
+                  <ConsentGuard>
+                    <ImpersonateBanner />
+                    <Routes>
+                      <Route path="/" element={<Dashboard />} />
+                      <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/raio-x" element={<RaioX />} />
+                      <Route path="/agente-seo" element={<AgenteSEO />} />
+                      <Route path="/agente-suspensoes" element={<AgenteSuspensoes />} />
+                      <Route path="/historico" element={<Historico />} />
+                      <Route path="/relatorio-gestor" element={<ManagerReport />} />
+                      <Route path="/recorrencia" element={<Recorrencia />} />
+                      <Route path="/auth" element={<Auth />} />
+                      <Route path="/register" element={<Register />} />
+                      <Route path="/admin" element={<Admin />} />
+                      <Route path="/admin/users" element={<AdminUsers />} />
+                      <Route path="/admin/plan" element={<AgencyPlan />} />
+                      <Route path="/super-admin" element={<SuperAdmin />} />
+                      <Route path="/commissions" element={<Commissions />} />
+                      <Route path="/duvidas" element={<Questions />} />
+                      <Route path="/sugestoes" element={<Suggestions />} />
+                      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                    {/* QA Debug Tools */}
+                    <QADebugTrigger />
+                    <QADebugDrawer />
+                  </ConsentGuard>
                 </QADebugProvider>
               </ClientsProvider>
             </UndoRedoProvider>

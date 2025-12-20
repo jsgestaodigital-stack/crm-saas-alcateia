@@ -129,6 +129,50 @@ export type Database = {
           },
         ]
       }
+      agency_sensitive_data: {
+        Row: {
+          agency_id: string
+          bank_account_encrypted: string | null
+          bank_agency_encrypted: string | null
+          cnpj_encrypted: string | null
+          created_at: string
+          encryption_key_id: string | null
+          id: string
+          pix_key_encrypted: string | null
+          updated_at: string
+        }
+        Insert: {
+          agency_id: string
+          bank_account_encrypted?: string | null
+          bank_agency_encrypted?: string | null
+          cnpj_encrypted?: string | null
+          created_at?: string
+          encryption_key_id?: string | null
+          id?: string
+          pix_key_encrypted?: string | null
+          updated_at?: string
+        }
+        Update: {
+          agency_id?: string
+          bank_account_encrypted?: string | null
+          bank_agency_encrypted?: string | null
+          cnpj_encrypted?: string | null
+          created_at?: string
+          encryption_key_id?: string | null
+          id?: string
+          pix_key_encrypted?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agency_sensitive_data_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: true
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agency_usage: {
         Row: {
           agency_id: string
@@ -809,6 +853,39 @@ export type Database = {
           },
         ]
       }
+      login_events: {
+        Row: {
+          created_at: string
+          failure_reason: string | null
+          id: string
+          ip_address: unknown
+          location: string | null
+          success: boolean
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          failure_reason?: string | null
+          id?: string
+          ip_address?: unknown
+          location?: string | null
+          success?: boolean
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          failure_reason?: string | null
+          id?: string
+          ip_address?: unknown
+          location?: string | null
+          success?: boolean
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       lost_reasons: {
         Row: {
           active: boolean
@@ -1305,6 +1382,50 @@ export type Database = {
           },
         ]
       }
+      security_alerts: {
+        Row: {
+          agency_id: string | null
+          details: Json | null
+          detected_at: string
+          event_type: string
+          id: string
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          user_id: string | null
+        }
+        Insert: {
+          agency_id?: string | null
+          details?: Json | null
+          detected_at?: string
+          event_type: string
+          id?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          user_id?: string | null
+        }
+        Update: {
+          agency_id?: string | null
+          details?: Json | null
+          detected_at?: string
+          event_type?: string
+          id?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "security_alerts_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscription_history: {
         Row: {
           agency_id: string
@@ -1748,6 +1869,92 @@ export type Database = {
         }
         Relationships: []
       }
+      user_consents: {
+        Row: {
+          accepted_at: string
+          created_at: string
+          id: string
+          ip_address: unknown
+          policy_type: string
+          policy_version: string
+          revoked_at: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          accepted_at?: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown
+          policy_type?: string
+          policy_version: string
+          revoked_at?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          accepted_at?: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown
+          policy_type?: string
+          policy_version?: string
+          revoked_at?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_deletion_requests: {
+        Row: {
+          agency_id: string | null
+          deletion_type: string
+          id: string
+          metadata: Json | null
+          notes: string | null
+          processed_at: string | null
+          processed_by: string | null
+          requested_at: string
+          status: string
+          user_email: string
+          user_id: string
+        }
+        Insert: {
+          agency_id?: string | null
+          deletion_type?: string
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          requested_at?: string
+          status?: string
+          user_email: string
+          user_id: string
+        }
+        Update: {
+          agency_id?: string | null
+          deletion_type?: string
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          requested_at?: string
+          status?: string
+          user_email?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_deletion_requests_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_permissions: {
         Row: {
           can_admin: boolean
@@ -1886,7 +2093,23 @@ export type Database = {
         Returns: string
       }
       current_agency_id: { Args: never; Returns: string }
+      decrypt_sensitive_data: {
+        Args: { _encrypted: string; _key?: string }
+        Returns: string
+      }
       delete_lead: { Args: { _lead_id: string }; Returns: undefined }
+      detect_suspicious_logins: {
+        Args: { _user_id: string; _window_minutes?: number }
+        Returns: {
+          is_suspicious: boolean
+          reason: string
+          recent_ips: string[]
+        }[]
+      }
+      encrypt_sensitive_data: {
+        Args: { _data: string; _key?: string }
+        Returns: string
+      }
       exit_impersonate: { Args: never; Returns: undefined }
       get_agency_features: { Args: { _agency_id: string }; Returns: Json }
       get_all_agencies_with_stats: {
@@ -1929,6 +2152,10 @@ export type Database = {
           super_admin_user_id: string
         }[]
       }
+      has_active_consent: {
+        Args: { _min_version?: string; _policy_type?: string; _user_id: string }
+        Returns: boolean
+      }
       has_agency_role: {
         Args: { _agency_id: string; _role: string; _user_id: string }
         Returns: boolean
@@ -1943,10 +2170,45 @@ export type Database = {
       impersonate_agency: { Args: { _agency_id: string }; Returns: undefined }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
+      log_action: {
+        Args: {
+          _action_type: string
+          _entity_id?: string
+          _entity_name?: string
+          _entity_type: string
+          _metadata?: Json
+          _new_value?: Json
+          _old_value?: Json
+        }
+        Returns: string
+      }
+      log_limit_abuse: {
+        Args: {
+          _agency_id: string
+          _attempted_count: number
+          _limit: number
+          _resource: string
+          _user_id: string
+        }
+        Returns: string
+      }
+      log_login_event: {
+        Args: {
+          _failure_reason?: string
+          _ip_address?: string
+          _success: boolean
+          _user_agent?: string
+        }
+        Returns: string
+      }
       reactivate_agency: { Args: { _agency_id: string }; Returns: undefined }
       reject_registration: {
         Args: { _reason?: string; _registration_id: string }
         Returns: undefined
+      }
+      request_user_deletion: {
+        Args: { _deletion_type?: string; _notes?: string; _user_id: string }
+        Returns: string
       }
       set_current_agency: { Args: { _agency_id: string }; Returns: undefined }
       suspend_agency: { Args: { _agency_id: string }; Returns: undefined }
