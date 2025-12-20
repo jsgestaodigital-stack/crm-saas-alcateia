@@ -572,6 +572,23 @@ export function AppSidebar({
               </TooltipContent>
             </Tooltip>}
 
+          {/* Gestão de Colaboradores - Admin only */}
+          {canAccessAdmin && <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" className={cn("w-full gap-2 h-11 border-violet-500/30 hover:bg-violet-500/10 hover:text-violet-400 transition-all", collapsed ? "px-3" : "px-4", location.pathname === "/admin/users" && "bg-violet-500/10 text-violet-400 border-violet-500/50")} onClick={() => {
+              navigate("/admin/users");
+              onMobileOpenChange(false);
+            }}>
+                  <Users className="h-5 w-5 shrink-0" />
+                  {!collapsed && <span className="animate-fade-in">Colaboradores</span>}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="glass">
+                <p className="font-medium">Gestão de Colaboradores</p>
+                <p className="text-xs text-muted-foreground">Criar e gerenciar usuários da agência</p>
+              </TooltipContent>
+            </Tooltip>}
+
           {/* Manager Report - Admin only */}
           {canAccessAdmin && <Tooltip>
               <TooltipTrigger asChild>
