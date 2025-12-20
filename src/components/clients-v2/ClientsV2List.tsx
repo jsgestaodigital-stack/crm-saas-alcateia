@@ -19,13 +19,13 @@ const statusLabels: Record<string, { label: string; variant: 'default' | 'second
 
 export function ClientsV2List() {
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<ClientV2 | null>(null);
 
   const { clients, loading, totalCount, refetch, createClient, updateClient, deleteClient } = useClientsV2({
     search: search || undefined,
-    status: statusFilter || undefined,
+    status: statusFilter === 'all' ? undefined : statusFilter || undefined,
   });
 
   const handleEdit = (client: ClientV2) => {
@@ -91,7 +91,7 @@ export function ClientsV2List() {
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todos</SelectItem>
+              <SelectItem value="all">Todos</SelectItem>
               <SelectItem value="active">Ativos</SelectItem>
               <SelectItem value="paused">Pausados</SelectItem>
               <SelectItem value="cancelled">Cancelados</SelectItem>
