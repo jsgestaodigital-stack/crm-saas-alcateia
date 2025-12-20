@@ -901,6 +901,87 @@ export type Database = {
           },
         ]
       }
+      email_queue: {
+        Row: {
+          agency_id: string
+          attempts: number | null
+          body_html: string | null
+          body_text: string | null
+          created_at: string
+          error_message: string | null
+          id: string
+          last_attempt_at: string | null
+          max_attempts: number | null
+          notification_id: string | null
+          priority: number | null
+          recipient_email: string
+          recipient_name: string | null
+          scheduled_for: string | null
+          sent_at: string | null
+          status: string
+          subject: string
+          template_data: Json | null
+          template_id: string | null
+        }
+        Insert: {
+          agency_id: string
+          attempts?: number | null
+          body_html?: string | null
+          body_text?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          last_attempt_at?: string | null
+          max_attempts?: number | null
+          notification_id?: string | null
+          priority?: number | null
+          recipient_email: string
+          recipient_name?: string | null
+          scheduled_for?: string | null
+          sent_at?: string | null
+          status?: string
+          subject: string
+          template_data?: Json | null
+          template_id?: string | null
+        }
+        Update: {
+          agency_id?: string
+          attempts?: number | null
+          body_html?: string | null
+          body_text?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          last_attempt_at?: string | null
+          max_attempts?: number | null
+          notification_id?: string | null
+          priority?: number | null
+          recipient_email?: string
+          recipient_name?: string | null
+          scheduled_for?: string | null
+          sent_at?: string | null
+          status?: string
+          subject?: string
+          template_data?: Json | null
+          template_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_queue_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "email_queue_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "notifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lead_activities: {
         Row: {
           agency_id: string
@@ -1510,6 +1591,167 @@ export type Database = {
             columns: ["agency_id"]
             isOneToOne: false
             referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notification_preferences: {
+        Row: {
+          agency_id: string
+          ai_insight_enabled: boolean | null
+          created_at: string
+          email_digest_frequency: string | null
+          email_enabled: boolean | null
+          id: string
+          lead_activity_enabled: boolean | null
+          lead_stale_enabled: boolean | null
+          push_enabled: boolean | null
+          quiet_hours_end: string | null
+          quiet_hours_start: string | null
+          task_due_enabled: boolean | null
+          task_overdue_enabled: boolean | null
+          team_mention_enabled: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          agency_id: string
+          ai_insight_enabled?: boolean | null
+          created_at?: string
+          email_digest_frequency?: string | null
+          email_enabled?: boolean | null
+          id?: string
+          lead_activity_enabled?: boolean | null
+          lead_stale_enabled?: boolean | null
+          push_enabled?: boolean | null
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          task_due_enabled?: boolean | null
+          task_overdue_enabled?: boolean | null
+          team_mention_enabled?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          agency_id?: string
+          ai_insight_enabled?: boolean | null
+          created_at?: string
+          email_digest_frequency?: string | null
+          email_enabled?: boolean | null
+          id?: string
+          lead_activity_enabled?: boolean | null
+          lead_stale_enabled?: boolean | null
+          push_enabled?: boolean | null
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          task_due_enabled?: boolean | null
+          task_overdue_enabled?: boolean | null
+          team_mention_enabled?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_preferences_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          agency_id: string
+          channel: Database["public"]["Enums"]["notification_channel"]
+          client_id: string | null
+          created_at: string
+          dismissed_at: string | null
+          expires_at: string | null
+          id: string
+          lead_id: string | null
+          message: string | null
+          metadata: Json | null
+          priority: Database["public"]["Enums"]["notification_priority"]
+          read_at: string | null
+          sent_at: string | null
+          task_id: string | null
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Insert: {
+          agency_id: string
+          channel?: Database["public"]["Enums"]["notification_channel"]
+          client_id?: string | null
+          created_at?: string
+          dismissed_at?: string | null
+          expires_at?: string | null
+          id?: string
+          lead_id?: string | null
+          message?: string | null
+          metadata?: Json | null
+          priority?: Database["public"]["Enums"]["notification_priority"]
+          read_at?: string | null
+          sent_at?: string | null
+          task_id?: string | null
+          title: string
+          type?: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Update: {
+          agency_id?: string
+          channel?: Database["public"]["Enums"]["notification_channel"]
+          client_id?: string | null
+          created_at?: string
+          dismissed_at?: string | null
+          expires_at?: string | null
+          id?: string
+          lead_id?: string | null
+          message?: string | null
+          metadata?: Json | null
+          priority?: Database["public"]["Enums"]["notification_priority"]
+          read_at?: string | null
+          sent_at?: string | null
+          task_id?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["notification_type"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_expanded"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "scheduled_tasks"
             referencedColumns: ["id"]
           },
         ]
@@ -3036,6 +3278,7 @@ export type Database = {
         Args: { _agency_id: string; _increment?: number; _resource: string }
         Returns: Json
       }
+      check_notifications: { Args: never; Returns: Json }
       complete_task: { Args: { p_task_id: string }; Returns: boolean }
       count_clients_v2: {
         Args: {
@@ -3063,6 +3306,21 @@ export type Database = {
       }
       create_agency_with_owner: {
         Args: { _name: string; _owner_user_id: string; _slug: string }
+        Returns: string
+      }
+      create_notification: {
+        Args: {
+          p_channel?: Database["public"]["Enums"]["notification_channel"]
+          p_client_id?: string
+          p_lead_id?: string
+          p_message?: string
+          p_metadata?: Json
+          p_priority?: Database["public"]["Enums"]["notification_priority"]
+          p_task_id?: string
+          p_title: string
+          p_type: Database["public"]["Enums"]["notification_type"]
+          p_user_id: string
+        }
         Returns: string
       }
       create_trial_subscription: {
@@ -3193,6 +3451,7 @@ export type Database = {
           super_admin_user_id: string
         }[]
       }
+      get_unread_notification_count: { Args: never; Returns: number }
       has_active_consent: {
         Args: { _min_version?: string; _policy_type?: string; _user_id: string }
         Returns: boolean
@@ -3261,6 +3520,7 @@ export type Database = {
         }
         Returns: string
       }
+      mark_all_notifications_read: { Args: never; Returns: number }
       mark_invoice_paid: {
         Args: {
           _invoice_id: string
@@ -3268,6 +3528,24 @@ export type Database = {
           _payment_method?: string
         }
         Returns: undefined
+      }
+      mark_notification_read: {
+        Args: { p_notification_id: string }
+        Returns: boolean
+      }
+      queue_email: {
+        Args: {
+          p_body_html?: string
+          p_body_text?: string
+          p_notification_id?: string
+          p_recipient_email: string
+          p_recipient_name?: string
+          p_scheduled_for?: string
+          p_subject: string
+          p_template_data?: Json
+          p_template_id?: string
+        }
+        Returns: string
       }
       reactivate_agency: { Args: { _agency_id: string }; Returns: undefined }
       reject_registration: {
@@ -3418,6 +3696,17 @@ export type Database = {
         | "lost"
       lead_status: "open" | "gained" | "lost" | "future"
       lead_temperature: "cold" | "warm" | "hot"
+      notification_channel: "in_app" | "email" | "push" | "sms"
+      notification_priority: "low" | "normal" | "high" | "urgent"
+      notification_type:
+        | "task_due"
+        | "task_overdue"
+        | "lead_stale"
+        | "lead_activity"
+        | "ai_insight"
+        | "team_mention"
+        | "system"
+        | "reminder"
       photo_mode: "with_photos" | "without_photos" | "pending"
       plan_type: "unique" | "recurring"
       proposal_status:
@@ -3604,6 +3893,18 @@ export const Constants = {
       ],
       lead_status: ["open", "gained", "lost", "future"],
       lead_temperature: ["cold", "warm", "hot"],
+      notification_channel: ["in_app", "email", "push", "sms"],
+      notification_priority: ["low", "normal", "high", "urgent"],
+      notification_type: [
+        "task_due",
+        "task_overdue",
+        "lead_stale",
+        "lead_activity",
+        "ai_insight",
+        "team_mention",
+        "system",
+        "reminder",
+      ],
       photo_mode: ["with_photos", "without_photos", "pending"],
       plan_type: ["unique", "recurring"],
       proposal_status: [
