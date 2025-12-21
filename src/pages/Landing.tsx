@@ -50,7 +50,7 @@ const Landing = () => {
       annualPrice: 54,
       features: [
         "Até 15 clientes ativos",
-        "Até 500 leads",
+        "Até 200 leads",
         "Até 2 membros da equipe",
         "Funil e tarefas básicas",
         "Relatórios por agência",
@@ -73,7 +73,7 @@ const Landing = () => {
       annualPrice: 102,
       features: [
         "Até 50 clientes ativos",
-        "Até 2.000 leads",
+        "Até 1.000 leads",
         "Até 5 membros",
         "Funil e tarefas avançadas",
         "Automações por status",
@@ -94,7 +94,7 @@ const Landing = () => {
       annualPrice: 158,
       features: [
         "Até 150 clientes ativos",
-        "Até 10.000 leads",
+        "Até 5.000 leads",
         "Até 15 membros",
         "Tudo do Pro +",
         "Dashboard financeiro",
