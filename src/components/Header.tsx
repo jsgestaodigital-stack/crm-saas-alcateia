@@ -62,7 +62,7 @@ export function Header({ onNewClient }: HeaderProps) {
         {/* Mobile Menu */}
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <SheetTrigger asChild className="sm:hidden">
-            <Button variant="ghost" size="icon" className="hover:bg-emerald/10 hover:text-emerald">
+            <Button variant="ghost" size="icon" aria-label="Abrir menu de navegação" className="hover:bg-emerald/10 hover:text-emerald">
               <Menu className="w-5 h-5" />
             </Button>
           </SheetTrigger>
@@ -244,6 +244,7 @@ export function Header({ onNewClient }: HeaderProps) {
             variant="emerald"
             className="sm:hidden w-8 h-8"
             onClick={onNewClient}
+            aria-label="Criar novo cliente"
           >
             <Plus className="w-4 h-4" />
           </Button>
@@ -251,9 +252,9 @@ export function Header({ onNewClient }: HeaderProps) {
           {/* User Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full" aria-label="Menu do usuário">
                 <Avatar className="h-8 w-8 border-2 border-emerald/30 ring-2 ring-emerald/10">
-                  <AvatarImage src={user?.user_metadata?.avatar_url} />
+                  <AvatarImage src={user?.user_metadata?.avatar_url} alt="Foto do usuário" />
                   <AvatarFallback className="bg-gradient-to-br from-emerald/20 to-violet/20 text-emerald font-semibold text-xs">
                     {userInitials}
                   </AvatarFallback>

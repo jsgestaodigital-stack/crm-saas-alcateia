@@ -329,7 +329,7 @@ export function ProposalEditor({
                 <Input
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  placeholder="Cidade"
+                  placeholder="Ex: São Paulo, Campinas"
                 />
               </div>
               <div>
@@ -354,8 +354,9 @@ export function ProposalEditor({
                 <Input
                   value={keywords}
                   onChange={(e) => setKeywords(e.target.value)}
-                  placeholder="Ex: advogado, dentista, restaurante italiano"
+                  placeholder="Ex: dentista em campinas, melhor advogado, restaurante italiano SP"
                 />
+                <p className="text-xs text-muted-foreground mt-1">Usadas para personalizar a proposta com IA</p>
               </div>
             </div>
           </CardContent>

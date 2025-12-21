@@ -299,8 +299,9 @@ export function ContractWizard({ onComplete, onCancel, initialData }: ContractWi
                 <Input
                   value={data.city}
                   onChange={(e) => updateData({ city: e.target.value })}
-                  placeholder="São Paulo"
+                  placeholder="Ex: São Paulo, Campinas"
                 />
+                <p className="text-xs text-muted-foreground mt-1">Será usada no contrato</p>
               </div>
             </div>
           )}
