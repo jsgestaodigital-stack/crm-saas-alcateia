@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setTimeout(() => {
             fetchUserRole(session.user.id);
             fetchUserPermissions(session.user.id);
-            fetchCurrentAgencyId(session.user.id);
+            fetchCurrentAgencyId(session.user);
           }, 0);
         } else {
           setUserRole(null);
@@ -85,7 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (session?.user) {
         fetchUserRole(session.user.id);
         fetchUserPermissions(session.user.id);
-        fetchCurrentAgencyId(session.user.id);
+        fetchCurrentAgencyId(session.user);
       }
       setIsLoading(false);
     });
@@ -164,21 +164,79 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const fetchCurrentAgencyId = async (userId: string) => {
+  const fetchCurrentAgencyId = async (authUser: User) => {
+    const userId = authUser.id;
+    const fullName =
+      (authUser.user_metadata as any)?.full_name ||
+      (authUser.user_metadata as any)?.name ||
+      authUser.email ||
+      "Usuário";
+
     try {
-      const { data, error } = await supabase
+      // 1) Ensure profile exists (profiles.full_name is NOT NULL)
+      const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("current_agency_id")
         .eq("id", userId)
         .maybeSingle();
 
-      if (error) {
-        console.error("Error fetching current agency:", error);
+      if (profileError) {
+        console.error("Error fetching current agency:", profileError);
         setCurrentAgencyId(null);
         return;
       }
 
-      setCurrentAgencyId(data?.current_agency_id ?? null);
+      if (!profile) {
+        const { error: insertError } = await supabase
+          .from("profiles")
+          .insert({ id: userId, full_name: fullName });
+
+        if (insertError) {
+          console.error("Error creating profile:", insertError);
+          setCurrentAgencyId(null);
+          return;
+        }
+      }
+
+      // 2) If a current agency is already set, use it
+      if (profile?.current_agency_id) {
+        setCurrentAgencyId(profile.current_agency_id);
+        return;
+      }
+
+      // 3) Otherwise, auto-select the first agency membership
+      const { data: membership, error: membershipError } = await supabase
+        .from("agency_members")
+        .select("agency_id")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+
+      if (membershipError) {
+        console.error("Error fetching agency membership:", membershipError);
+        setCurrentAgencyId(null);
+        return;
+      }
+
+      const agencyId = membership?.agency_id ?? null;
+      if (!agencyId) {
+        setCurrentAgencyId(null);
+        return;
+      }
+
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ current_agency_id: agencyId })
+        .eq("id", userId);
+
+      if (updateError) {
+        console.error("Error setting current agency:", updateError);
+        setCurrentAgencyId(null);
+        return;
+      }
+
+      setCurrentAgencyId(agencyId);
     } catch (err) {
       console.error("Error fetching current agency:", err);
       setCurrentAgencyId(null);
