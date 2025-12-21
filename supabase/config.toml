@@ -50,3 +50,6 @@ verify_jwt = false
 
 [functions.check-notifications]
 verify_jwt = true
+
+[functions.generate-proposal]
+verify_jwt = true
