@@ -73,17 +73,31 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Get user's agency
+    // Get user's agency - try profile first, then agency_members
     const { data: profile } = await supabaseAdmin
       .from("profiles")
       .select("current_agency_id")
       .eq("id", user.id)
       .maybeSingle();
 
-    const agencyId = profile?.current_agency_id;
+    let agencyId = profile?.current_agency_id;
+    
+    // Fallback to agency_members if no current_agency_id in profile
     if (!agencyId) {
+      const { data: membership } = await supabaseAdmin
+        .from("agency_members")
+        .select("agency_id")
+        .eq("user_id", user.id)
+        .limit(1)
+        .maybeSingle();
+      
+      agencyId = membership?.agency_id;
+    }
+
+    if (!agencyId) {
+      console.error("No agency found for user:", user.id);
       return new Response(
-        JSON.stringify({ error: "No agency found" }),
+        JSON.stringify({ error: "No agency found for this user" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
