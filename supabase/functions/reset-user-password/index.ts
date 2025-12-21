@@ -10,12 +10,9 @@ interface ResetPasswordRequest {
   new_password: string;
 }
 
-// Strong password validation: min 8 chars, at least 1 number, 1 symbol
+// Password validation: min 8 chars
 function isStrongPassword(password: string): boolean {
-  if (password.length < 8) return false;
-  if (!/\d/.test(password)) return false;
-  if (!/[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/`~;']/.test(password)) return false;
-  return true;
+  return password.length >= 8;
 }
 
 Deno.serve(async (req) => {
@@ -90,7 +87,7 @@ Deno.serve(async (req) => {
     if (!isStrongPassword(new_password)) {
       return new Response(
         JSON.stringify({ 
-          error: "Senha fraca. Deve ter no mínimo 8 caracteres, incluir pelo menos 1 número e 1 símbolo (!@#$%^&*)" 
+          error: "Senha fraca. Deve ter no mínimo 8 caracteres." 
         }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );

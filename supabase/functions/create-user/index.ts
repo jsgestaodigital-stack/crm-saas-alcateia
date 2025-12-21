@@ -12,12 +12,9 @@ interface CreateUserRequest {
   role: "admin" | "operador" | "visualizador";
 }
 
-// Strong password validation: min 8 chars, at least 1 number, 1 symbol
+// Password validation: min 8 chars
 function isStrongPassword(password: string): boolean {
-  if (password.length < 8) return false;
-  if (!/\d/.test(password)) return false; // at least one number
-  if (!/[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/`~;']/.test(password)) return false; // at least one symbol
-  return true;
+  return password.length >= 8;
 }
 
 function validateEmail(email: string): boolean {
