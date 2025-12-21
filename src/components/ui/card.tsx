@@ -7,9 +7,9 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
     <div
       ref={ref}
       className={cn(
-        "rounded-xl border border-border/50 bg-card text-card-foreground shadow-md",
-        "backdrop-blur-sm transition-all duration-250",
-        "hover:shadow-lg hover:border-border/70",
+        "rounded-2xl border border-border/40 bg-card text-card-foreground",
+        "shadow-lg shadow-black/5 backdrop-blur-xl transition-all duration-300",
+        "hover:shadow-xl hover:border-border/60 hover:-translate-y-0.5",
         className
       )}
       {...props}
@@ -29,7 +29,7 @@ const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HT
   ({ className, ...props }, ref) => (
     <h3
       ref={ref}
-      className={cn("text-xl font-semibold leading-none tracking-tight font-display", className)}
+      className={cn("text-xl font-bold leading-none tracking-tight font-display", className)}
       {...props}
     />
   ),
@@ -55,16 +55,16 @@ const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
 );
 CardFooter.displayName = "CardFooter";
 
-// New: Premium card variant for featured content
+// Premium card with emerald glow
 const CardGlow = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
       className={cn(
-        "rounded-xl border border-primary/30 bg-card text-card-foreground",
-        "shadow-lg shadow-primary/10 backdrop-blur-sm",
+        "rounded-2xl border border-primary/40 bg-card text-card-foreground",
+        "shadow-[0_0_24px_hsl(var(--primary)/0.15)] backdrop-blur-xl",
         "transition-all duration-300",
-        "hover:shadow-xl hover:shadow-primary/20 hover:border-primary/50",
+        "hover:shadow-[0_0_36px_hsl(var(--primary)/0.25)] hover:border-primary/60 hover:-translate-y-1",
         className
       )}
       {...props}
@@ -73,4 +73,22 @@ const CardGlow = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
 );
 CardGlow.displayName = "CardGlow";
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, CardGlow };
+// Gradient border card
+const CardGradient = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        "relative rounded-2xl bg-card text-card-foreground p-[1px] overflow-hidden",
+        "before:absolute before:inset-0 before:rounded-2xl before:gradient-primary before:opacity-60",
+        "after:absolute after:inset-[1px] after:rounded-[calc(1rem-1px)] after:bg-card",
+        "transition-all duration-300 hover:before:opacity-100",
+        className
+      )}
+      {...props}
+    />
+  )
+);
+CardGradient.displayName = "CardGradient";
+
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, CardGlow, CardGradient };

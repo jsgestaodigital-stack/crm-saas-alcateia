@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,187 +6,196 @@
 
 @layer base {
   :root {
-    /* === G-RANK CRM - DARK THEME === */
-    /* Base - Deep navy/purple tones */
-    --background: 250 25% 6%;
+    /* === G-RANK CRM - NOVA IDENTIDADE VISUAL (DARK) === */
+    /* Inspirada na logo: Verde esmeralda, Azul violeta, Roxo lavanda */
+    
+    /* Base - Preto profundo com toque violeta */
+    --background: 250 25% 5%;
     --foreground: 0 0% 98%;
 
-    /* Card - Elevated surfaces with purple undertones */
-    --card: 250 20% 11%;
+    /* Card - Superfícies elevadas */
+    --card: 252 22% 9%;
     --card-foreground: 0 0% 98%;
 
-    /* Popover - Floating elements */
-    --popover: 250 22% 9%;
+    /* Popover */
+    --popover: 252 24% 7%;
     --popover-foreground: 0 0% 98%;
 
-    /* Primary - Vibrant purple/violet gradient base */
-    --primary: 265 85% 60%;
-    --primary-foreground: 0 0% 100%;
+    /* Primary - Verde esmeralda neon #00FCA8 */
+    --primary: 159 100% 49%;
+    --primary-foreground: 0 0% 5%;
 
-    /* Secondary - Deep purple */
-    --secondary: 260 30% 16%;
-    --secondary-foreground: 0 0% 98%;
+    /* Secondary - Azul violeta profundo #3700F9 */
+    --secondary: 253 100% 49%;
+    --secondary-foreground: 0 0% 100%;
 
-    /* Muted - Subtle backgrounds */
-    --muted: 255 20% 14%;
-    --muted-foreground: 250 15% 65%;
+    /* Muted */
+    --muted: 252 20% 12%;
+    --muted-foreground: 250 15% 60%;
 
-    /* Accent - Cyan/Teal for highlights */
-    --accent: 180 85% 55%;
-    --accent-foreground: 0 0% 5%;
+    /* Accent - Roxo lavanda #C7BFFF */
+    --accent: 252 100% 87%;
+    --accent-foreground: 252 25% 10%;
 
     /* Destructive */
     --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 98%;
 
     /* Borders and inputs */
-    --border: 260 25% 22%;
-    --input: 260 22% 14%;
-    --ring: 265 85% 60%;
+    --border: 252 25% 18%;
+    --input: 252 22% 12%;
+    --ring: 159 100% 49%;
 
-    --radius: 0.625rem;
+    --radius: 0.75rem;
 
-    /* === G-RANK BRAND TOKENS === */
-    /* Neon Purple (Primary brand) */
-    --neon-purple: 265 85% 60%;
-    --neon-purple-glow: 0 0 25px hsl(265 85% 60% / 0.5);
-    --neon-purple-soft: 265 85% 60% / 0.1;
-    --neon-purple-medium: 265 85% 60% / 0.2;
+    /* === G-RANK BRAND TOKENS (Nova Paleta) === */
+    /* Emerald Neon (Primary) - #00FCA8 */
+    --emerald: 159 100% 49%;
+    --emerald-glow: 0 0 30px hsl(159 100% 49% / 0.6);
+    --emerald-soft: 159 100% 49% / 0.1;
+    --emerald-medium: 159 100% 49% / 0.2;
 
-    /* Neon Cyan (Accent) */
-    --neon-cyan: 180 85% 55%;
-    --neon-cyan-glow: 0 0 25px hsl(180 85% 55% / 0.5);
-    --neon-cyan-soft: 180 85% 55% / 0.1;
+    /* Violet Deep (Secondary) - #3700F9 */
+    --violet: 253 100% 49%;
+    --violet-glow: 0 0 30px hsl(253 100% 49% / 0.5);
+    --violet-soft: 253 100% 49% / 0.1;
 
-    /* Neon Blue (Secondary accent) */
-    --neon-blue: 220 90% 58%;
-    --neon-blue-glow: 0 0 25px hsl(220 90% 58% / 0.5);
-    --neon-blue-soft: 220 90% 58% / 0.1;
+    /* Lavender (Accent) - #C7BFFF */
+    --lavender: 252 100% 87%;
+    --lavender-glow: 0 0 25px hsl(252 100% 87% / 0.4);
+    --lavender-soft: 252 100% 87% / 0.15;
 
-    /* Gradient tokens */
-    --gradient-primary: linear-gradient(135deg, hsl(265 85% 60%), hsl(220 90% 58%), hsl(180 85% 55%));
-    --gradient-surface: linear-gradient(180deg, hsl(250 25% 8%), hsl(250 25% 6%));
-    --gradient-card: linear-gradient(135deg, hsl(260 20% 13%), hsl(250 20% 10%));
-    --gradient-glow: radial-gradient(ellipse at center, hsl(265 85% 60% / 0.15), transparent 70%);
+    /* Gradient tokens - Aquarelados */
+    --gradient-primary: linear-gradient(135deg, hsl(159 100% 49%), hsl(253 100% 49%), hsl(252 100% 87%));
+    --gradient-emerald: linear-gradient(135deg, hsl(159 100% 49%), hsl(159 80% 35%));
+    --gradient-violet: linear-gradient(135deg, hsl(253 100% 55%), hsl(252 100% 87%));
+    --gradient-surface: linear-gradient(180deg, hsl(252 25% 7%), hsl(250 25% 5%));
+    --gradient-card: linear-gradient(135deg, hsl(252 22% 11%), hsl(250 22% 8%));
+    --gradient-glow: radial-gradient(ellipse at center, hsl(159 100% 49% / 0.12), transparent 70%);
 
     /* Surface layers */
-    --surface-1: 250 25% 8%;
-    --surface-2: 255 22% 11%;
-    --surface-3: 258 20% 14%;
+    --surface-1: 252 25% 6%;
+    --surface-2: 252 22% 9%;
+    --surface-3: 252 20% 12%;
 
     /* Status colors */
-    --status-success: 160 80% 45%;
+    --status-success: 159 80% 42%;
     --status-warning: 45 95% 55%;
     --status-danger: 0 72% 55%;
-    --status-info: 210 90% 60%;
-    --status-purple: 280 75% 60%;
+    --status-info: 253 80% 60%;
+    --status-purple: 252 100% 87%;
 
     /* Column colors - Delivery (Clients) */
     --column-pipeline: 25 95% 55%;
-    --column-onboarding: 220 90% 58%;
+    --column-onboarding: 253 100% 55%;
     --column-optimization: 35 95% 55%;
-    --column-ready: 175 80% 48%;
-    --column-delivered: 265 85% 60%;
+    --column-ready: 159 100% 45%;
+    --column-delivered: 252 100% 87%;
     --column-suspended: 0 72% 55%;
     --column-finalized: 45 95% 55%;
 
     /* Lead pipeline colors (Sales) */
     --lead-cold: 220 50% 55%;
-    --lead-contacted: 220 90% 58%;
-    --lead-qualified: 175 80% 48%;
-    --lead-meeting: 280 75% 60%;
+    --lead-contacted: 253 100% 55%;
+    --lead-qualified: 159 80% 45%;
+    --lead-meeting: 252 100% 87%;
     --lead-proposal: 45 95% 55%;
     --lead-negotiating: 35 95% 55%;
     --lead-future: 260 25% 45%;
-    --lead-gained: 265 85% 60%;
+    --lead-gained: 159 100% 49%;
     --lead-lost: 0 72% 55%;
 
     /* Sidebar */
-    --sidebar-background: 250 28% 5%;
+    --sidebar-background: 250 28% 4%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 265 85% 60%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 260 25% 16%;
+    --sidebar-primary: 159 100% 49%;
+    --sidebar-primary-foreground: 0 0% 5%;
+    --sidebar-accent: 252 25% 14%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 260 25% 15%;
-    --sidebar-ring: 265 85% 60%;
+    --sidebar-border: 252 25% 12%;
+    --sidebar-ring: 159 100% 49%;
 
     /* Glass effect tokens */
-    --glass-bg: 250 25% 8% / 0.85;
-    --glass-border: 265 30% 40% / 0.2;
-    --glass-blur: 20px;
+    --glass-bg: 252 25% 6% / 0.88;
+    --glass-border: 159 50% 50% / 0.15;
+    --glass-blur: 24px;
   }
 
   .light {
     /* === G-RANK CRM - LIGHT THEME === */
-    --background: 250 20% 98%;
-    --foreground: 250 25% 10%;
+    --background: 0 0% 98%;
+    --foreground: 252 25% 8%;
 
     --card: 0 0% 100%;
-    --card-foreground: 250 25% 10%;
+    --card-foreground: 252 25% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 250 25% 10%;
+    --popover-foreground: 252 25% 8%;
 
-    --primary: 265 80% 52%;
+    /* Primary - Verde esmeralda */
+    --primary: 159 90% 38%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 260 20% 94%;
-    --secondary-foreground: 260 25% 20%;
+    /* Secondary - Azul violeta */
+    --secondary: 253 90% 55%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 260 15% 95%;
-    --muted-foreground: 250 20% 45%;
+    --muted: 250 15% 94%;
+    --muted-foreground: 250 20% 40%;
 
-    --accent: 180 80% 42%;
+    /* Accent - Lavanda */
+    --accent: 252 80% 68%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 260 20% 88%;
-    --input: 260 15% 92%;
-    --ring: 265 80% 52%;
+    --border: 250 15% 88%;
+    --input: 250 12% 92%;
+    --ring: 159 90% 38%;
 
-    /* Light mode G-RANK tokens */
-    --neon-purple: 265 80% 52%;
-    --neon-purple-glow: 0 0 20px hsl(265 80% 52% / 0.3);
-    --neon-purple-soft: 265 80% 52% / 0.08;
-    --neon-purple-medium: 265 80% 52% / 0.15;
+    /* Light mode brand tokens */
+    --emerald: 159 90% 35%;
+    --emerald-glow: 0 0 20px hsl(159 90% 35% / 0.25);
+    --emerald-soft: 159 90% 35% / 0.08;
+    --emerald-medium: 159 90% 35% / 0.12;
 
-    --neon-cyan: 180 80% 38%;
-    --neon-cyan-glow: 0 0 20px hsl(180 80% 38% / 0.3);
-    --neon-cyan-soft: 180 80% 38% / 0.08;
+    --violet: 253 85% 52%;
+    --violet-glow: 0 0 20px hsl(253 85% 52% / 0.25);
+    --violet-soft: 253 85% 52% / 0.08;
 
-    --neon-blue: 220 85% 50%;
-    --neon-blue-glow: 0 0 20px hsl(220 85% 50% / 0.3);
-    --neon-blue-soft: 220 85% 50% / 0.08;
+    --lavender: 252 70% 62%;
+    --lavender-glow: 0 0 18px hsl(252 70% 62% / 0.25);
+    --lavender-soft: 252 70% 62% / 0.08;
 
-    --gradient-primary: linear-gradient(135deg, hsl(265 80% 52%), hsl(220 85% 50%), hsl(180 80% 42%));
-    --gradient-surface: linear-gradient(180deg, hsl(250 20% 100%), hsl(250 20% 98%));
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(260 15% 98%));
+    --gradient-primary: linear-gradient(135deg, hsl(159 90% 38%), hsl(253 90% 55%), hsl(252 80% 68%));
+    --gradient-emerald: linear-gradient(135deg, hsl(159 90% 38%), hsl(159 70% 28%));
+    --gradient-violet: linear-gradient(135deg, hsl(253 90% 55%), hsl(252 80% 68%));
+    --gradient-surface: linear-gradient(180deg, hsl(0 0% 100%), hsl(250 15% 97%));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(250 12% 98%));
 
     --surface-1: 0 0% 100%;
-    --surface-2: 260 15% 97%;
-    --surface-3: 258 15% 94%;
+    --surface-2: 250 12% 96%;
+    --surface-3: 250 10% 93%;
 
-    --status-success: 160 75% 38%;
-    --status-warning: 45 95% 45%;
+    --status-success: 159 75% 32%;
+    --status-warning: 45 95% 42%;
     --status-danger: 0 72% 48%;
-    --status-info: 210 85% 52%;
-    --status-purple: 280 70% 52%;
+    --status-info: 253 80% 52%;
+    --status-purple: 252 70% 58%;
 
-    --sidebar-background: 260 20% 97%;
-    --sidebar-foreground: 250 25% 10%;
-    --sidebar-primary: 265 80% 52%;
+    --sidebar-background: 250 15% 96%;
+    --sidebar-foreground: 252 25% 8%;
+    --sidebar-primary: 159 90% 35%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 260 18% 93%;
-    --sidebar-accent-foreground: 260 25% 20%;
-    --sidebar-border: 260 18% 90%;
-    --sidebar-ring: 265 80% 52%;
+    --sidebar-accent: 250 12% 92%;
+    --sidebar-accent-foreground: 252 25% 15%;
+    --sidebar-border: 250 12% 88%;
+    --sidebar-ring: 159 90% 35%;
 
-    --glass-bg: 255 100% 100% / 0.85;
-    --glass-border: 260 20% 80% / 0.4;
-    --glass-blur: 20px;
+    --glass-bg: 255 100% 100% / 0.88;
+    --glass-border: 159 40% 60% / 0.25;
+    --glass-blur: 24px;
   }
 }
 
@@ -216,31 +225,51 @@
 }
 
 @layer utilities {
-  /* === NEON EFFECTS === */
+  /* === EMERALD NEON EFFECTS === */
   .neon-glow {
-    box-shadow: var(--neon-purple-glow);
+    box-shadow: var(--emerald-glow);
   }
 
-  .neon-glow-cyan {
-    box-shadow: var(--neon-cyan-glow);
+  .neon-glow-emerald {
+    box-shadow: var(--emerald-glow);
   }
 
-  .neon-glow-blue {
-    box-shadow: var(--neon-blue-glow);
+  .neon-glow-violet {
+    box-shadow: var(--violet-glow);
+  }
+
+  .neon-glow-lavender {
+    box-shadow: var(--lavender-glow);
   }
 
   .neon-border {
     @apply border border-primary/40;
-    box-shadow: inset 0 0 12px hsl(var(--neon-purple) / 0.08), 0 0 15px hsl(var(--neon-purple) / 0.15);
+    box-shadow: inset 0 0 14px hsl(var(--emerald) / 0.1), 0 0 18px hsl(var(--emerald) / 0.2);
   }
 
   .neon-text {
-    text-shadow: 0 0 12px hsl(var(--neon-purple) / 0.6), 0 0 24px hsl(var(--neon-purple) / 0.4);
+    text-shadow: 0 0 14px hsl(var(--emerald) / 0.7), 0 0 28px hsl(var(--emerald) / 0.5);
+  }
+
+  .neon-text-gradient {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 8px hsl(var(--emerald) / 0.4));
   }
 
   /* === GRADIENTS === */
   .gradient-primary {
     background: var(--gradient-primary);
+  }
+
+  .gradient-emerald {
+    background: var(--gradient-emerald);
+  }
+
+  .gradient-violet {
+    background: var(--gradient-violet);
   }
 
   .gradient-surface {
@@ -262,33 +291,33 @@
     background-clip: text;
   }
 
-  /* === GLASSMORPHISM === */
+  /* === GLASSMORPHISM (Atualizado) === */
   .glass {
-    @apply backdrop-blur-xl;
+    @apply backdrop-blur-2xl;
     background: hsl(var(--glass-bg));
     border: 1px solid hsl(var(--glass-border));
   }
 
   .glass-card {
-    @apply bg-card/80 backdrop-blur-xl border border-border/40;
+    @apply bg-card/85 backdrop-blur-2xl border border-border/40;
     box-shadow: 
-      0 4px 32px hsl(265 50% 20% / 0.08),
+      0 4px 32px hsl(252 50% 15% / 0.1),
       0 0 0 1px hsl(var(--border) / 0.5),
       inset 0 1px 0 hsl(var(--foreground) / 0.04);
   }
 
   .glass-panel {
-    @apply bg-surface-2/85 backdrop-blur-xl border border-border/30;
+    @apply bg-surface-2/88 backdrop-blur-2xl border border-border/30;
     box-shadow: 
-      0 8px 40px hsl(265 50% 10% / 0.12),
+      0 8px 40px hsl(252 50% 10% / 0.14),
       inset 0 1px 0 hsl(var(--foreground) / 0.03);
   }
 
   .glass-header {
-    @apply backdrop-blur-2xl;
-    background: hsl(var(--surface-1) / 0.9);
-    border-bottom: 1px solid hsl(var(--border) / 0.6);
-    box-shadow: 0 4px 32px hsl(265 50% 10% / 0.1);
+    @apply backdrop-blur-3xl;
+    background: hsl(var(--surface-1) / 0.92);
+    border-bottom: 1px solid hsl(var(--border) / 0.5);
+    box-shadow: 0 4px 32px hsl(252 50% 10% / 0.12);
   }
 
   .glass-sidebar {
