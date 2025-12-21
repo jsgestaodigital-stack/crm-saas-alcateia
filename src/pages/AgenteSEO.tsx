@@ -144,7 +144,7 @@ export default function AgenteSEO() {
             <div>
               <h1 className="text-2xl font-bold text-foreground">🐺 Lobo SEO Local</h1>
               <p className="text-sm text-muted-foreground">
-                Otimização Local Agressiva – Alcateia Lobos do Google
+                Otimização Local Agressiva – G Rank CRM
               </p>
             </div>
           </div>

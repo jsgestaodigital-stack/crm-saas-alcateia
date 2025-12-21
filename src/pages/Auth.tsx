@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import alcateiaLogo from "@/assets/alcateia-logo.png";
+import grankLogo from "@/assets/grank-logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useSecurityCheck } from "@/hooks/useSecurityCheck";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -307,9 +307,9 @@ export default function Auth() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <img src={alcateiaLogo} alt="Alcateia Lobos do Google" className="h-24 mx-auto mb-6" />
-          <h1 className="text-2xl font-bold text-foreground">Plataforma Operacional Alcateia</h1>
-          <p className="text-muted-foreground text-sm mt-2 max-w-xs mx-auto">Gestão de clientes, processos e execução diária — tudo em um só lugar.</p>
+          <img src={grankLogo} alt="G Rank CRM" className="h-24 mx-auto mb-6" />
+          <h1 className="text-2xl font-bold text-foreground">G Rank CRM</h1>
+          <p className="text-muted-foreground text-sm mt-2 max-w-xs mx-auto">CRM para vendas e gestão de perfis da empresa no Google</p>
         </div>
 
         {/* Alerta de usuário bloqueado */}
@@ -323,7 +323,7 @@ export default function Auth() {
                 variant="outline" 
                 size="sm" 
                 className="mt-2"
-                onClick={() => window.location.href = 'mailto:suporte@alcateia.com?subject=Solicitação de Reativação de Conta'}
+                onClick={() => window.location.href = 'mailto:suporte@grank.com.br?subject=Solicitação de Reativação de Conta'}
               >
                 Solicitar reativação
               </Button>
@@ -661,7 +661,7 @@ export default function Auth() {
         </div>
 
         <p className="text-center text-xs text-muted-foreground mt-6">
-          © {new Date().getFullYear()} Alcateia Lobos do Google. Todos os direitos reservados.
+          © {new Date().getFullYear()} G Rank CRM. Todos os direitos reservados.
         </p>
       </div>
     </div>
