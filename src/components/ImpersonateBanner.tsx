@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Shield, LogOut } from "lucide-react";
+import { Shield, LogOut, ChevronUp, ChevronDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 export function ImpersonateBanner() {
   const { user } = useAuth();
@@ -11,6 +12,7 @@ export function ImpersonateBanner() {
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [currentAgency, setCurrentAgency] = useState<{ id: string; name: string } | null>(null);
   const [isExiting, setIsExiting] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     const checkStatus = async () => {
@@ -72,28 +74,70 @@ export function ImpersonateBanner() {
   if (!isSuperAdmin || !currentAgency) return null;
 
   return (
-    <>
-      {/* Spacer to prevent content from being hidden behind the banner */}
-      <div className="h-12 sm:h-10" />
-      <div className="fixed top-0 left-0 right-0 z-[100] bg-amber-500 text-amber-950 py-2 px-3 sm:px-4 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm font-medium shadow-lg">
-        <div className="flex items-center gap-2 text-center">
-          <Shield className="h-4 w-4 shrink-0" />
-          <span className="hidden sm:inline">Modo Super Admin ativo como:</span>
-          <span className="sm:hidden">Super Admin:</span>
-          <span className="font-bold truncate max-w-[120px] sm:max-w-none">{currentAgency.name}</span>
-        </div>
-        <Button
-          size="sm"
-          variant="outline"
-          className="bg-white/20 border-amber-700/30 text-amber-950 hover:bg-white/30 text-xs sm:text-sm h-7 sm:h-8"
-          onClick={handleExitImpersonate}
-          disabled={isExiting}
+    <div 
+      className={cn(
+        "fixed bottom-4 left-4 z-[100] transition-all duration-300 ease-out",
+        "group cursor-pointer"
+      )}
+    >
+      {/* Collapsed state - small pill */}
+      <div 
+        className={cn(
+          "flex items-center gap-2 rounded-full shadow-lg border transition-all duration-300",
+          "bg-amber-500 border-amber-600/50 text-amber-950",
+          isExpanded 
+            ? "px-4 py-2 rounded-xl" 
+            : "px-3 py-1.5 hover:px-4 hover:shadow-xl"
+        )}
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <Shield className="h-4 w-4 shrink-0" />
+        
+        {/* Agency name - shown on hover or expanded */}
+        <span 
+          className={cn(
+            "text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-300",
+            isExpanded ? "max-w-[200px] opacity-100" : "max-w-0 opacity-0 group-hover:max-w-[200px] group-hover:opacity-100"
+          )}
         >
-          <LogOut className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-          <span className="hidden sm:inline">Voltar ao Super Admin</span>
-          <span className="sm:hidden">Sair</span>
-        </Button>
+          {currentAgency.name}
+        </span>
+
+        {/* Toggle chevron */}
+        {isExpanded ? (
+          <ChevronDown className="h-3 w-3 shrink-0" />
+        ) : (
+          <ChevronUp className="h-3 w-3 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+        )}
       </div>
-    </>
+
+      {/* Expanded panel with exit button */}
+      <div 
+        className={cn(
+          "absolute bottom-full left-0 mb-2 transition-all duration-300 origin-bottom-left",
+          isExpanded 
+            ? "opacity-100 scale-100 pointer-events-auto" 
+            : "opacity-0 scale-95 pointer-events-none"
+        )}
+      >
+        <div className="bg-card border border-border rounded-xl shadow-xl p-3 min-w-[220px]">
+          <p className="text-xs text-muted-foreground mb-2">Modo Super Admin ativo</p>
+          <p className="text-sm font-semibold text-foreground mb-3 truncate">{currentAgency.name}</p>
+          <Button
+            size="sm"
+            variant="outline"
+            className="w-full text-xs border-amber-500/50 text-amber-600 hover:bg-amber-50 hover:text-amber-700"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleExitImpersonate();
+            }}
+            disabled={isExiting}
+          >
+            <LogOut className="h-3 w-3 mr-1.5" />
+            Voltar ao Super Admin
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }
