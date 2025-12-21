@@ -1045,6 +1045,289 @@ export type Database = {
           },
         ]
       }
+      contract_templates: {
+        Row: {
+          agency_id: string
+          clauses: Json
+          contract_type: Database["public"]["Enums"]["contract_type"]
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          is_default: boolean | null
+          is_system: boolean | null
+          name: string
+          updated_at: string
+          variables: Json | null
+        }
+        Insert: {
+          agency_id: string
+          clauses?: Json
+          contract_type?: Database["public"]["Enums"]["contract_type"]
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          is_system?: boolean | null
+          name: string
+          updated_at?: string
+          variables?: Json | null
+        }
+        Update: {
+          agency_id?: string
+          clauses?: Json
+          contract_type?: Database["public"]["Enums"]["contract_type"]
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          is_system?: boolean | null
+          name?: string
+          updated_at?: string
+          variables?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_templates_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contract_views: {
+        Row: {
+          contract_id: string
+          duration_seconds: number | null
+          id: string
+          ip_address: unknown
+          referrer: string | null
+          user_agent: string | null
+          viewed_at: string
+        }
+        Insert: {
+          contract_id: string
+          duration_seconds?: number | null
+          id?: string
+          ip_address?: unknown
+          referrer?: string | null
+          user_agent?: string | null
+          viewed_at?: string
+        }
+        Update: {
+          contract_id?: string
+          duration_seconds?: number | null
+          id?: string
+          ip_address?: unknown
+          referrer?: string | null
+          user_agent?: string | null
+          viewed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_views_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contracts: {
+        Row: {
+          agency_id: string
+          auto_renewal: boolean | null
+          billing_cycle: string | null
+          clauses: Json
+          client_id: string | null
+          client_ip_address: unknown
+          client_signature_cpf: string | null
+          client_signature_name: string | null
+          client_signed_at: string | null
+          contract_type: Database["public"]["Enums"]["contract_type"]
+          contracted_address: string | null
+          contracted_cnpj: string | null
+          contracted_cpf: string | null
+          contracted_email: string | null
+          contracted_name: string | null
+          contracted_phone: string | null
+          contracted_responsible: string | null
+          contractor_address: string | null
+          contractor_cnpj: string | null
+          contractor_cpf: string | null
+          contractor_email: string | null
+          contractor_name: string | null
+          contractor_phone: string | null
+          contractor_responsible: string | null
+          created_at: string
+          created_by: string
+          discounted_price: number | null
+          end_date: string | null
+          execution_term_days: number | null
+          first_viewed_at: string | null
+          full_price: number | null
+          id: string
+          installment_value: number | null
+          installments: number | null
+          is_recurring: boolean | null
+          last_viewed_at: string | null
+          lead_id: string | null
+          payment_method: string | null
+          proposal_id: string | null
+          public_token: string | null
+          public_url: string | null
+          sent_at: string | null
+          signed_at: string | null
+          start_date: string | null
+          status: Database["public"]["Enums"]["contract_status"]
+          title: string
+          updated_at: string
+          variables: Json | null
+          view_count: number | null
+        }
+        Insert: {
+          agency_id: string
+          auto_renewal?: boolean | null
+          billing_cycle?: string | null
+          clauses?: Json
+          client_id?: string | null
+          client_ip_address?: unknown
+          client_signature_cpf?: string | null
+          client_signature_name?: string | null
+          client_signed_at?: string | null
+          contract_type?: Database["public"]["Enums"]["contract_type"]
+          contracted_address?: string | null
+          contracted_cnpj?: string | null
+          contracted_cpf?: string | null
+          contracted_email?: string | null
+          contracted_name?: string | null
+          contracted_phone?: string | null
+          contracted_responsible?: string | null
+          contractor_address?: string | null
+          contractor_cnpj?: string | null
+          contractor_cpf?: string | null
+          contractor_email?: string | null
+          contractor_name?: string | null
+          contractor_phone?: string | null
+          contractor_responsible?: string | null
+          created_at?: string
+          created_by: string
+          discounted_price?: number | null
+          end_date?: string | null
+          execution_term_days?: number | null
+          first_viewed_at?: string | null
+          full_price?: number | null
+          id?: string
+          installment_value?: number | null
+          installments?: number | null
+          is_recurring?: boolean | null
+          last_viewed_at?: string | null
+          lead_id?: string | null
+          payment_method?: string | null
+          proposal_id?: string | null
+          public_token?: string | null
+          public_url?: string | null
+          sent_at?: string | null
+          signed_at?: string | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["contract_status"]
+          title: string
+          updated_at?: string
+          variables?: Json | null
+          view_count?: number | null
+        }
+        Update: {
+          agency_id?: string
+          auto_renewal?: boolean | null
+          billing_cycle?: string | null
+          clauses?: Json
+          client_id?: string | null
+          client_ip_address?: unknown
+          client_signature_cpf?: string | null
+          client_signature_name?: string | null
+          client_signed_at?: string | null
+          contract_type?: Database["public"]["Enums"]["contract_type"]
+          contracted_address?: string | null
+          contracted_cnpj?: string | null
+          contracted_cpf?: string | null
+          contracted_email?: string | null
+          contracted_name?: string | null
+          contracted_phone?: string | null
+          contracted_responsible?: string | null
+          contractor_address?: string | null
+          contractor_cnpj?: string | null
+          contractor_cpf?: string | null
+          contractor_email?: string | null
+          contractor_name?: string | null
+          contractor_phone?: string | null
+          contractor_responsible?: string | null
+          created_at?: string
+          created_by?: string
+          discounted_price?: number | null
+          end_date?: string | null
+          execution_term_days?: number | null
+          first_viewed_at?: string | null
+          full_price?: number | null
+          id?: string
+          installment_value?: number | null
+          installments?: number | null
+          is_recurring?: boolean | null
+          last_viewed_at?: string | null
+          lead_id?: string | null
+          payment_method?: string | null
+          proposal_id?: string | null
+          public_token?: string | null
+          public_url?: string | null
+          sent_at?: string | null
+          signed_at?: string | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["contract_status"]
+          title?: string
+          updated_at?: string
+          variables?: Json | null
+          view_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contracts_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contracts_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contracts_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contracts_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_expanded"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contracts_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       email_queue: {
         Row: {
           agency_id: string
@@ -4387,6 +4670,7 @@ export type Database = {
         Returns: string
       }
       reactivate_agency: { Args: { _agency_id: string }; Returns: undefined }
+      record_contract_view: { Args: { p_token: string }; Returns: Json }
       record_failed_login: {
         Args: { _email: string; _ip_address?: unknown; _user_agent?: string }
         Returns: undefined
@@ -4488,6 +4772,14 @@ export type Database = {
       }
       set_current_agency: { Args: { _agency_id: string }; Returns: undefined }
       should_show_nps: { Args: never; Returns: Json }
+      sign_contract: {
+        Args: {
+          p_signature_cpf: string
+          p_signature_name: string
+          p_token: string
+        }
+        Returns: Json
+      }
       start_visual_tour: { Args: never; Returns: Json }
       submit_nps: {
         Args: { _feedback?: string; _score: number }
@@ -4572,6 +4864,14 @@ export type Database = {
         | "designer"
         | "freelancer"
       commission_status: "pending" | "paid" | "cancelled"
+      contract_status:
+        | "draft"
+        | "sent"
+        | "viewed"
+        | "signed"
+        | "expired"
+        | "cancelled"
+      contract_type: "single_optimization" | "recurring" | "custom"
       full_proposal_status:
         | "draft"
         | "sent"
@@ -4791,6 +5091,15 @@ export const Constants = {
         "freelancer",
       ],
       commission_status: ["pending", "paid", "cancelled"],
+      contract_status: [
+        "draft",
+        "sent",
+        "viewed",
+        "signed",
+        "expired",
+        "cancelled",
+      ],
+      contract_type: ["single_optimization", "recurring", "custom"],
       full_proposal_status: [
         "draft",
         "sent",
