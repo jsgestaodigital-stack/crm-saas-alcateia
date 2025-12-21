@@ -9,7 +9,8 @@ import {
   Check, 
   ArrowRight,
   Sparkles,
-  Zap
+  Zap,
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import grankLogo from "@/assets/grank-logo.png";
@@ -43,49 +44,66 @@ const Landing = () => {
   const plans = [
     {
       name: "Starter",
-      description: "Para agências iniciantes",
-      monthlyPrice: 97,
-      annualPrice: 77,
+      emoji: "🟢",
+      tagline: "Feito pro lobo solo",
+      monthlyPrice: 67,
+      annualPrice: 54,
       features: [
-        "Até 3 usuários",
-        "50 leads/mês",
-        "20 clientes ativos",
-        "Contratos digitais",
-        "Suporte por email"
+        "1 agência",
+        "Até 15 clientes ativos",
+        "Até 2 membros da equipe",
+        "Funil e tarefas básicas",
+        "Relatórios simples por agência",
+        "Dashboard principal",
+        "Suporte por e-mail"
+      ],
+      limitations: [
+        "Sem automações",
+        "Sem controle de comissão",
+        "Sem exportação"
       ],
       cta: "Começar Grátis",
       popular: false
     },
     {
       name: "Pro",
-      description: "Para agências em crescimento",
-      monthlyPrice: 197,
-      annualPrice: 157,
+      emoji: "🔵",
+      tagline: "Feito pra quem vive disso",
+      monthlyPrice: 127,
+      annualPrice: 102,
       features: [
-        "Até 10 usuários",
-        "200 leads/mês",
-        "100 clientes ativos",
-        "Relatórios com IA",
-        "Suporte prioritário",
-        "API de integração"
+        "Até 50 clientes ativos",
+        "Até 5 membros",
+        "Funil e tarefas avançadas",
+        "Automações por status",
+        "Cobrança via Stripe",
+        "Relatórios por cliente",
+        "Controle de comissões",
+        "Logs e auditoria",
+        "Suporte prioritário"
       ],
+      limitations: [],
       cta: "Testar Grátis",
       popular: true
     },
     {
-      name: "Elite",
-      description: "Para grandes operações",
-      monthlyPrice: 397,
-      annualPrice: 317,
+      name: "Master",
+      emoji: "🟣",
+      tagline: "Feito pro lobo alfa de matilha",
+      monthlyPrice: 197,
+      annualPrice: 158,
       features: [
-        "Usuários ilimitados",
-        "Leads ilimitados",
-        "Clientes ilimitados",
-        "White-label disponível",
-        "Gerente de sucesso dedicado",
-        "Treinamento personalizado"
+        "Até 150 clientes ativos",
+        "Até 15 membros",
+        "Dashboard financeiro",
+        "10.000 tarefas/mês",
+        "Integração AlfaLeads",
+        "Exportação de dados",
+        "Suporte por WhatsApp",
+        "Acesso antecipado a novos recursos"
       ],
-      cta: "Falar com Vendas",
+      limitations: [],
+      cta: "Testar Grátis",
       popular: false
     }
   ];
@@ -299,8 +317,11 @@ const Landing = () => {
                 )}
 
                 <div className="text-center mb-6">
-                  <h3 className="text-xl font-bold text-white mb-1">{plan.name}</h3>
-                  <p className="text-sm text-gray-400">{plan.description}</p>
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    <span className="text-2xl">{plan.emoji}</span>
+                    <h3 className="text-xl font-bold text-white">{plan.name}</h3>
+                  </div>
+                  <p className="text-sm text-gray-400">{plan.tagline}</p>
                 </div>
 
                 <div className="text-center mb-6">
@@ -318,7 +339,7 @@ const Landing = () => {
                   )}
                 </div>
 
-                <ul className="space-y-3 mb-6">
+                <ul className="space-y-2 mb-4">
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex items-center gap-2 text-sm text-gray-300">
                       <Check className="h-4 w-4 text-cyan-400 flex-shrink-0" />
@@ -326,6 +347,17 @@ const Landing = () => {
                     </li>
                   ))}
                 </ul>
+
+                {plan.limitations.length > 0 && (
+                  <ul className="space-y-2 mb-6 pt-3 border-t border-white/10">
+                    {plan.limitations.map((limitation) => (
+                      <li key={limitation} className="flex items-center gap-2 text-sm text-gray-500">
+                        <X className="h-4 w-4 text-gray-600 flex-shrink-0" />
+                        {limitation}
+                      </li>
+                    ))}
+                  </ul>
+                )}
 
                 <Button 
                   asChild 
