@@ -226,26 +226,46 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Social Proof Section */}
+      {/* Origin Section */}
       <section className="py-16 px-4 border-y border-white/10 bg-white/[0.02]">
-        <div className="container mx-auto">
-          <p className="text-center text-gray-500 mb-8 text-sm uppercase tracking-wider">
-            Confiado por agências em todo o Brasil
-          </p>
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
-            {partners.map((partner, index) => (
-              <motion.div
-                key={partner}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="text-gray-600 font-semibold text-lg hover:text-gray-400 transition-colors cursor-default"
-              >
-                {partner}
-              </motion.div>
-            ))}
-          </div>
+        <div className="container mx-auto max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-6">
+              <Users className="h-4 w-4 text-emerald-400" />
+              <span className="text-sm text-emerald-400 font-medium">Feito por quem faz</span>
+            </div>
+            
+            <h3 className="text-2xl md:text-3xl font-bold mb-4 text-white">
+              Desenvolvido por quem vende Google Meu Negócio de verdade
+            </h3>
+            
+            <p className="text-gray-400 mb-8 max-w-2xl mx-auto">
+              O G-Rank nasceu dentro de uma agência real, com mais de 500 clientes ativos. 
+              Cada funcionalidade foi criada para resolver problemas reais do dia a dia de quem 
+              gerencia perfis, acompanha rankings e precisa entregar resultados.
+            </p>
+            
+            <div className="grid md:grid-cols-3 gap-6 mt-8">
+              <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                <div className="text-3xl font-bold text-cyan-400 mb-1">500+</div>
+                <p className="text-sm text-gray-400">Clientes gerenciados na nossa própria agência</p>
+              </div>
+              <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                <div className="text-3xl font-bold text-emerald-400 mb-1">4 anos</div>
+                <p className="text-sm text-gray-400">De experiência em SEO local e Google Perfil</p>
+              </div>
+              <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                <div className="text-3xl font-bold text-purple-400 mb-1">100%</div>
+                <p className="text-sm text-gray-400">Focado em agências de Google Meu Negócio</p>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
