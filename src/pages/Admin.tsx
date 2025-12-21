@@ -88,18 +88,33 @@ const roleLabels: Record<AppRole, string> = {
   admin: "Admin",
   operador: "Operador",
   visualizador: "Visualizador",
+  super_admin: "Super Admin",
+  owner: "Proprietário",
+  manager: "Gerente",
+  sales_rep: "Vendedor",
+  support: "Suporte",
 };
 
 const roleColors: Record<AppRole, string> = {
   admin: "bg-primary/20 text-primary border-primary/30",
   operador: "bg-status-info/20 text-status-info border-status-info/30",
   visualizador: "bg-muted text-muted-foreground border-border/30",
+  super_admin: "bg-destructive/20 text-destructive border-destructive/30",
+  owner: "bg-purple-500/20 text-purple-500 border-purple-500/30",
+  manager: "bg-warning/20 text-warning border-warning/30",
+  sales_rep: "bg-green-500/20 text-green-500 border-green-500/30",
+  support: "bg-blue-500/20 text-blue-500 border-blue-500/30",
 };
 
 const roleIcons: Record<AppRole, React.ReactNode> = {
   admin: <Crown className="w-3 h-3" />,
   operador: <Settings className="w-3 h-3" />,
   visualizador: <Eye className="w-3 h-3" />,
+  super_admin: <Crown className="w-3 h-3" />,
+  owner: <Crown className="w-3 h-3" />,
+  manager: <Settings className="w-3 h-3" />,
+  sales_rep: <Eye className="w-3 h-3" />,
+  support: <Settings className="w-3 h-3" />,
 };
 
 const statusColors: Record<UserStatus, string> = {
