@@ -1107,4 +1107,275 @@
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-5px); }
   }
+
+  /* ===================================== */
+  /* === RESPONSIVIDADE GLOBAL (MOBILE-FIRST) === */
+  /* ===================================== */
+
+  /* Safe areas for iOS */
+  .safe-area-inset-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-inset-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-area-inset-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Touch targets - mínimo 44px para acessibilidade */
+  .touch-target {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .touch-target-lg {
+    min-width: 48px;
+    min-height: 48px;
+  }
+
+  /* Tap highlight para mobile */
+  .tap-highlight-subtle:active {
+    background-color: hsl(var(--primary) / 0.1);
+  }
+
+  /* Container responsivo - padding automático */
+  .container-responsive {
+    @apply w-full px-4 sm:px-6 lg:px-8;
+    max-width: 100%;
+  }
+
+  @screen sm {
+    .container-responsive {
+      max-width: 640px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+  @screen md {
+    .container-responsive {
+      max-width: 768px;
+    }
+  }
+
+  @screen lg {
+    .container-responsive {
+      max-width: 1024px;
+    }
+  }
+
+  @screen xl {
+    .container-responsive {
+      max-width: 1280px;
+    }
+  }
+
+  /* Text responsivo */
+  .text-responsive-sm {
+    @apply text-xs sm:text-sm;
+  }
+
+  .text-responsive-base {
+    @apply text-sm sm:text-base;
+  }
+
+  .text-responsive-lg {
+    @apply text-base sm:text-lg md:text-xl;
+  }
+
+  .text-responsive-xl {
+    @apply text-lg sm:text-xl md:text-2xl lg:text-3xl;
+  }
+
+  .text-responsive-2xl {
+    @apply text-xl sm:text-2xl md:text-3xl lg:text-4xl;
+  }
+
+  .text-responsive-hero {
+    @apply text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl;
+  }
+
+  /* Grid responsivo - cards */
+  .grid-cards-responsive {
+    @apply grid gap-4;
+    @apply grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+  }
+
+  .grid-cards-2 {
+    @apply grid gap-4;
+    @apply grid-cols-1 md:grid-cols-2;
+  }
+
+  .grid-cards-3 {
+    @apply grid gap-4 sm:gap-6;
+    @apply grid-cols-1 sm:grid-cols-2 lg:grid-cols-3;
+  }
+
+  /* Flex responsivo */
+  .flex-responsive {
+    @apply flex flex-col sm:flex-row;
+  }
+
+  .flex-responsive-reverse {
+    @apply flex flex-col-reverse sm:flex-row;
+  }
+
+  /* Espaçamento responsivo */
+  .gap-responsive {
+    @apply gap-3 sm:gap-4 md:gap-6;
+  }
+
+  .p-responsive {
+    @apply p-3 sm:p-4 md:p-6;
+  }
+
+  .px-responsive {
+    @apply px-3 sm:px-4 md:px-6 lg:px-8;
+  }
+
+  .py-responsive {
+    @apply py-4 sm:py-6 md:py-8 lg:py-12;
+  }
+
+  .section-padding {
+    @apply py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6;
+  }
+
+  /* Hide/Show por dispositivo */
+  .hide-mobile {
+    @apply hidden sm:block;
+  }
+
+  .show-mobile-only {
+    @apply block sm:hidden;
+  }
+
+  .hide-tablet {
+    @apply hidden md:block;
+  }
+
+  .show-tablet-only {
+    @apply hidden sm:block lg:hidden;
+  }
+
+  /* Scroll horizontal mobile */
+  .scroll-x-mobile {
+    @apply overflow-x-auto sm:overflow-x-visible;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .scroll-x-mobile::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Cards responsivos com min-width */
+  .card-responsive {
+    @apply w-full min-w-0;
+  }
+
+  /* Botões responsivos */
+  .btn-responsive {
+    @apply w-full sm:w-auto;
+  }
+
+  .btn-group-responsive {
+    @apply flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto;
+  }
+
+  /* Modal/Dialog responsivo */
+  .dialog-responsive {
+    @apply w-[95vw] max-w-lg sm:w-full sm:max-w-md md:max-w-lg lg:max-w-xl;
+  }
+
+  /* Table responsivo */
+  .table-responsive {
+    @apply w-full overflow-x-auto;
+  }
+
+  .table-responsive table {
+    @apply min-w-full;
+  }
+
+  /* Sidebar overlay para mobile */
+  .sidebar-overlay {
+    @apply fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden;
+  }
+
+  /* Input responsivo */
+  .input-responsive {
+    @apply text-base sm:text-sm; /* Previne zoom em iOS */
+  }
+
+  /* iOS input zoom fix */
+  @supports (-webkit-touch-callout: none) {
+    input, textarea, select {
+      font-size: 16px !important;
+    }
+    
+    @screen sm {
+      input, textarea, select {
+        font-size: inherit !important;
+      }
+    }
+  }
+
+  /* Aspect ratios responsivos */
+  .aspect-responsive-video {
+    @apply aspect-video;
+  }
+
+  .aspect-responsive-square {
+    @apply aspect-square;
+  }
+
+  /* Max-height responsivo para modais */
+  .max-h-responsive {
+    @apply max-h-[85vh] sm:max-h-[80vh] md:max-h-[75vh];
+  }
+
+  /* Z-index layers */
+  .z-sidebar { z-index: 40; }
+  .z-header { z-index: 30; }
+  .z-modal { z-index: 50; }
+  .z-toast { z-index: 60; }
+  .z-tooltip { z-index: 70; }
+
+  /* Print responsivo */
+  @media print {
+    .no-print {
+      display: none !important;
+    }
+    
+    .print-only {
+      display: block !important;
+    }
+  }
+
+  /* Landscape mode fixes */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .landscape-compact {
+      @apply py-2;
+    }
+    
+    .landscape-hide {
+      display: none;
+    }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }

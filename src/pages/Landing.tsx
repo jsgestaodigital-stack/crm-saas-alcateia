@@ -119,33 +119,34 @@ const Landing = () => {
       <ScrollProgress />
       
       {/* Fixed Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 glass-header">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+      <header className="fixed top-0 left-0 right-0 z-50 glass-header safe-area-inset-top">
+        <div className="container mx-auto px-3 sm:px-4 h-14 sm:h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <img src={grankLogo} alt="G-Rank" className="h-8 w-auto" />
-            <span className="font-bold text-xl gradient-text">G-Rank</span>
+            <img src={grankLogo} alt="G-Rank" className="h-7 sm:h-8 w-auto" />
+            <span className="font-bold text-lg sm:text-xl gradient-text">G-Rank</span>
           </Link>
           
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-6">
+          <nav className="hidden md:flex items-center gap-4 lg:gap-6">
             {navLinks.map(link => <a key={link.label} href={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
                 {link.label}
               </a>)}
           </nav>
           
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" asChild className="hidden sm:flex text-muted-foreground hover:text-foreground hover:bg-muted">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Button variant="ghost" asChild className="hidden sm:flex text-muted-foreground hover:text-foreground hover:bg-muted text-sm">
               <Link to="/auth">Entrar</Link>
             </Button>
-            <Button asChild className="gradient-primary text-primary-foreground border-0 neon-glow">
+            <Button asChild className="gradient-primary text-primary-foreground border-0 neon-glow text-xs sm:text-sm px-3 sm:px-4 h-9 sm:h-10">
               <Link to="/register">
-                Testar Grátis
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <span className="hidden xs:inline">Testar Grátis</span>
+                <span className="xs:hidden">Testar</span>
+                <ArrowRight className="ml-1 sm:ml-2 h-3 sm:h-4 w-3 sm:w-4" />
               </Link>
             </Button>
             
             {/* Mobile menu button */}
-            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-2 text-foreground">
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden p-2 text-foreground touch-target">
               {mobileMenuOpen ? <CloseIcon className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
@@ -161,27 +162,27 @@ const Landing = () => {
       }} exit={{
         opacity: 0,
         y: -10
-      }} className="md:hidden bg-card border-t border-border px-4 py-4">
-            {navLinks.map(link => <a key={link.label} href={link.href} onClick={() => setMobileMenuOpen(false)} className="block py-3 text-foreground hover:text-primary transition-colors">
+      }} className="md:hidden bg-card border-t border-border px-4 py-4 safe-area-inset-left safe-area-inset-right">
+            {navLinks.map(link => <a key={link.label} href={link.href} onClick={() => setMobileMenuOpen(false)} className="block py-3 text-foreground hover:text-primary transition-colors touch-target">
                 {link.label}
               </a>)}
-            <Link to="/auth" onClick={() => setMobileMenuOpen(false)} className="block py-3 text-muted-foreground">
+            <Link to="/auth" onClick={() => setMobileMenuOpen(false)} className="block py-3 text-muted-foreground touch-target">
               Entrar
             </Link>
           </motion.div>}
       </header>
 
       {/* ===== HERO SECTION ===== */}
-      <section className="min-h-screen relative flex items-center justify-center pt-24 pb-32 px-4 section-white overflow-hidden">
+      <section className="min-h-screen relative flex items-center justify-center pt-20 sm:pt-24 pb-16 sm:pb-32 px-3 sm:px-4 section-white overflow-hidden">
         <FloatingParticles />
         
-        {/* Background gradients */}
+        {/* Background gradients - reduced on mobile */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/8 rounded-full blur-[120px]" />
-          <div className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] bg-teal/8 rounded-full blur-[100px]" />
+          <div className="absolute top-1/4 left-1/4 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-primary/8 rounded-full blur-[80px] sm:blur-[120px]" />
+          <div className="absolute bottom-1/3 right-1/4 w-[250px] sm:w-[400px] h-[250px] sm:h-[400px] bg-teal/8 rounded-full blur-[60px] sm:blur-[100px]" />
         </div>
 
-        <div className="container mx-auto text-center relative z-10">
+        <div className="container mx-auto text-center relative z-10 px-2 sm:px-4">
           <motion.div initial={{
           opacity: 0,
           y: 30
@@ -200,13 +201,13 @@ const Landing = () => {
             scale: 1
           }} transition={{
             delay: 0.2
-          }} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 mb-8">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-sm text-primary font-medium">A Plataforma Operacional Completa para Google Meu Negócio</span>
+          }} className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary/10 border border-primary/30 mb-6 sm:mb-8">
+              <Sparkles className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-primary flex-shrink-0" />
+              <span className="text-xs sm:text-sm text-primary font-medium text-center">A Plataforma Operacional Completa para Google Meu Negócio</span>
             </motion.div>
             
-            {/* Headline Principal */}
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight font-display">
+            {/* Headline Principal - responsivo */}
+            <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 sm:mb-6 leading-tight font-display">
               <span className="text-foreground">
                 Pare de Fazer Tudo Sozinho.
               </span>
@@ -220,8 +221,8 @@ const Landing = () => {
               </span>
             </h1>
 
-            {/* Subheadline */}
-            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed">
+            {/* Subheadline - responsivo */}
+            <p className="text-sm sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-6 sm:mb-10 leading-relaxed px-2">
               Da prospecção à execução recorrente. Da proposta ao checklist de otimização.
               <br className="hidden sm:block" />
               O único sistema que gerencia <strong className="text-foreground">todo o ciclo operacional</strong> da sua agência em um só lugar.
@@ -229,23 +230,23 @@ const Landing = () => {
               <span className="text-primary font-medium">Não é só um CRM. É a plataforma que te liberta da operação.</span>
             </p>
 
-            {/* CTA Principal */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
-              <Button size="lg" asChild className="gradient-primary text-primary-foreground border-0 shadow-xl btn-pulse btn-press text-lg px-8 py-6 h-auto min-h-[56px]">
+            {/* CTA Principal - responsivo */}
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-4 sm:mb-6 px-2">
+              <Button size="lg" asChild className="gradient-primary text-primary-foreground border-0 shadow-xl btn-pulse btn-press text-sm sm:text-lg px-6 sm:px-8 py-4 sm:py-6 h-auto min-h-[48px] sm:min-h-[56px] w-full sm:w-auto">
                 <Link to="/register">
-                  <Zap className="mr-2 h-5 w-5" />
+                  <Zap className="mr-2 h-4 sm:h-5 w-4 sm:w-5" />
                   TESTE GRÁTIS POR 14 DIAS
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" asChild className="border-border hover:bg-muted hover:border-primary/30 text-lg px-8 py-6 h-auto min-h-[56px] btn-press">
+              <Button size="lg" variant="outline" asChild className="border-border hover:bg-muted hover:border-primary/30 text-sm sm:text-lg px-6 sm:px-8 py-4 sm:py-6 h-auto min-h-[48px] sm:min-h-[56px] btn-press w-full sm:w-auto">
                 <a href="#demo">
-                  <MessageCircle className="mr-2 h-5 w-5" />
+                  <MessageCircle className="mr-2 h-4 sm:h-5 w-4 sm:w-5" />
                   Agendar Demonstração
                 </a>
               </Button>
             </div>
             
-            <p className="text-sm text-muted-foreground flex items-center justify-center gap-4 flex-wrap">
+            <p className="text-xs sm:text-sm text-muted-foreground flex items-center justify-center gap-2 sm:gap-4 flex-wrap px-2">
               <span className="flex items-center gap-1">
                 <Check className="h-4 w-4 text-primary" />
                 Sem cartão de crédito
@@ -281,7 +282,7 @@ const Landing = () => {
       </section>
 
       {/* ===== SEÇÃO PROBLEMA ===== */}
-      <section className="py-24 px-4 relative section-gray pattern-dots">
+      <section className="py-12 sm:py-16 md:py-20 lg:py-24 px-3 sm:px-4 relative section-gray pattern-dots">
         <div className="container mx-auto">
           <motion.div initial={{
           opacity: 0,
@@ -291,17 +292,17 @@ const Landing = () => {
           y: 0
         }} viewport={{
           once: true
-        }} className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 font-display">
+        }} className="text-center mb-8 sm:mb-12 md:mb-16">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-3 sm:mb-4 font-display px-2">
               Você Está{" "}
               <span className="text-status-danger">Preso na Operação?</span>
             </h2>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-muted-foreground text-sm sm:text-base md:text-lg px-2">
               Identifique se esses sintomas estão te impedindo de escalar:
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-6xl mx-auto">
             {[{
             icon: Users,
             title: "😰 Você Faz Tudo Sozinho",
@@ -704,7 +705,7 @@ const Landing = () => {
       </section>
 
       {/* ===== SEÇÃO PREÇOS ===== */}
-      <section id="precos" className="py-24 px-4 relative section-white">
+      <section id="precos" className="py-12 sm:py-16 md:py-20 lg:py-24 px-3 sm:px-4 relative section-white">
         <div className="container mx-auto">
           <motion.div initial={{
           opacity: 0,
@@ -714,31 +715,32 @@ const Landing = () => {
           y: 0
         }} viewport={{
           once: true
-        }} className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 font-display">
+        }} className="text-center mb-8 sm:mb-12">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 font-display px-2">
               Quanto Custa Ter{" "}
               <span className="gradient-title-text">Estrutura na Sua Operação?</span>
             </h2>
-            <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
+            <p className="text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto text-sm sm:text-base px-2">
               O G-Rank não é uma despesa. É infraestrutura de crescimento.
               Se você perde 1 contrato por mês por desorganização — o sistema já se paga.
             </p>
 
-            {/* Toggle */}
-            <div className="inline-flex items-center gap-3 p-1.5 rounded-full bg-muted border border-border">
-              <button onClick={() => setIsAnnual(false)} className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all btn-press ${!isAnnual ? 'gradient-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}>
+            {/* Toggle - responsivo */}
+            <div className="inline-flex items-center gap-2 sm:gap-3 p-1 sm:p-1.5 rounded-full bg-muted border border-border">
+              <button onClick={() => setIsAnnual(false)} className={`px-3 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all btn-press ${!isAnnual ? 'gradient-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}>
                 Mensal
               </button>
-              <button onClick={() => setIsAnnual(true)} className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all flex items-center gap-2 btn-press ${isAnnual ? 'gradient-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}>
+              <button onClick={() => setIsAnnual(true)} className={`px-3 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all flex items-center gap-1.5 sm:gap-2 btn-press ${isAnnual ? 'gradient-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}>
                 Anual
-                <span className="px-2 py-0.5 rounded-full bg-status-success/20 text-status-success text-xs">
+                <span className="px-1.5 sm:px-2 py-0.5 rounded-full bg-status-success/20 text-status-success text-[10px] sm:text-xs">
                   -20%
                 </span>
               </button>
             </div>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto items-stretch">
+          {/* Grid de planos - responsivo com scroll horizontal no mobile */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto items-stretch">
             {plans.map((plan, index) => <motion.div key={plan.name} initial={{
             opacity: 0,
             y: 20
@@ -976,27 +978,27 @@ const Landing = () => {
       </section>
 
       {/* ===== FOOTER ===== */}
-      <footer className="py-16 px-4 border-t border-border">
+      <footer className="py-10 sm:py-12 md:py-16 px-3 sm:px-4 border-t border-border safe-area-inset-bottom">
         <div className="container mx-auto">
-          <div className="grid md:grid-cols-4 gap-8 mb-12">
-            <div className="md:col-span-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-8 sm:mb-12">
+            <div className="sm:col-span-2">
               <Link to="/" className="flex items-center gap-2 mb-4">
-                <img src={grankLogo} alt="G-Rank" className="h-8 w-auto" />
-                <span className="font-bold text-xl gradient-text">G-Rank CRM</span>
+                <img src={grankLogo} alt="G-Rank" className="h-7 sm:h-8 w-auto" />
+                <span className="font-bold text-lg sm:text-xl gradient-text">G-Rank CRM</span>
               </Link>
-              <p className="text-muted-foreground mb-4">
+              <p className="text-muted-foreground mb-4 text-sm sm:text-base">
                 Gestão Profissional para Agências de Marketing Local
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Construído por quem vive o jogo do GMB no campo.
               </p>
             </div>
             
             <div>
-              <h4 className="font-semibold mb-4">Links Rápidos</h4>
+              <h4 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Links Rápidos</h4>
               <ul className="space-y-2">
                 {navLinks.map(link => <li key={link.label}>
-                    <a href={link.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    <a href={link.href} className="text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors">
                       {link.label}
                     </a>
                   </li>)}
@@ -1004,15 +1006,15 @@ const Landing = () => {
             </div>
             
             <div>
-              <h4 className="font-semibold mb-4">Contato</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
+              <h4 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Contato</h4>
+              <ul className="space-y-2 text-xs sm:text-sm text-muted-foreground">
                 <li>📧 contato@grank.com.br</li>
                 <li>📱 WhatsApp: (XX) XXXXX-XXXX</li>
               </ul>
             </div>
           </div>
           
-          <div className="border-t border-border pt-8 text-center text-sm text-muted-foreground">
+          <div className="border-t border-border pt-6 sm:pt-8 text-center text-xs sm:text-sm text-muted-foreground">
             © {new Date().getFullYear()} G-Rank CRM. Todos os direitos reservados.
           </div>
         </div>
