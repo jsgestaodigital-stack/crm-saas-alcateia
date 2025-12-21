@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -77,7 +77,7 @@ export function NewLeadDialog({ open, onOpenChange }: NewLeadDialogProps) {
     instagram: { valid: true },
   });
 
-  const [formData, setFormData] = useState<LeadFormData>({
+  const initialFormData: LeadFormData = {
     company_name: '',
     contact_name: '',
     whatsapp: '',
@@ -89,7 +89,42 @@ export function NewLeadDialog({ open, onOpenChange }: NewLeadDialogProps) {
     temperature: 'cold',
     next_action: '',
     notes: '',
-  });
+  };
+
+  const [formData, setFormData] = useState<LeadFormData>(initialFormData);
+
+  // Check if form has unsaved changes (dirty state)
+  const isDirty = useMemo(() => {
+    return Object.keys(formData).some(key => {
+      const k = key as keyof LeadFormData;
+      return formData[k] !== initialFormData[k];
+    });
+  }, [formData]);
+
+  // Warn before closing with unsaved changes
+  const handleOpenChange = useCallback((newOpen: boolean) => {
+    if (!newOpen && isDirty) {
+      const confirmClose = window.confirm(
+        'Você tem alterações não salvas. Deseja realmente fechar e perder os dados?'
+      );
+      if (!confirmClose) return;
+    }
+    onOpenChange(newOpen);
+  }, [isDirty, onOpenChange]);
+
+  // Warn before page unload with unsaved changes
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty && open) {
+        e.preventDefault();
+        e.returnValue = 'Você tem alterações não salvas.';
+        return e.returnValue;
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isDirty, open]);
 
   // Debounced duplicate check
   const debouncedCheckDuplicates = useCallback(
@@ -272,6 +307,12 @@ export function NewLeadDialog({ open, onOpenChange }: NewLeadDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={(value) => {
+      if (!value && isDirty) {
+        const confirmClose = window.confirm(
+          'Você tem alterações não salvas. Deseja realmente fechar e perder os dados?'
+        );
+        if (!confirmClose) return;
+      }
       if (!value) resetForm();
       onOpenChange(value);
     }}>
