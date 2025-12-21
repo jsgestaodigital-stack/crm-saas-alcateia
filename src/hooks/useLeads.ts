@@ -12,22 +12,59 @@ import {
 } from '@/types/lead';
 import { createAutoCommission } from './useCommissions';
 
+// Campos mínimos para listagem no Kanban (performance)
+const LEAD_LIST_FIELDS = `
+  id,
+  company_name,
+  contact_name,
+  pipeline_stage,
+  temperature,
+  status,
+  estimated_value,
+  probability,
+  next_action,
+  next_action_date,
+  responsible,
+  last_activity_at,
+  created_at
+` as const;
+
+// Limite de leads por página
+const PAGE_SIZE = 100;
+
 export function useLeads() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(0);
   const { user, currentAgencyId } = useAuth();
 
   const userName = user?.user_metadata?.full_name || user?.email || 'Usuário';
 
-  const fetchLeads = useCallback(async () => {
+  const fetchLeads = useCallback(async (pageNum = 0, append = false) => {
     try {
-      const { data, error } = await supabase
+      const from = pageNum * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+
+      const { data, error, count } = await supabase
         .from('leads')
-        .select('*')
-        .order('last_activity_at', { ascending: false });
+        .select(LEAD_LIST_FIELDS, { count: 'exact' })
+        .order('last_activity_at', { ascending: false })
+        .range(from, to);
 
       if (error) throw error;
-      setLeads((data as unknown as Lead[]) || []);
+      
+      const newLeads = (data as unknown as Lead[]) || [];
+      
+      if (append) {
+        setLeads(prev => [...prev, ...newLeads]);
+      } else {
+        setLeads(newLeads);
+      }
+      
+      // Verifica se há mais páginas
+      setHasMore(count ? from + newLeads.length < count : false);
+      setPage(pageNum);
     } catch (error) {
       console.error('Error fetching leads:', error);
       toast.error('Erro ao carregar leads');
@@ -36,15 +73,21 @@ export function useLeads() {
     }
   }, []);
 
+  const loadMore = useCallback(() => {
+    if (hasMore && !loading) {
+      fetchLeads(page + 1, true);
+    }
+  }, [hasMore, loading, page, fetchLeads]);
+
   useEffect(() => {
-    fetchLeads();
+    fetchLeads(0, false);
 
     const channel = supabase
       .channel('leads-changes')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'leads' },
-        () => fetchLeads()
+        () => fetchLeads(0, false) // Reset to first page on changes
       )
       .subscribe();
 
@@ -187,11 +230,13 @@ export function useLeads() {
   return {
     leads,
     loading,
+    hasMore,
+    loadMore,
     createLead,
     updateLead,
     moveLead,
     deleteLead,
-    refetch: fetchLeads,
+    refetch: () => fetchLeads(0, false),
   };
 }
 
