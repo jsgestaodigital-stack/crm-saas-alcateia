@@ -57,16 +57,16 @@ export function Header({ onNewClient }: HeaderProps) {
     : user?.email?.slice(0, 2).toUpperCase() || "U";
 
   return (
-    <header className="h-14 sm:h-16 border-b border-primary/20 bg-surface-1/80 backdrop-blur-xl fixed top-0 left-0 right-0 z-50">
+    <header className="h-14 sm:h-16 border-b border-emerald/10 bg-background/80 backdrop-blur-xl fixed top-0 left-0 right-0 z-50 shadow-[0_4px_20px_rgba(0,252,168,0.03)]">
       <div className="flex items-center justify-between h-full px-3 sm:px-6">
         {/* Mobile Menu */}
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <SheetTrigger asChild className="sm:hidden">
-            <Button variant="ghost" size="icon" className="hover:bg-primary/10 hover:text-primary">
+            <Button variant="ghost" size="icon" className="hover:bg-emerald/10 hover:text-emerald">
               <Menu className="w-5 h-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-72 p-4 bg-surface-1 border-primary/20">
+          <SheetContent side="left" className="w-72 p-4 bg-sidebar border-emerald/10">
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <img src={grankLogo} alt="G-Rank CRM" className="h-8 w-auto" />
@@ -74,7 +74,7 @@ export function Header({ onNewClient }: HeaderProps) {
               </div>
               
               <div className="space-y-2">
-                <p className="text-xs text-primary font-semibold mb-3 uppercase tracking-wider">Visualizações</p>
+                <p className="text-xs text-emerald font-semibold mb-3 uppercase tracking-wider">Visualizações</p>
                 {VIEW_OPTIONS.map((view) => (
                   <Button
                     key={view.id}
@@ -83,8 +83,8 @@ export function Header({ onNewClient }: HeaderProps) {
                     className={cn(
                       "w-full justify-start gap-3 h-12",
                       viewMode === view.id 
-                        ? "bg-primary/10 text-primary border border-primary/30" 
-                        : "hover:bg-primary/5 hover:text-primary"
+                        ? "bg-emerald/10 text-emerald border border-emerald/30" 
+                        : "hover:bg-emerald/5 hover:text-emerald"
                     )}
                     onClick={() => {
                       setViewMode(view.id as any);
@@ -101,7 +101,7 @@ export function Header({ onNewClient }: HeaderProps) {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="w-full justify-start gap-3 h-12 border-primary/30 text-primary hover:bg-primary/10"
+                  className="w-full justify-start gap-3 h-12 border-emerald/30 text-emerald hover:bg-emerald/10"
                   onClick={() => {
                     navigate("/admin");
                     setMobileMenuOpen(false);
@@ -139,7 +139,7 @@ export function Header({ onNewClient }: HeaderProps) {
         <div className="flex items-center gap-2 sm:gap-3">
           {/* View Toggle - Desktop */}
           <TooltipProvider delayDuration={800}>
-            <div className="hidden lg:flex items-center bg-surface-2 rounded-xl p-1.5 border border-primary/20 neon-border">
+            <div className="hidden lg:flex items-center bg-muted/30 rounded-xl p-1.5 border border-emerald/10">
               {VIEW_OPTIONS.map((view) => (
                 <Tooltip key={view.id}>
                   <TooltipTrigger asChild>
@@ -147,10 +147,10 @@ export function Header({ onNewClient }: HeaderProps) {
                       variant="ghost"
                       size="sm"
                       className={cn(
-                        "h-10 px-3 text-sm font-medium rounded-lg transition-all",
+                        "h-10 px-3 text-sm font-medium rounded-lg transition-all duration-200",
                         viewMode === view.id 
-                          ? "bg-primary text-primary-foreground neon-glow" 
-                          : "text-muted-foreground hover:text-primary hover:bg-primary/10"
+                          ? "bg-emerald text-soft-black shadow-[0_0_12px_hsl(var(--emerald)/0.4)]" 
+                          : "text-muted-foreground hover:text-emerald hover:bg-emerald/10"
                       )}
                       onClick={() => setViewMode(view.id as any)}
                     >
@@ -169,26 +169,26 @@ export function Header({ onNewClient }: HeaderProps) {
           {/* View Dropdown - Tablet */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild className="hidden sm:flex lg:hidden">
-              <Button variant="outline" size="default" className="gap-2 border-primary/30 hover:border-primary/50">
+              <Button variant="outline" size="default" className="gap-2 border-emerald/30 hover:border-emerald/50">
                 {VIEW_OPTIONS.find(v => v.id === viewMode)?.icon && (
                   <span className="w-5 h-5">
                     {(() => {
                       const Icon = VIEW_OPTIONS.find(v => v.id === viewMode)?.icon;
-                      return Icon ? <Icon className="w-5 h-5 text-primary" /> : null;
+                      return Icon ? <Icon className="w-5 h-5 text-emerald" /> : null;
                     })()}
                   </span>
                 )}
                 {VIEW_OPTIONS.find(v => v.id === viewMode)?.label}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-surface-1 border-border/50">
+            <DropdownMenuContent className="bg-popover/95 backdrop-blur-xl border-border/50">
               {VIEW_OPTIONS.map((view) => (
                 <DropdownMenuItem
                   key={view.id}
                   onClick={() => setViewMode(view.id as any)}
                   className={cn(
                     "gap-2",
-                    viewMode === view.id && "bg-primary/10 text-primary"
+                    viewMode === view.id && "bg-emerald/10 text-emerald"
                   )}
                 >
                   <view.icon className="w-5 h-5" />
@@ -224,7 +224,8 @@ export function Header({ onNewClient }: HeaderProps) {
               <TooltipTrigger asChild>
                 <Button 
                   size="sm" 
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 neon-glow hidden sm:flex"
+                  variant="emerald"
+                  className="hidden sm:flex"
                   onClick={onNewClient}
                 >
                   <Plus className="w-4 h-4 sm:mr-2" />
@@ -240,7 +241,8 @@ export function Header({ onNewClient }: HeaderProps) {
           {/* Mobile New Client */}
           <Button 
             size="icon" 
-            className="bg-primary text-primary-foreground hover:bg-primary/90 sm:hidden w-8 h-8"
+            variant="emerald"
+            className="sm:hidden w-8 h-8"
             onClick={onNewClient}
           >
             <Plus className="w-4 h-4" />
@@ -250,19 +252,19 @@ export function Header({ onNewClient }: HeaderProps) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                <Avatar className="h-8 w-8 border border-primary/30">
+                <Avatar className="h-8 w-8 border-2 border-emerald/30 ring-2 ring-emerald/10">
                   <AvatarImage src={user?.user_metadata?.avatar_url} />
-                  <AvatarFallback className="bg-primary/20 text-primary font-semibold text-xs">
+                  <AvatarFallback className="bg-gradient-to-br from-emerald/20 to-violet/20 text-emerald font-semibold text-xs">
                     {userInitials}
                   </AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 bg-surface-1 border-border/50" align="end">
+            <DropdownMenuContent className="w-56 bg-popover/95 backdrop-blur-xl border-border/50" align="end">
               <div className="flex items-center gap-2 p-2">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={user?.user_metadata?.avatar_url} />
-                  <AvatarFallback className="bg-primary/20 text-primary text-xs">
+                  <AvatarFallback className="bg-gradient-to-br from-emerald/20 to-violet/20 text-emerald text-xs">
                     {userInitials}
                   </AvatarFallback>
                 </Avatar>
