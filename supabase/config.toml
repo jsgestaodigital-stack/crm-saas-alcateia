@@ -1,5 +1,8 @@
 project_id = "ufsltbgevtozvlcavetq"
 
+[functions.admin-reset-password]
+verify_jwt = false
+
 [functions.bootstrap-users]
 verify_jwt = false
 

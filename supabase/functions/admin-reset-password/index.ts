@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
     const expectedKey = Deno.env.get("ADMIN_SETUP_KEY") || "setup-rankeia-2024";
     if (admin_key !== expectedKey) {
       return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
+        JSON.stringify({ error: "Unauthorized - invalid admin key" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
