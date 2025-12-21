@@ -10,9 +10,12 @@ import {
   ContractsList,
   ContractEditor,
   ContractPreview,
+  ContractHelpSection,
 } from '@/components/contracts';
 import { Contract, ContractType } from '@/types/contract';
-import { ArrowLeft, FileText, Plus } from 'lucide-react';
+import { ArrowLeft, FileText, Plus, HelpCircle } from 'lucide-react';
+import { useState as useToggleState } from 'react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 export default function Contratos() {
   const navigate = useNavigate();
@@ -41,7 +44,7 @@ export default function Contratos() {
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
   const [contractType, setContractType] = useState<ContractType>('single_optimization');
   const [initialVariables, setInitialVariables] = useState<Record<string, string>>({});
-
+  const [showHelp, setShowHelp] = useState(false);
   // Check for proposalId or leadId in URL params
   useEffect(() => {
     const proposalId = searchParams.get('proposalId');
@@ -240,30 +243,53 @@ export default function Contratos() {
             </div>
           </div>
 
-          {view === 'list' && isAdmin && (
+          {view === 'list' && (
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => handleNew('single_optimization')} className="gap-2">
-                <Plus className="h-4 w-4" />
-                Otimização Única
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setShowHelp(!showHelp)}
+                className="gap-2"
+              >
+                <HelpCircle className="h-4 w-4" />
+                Ajuda
               </Button>
-              <Button onClick={() => handleNew('recurring')} className="gap-2">
-                <Plus className="h-4 w-4" />
-                Recorrência
-              </Button>
+              {isAdmin && (
+                <>
+                  <Button variant="outline" onClick={() => handleNew('single_optimization')} className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    Otimização Única
+                  </Button>
+                  <Button onClick={() => handleNew('recurring')} className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    Recorrência
+                  </Button>
+                </>
+              )}
             </div>
           )}
         </div>
 
+        {/* Help Section */}
+        <Collapsible open={showHelp} onOpenChange={setShowHelp}>
+          <CollapsibleContent className="mb-6">
+            <ContractHelpSection />
+          </CollapsibleContent>
+        </Collapsible>
+
         {/* Content */}
         {view === 'list' && (
-          <ContractsList
-            contracts={contracts}
-            onEdit={handleEdit}
-            onDuplicate={handleDuplicate}
-            onDelete={handleDelete}
-            onSend={handleSend}
-            onViewPublic={handleViewPublic}
-          />
+          <>
+            {!showHelp && <ContractHelpSection showCompact />}
+            <ContractsList
+              contracts={contracts}
+              onEdit={handleEdit}
+              onDuplicate={handleDuplicate}
+              onDelete={handleDelete}
+              onSend={handleSend}
+              onViewPublic={handleViewPublic}
+            />
+          </>
         )}
 
         {(view === 'new' || view === 'edit') && (

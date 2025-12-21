@@ -1,8 +1,8 @@
 import React from 'react';
-import { Contract, CONTRACT_STATUS_CONFIG, CONTRACT_TYPE_CONFIG } from '@/types/contract';
+import { Contract, CONTRACT_TYPE_CONFIG } from '@/types/contract';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { ContractStatusBadge } from './ContractStatusBadge';
 import { 
   FileText, 
   Eye, 
@@ -12,7 +12,8 @@ import {
   ExternalLink,
   Calendar,
   Building2,
-  DollarSign
+  DollarSign,
+  Download
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -20,6 +21,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { MoreVertical } from 'lucide-react';
@@ -56,7 +58,6 @@ export function ContractsList({
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {contracts.map((contract) => {
-        const statusConfig = CONTRACT_STATUS_CONFIG[contract.status];
         const typeConfig = CONTRACT_TYPE_CONFIG[contract.contract_type];
 
         return (
@@ -88,7 +89,16 @@ export function ContractsList({
                     {contract.status === 'draft' && (
                       <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onSend(contract); }}>
                         <Send className="h-4 w-4 mr-2" />
-                        Enviar
+                        Enviar para Assinatura
+                      </DropdownMenuItem>
+                    )}
+                    {contract.autentique_sign_url && (
+                      <DropdownMenuItem onClick={(e) => { 
+                        e.stopPropagation(); 
+                        window.open(contract.autentique_sign_url!, '_blank'); 
+                      }}>
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        Abrir no Autentique
                       </DropdownMenuItem>
                     )}
                     {contract.public_token && (
@@ -97,6 +107,7 @@ export function ContractsList({
                         Ver Link Público
                       </DropdownMenuItem>
                     )}
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDuplicate(contract); }}>
                       <Copy className="h-4 w-4 mr-2" />
                       Duplicar
@@ -136,13 +147,25 @@ export function ContractsList({
 
               {/* Status */}
               <div className="flex items-center justify-between">
-                <Badge className={statusConfig.color}>
-                  {statusConfig.emoji} {statusConfig.label}
-                </Badge>
-                {contract.view_count && contract.view_count > 0 && (
-                  <span className="text-xs text-muted-foreground">
-                    {contract.view_count} visualização{contract.view_count > 1 ? 'ões' : ''}
-                  </span>
+                <ContractStatusBadge 
+                  status={contract.status} 
+                  autentiqueStatus={contract.autentique_status}
+                  viewCount={contract.view_count}
+                  size="sm"
+                />
+                {contract.autentique_sign_url && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-6 text-xs"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(contract.autentique_sign_url!, '_blank');
+                    }}
+                  >
+                    <ExternalLink className="h-3 w-3 mr-1" />
+                    Autentique
+                  </Button>
                 )}
               </div>
             </CardContent>
