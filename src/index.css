@@ -146,80 +146,82 @@
   }
 
   .light {
-    /* === G-RANK CRM - LIGHT THEME (Clean & Professional) === */
-    --background: 0 0% 100%;
-    --foreground: 220 20% 12%;
+    /* === G-RANK CRM - LIGHT THEME (Branco limpo + Verde vibrante) === */
+    --background: 0 0% 99%;
+    --foreground: 220 25% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 12%;
+    --card-foreground: 220 25% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 12%;
+    --popover-foreground: 220 25% 10%;
 
-    /* Primary - Verde esmeralda mais vibrante */
-    --primary: 159 85% 35%;
+    /* Primary - Verde esmeralda vibrante para CTAs */
+    --primary: 159 90% 32%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary - Verde escuro */
-    --secondary: 159 60% 25%;
-    --secondary-foreground: 0 0% 100%;
+    /* Secondary - Fundo suave para botões secundários */
+    --secondary: 220 15% 92%;
+    --secondary-foreground: 220 25% 15%;
 
-    --muted: 220 15% 95%;
-    --muted-foreground: 220 10% 45%;
+    --muted: 220 12% 96%;
+    --muted-foreground: 220 12% 40%;
 
-    /* Accent - Verde claro */
-    --accent: 159 70% 92%;
-    --accent-foreground: 159 85% 25%;
+    /* Accent - Verde claro para destaques */
+    --accent: 159 60% 94%;
+    --accent-foreground: 159 90% 25%;
 
     --destructive: 0 72% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 90%;
-    --input: 220 12% 94%;
-    --ring: 159 85% 35%;
+    /* Bordas mais definidas para contraste */
+    --border: 220 18% 85%;
+    --input: 220 15% 92%;
+    --ring: 159 90% 32%;
 
-    /* Light mode brand tokens - All green-based */
-    --emerald: 159 85% 35%;
-    --emerald-glow: 0 0 30px hsl(159 85% 35% / 0.35);
-    --emerald-soft: 159 85% 35% / 0.08;
-    --emerald-medium: 159 85% 35% / 0.15;
+    /* Light mode brand tokens - Verde vibrante */
+    --emerald: 159 90% 32%;
+    --emerald-glow: 0 0 25px hsl(159 90% 32% / 0.3);
+    --emerald-soft: 159 90% 32% / 0.1;
+    --emerald-medium: 159 90% 32% / 0.18;
 
-    --violet: 159 70% 30%;
-    --violet-glow: 0 0 25px hsl(159 70% 30% / 0.3);
-    --violet-soft: 159 70% 30% / 0.08;
+    --violet: 159 70% 28%;
+    --violet-glow: 0 0 20px hsl(159 70% 28% / 0.25);
+    --violet-soft: 159 70% 28% / 0.08;
 
-    --lavender: 159 50% 45%;
-    --lavender-glow: 0 0 20px hsl(159 50% 45% / 0.25);
-    --lavender-soft: 159 50% 45% / 0.08;
+    --lavender: 159 45% 50%;
+    --lavender-glow: 0 0 18px hsl(159 45% 50% / 0.2);
+    --lavender-soft: 159 45% 50% / 0.1;
 
-    --gradient-primary: linear-gradient(135deg, hsl(159 85% 35%), hsl(159 70% 28%));
-    --gradient-emerald: linear-gradient(135deg, hsl(159 85% 38%), hsl(159 70% 28%));
-    --gradient-violet: linear-gradient(135deg, hsl(159 70% 30%), hsl(159 50% 40%));
-    --gradient-surface: linear-gradient(180deg, hsl(0 0% 100%), hsl(220 15% 98%));
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(220 12% 98%));
+    --gradient-primary: linear-gradient(135deg, hsl(159 90% 32%), hsl(159 75% 25%));
+    --gradient-emerald: linear-gradient(135deg, hsl(159 90% 35%), hsl(159 80% 28%));
+    --gradient-violet: linear-gradient(135deg, hsl(159 70% 28%), hsl(159 55% 38%));
+    --gradient-surface: linear-gradient(180deg, hsl(0 0% 100%), hsl(220 12% 98%));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(220 10% 97%));
 
     --surface-1: 0 0% 100%;
-    --surface-2: 220 15% 97%;
-    --surface-3: 220 12% 94%;
+    --surface-2: 220 12% 97%;
+    --surface-3: 220 10% 94%;
 
-    --status-success: 159 75% 32%;
-    --status-warning: 45 95% 42%;
-    --status-danger: 0 72% 48%;
-    --status-info: 210 80% 50%;
-    --status-purple: 159 60% 40%;
+    --status-success: 159 80% 30%;
+    --status-warning: 45 95% 45%;
+    --status-danger: 0 75% 50%;
+    --status-info: 210 85% 50%;
+    --status-purple: 159 65% 38%;
 
-    --sidebar-background: 220 15% 97%;
-    --sidebar-foreground: 220 20% 12%;
-    --sidebar-primary: 159 85% 35%;
+    /* Sidebar claro com borda definida */
+    --sidebar-background: 220 12% 97%;
+    --sidebar-foreground: 220 25% 10%;
+    --sidebar-primary: 159 90% 32%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 12% 92%;
-    --sidebar-accent-foreground: 220 20% 15%;
-    --sidebar-border: 220 12% 88%;
-    --sidebar-ring: 159 85% 35%;
+    --sidebar-accent: 159 50% 94%;
+    --sidebar-accent-foreground: 159 90% 22%;
+    --sidebar-border: 220 15% 88%;
+    --sidebar-ring: 159 90% 32%;
 
-    --glass-bg: 0 0% 100% / 0.92;
-    --glass-border: 220 15% 85% / 0.5;
-    --glass-blur: 20px;
+    --glass-bg: 0 0% 100% / 0.95;
+    --glass-border: 220 18% 80% / 0.6;
+    --glass-blur: 16px;
   }
   .dark {
     --background: 222 47% 11%;
