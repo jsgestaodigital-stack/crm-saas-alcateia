@@ -63,7 +63,7 @@ const roleIcons: Record<AppRole, React.ReactNode> = {
 
 export default function Equipe() {
   const navigate = useNavigate();
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading, isAdmin } = useAuth();
   const {
     myRole,
     members,
@@ -75,6 +75,10 @@ export default function Equipe() {
     canAssignRoles,
   } = useTeamPermissions();
   const { pendingInvites, cancelInvite } = useInvites();
+
+  // Owner pode gerenciar se for admin OU se for o único membro (primeiro usuário)
+  const isFirstUser = members?.length === 0 || (members?.length === 1 && members[0]?.user_id === user?.id);
+  const canManage = canManageTeam || isAdmin || isFirstUser;
 
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
@@ -143,7 +147,7 @@ export default function Equipe() {
               </div>
             </div>
 
-            {canManageTeam && (
+            {canManage && (
               <div className="flex items-center gap-2">
                 <InviteMemberModal />
                 <InviteMemberDialog onSuccess={refetchMembers} />
@@ -201,7 +205,7 @@ export default function Equipe() {
               <Users className="h-4 w-4" />
               Membros ({members?.length || 0})
             </TabsTrigger>
-            {canManageTeam && (
+            {canManage && (
               <TabsTrigger value="invites" className="gap-2">
                 <Mail className="h-4 w-4" />
                 Convites pendentes ({pendingInvites.length})
@@ -264,7 +268,7 @@ export default function Equipe() {
                     key={member.id}
                     member={member}
                     canAssignRoles={canAssignRoles}
-                    canRemove={canManageTeam}
+                    canRemove={canManage}
                     isCurrentUser={member.user_id === user?.id}
                     onRoleChange={handleRoleChange}
                     onRemove={handleRemove}
@@ -274,7 +278,7 @@ export default function Equipe() {
             )}
           </TabsContent>
 
-          {canManageTeam && (
+          {canManage && (
             <TabsContent value="invites" className="mt-4">
               {pendingInvites.length === 0 ? (
                 <div className="text-center py-12">
