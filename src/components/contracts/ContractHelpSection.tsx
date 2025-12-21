@@ -1,16 +1,14 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
 import { 
   Info, 
   Download, 
   Printer, 
-  Send, 
   CheckCircle2, 
   FileText,
-  Settings,
-  HelpCircle
+  HelpCircle,
+  Copy
 } from 'lucide-react';
 import {
   Accordion,
@@ -26,11 +24,10 @@ interface ContractHelpSectionProps {
 export function ContractHelpSection({ showCompact = false }: ContractHelpSectionProps) {
   if (showCompact) {
     return (
-      <Alert className="bg-primary/5 border-primary/20">
+      <Alert className="bg-primary/5 border-primary/20 mb-4">
         <Info className="h-4 w-4 text-primary" />
         <AlertDescription className="text-sm">
-          <strong>Modo Manual:</strong> Você pode usar o sistema sem Autentique. 
-          Geramos contratos 100% jurídicos prontos para imprimir ou baixar em PDF.
+          Gere contratos 100% jurídicos prontos para imprimir, baixar em PDF ou copiar o texto.
         </AlertDescription>
       </Alert>
     );
@@ -45,80 +42,45 @@ export function ContractHelpSection({ showCompact = false }: ContractHelpSection
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Two Modes Explanation */}
-        <div className="grid md:grid-cols-2 gap-4">
-          <Card className="border-2 border-primary/20 bg-primary/5">
-            <CardContent className="p-4">
-              <div className="flex items-start gap-3">
-                <div className="p-2 rounded-full bg-primary/10">
-                  <FileText className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <h4 className="font-semibold flex items-center gap-2">
-                    🟢 Modo Manual
-                    <Badge variant="secondary" className="text-xs">Padrão</Badge>
-                  </h4>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Gere contratos completos sem integração externa. 
-                    Baixe em PDF, imprima ou copie o texto.
-                  </p>
-                  <ul className="text-sm mt-2 space-y-1">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-3 w-3 text-green-500" />
-                      Sem necessidade de API
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-3 w-3 text-green-500" />
-                      100% funcional
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-3 w-3 text-green-500" />
-                      Pronto para assinar
-                    </li>
-                  </ul>
-                </div>
+        {/* Features */}
+        <Card className="border-2 border-primary/20 bg-primary/5">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <div className="p-2 rounded-full bg-primary/10">
+                <FileText className="h-5 w-5 text-primary" />
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-2 border-blue-500/20 bg-blue-500/5">
-            <CardContent className="p-4">
-              <div className="flex items-start gap-3">
-                <div className="p-2 rounded-full bg-blue-500/10">
-                  <Send className="h-5 w-5 text-blue-500" />
-                </div>
-                <div>
-                  <h4 className="font-semibold flex items-center gap-2">
-                    🔵 Assinatura Digital
-                    <Badge variant="outline" className="text-xs">Opcional</Badge>
-                  </h4>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Integre com a Autentique para enviar contratos 
-                    e rastrear assinaturas digitais.
-                  </p>
-                  <ul className="text-sm mt-2 space-y-1">
-                    <li className="flex items-center gap-2">
-                      <Settings className="h-3 w-3 text-muted-foreground" />
-                      Requer configuração
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <Send className="h-3 w-3 text-muted-foreground" />
-                      Envio automático
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-3 w-3 text-muted-foreground" />
-                      Rastreio de status
-                    </li>
-                  </ul>
-                </div>
+              <div>
+                <h4 className="font-semibold">Sistema de Contratos Completo</h4>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Gere contratos profissionais com todas as cláusulas necessárias, 
+                  prontos para uso imediato.
+                </p>
+                <ul className="text-sm mt-3 space-y-2">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    Preenchimento assistido por wizard
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    Variáveis substituídas automaticamente
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    Cláusulas jurídicas completas
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    Baixar PDF, imprimir ou copiar
+                  </li>
+                </ul>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* FAQ */}
         <Accordion type="single" collapsible className="w-full">
-          <AccordionItem value="manual">
+          <AccordionItem value="download">
             <AccordionTrigger className="text-sm">
               <span className="flex items-center gap-2">
                 <Download className="h-4 w-4" />
@@ -129,8 +91,8 @@ export function ContractHelpSection({ showCompact = false }: ContractHelpSection
               <ol className="list-decimal list-inside space-y-1">
                 <li>Crie ou edite um contrato</li>
                 <li>Preencha todos os dados necessários</li>
-                <li>Clique em "Baixar PDF" ou "Imprimir"</li>
-                <li>O navegador abrirá a janela de impressão onde você pode salvar como PDF</li>
+                <li>Clique em "Baixar PDF"</li>
+                <li>Na janela de impressão, selecione "Salvar como PDF"</li>
               </ol>
             </AccordionContent>
           </AccordionItem>
@@ -144,28 +106,21 @@ export function ContractHelpSection({ showCompact = false }: ContractHelpSection
             </AccordionTrigger>
             <AccordionContent className="text-sm text-muted-foreground">
               Sim! O contrato gerado é 100% válido juridicamente. 
-              Basta imprimir, coletar assinaturas físicas e arquivar. 
-              Você não precisa usar a Autentique se preferir o modo tradicional.
+              Basta imprimir, coletar as assinaturas físicas de ambas as partes e arquivar.
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="autentique">
+          <AccordionItem value="copy">
             <AccordionTrigger className="text-sm">
               <span className="flex items-center gap-2">
-                <Send className="h-4 w-4" />
-                Como configurar a Autentique?
+                <Copy className="h-4 w-4" />
+                Posso copiar o texto do contrato?
               </span>
             </AccordionTrigger>
             <AccordionContent className="text-sm text-muted-foreground">
-              <ol className="list-decimal list-inside space-y-1">
-                <li>Acesse <a href="https://app.autentique.com.br" target="_blank" rel="noopener noreferrer" className="text-primary underline">app.autentique.com.br</a></li>
-                <li>Vá em "Minha Conta" → "Integrações"</li>
-                <li>Gere um token de API</li>
-                <li>Configure o token nas configurações da agência</li>
-              </ol>
-              <p className="mt-2 text-xs">
-                Após configurar, o botão "Enviar para Assinatura" ficará disponível.
-              </p>
+              Sim! Use o botão "Copiar Texto" para copiar todo o conteúdo do contrato 
+              para a área de transferência. Você pode colar em qualquer editor de texto 
+              ou sistema que preferir.
             </AccordionContent>
           </AccordionItem>
 
@@ -178,12 +133,9 @@ export function ContractHelpSection({ showCompact = false }: ContractHelpSection
             </AccordionTrigger>
             <AccordionContent className="text-sm text-muted-foreground">
               <ul className="space-y-2">
-                <li><Badge className="bg-slate-500">📝 Rascunho</Badge> - Contrato sendo editado</li>
-                <li><Badge className="bg-blue-500">📤 Enviado</Badge> - Aguardando visualização</li>
-                <li><Badge className="bg-amber-500">👁️ Visualizado</Badge> - Cliente abriu o contrato</li>
-                <li><Badge className="bg-green-500">✅ Assinado</Badge> - Contrato finalizado</li>
-                <li><Badge className="bg-red-500">❌ Cancelado</Badge> - Contrato cancelado</li>
-                <li><Badge className="bg-gray-500">⏰ Expirado</Badge> - Prazo encerrado</li>
+                <li><strong>📝 Rascunho</strong> - Contrato sendo editado</li>
+                <li><strong>✅ Assinado</strong> - Contrato finalizado</li>
+                <li><strong>❌ Cancelado</strong> - Contrato cancelado</li>
               </ul>
             </AccordionContent>
           </AccordionItem>
@@ -195,7 +147,7 @@ export function ContractHelpSection({ showCompact = false }: ContractHelpSection
           <AlertTitle>Dica importante</AlertTitle>
           <AlertDescription className="text-sm">
             Certifique-se de preencher todos os campos obrigatórios (nome, e-mail, CNPJ/CPF) 
-            antes de gerar ou enviar o contrato. Dados incompletos podem invalidar o documento.
+            antes de gerar o contrato. Dados incompletos podem invalidar o documento.
           </AlertDescription>
         </Alert>
       </CardContent>
