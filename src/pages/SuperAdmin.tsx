@@ -32,7 +32,10 @@ import {
   Loader2,
   Copy,
   Settings,
-  Plus
+  Plus,
+  AlertTriangle,
+  CreditCard,
+  DollarSign
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -44,11 +47,15 @@ export default function SuperAdmin() {
   const {
     agencies,
     auditLogs,
+    subscriptions,
     stats,
+    financialStats,
     isLoadingAgencies,
     isLoadingLogs,
+    isLoadingSubscriptions,
     refetchAgencies,
     refetchLogs,
+    refetchSubscriptions,
     approveAgency,
     suspendAgency,
     reactivateAgency,
@@ -196,6 +203,7 @@ export default function SuperAdmin() {
               onClick={() => {
                 refetchAgencies();
                 refetchLogs();
+                refetchSubscriptions();
                 fetchRegistrations();
               }}
             >
@@ -207,7 +215,7 @@ export default function SuperAdmin() {
       </header>
 
       <main className="container mx-auto px-6 py-8 space-y-8">
-        {/* Stats Cards */}
+        {/* Stats Cards - Row 1: Agencies */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
           <Card className="bg-card/50 border-border/40">
             <CardContent className="p-4">
@@ -294,6 +302,61 @@ export default function SuperAdmin() {
           </Card>
         </div>
 
+        {/* Stats Cards - Row 2: Financial */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card className={`border-border/40 ${financialStats.overdue > 0 ? 'bg-red-500/10 border-red-500/30' : 'bg-card/50'}`}>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <AlertTriangle className={`h-5 w-5 ${financialStats.overdue > 0 ? 'text-red-500' : 'text-muted-foreground'}`} />
+                <div>
+                  <p className={`text-2xl font-bold ${financialStats.overdue > 0 ? 'text-red-500' : ''}`}>
+                    {financialStats.overdue}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Inadimplentes</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className={`border-border/40 ${financialStats.trialExpiringSoon > 0 ? 'bg-amber-500/10 border-amber-500/30' : 'bg-card/50'}`}>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <Clock className={`h-5 w-5 ${financialStats.trialExpiringSoon > 0 ? 'text-amber-500' : 'text-muted-foreground'}`} />
+                <div>
+                  <p className={`text-2xl font-bold ${financialStats.trialExpiringSoon > 0 ? 'text-amber-500' : ''}`}>
+                    {financialStats.trialExpiringSoon}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Trial Expirando</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-card/50 border-border/40">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <CreditCard className="h-5 w-5 text-emerald-500" />
+                <div>
+                  <p className="text-2xl font-bold">{financialStats.activeSubscriptions}</p>
+                  <p className="text-xs text-muted-foreground">Assinaturas Ativas</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-card/50 border-border/40">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <DollarSign className="h-5 w-5 text-cyan-500" />
+                <div>
+                  <p className="text-2xl font-bold">{financialStats.trialSubscriptions}</p>
+                  <p className="text-xs text-muted-foreground">Em Trial</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Main Content */}
         <Tabs defaultValue="registrations" className="space-y-6">
           <TabsList className="bg-muted/50">
@@ -306,6 +369,14 @@ export default function SuperAdmin() {
               )}
             </TabsTrigger>
             <TabsTrigger value="agencies">Agências</TabsTrigger>
+            <TabsTrigger value="financial" className="relative">
+              Financeiro
+              {financialStats.overdue > 0 && (
+                <span className="ml-2 px-2 py-0.5 text-xs bg-red-500 text-white rounded-full">
+                  {financialStats.overdue}
+                </span>
+              )}
+            </TabsTrigger>
             <TabsTrigger value="logs">Logs de Auditoria</TabsTrigger>
           </TabsList>
 
@@ -532,6 +603,132 @@ export default function SuperAdmin() {
                         <TableRow>
                           <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                             Nenhuma agência encontrada
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Financeiro */}
+          <TabsContent value="financial" className="space-y-4">
+            <Card className="border-border/40">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <CreditCard className="h-5 w-5" />
+                  Assinaturas e Inadimplência
+                </CardTitle>
+                <CardDescription>
+                  Controle financeiro de todas as agências
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isLoadingSubscriptions ? (
+                  <div className="space-y-3">
+                    {[1, 2, 3].map((i) => (
+                      <Skeleton key={i} className="h-16 w-full" />
+                    ))}
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Agência</TableHead>
+                        <TableHead>Plano</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Vencimento</TableHead>
+                        <TableHead className="text-center">Usuários</TableHead>
+                        <TableHead className="text-center">Clientes</TableHead>
+                        <TableHead className="text-right">Ações</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {subscriptions?.map((sub) => {
+                        const now = new Date();
+                        const periodEnd = sub.current_period_end ? new Date(sub.current_period_end) : null;
+                        const trialEnd = sub.trial_ends_at ? new Date(sub.trial_ends_at) : null;
+                        const isOverdue = periodEnd && periodEnd < now && sub.subscription_status !== "cancelled";
+                        const isTrialExpiring = sub.subscription_status === "trial" && trialEnd && 
+                          trialEnd > now && trialEnd <= new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+                        
+                        return (
+                          <TableRow key={sub.agency_id} className={isOverdue ? "bg-red-500/5" : isTrialExpiring ? "bg-amber-500/5" : ""}>
+                            <TableCell>
+                              <div>
+                                <p className="font-medium">{sub.agency_name}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {sub.agency_status === "active" ? "Ativa" : sub.agency_status === "suspended" ? "Suspensa" : sub.agency_status}
+                                </p>
+                              </div>
+                            </TableCell>
+                            <TableCell>{sub.plan_name || "—"}</TableCell>
+                            <TableCell>
+                              {sub.subscription_status === "active" && (
+                                <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">Ativa</Badge>
+                              )}
+                              {sub.subscription_status === "trial" && (
+                                <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">Trial</Badge>
+                              )}
+                              {sub.subscription_status === "cancelled" && (
+                                <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30">Cancelada</Badge>
+                              )}
+                              {sub.subscription_status === "past_due" && (
+                                <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Vencida</Badge>
+                              )}
+                              {isOverdue && sub.subscription_status !== "past_due" && (
+                                <Badge className="bg-red-500/20 text-red-400 border-red-500/30 ml-1">Inadimplente</Badge>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {sub.subscription_status === "trial" && trialEnd ? (
+                                <div className={isTrialExpiring ? "text-amber-500 font-medium" : ""}>
+                                  <p className="text-sm">Trial até</p>
+                                  <p className="text-sm">{format(trialEnd, "dd/MM/yyyy", { locale: ptBR })}</p>
+                                </div>
+                              ) : periodEnd ? (
+                                <div className={isOverdue ? "text-red-500 font-medium" : ""}>
+                                  <p className="text-sm">{format(periodEnd, "dd/MM/yyyy", { locale: ptBR })}</p>
+                                  {isOverdue && (
+                                    <p className="text-xs">Vencido há {Math.floor((now.getTime() - periodEnd.getTime()) / (1000 * 60 * 60 * 24))} dias</p>
+                                  )}
+                                </div>
+                              ) : (
+                                "—"
+                              )}
+                            </TableCell>
+                            <TableCell className="text-center">{sub.members_count}</TableCell>
+                            <TableCell className="text-center">{sub.clients_count}</TableCell>
+                            <TableCell>
+                              <div className="flex items-center justify-end gap-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => navigate(`/admin/agencia/${sub.agency_id}`)}
+                                >
+                                  <Settings className="h-4 w-4 mr-1" />
+                                  Editar
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => impersonateAgency.mutate(sub.agency_id)}
+                                  disabled={impersonateAgency.isPending}
+                                >
+                                  <LogIn className="h-4 w-4 mr-1" />
+                                  Entrar
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                      {(!subscriptions || subscriptions.length === 0) && (
+                        <TableRow>
+                          <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                            Nenhuma assinatura encontrada
                           </TableCell>
                         </TableRow>
                       )}
