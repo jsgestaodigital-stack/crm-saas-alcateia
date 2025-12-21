@@ -264,6 +264,101 @@ export type Database = {
           },
         ]
       }
+      agency_plan_history: {
+        Row: {
+          agency_id: string
+          change_type: string
+          created_at: string
+          effective_at: string
+          id: string
+          initiated_by: string | null
+          initiated_by_name: string | null
+          metadata: Json | null
+          new_plan_id: string | null
+          new_plan_name: string | null
+          new_plan_slug: string | null
+          new_price: number | null
+          previous_plan_id: string | null
+          previous_plan_name: string | null
+          previous_plan_slug: string | null
+          previous_price: number | null
+          reason: string | null
+          stripe_event_id: string | null
+          subscription_id: string | null
+        }
+        Insert: {
+          agency_id: string
+          change_type: string
+          created_at?: string
+          effective_at?: string
+          id?: string
+          initiated_by?: string | null
+          initiated_by_name?: string | null
+          metadata?: Json | null
+          new_plan_id?: string | null
+          new_plan_name?: string | null
+          new_plan_slug?: string | null
+          new_price?: number | null
+          previous_plan_id?: string | null
+          previous_plan_name?: string | null
+          previous_plan_slug?: string | null
+          previous_price?: number | null
+          reason?: string | null
+          stripe_event_id?: string | null
+          subscription_id?: string | null
+        }
+        Update: {
+          agency_id?: string
+          change_type?: string
+          created_at?: string
+          effective_at?: string
+          id?: string
+          initiated_by?: string | null
+          initiated_by_name?: string | null
+          metadata?: Json | null
+          new_plan_id?: string | null
+          new_plan_name?: string | null
+          new_plan_slug?: string | null
+          new_price?: number | null
+          previous_plan_id?: string | null
+          previous_plan_name?: string | null
+          previous_plan_slug?: string | null
+          previous_price?: number | null
+          reason?: string | null
+          stripe_event_id?: string | null
+          subscription_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agency_plan_history_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agency_plan_history_new_plan_id_fkey"
+            columns: ["new_plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agency_plan_history_previous_plan_id_fkey"
+            columns: ["previous_plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agency_plan_history_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agency_sensitive_data: {
         Row: {
           agency_id: string
