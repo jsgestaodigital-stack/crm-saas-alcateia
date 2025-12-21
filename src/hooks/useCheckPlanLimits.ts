@@ -32,7 +32,7 @@ export function useCheckPlanLimits() {
   
   const isSuperAdmin = permissions.isSuperAdmin;
   
-  // Build agency object from subscription data
+  // Build agency object from subscription data (unificado com o banco)
   const agency: Agency | null = subscription?.plan ? {
     id: subscription.agency_id,
     name: '',
@@ -44,7 +44,8 @@ export function useCheckPlanLimits() {
       max_leads: subscription.plan.max_leads,
       max_recurring_clients: subscription.plan.max_recurring_clients,
       storage_mb: subscription.plan.storage_mb,
-      features: (subscription.plan as any).features || {},
+      // Features vêm diretamente do JSONB do banco
+      features: subscription.plan.features || {},
     },
   } : null;
   

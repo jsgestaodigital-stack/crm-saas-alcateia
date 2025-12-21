@@ -3,17 +3,23 @@
  * 
  * Use esta função antes de criar novos recursos (clientes, leads, membros, etc.)
  * para garantir que a agência não exceda os limites do seu plano.
+ * 
+ * IMPORTANTE: Todos os valores vêm diretamente do banco de dados.
+ * - Limites numéricos: max_users, max_clients, max_leads, max_recurring_clients, storage_mb
+ * - Features (JSONB): funil_tarefas, automacoes, comissoes, etc.
+ * - limite_tarefas_mes está dentro do JSONB features
  */
 
+// Limites numéricos (colunas diretas da tabela plans)
 export interface PlanLimits {
   max_users: number;
   max_clients: number;
   max_leads: number;
   max_recurring_clients: number;
   storage_mb: number;
-  limite_tarefas_mes: number;
 }
 
+// Features booleanas e limite_tarefas_mes (JSONB da tabela plans)
 export interface PlanFeatures {
   funil_tarefas?: boolean;
   funil_avancado?: boolean;
@@ -31,9 +37,10 @@ export interface PlanFeatures {
   suporte_prioritario?: boolean;
   suporte_whatsapp?: boolean;
   acesso_antecipado?: boolean;
-  limite_tarefas_mes?: number;
+  limite_tarefas_mes?: number; // Número de tarefas mensais permitidas
 }
 
+// Estrutura do plano como vem do banco
 export interface AgencyPlan {
   name: string;
   slug: string;
@@ -45,16 +52,18 @@ export interface AgencyPlan {
   features: PlanFeatures;
 }
 
+// Agência com plano
 export interface Agency {
   id: string;
   name: string;
   plan?: AgencyPlan | null;
 }
 
+// Resultado da validação de limite
 export interface LimitCheckResult {
   valid: boolean;
   message?: string;
-  limitType?: keyof PlanLimits;
+  limitType?: keyof PlanLimits | 'limite_tarefas_mes';
   currentValue?: number;
   maxValue?: number;
 }
