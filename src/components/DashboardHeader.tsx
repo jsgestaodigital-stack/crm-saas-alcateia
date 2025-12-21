@@ -122,7 +122,10 @@ export function DashboardHeader() {
                 </div>
               </div>
               <DropdownMenuSeparator className="bg-border/30" />
-              <DropdownMenuItem className="cursor-pointer gap-2 hover:bg-primary/10 focus:bg-primary/10">
+              <DropdownMenuItem 
+                className="cursor-pointer gap-2 hover:bg-primary/10 focus:bg-primary/10"
+                onClick={() => navigate("/meu-perfil")}
+              >
                 <User className="w-4 h-4" />
                 Meu Perfil
               </DropdownMenuItem>
