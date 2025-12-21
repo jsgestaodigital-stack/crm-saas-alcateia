@@ -131,7 +131,7 @@ export function AgenteSuspensoesModal({ trigger }: AgenteSuspensoesModalProps) {
             </div>
             Agente de Recuperação
             <Badge variant="outline" className="ml-2 text-[10px] border-red-500/30 text-red-400">
-              GRank AI
+              GRank CRM AI
             </Badge>
           </DialogTitle>
         </DialogHeader>
