@@ -37,7 +37,7 @@ import { VoiceCommandButton } from "@/components/VoiceCommandButton";
 import { TrashBin } from "@/components/TrashBin";
 import { Button } from "@/components/ui/button";
 import { FunnelToggle } from "@/components/FunnelToggle";
-import { OnboardingChecklist } from "@/components/onboarding";
+import { OnboardingChecklist, VisualTour } from "@/components/onboarding";
 
 import { useClientStore } from "@/stores/clientStore";
 import { useAuth } from "@/contexts/AuthContext";
@@ -253,6 +253,9 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Visual Tour */}
+      <VisualTour />
+
       {/* Confetti celebration */}
       <Confetti 
         active={showConfetti} 
@@ -261,13 +264,15 @@ const Dashboard = () => {
       />
 
       {/* Sidebar */}
-      <AppSidebar 
-        onNewClient={() => isSalesMode ? setNewLeadOpen(true) : setWizardOpen(true)} 
-        collapsed={sidebarCollapsed}
-        onCollapsedChange={setSidebarCollapsed}
-        mobileOpen={mobileMenuOpen}
-        onMobileOpenChange={setMobileMenuOpen}
-      />
+      <div data-tour="sidebar">
+        <AppSidebar 
+          onNewClient={() => isSalesMode ? setNewLeadOpen(true) : setWizardOpen(true)} 
+          collapsed={sidebarCollapsed}
+          onCollapsedChange={setSidebarCollapsed}
+          mobileOpen={mobileMenuOpen}
+          onMobileOpenChange={setMobileMenuOpen}
+        />
+      </div>
       
       {/* Main Content */}
       <div className={cn(

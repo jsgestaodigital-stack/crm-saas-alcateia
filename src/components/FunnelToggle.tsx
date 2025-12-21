@@ -61,7 +61,7 @@ export function FunnelToggle() {
 
   return (
     <TooltipProvider delayDuration={500}>
-      <div className="flex items-center bg-surface-2/50 rounded-full p-1 border border-border/50 gap-1">
+      <div data-tour="funnel-toggle" className="flex items-center bg-surface-2/50 rounded-full p-1 border border-border/50 gap-1">
         {/* Sales Button */}
         {canAccessSales && (
           <Tooltip>
