@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { 
   Lead, 
+  LeadListItem,
   LeadActivity, 
   LeadSource, 
   LostReason,
@@ -46,15 +47,16 @@ export function useLeads() {
       const from = pageNum * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
+      // Busca todos os campos para manter compatibilidade com componentes que usam email, phone, etc.
       const { data, error, count } = await supabase
         .from('leads')
-        .select(LEAD_LIST_FIELDS, { count: 'exact' })
+        .select('*', { count: 'exact' })
         .order('last_activity_at', { ascending: false })
         .range(from, to);
 
       if (error) throw error;
       
-      const newLeads = (data as unknown as Lead[]) || [];
+      const newLeads = (data ?? []) as Lead[];
       
       if (append) {
         setLeads(prev => [...prev, ...newLeads]);
