@@ -3,7 +3,6 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import {
   Select,
   SelectContent,
@@ -15,8 +14,7 @@ import { Lead, ProposalStatus, PROPOSAL_STATUS_CONFIG } from '@/types/lead';
 import { useLeads } from '@/hooks/useLeads';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
-import { FileText, Link, ExternalLink, Sparkles } from 'lucide-react';
-import { LeadProposalButton } from './LeadProposalButton';
+import { FileText, Link, ExternalLink } from 'lucide-react';
 
 interface LeadProposalTabProps {
   lead: Lead;
@@ -123,20 +121,6 @@ export function LeadProposalTab({ lead, onUpdate }: LeadProposalTabProps) {
           Marcar como Enviada
         </Button>
       )}
-
-      <Separator className="my-4" />
-
-      {/* Full Proposal System */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Sparkles className="h-4 w-4 text-primary" />
-          <span>Sistema Avançado de Propostas</span>
-        </div>
-        <LeadProposalButton lead={lead} />
-        <p className="text-xs text-muted-foreground">
-          Crie uma proposta completa com IA, blocos editáveis e link de compartilhamento.
-        </p>
-      </div>
     </div>
   );
 }
