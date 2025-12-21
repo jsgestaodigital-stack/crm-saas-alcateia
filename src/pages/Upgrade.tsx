@@ -28,7 +28,6 @@ const planBenefits: Record<string, { icon: React.ElementType; label: string }[]>
     { icon: Users, label: "Até 50 clientes ativos (3x mais)" },
     { icon: Target, label: "Até 500 leads" },
     { icon: Zap, label: "Automações por status" },
-    { icon: Building2, label: "Cobrança via Stripe" },
     { icon: Sparkles, label: "Relatórios detalhados por cliente" },
     { icon: TrendingUp, label: "Controle de comissões da equipe" },
   ],

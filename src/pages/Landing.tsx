@@ -76,7 +76,6 @@ const Landing = () => {
         "Até 5 membros",
         "Funil e tarefas avançadas",
         "Automações por status",
-        "Cobrança via Stripe",
         "Relatórios por cliente",
         "Controle de comissões",
         "Logs e auditoria",
