@@ -72,22 +72,28 @@ export function ImpersonateBanner() {
   if (!isSuperAdmin || !currentAgency) return null;
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-[100] bg-amber-500 text-amber-950 py-2 px-4 flex items-center justify-center gap-4 text-sm font-medium shadow-lg">
-      <div className="flex items-center gap-2">
-        <Shield className="h-4 w-4" />
-        <span>Modo Super Admin ativo como:</span>
-        <span className="font-bold">{currentAgency.name}</span>
+    <>
+      {/* Spacer to prevent content from being hidden behind the banner */}
+      <div className="h-12 sm:h-10" />
+      <div className="fixed top-0 left-0 right-0 z-[100] bg-amber-500 text-amber-950 py-2 px-3 sm:px-4 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm font-medium shadow-lg">
+        <div className="flex items-center gap-2 text-center">
+          <Shield className="h-4 w-4 shrink-0" />
+          <span className="hidden sm:inline">Modo Super Admin ativo como:</span>
+          <span className="sm:hidden">Super Admin:</span>
+          <span className="font-bold truncate max-w-[120px] sm:max-w-none">{currentAgency.name}</span>
+        </div>
+        <Button
+          size="sm"
+          variant="outline"
+          className="bg-white/20 border-amber-700/30 text-amber-950 hover:bg-white/30 text-xs sm:text-sm h-7 sm:h-8"
+          onClick={handleExitImpersonate}
+          disabled={isExiting}
+        >
+          <LogOut className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+          <span className="hidden sm:inline">Voltar ao Super Admin</span>
+          <span className="sm:hidden">Sair</span>
+        </Button>
       </div>
-      <Button
-        size="sm"
-        variant="outline"
-        className="bg-white/20 border-amber-700/30 text-amber-950 hover:bg-white/30"
-        onClick={handleExitImpersonate}
-        disabled={isExiting}
-      >
-        <LogOut className="h-4 w-4 mr-1" />
-        Voltar ao Super Admin
-      </Button>
-    </div>
+    </>
   );
 }
