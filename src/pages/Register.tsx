@@ -19,8 +19,11 @@ import {
   Users,
   Target,
   BarChart3,
-  Clock,
   ArrowRight,
+  Lock,
+  Eye,
+  EyeOff,
+  Gift,
 } from "lucide-react";
 import grankLogo from "@/assets/grank-logo.png";
 
@@ -41,6 +44,13 @@ const registerSchema = z.object({
       (val) => !val || /^\(?[1-9]{2}\)?\s?9?\d{4}-?\d{4}$/.test(val.replace(/\s/g, "")),
       "Formato inválido. Use (11) 99999-9999"
     ),
+  password: z.string()
+    .min(6, "Senha deve ter pelo menos 6 caracteres")
+    .max(72, "Senha muito longa"),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "As senhas não coincidem",
+  path: ["confirmPassword"],
 });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
@@ -49,11 +59,15 @@ export default function Register() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState<RegisterFormData>({
     agencyName: "",
     ownerName: "",
     ownerEmail: "",
     ownerPhone: "",
+    password: "",
+    confirmPassword: "",
   });
   const [errors, setErrors] = useState<Partial<Record<keyof RegisterFormData, string>>>({});
 
@@ -87,31 +101,49 @@ export default function Register() {
     try {
       const slug = generateSlug(formData.agencyName);
 
-      // Insert pending registration
-      const { error } = await supabase
-        .from("pending_registrations")
-        .insert({
-          agency_name: formData.agencyName.trim(),
-          agency_slug: slug,
-          owner_name: formData.ownerName.trim(),
-          owner_email: formData.ownerEmail.trim().toLowerCase(),
-          owner_phone: formData.ownerPhone?.trim() || null,
-          status: "pending",
-        });
+      // Call auto-register edge function
+      const { data, error } = await supabase.functions.invoke("auto-register-agency", {
+        body: {
+          agencyName: formData.agencyName.trim(),
+          agencySlug: slug,
+          ownerName: formData.ownerName.trim(),
+          ownerEmail: formData.ownerEmail.trim().toLowerCase(),
+          ownerPhone: formData.ownerPhone?.trim() || null,
+          password: formData.password,
+        },
+      });
 
       if (error) {
-        if (error.code === "23505") {
-          toast.error("Já existe uma solicitação com esse nome de agência ou email");
-        } else {
-          console.error("Registration error:", error);
-          toast.error("Erro ao enviar solicitação: " + error.message);
-        }
+        console.error("Registration error:", error);
+        toast.error("Erro ao criar conta: " + error.message);
+        setIsLoading(false);
+        return;
+      }
+
+      if (!data.success) {
+        toast.error(data.error || "Erro ao criar conta");
         setIsLoading(false);
         return;
       }
 
       setIsSuccess(true);
-      toast.success("Solicitação enviada com sucesso!");
+      toast.success("Conta criada com sucesso! Redirecionando...");
+      
+      // Auto-login the user
+      setTimeout(async () => {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: formData.ownerEmail.trim().toLowerCase(),
+          password: formData.password,
+        });
+
+        if (signInError) {
+          console.error("Auto-login error:", signInError);
+          navigate("/auth");
+        } else {
+          navigate("/");
+        }
+      }, 2000);
+      
     } catch (err) {
       console.error("Unexpected error:", err);
       toast.error("Erro inesperado. Tente novamente.");
@@ -130,9 +162,9 @@ export default function Register() {
               <div className="mx-auto w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center animate-fade-in-scale">
                 <CheckCircle className="w-12 h-12 text-primary" />
               </div>
-              <CardTitle className="text-2xl">Solicitação Enviada!</CardTitle>
+              <CardTitle className="text-2xl">Conta Criada com Sucesso!</CardTitle>
               <CardDescription className="text-base">
-                Sua solicitação de cadastro foi recebida com sucesso.
+                Seu teste grátis de 14 dias foi ativado.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -161,47 +193,24 @@ export default function Register() {
                 </div>
               </div>
 
-              {/* What Happens Next */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-primary" />
-                  Próximos Passos
-                </h3>
-                <div className="space-y-2">
-                  {[
-                    { step: 1, text: "Nossa equipe irá analisar sua solicitação" },
-                    { step: 2, text: "Você receberá um email com suas credenciais" },
-                    { step: 3, text: "Acesse o sistema e configure sua agência" },
-                  ].map(({ step, text }) => (
-                    <div key={step} className="flex items-center gap-3 text-sm">
-                      <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
-                        {step}
-                      </div>
-                      <span className="text-muted-foreground">{text}</span>
-                    </div>
-                  ))}
+              {/* Trial Info */}
+              <div className="bg-primary/10 rounded-lg p-4 border border-primary/20">
+                <div className="flex items-center gap-3">
+                  <Gift className="w-6 h-6 text-primary" />
+                  <div>
+                    <p className="font-semibold text-foreground">Teste Grátis Ativado!</p>
+                    <p className="text-sm text-muted-foreground">
+                      Você tem 14 dias para explorar todas as funcionalidades.
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              {/* Estimated Time */}
-              <div className="bg-status-info/10 rounded-lg p-3 border border-status-info/20">
-                <p className="text-sm text-status-info flex items-center gap-2">
-                  <Sparkles className="w-4 h-4" />
-                  <span>
-                    <strong>Tempo estimado:</strong> até 24 horas úteis
-                  </span>
-                </p>
+              {/* Loading indicator */}
+              <div className="flex items-center justify-center gap-2 text-muted-foreground">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span className="text-sm">Entrando no sistema...</span>
               </div>
-
-              {/* Action Button */}
-              <Button
-                variant="outline"
-                className="w-full gap-2"
-                onClick={() => navigate("/auth")}
-              >
-                Ir para Login
-                <ArrowRight className="w-4 h-4" />
-              </Button>
             </CardContent>
           </Card>
         </div>
@@ -222,11 +231,33 @@ export default function Register() {
               className="h-16 object-contain mb-6"
             />
             <h1 className="text-3xl font-bold text-foreground mb-3">
-              CRM completo para sua agência
+              Comece seu teste grátis
             </h1>
             <p className="text-muted-foreground text-lg">
-              Gerencie leads, clientes e entregas em uma única plataforma inteligente.
+              14 dias para experimentar o CRM completo para sua agência. Sem compromisso.
             </p>
+          </div>
+
+          {/* Trial Benefits */}
+          <div className="bg-primary/5 rounded-xl p-5 border border-primary/20">
+            <div className="flex items-center gap-2 mb-4">
+              <Gift className="w-5 h-5 text-primary" />
+              <span className="font-semibold text-foreground">No teste grátis você tem:</span>
+            </div>
+            <ul className="space-y-2">
+              {[
+                "Até 3 usuários",
+                "100 leads no funil",
+                "20 clientes ativos",
+                "Agentes de IA inclusos",
+                "Suporte por chat",
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <CheckCircle className="w-4 h-4 text-primary" />
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
 
           <div className="space-y-4">
@@ -258,14 +289,18 @@ export default function Register() {
               className="h-12 mx-auto object-contain lg:hidden"
             />
             <div>
-              <CardTitle className="text-2xl">Cadastre sua Agência</CardTitle>
+              <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium mb-3">
+                <Gift className="w-4 h-4" />
+                14 dias grátis
+              </div>
+              <CardTitle className="text-2xl">Crie sua Conta</CardTitle>
               <CardDescription className="text-base mt-2">
-                Preencha os dados abaixo para solicitar acesso ao sistema.
+                Acesso imediato. Sem cartão de crédito.
               </CardDescription>
             </div>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-4">
               {/* Agency Name */}
               <div className="space-y-2">
                 <Label htmlFor="agencyName" className="flex items-center gap-2">
@@ -356,6 +391,74 @@ export default function Register() {
                 )}
               </div>
 
+              {/* Password */}
+              <div className="space-y-2">
+                <Label htmlFor="password" className="flex items-center gap-2">
+                  <Lock className="w-4 h-4 text-primary" />
+                  Senha *
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Mínimo 6 caracteres"
+                    value={formData.password}
+                    onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                    disabled={isLoading}
+                    className={errors.password ? "border-destructive pr-10" : "pr-10"}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </Button>
+                </div>
+                {errors.password && (
+                  <p className="text-xs text-destructive flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {errors.password}
+                  </p>
+                )}
+              </div>
+
+              {/* Confirm Password */}
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword" className="flex items-center gap-2">
+                  <Lock className="w-4 h-4 text-primary" />
+                  Confirmar Senha *
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Digite a senha novamente"
+                    value={formData.confirmPassword}
+                    onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                    disabled={isLoading}
+                    className={errors.confirmPassword ? "border-destructive pr-10" : "pr-10"}
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </Button>
+                </div>
+                {errors.confirmPassword && (
+                  <p className="text-xs text-destructive flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {errors.confirmPassword}
+                  </p>
+                )}
+              </div>
+
               <Button
                 type="submit"
                 className="w-full gap-2"
@@ -364,11 +467,11 @@ export default function Register() {
                 {isLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Enviando...
+                    Criando conta...
                   </>
                 ) : (
                   <>
-                    Solicitar Cadastro
+                    Começar Teste Grátis
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
