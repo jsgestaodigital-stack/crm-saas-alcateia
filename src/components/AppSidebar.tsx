@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { LayoutGrid, Table, Calendar, Clock, LayoutDashboard, ClipboardList, Plus, Shield, ChevronLeft, ChevronRight, Zap, Target, AlertTriangle, TrendingUp, X, DollarSign, MessageCircleQuestion, Flame, CalendarClock, Search, FileText, CalendarCheck, RefreshCw, CheckCircle2, Users, Lightbulb, Bell, History, FileSignature } from "lucide-react";
+import { LayoutGrid, Table, Calendar, Clock, LayoutDashboard, ClipboardList, Plus, Shield, ChevronLeft, ChevronRight, Zap, Target, AlertTriangle, TrendingUp, X, DollarSign, MessageCircleQuestion, Flame, CalendarClock, Search, FileText, CalendarCheck, RefreshCw, CheckCircle2, Users, Lightbulb, Bell, History, FileSignature, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useClientStore } from "@/stores/clientStore";
@@ -472,6 +472,23 @@ export function AppSidebar({
                 </TooltipTrigger>
                 <TooltipContent side="right" className="glass">
                   <p className="font-medium">Gestão de Equipe</p>
+                </TooltipContent>
+              </Tooltip>
+
+              {/* Dashboard Gerencial (BI) */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" className={cn("w-full justify-start gap-2 h-9 transition-all", collapsed ? "px-3 justify-center" : "px-3", location.pathname === "/dashboard-gerencial" ? "bg-primary/10 text-primary" : "hover:bg-primary/5 hover:text-primary")} onClick={() => {
+                    navigate("/dashboard-gerencial");
+                    onMobileOpenChange(false);
+                  }}>
+                    <BarChart3 className="h-4 w-4 shrink-0" />
+                    {!collapsed && <span className="text-sm">Dashboard BI</span>}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="glass">
+                  <p className="font-medium">Dashboard Gerencial</p>
+                  <p className="text-xs text-muted-foreground">Business Intelligence</p>
                 </TooltipContent>
               </Tooltip>
 
