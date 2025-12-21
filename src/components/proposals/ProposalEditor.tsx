@@ -33,7 +33,9 @@ import {
   Plus,
   Eye,
   Link,
-  Wand2
+  Wand2,
+  ClipboardCopy,
+  Check
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -44,7 +46,7 @@ interface ProposalEditorProps {
   templates: ProposalTemplate[];
   onSave: (data: Partial<Proposal>) => Promise<void>;
   onSend?: () => Promise<void>;
-  onGenerateAI?: (prompt: string) => Promise<ProposalBlock[] | null>;
+  onGenerateAI?: (prompt: string, keywords?: string) => Promise<ProposalBlock[] | null>;
   isGenerating?: boolean;
 }
 
@@ -74,18 +76,30 @@ export function ProposalEditor({
   const [paymentMethod, setPaymentMethod] = useState(proposal?.payment_method || '');
   const [discountReason, setDiscountReason] = useState(proposal?.discount_reason || '');
   const [validUntil, setValidUntil] = useState(proposal?.valid_until || '');
+  const [keywords, setKeywords] = useState(lead?.main_category || '');
   
   const [aiPrompt, setAiPrompt] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [copiedAll, setCopiedAll] = useState(false);
 
   // Variables for template replacement
   const variables: Record<string, string> = {
     nome_cliente: clientName,
     nome_empresa: companyName,
     cidade: city,
-    palavras_chave: lead?.main_category || '',
+    palavras_chave: keywords,
     responsavel: lead?.responsible || ''
   };
+
+  // Payment methods options
+  const PAYMENT_METHODS = [
+    { value: 'pix', label: 'PIX' },
+    { value: 'boleto', label: 'Boleto Bancário' },
+    { value: 'cartao_credito', label: 'Cartão de Crédito' },
+    { value: 'cartao_debito', label: 'Cartão de Débito' },
+    { value: 'transferencia', label: 'Transferência Bancária' },
+    { value: 'dinheiro', label: 'Dinheiro' },
+  ];
 
   // Calculate installment value
   const installmentValue = discountedPrice && installments 
@@ -134,7 +148,7 @@ export function ProposalEditor({
   const handleGenerateWithAI = async () => {
     if (!onGenerateAI || !aiPrompt.trim()) return;
     
-    const generatedBlocks = await onGenerateAI(aiPrompt);
+    const generatedBlocks = await onGenerateAI(aiPrompt, keywords);
     if (generatedBlocks) {
       setBlocks(generatedBlocks);
       toast.success('Proposta gerada com IA!');
@@ -175,6 +189,67 @@ export function ProposalEditor({
       const url = `${window.location.origin}/proposta/${proposal.public_token}`;
       navigator.clipboard.writeText(url);
       toast.success('Link copiado!');
+    }
+  };
+
+  // Generate full proposal text for copying
+  const getFullProposalText = () => {
+    const sortedBlocks = [...blocks].sort((a, b) => a.order - b.order);
+    
+    let text = `${title}\n`;
+    text += `${'='.repeat(40)}\n\n`;
+    
+    if (companyName) text += `Empresa: ${companyName}\n`;
+    if (clientName) text += `Cliente: ${clientName}\n`;
+    if (city) text += `Cidade: ${city}\n`;
+    if (keywords) text += `Palavras-chave: ${keywords}\n`;
+    text += '\n';
+
+    sortedBlocks.forEach(block => {
+      text += `${block.title}\n`;
+      text += `${'-'.repeat(30)}\n`;
+      
+      if (block.type === 'scope' && block.checklist) {
+        block.checklist.forEach(item => {
+          text += `✓ ${item}\n`;
+        });
+      } else if (block.type === 'investment') {
+        if (fullPrice) text += `Valor: R$ ${fullPrice}\n`;
+        if (discountedPrice && discountedPrice !== fullPrice) {
+          text += `Valor promocional: R$ ${discountedPrice}\n`;
+        }
+        if (installments && installmentValue) {
+          text += `Ou ${installments}x de R$ ${installmentValue}\n`;
+        }
+        if (paymentMethod) {
+          const method = PAYMENT_METHODS.find(m => m.value === paymentMethod);
+          text += `Forma de pagamento: ${method?.label || paymentMethod}\n`;
+        }
+      } else if (block.content) {
+        let content = block.content;
+        Object.entries(variables).forEach(([key, value]) => {
+          content = content.replace(new RegExp(`{{${key}}}`, 'g'), value || `{{${key}}}`);
+        });
+        text += `${content}\n`;
+      }
+      text += '\n';
+    });
+
+    if (validUntil) {
+      text += `\nProposta válida até: ${new Date(validUntil).toLocaleDateString('pt-BR')}\n`;
+    }
+
+    return text;
+  };
+
+  const handleCopyFullProposal = async () => {
+    try {
+      await navigator.clipboard.writeText(getFullProposalText());
+      setCopiedAll(true);
+      toast.success('Proposta completa copiada!');
+      setTimeout(() => setCopiedAll(false), 2000);
+    } catch (err) {
+      toast.error('Erro ao copiar proposta');
     }
   };
 
@@ -274,6 +349,14 @@ export function ProposalEditor({
                   placeholder="(00) 00000-0000"
                 />
               </div>
+              <div className="md:col-span-2">
+                <Label className="text-xs text-muted-foreground">Palavras-chave Principais</Label>
+                <Input
+                  value={keywords}
+                  onChange={(e) => setKeywords(e.target.value)}
+                  placeholder="Ex: advogado, dentista, restaurante italiano"
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -342,6 +425,32 @@ export function ProposalEditor({
               />
             ))}
           </div>
+
+          {/* Copy Full Proposal Button */}
+          {blocks.length > 0 && (
+            <Card className="border-2 border-dashed border-primary/30 bg-primary/5">
+              <CardContent className="py-4">
+                <Button 
+                  onClick={handleCopyFullProposal}
+                  className="w-full gap-2"
+                  variant="outline"
+                  size="lg"
+                >
+                  {copiedAll ? (
+                    <>
+                      <Check className="h-5 w-5 text-green-500" />
+                      Proposta Copiada!
+                    </>
+                  ) : (
+                    <>
+                      <ClipboardCopy className="h-5 w-5" />
+                      Copiar Proposta Completa
+                    </>
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
 
@@ -373,14 +482,6 @@ export function ProposalEditor({
                 placeholder="R$ 0,00"
               />
             </div>
-            <div>
-              <Label className="text-xs text-muted-foreground">Motivo do Desconto</Label>
-              <Input
-                value={discountReason}
-                onChange={(e) => setDiscountReason(e.target.value)}
-                placeholder="Ex: Desconto de lançamento"
-              />
-            </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
                 <Label className="text-xs text-muted-foreground">Parcelas</Label>
@@ -403,11 +504,18 @@ export function ProposalEditor({
             </div>
             <div>
               <Label className="text-xs text-muted-foreground">Forma de Pagamento</Label>
-              <Input
-                value={paymentMethod}
-                onChange={(e) => setPaymentMethod(e.target.value)}
-                placeholder="Ex: Pix, Boleto, Cartão"
-              />
+              <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {PAYMENT_METHODS.map((method) => (
+                    <SelectItem key={method.value} value={method.value}>
+                      {method.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
         </Card>
