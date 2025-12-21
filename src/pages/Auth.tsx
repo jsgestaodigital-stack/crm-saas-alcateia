@@ -91,7 +91,20 @@ export default function Auth() {
   useEffect(() => {
     const checkAuthAndStatus = async () => {
       if (!authLoading && user) {
-        if (authMode === 'reset-password') return; // stay on page to allow password update
+        // Check URL directly to prevent race condition with authMode state
+        const params = new URLSearchParams(location.search);
+        const mode = params.get('mode');
+        const hash = location.hash || '';
+        const isPasswordReset = mode === 'reset' || 
+                                 hash.includes('type=recovery') || 
+                                 hash.includes('access_token=') ||
+                                 authMode === 'reset-password';
+        
+        if (isPasswordReset) {
+          // Stay on page to allow password update
+          setAuthMode('reset-password');
+          return;
+        }
 
         // Verificar status do usuário (bloqueado ou email não verificado)
         const status = await checkUserStatus();
