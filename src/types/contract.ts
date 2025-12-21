@@ -97,6 +97,13 @@ export interface Contract {
   client_signed_at?: string;
   client_ip_address?: string;
   
+  // Autentique integration
+  autentique_document_id?: string;
+  autentique_document_url?: string;
+  autentique_sign_url?: string;
+  autentique_status?: string;
+  pdf_url?: string;
+  
   // Audit
   created_by: string;
   created_at: string;

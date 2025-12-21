@@ -1045,6 +1045,44 @@ export type Database = {
           },
         ]
       }
+      contract_events: {
+        Row: {
+          contract_id: string | null
+          created_at: string | null
+          event_type: string
+          id: string
+          ip_address: unknown
+          payload: Json | null
+          user_agent: string | null
+        }
+        Insert: {
+          contract_id?: string | null
+          created_at?: string | null
+          event_type: string
+          id?: string
+          ip_address?: unknown
+          payload?: Json | null
+          user_agent?: string | null
+        }
+        Update: {
+          contract_id?: string | null
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          ip_address?: unknown
+          payload?: Json | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contract_events_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contract_templates: {
         Row: {
           agency_id: string
@@ -1139,6 +1177,10 @@ export type Database = {
       contracts: {
         Row: {
           agency_id: string
+          autentique_document_id: string | null
+          autentique_document_url: string | null
+          autentique_sign_url: string | null
+          autentique_status: string | null
           auto_renewal: boolean | null
           billing_cycle: string | null
           clauses: Json
@@ -1176,6 +1218,7 @@ export type Database = {
           last_viewed_at: string | null
           lead_id: string | null
           payment_method: string | null
+          pdf_url: string | null
           proposal_id: string | null
           public_token: string | null
           public_url: string | null
@@ -1190,6 +1233,10 @@ export type Database = {
         }
         Insert: {
           agency_id: string
+          autentique_document_id?: string | null
+          autentique_document_url?: string | null
+          autentique_sign_url?: string | null
+          autentique_status?: string | null
           auto_renewal?: boolean | null
           billing_cycle?: string | null
           clauses?: Json
@@ -1227,6 +1274,7 @@ export type Database = {
           last_viewed_at?: string | null
           lead_id?: string | null
           payment_method?: string | null
+          pdf_url?: string | null
           proposal_id?: string | null
           public_token?: string | null
           public_url?: string | null
@@ -1241,6 +1289,10 @@ export type Database = {
         }
         Update: {
           agency_id?: string
+          autentique_document_id?: string | null
+          autentique_document_url?: string | null
+          autentique_sign_url?: string | null
+          autentique_status?: string | null
           auto_renewal?: boolean | null
           billing_cycle?: string | null
           clauses?: Json
@@ -1278,6 +1330,7 @@ export type Database = {
           last_viewed_at?: string | null
           lead_id?: string | null
           payment_method?: string | null
+          pdf_url?: string | null
           proposal_id?: string | null
           public_token?: string | null
           public_url?: string | null
