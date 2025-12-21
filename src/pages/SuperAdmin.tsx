@@ -30,10 +30,13 @@ import {
   Mail,
   Phone,
   Loader2,
-  Copy
+  Copy,
+  Settings,
+  Plus
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { CreateAgencyModal } from "@/components/agency/CreateAgencyModal";
 
 export default function SuperAdmin() {
   const navigate = useNavigate();
@@ -418,14 +421,17 @@ export default function SuperAdmin() {
           {/* Agências */}
           <TabsContent value="agencies" className="space-y-4">
             <Card className="border-border/40">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Building2 className="h-5 w-5" />
-                  Todas as Agências
-                </CardTitle>
-                <CardDescription>
-                  Gerencie todas as agências da plataforma
-                </CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Building2 className="h-5 w-5" />
+                    Todas as Agências
+                  </CardTitle>
+                  <CardDescription>
+                    Gerencie todas as agências da plataforma
+                  </CardDescription>
+                </div>
+                <CreateAgencyModal onSuccess={() => refetchAgencies()} />
               </CardHeader>
               <CardContent>
                 {isLoadingAgencies ? (
@@ -501,6 +507,14 @@ export default function SuperAdmin() {
                                   Reativar
                                 </Button>
                               )}
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => navigate(`/admin/agencia/${agency.id}`)}
+                              >
+                                <Settings className="h-4 w-4 mr-1" />
+                                Editar
+                              </Button>
                               <Button
                                 size="sm"
                                 variant="outline"

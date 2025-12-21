@@ -31,6 +31,7 @@ import Notifications from "./pages/Notifications";
 import ClientsCRM from "./pages/ClientsCRM";
 import Equipe from "./pages/Equipe";
 import Convite from "./pages/Convite";
+import AgencyDetail from "./pages/AgencyDetail";
 import NotFound from "./pages/NotFound";
 import { ImpersonateBanner } from "@/components/ImpersonateBanner";
 
@@ -64,6 +65,7 @@ const App = () => (
                       <Route path="/admin/users" element={<AdminUsers />} />
                       <Route path="/admin/plan" element={<AgencyPlan />} />
                       <Route path="/admin/audit" element={<AuditLogs />} />
+                      <Route path="/admin/agencia/:id" element={<AgencyDetail />} />
                       <Route path="/notifications" element={<Notifications />} />
                       <Route path="/super-admin" element={<SuperAdmin />} />
                       <Route path="/commissions" element={<Commissions />} />
