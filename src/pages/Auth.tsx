@@ -144,6 +144,55 @@ export default function Auth() {
     }
   };
 
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrors({});
+
+    const resetSchema = z
+      .object({
+        password: z.string().trim().min(8, { message: 'Senha deve ter pelo menos 8 caracteres' }),
+        confirmPassword: z.string().trim(),
+      })
+      .refine((v) => v.password === v.confirmPassword, {
+        message: 'As senhas não conferem',
+        path: ['confirmPassword'],
+      });
+
+    const result = resetSchema.safeParse({ password, confirmPassword });
+    if (!result.success) {
+      const fieldErrors: { password?: string; confirmPassword?: string } = {};
+      result.error.errors.forEach((err) => {
+        if (err.path[0] === 'password') fieldErrors.password = err.message;
+        if (err.path[0] === 'confirmPassword') fieldErrors.confirmPassword = err.message;
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ password });
+
+      if (error) {
+        toast.error('Link inválido ou expirado. Solicite um novo e-mail de recuperação.');
+        return;
+      }
+
+      toast.success('Senha atualizada! Faça login com a nova senha.');
+
+      // Clear URL (remove tokens/mode) and reset UI
+      navigate('/auth', { replace: true });
+      setAuthMode('login');
+      setPassword('');
+      setConfirmPassword('');
+      await supabase.auth.signOut();
+    } catch {
+      toast.error('Erro ao atualizar senha. Tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
