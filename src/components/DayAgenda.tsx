@@ -174,14 +174,17 @@ export function DayAgenda() {
     switch (viewMode) {
       case "day":
         return format(selectedDate, "EEEE, d 'de' MMMM", { locale: ptBR });
-      case "week":
+      case "week": {
         const weekStart = startOfWeek(selectedDate, { locale: ptBR });
         const weekEnd = endOfWeek(selectedDate, { locale: ptBR });
         return `${format(weekStart, "d MMM", { locale: ptBR })} - ${format(weekEnd, "d MMM", { locale: ptBR })}`;
+      }
       case "month":
         return format(selectedDate, "MMMM 'de' yyyy", { locale: ptBR });
       case "year":
         return format(selectedDate, "yyyy");
+      default:
+        return format(selectedDate, "EEEE, d 'de' MMMM", { locale: ptBR });
     }
   };
 

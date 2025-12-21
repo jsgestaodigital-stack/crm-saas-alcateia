@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { 
   Sparkles, 
   TrendingUp, 
@@ -211,7 +211,7 @@ export function AIInsightsPanel({ data, className }: AIInsightsPanelProps) {
     });
   };
 
-  const fetchAIInsights = async () => {
+  const fetchAIInsights = useCallback(async () => {
     setLoading(true);
     try {
       // Generate local insights immediately
@@ -227,11 +227,11 @@ export function AIInsightsPanel({ data, className }: AIInsightsPanelProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [data.activeLeads, data.hotLeads, data.stalledClients, data.pipelineValue, data.mrr, data.weeklyCompliance, data.pendingCommissions, data.readyToDeliver]);
 
   useEffect(() => {
     fetchAIInsights();
-  }, [data.activeLeads, data.stalledClients, data.mrr]);
+  }, [fetchAIInsights]);
 
   const highPriorityCount = insights.filter(i => i.priority === 'high').length;
 
