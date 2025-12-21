@@ -6,37 +6,38 @@ export type SubscriptionBlockStatus = 'active' | 'blocked' | 'loading';
 const BLOCKED_STATUSES = ['past_due', 'cancelled', 'expired'];
 
 export function useSubscriptionStatus() {
-  const { subscription, isLoading } = useSubscription();
+  const { subscription, features, isLoading } = useSubscription();
   const { permissions, isLoading: authLoading } = useAuth();
 
-  const isBlocked = (): boolean => {
-    // Super admins are never blocked
-    if (permissions?.isSuperAdmin) {
-      return false;
-    }
+  const isSuperAdmin = permissions?.isSuperAdmin ?? false;
+  const loading = isLoading || authLoading;
 
-    // If no subscription, consider blocked (unless still loading)
+  const backendStatus = features?.status;
+  const allowAccessWithoutSubscription =
+    backendStatus === "trial" || backendStatus === "active";
+
+  const blocked = (() => {
+    // Super admins are never blocked
+    if (isSuperAdmin) return false;
+
+    // Defensive: if subscription row is missing but backend says trial/active, allow
     if (!subscription) {
+      if (allowAccessWithoutSubscription) return false;
       return !isLoading;
     }
 
-    // Check if subscription status is in blocked list
+    // Trial is allowed
+    if (subscription.status === "trial") return false;
+
+    // Block only known inactive statuses
     return BLOCKED_STATUSES.includes(subscription.status);
-  };
-
-  const getStatus = (): SubscriptionBlockStatus => {
-    if (isLoading || authLoading) {
-      return 'loading';
-    }
-
-    return isBlocked() ? 'blocked' : 'active';
-  };
+  })();
 
   return {
-    status: getStatus(),
-    isBlocked: isBlocked(),
-    isLoading: isLoading || authLoading,
+    status: loading ? "loading" : blocked ? "blocked" : "active",
+    isBlocked: blocked,
+    isLoading: loading,
     subscription,
-    isSuperAdmin: permissions?.isSuperAdmin ?? false
+    isSuperAdmin,
   };
 }

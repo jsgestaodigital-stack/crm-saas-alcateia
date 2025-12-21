@@ -67,9 +67,27 @@ Deno.serve(async (req) => {
       throw new Error("Este email já está cadastrado. Faça login ou use outro email.");
     }
 
+    // Get default plan (Starter) to link the trial subscription
+    const { data: starterPlan, error: starterPlanError } = await supabaseClient
+      .from("plans")
+      .select("id, trial_days")
+      .eq("slug", "starter")
+      .eq("active", true)
+      .maybeSingle();
+
+    if (starterPlanError || !starterPlan?.id) {
+      console.error("Starter plan fetch error:", starterPlanError);
+      throw new Error(
+        "Não foi possível iniciar o teste grátis (plano padrão não encontrado)."
+      );
+    }
+
     // Create agency with trial status
+    const trialDays = Number(starterPlan.trial_days ?? 14);
+    const normalizedTrialDays = Number.isFinite(trialDays) && trialDays > 0 ? trialDays : 14;
+
     const trialEndDate = new Date();
-    trialEndDate.setDate(trialEndDate.getDate() + 14); // 14 days trial
+    trialEndDate.setDate(trialEndDate.getDate() + normalizedTrialDays);
 
     const { data: newAgency, error: agencyError } = await supabaseClient
       .from("agencies")
@@ -88,6 +106,26 @@ Deno.serve(async (req) => {
     if (agencyError) {
       console.error("Agency creation error:", agencyError);
       throw new Error(`Erro ao criar agência: ${agencyError.message}`);
+    }
+
+    // Create subscription row (required for access checks)
+    const { error: subscriptionError } = await supabaseClient
+      .from("subscriptions")
+      .insert({
+        agency_id: newAgency.id,
+        plan_id: starterPlan.id,
+        status: "trial",
+        trial_ends_at: trialEndDate.toISOString(),
+        current_period_start: new Date().toISOString(),
+        current_period_end: trialEndDate.toISOString(),
+        metadata: { source: "auto-register-agency" },
+      });
+
+    if (subscriptionError) {
+      console.error("Subscription creation error:", subscriptionError);
+      await supabaseClient.from("subscriptions").delete().eq("agency_id", newAgency.id);
+      await supabaseClient.from("agencies").delete().eq("id", newAgency.id);
+      throw new Error(`Erro ao iniciar teste grátis: ${subscriptionError.message}`);
     }
 
     // Create user
