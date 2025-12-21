@@ -22,6 +22,7 @@ import {
   Layers,
   Repeat,
   FileText,
+  FileSignature,
 } from "lucide-react";
 import {
   BarChart,
@@ -55,6 +56,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { useDashboardBI } from "@/hooks/useDashboardBI";
+import { 
+  MonthlyTrendChart, 
+  RevenueChart, 
+  ProposalsStatusChart, 
+  ContractsTypeChart,
+  AlertsPanel,
+} from "@/components/bi";
 
 import {
   ExecutiveKPICard,
@@ -196,6 +205,9 @@ const ManagerReport = () => {
   const [endDate, setEndDate] = useState<Date>(new Date());
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("executive");
+
+  // Fetch BI data for proposals and contracts
+  const { data: biData, loading: biLoading, refetch: refetchBI } = useDashboardBI();
 
   const canAccess = derived?.canAdminOrIsAdmin;
 
@@ -575,16 +587,21 @@ const ManagerReport = () => {
           </div>
         ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 h-auto">
+            <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 h-auto">
               <TabsTrigger value="executive" className="gap-2 py-3">
                 <BarChart3 className="h-4 w-4" />
-                <span className="hidden sm:inline">Visão Executiva</span>
-                <span className="sm:hidden">Executivo</span>
+                <span className="hidden sm:inline">Executivo</span>
+                <span className="sm:hidden">Exec</span>
               </TabsTrigger>
               <TabsTrigger value="sales" className="gap-2 py-3">
                 <Target className="h-4 w-4" />
                 <span className="hidden sm:inline">Vendas</span>
                 <span className="sm:hidden">Vendas</span>
+              </TabsTrigger>
+              <TabsTrigger value="proposals" className="gap-2 py-3">
+                <FileSignature className="h-4 w-4" />
+                <span className="hidden sm:inline">Propostas</span>
+                <span className="sm:hidden">Prop</span>
               </TabsTrigger>
               <TabsTrigger value="ops" className="gap-2 py-3">
                 <Users className="h-4 w-4" />
@@ -594,7 +611,7 @@ const ManagerReport = () => {
               <TabsTrigger value="financial" className="gap-2 py-3">
                 <DollarSign className="h-4 w-4" />
                 <span className="hidden sm:inline">Financeiro</span>
-                <span className="sm:hidden">Finanças</span>
+                <span className="sm:hidden">Finan</span>
               </TabsTrigger>
               <TabsTrigger value="insights" className="gap-2 py-3">
                 <Lightbulb className="h-4 w-4" />
@@ -884,6 +901,190 @@ const ManagerReport = () => {
                   }))}
                 />
               </div>
+            </TabsContent>
+
+            {/* ===================== PROPOSALS & CONTRACTS TAB ===================== */}
+            <TabsContent value="proposals" className="space-y-6 fade-in-up">
+              <SectionHeader
+                title="Propostas & Contratos"
+                subtitle="Acompanhamento de propostas enviadas e contratos assinados"
+                icon={FileSignature}
+                color="blue"
+              />
+
+              {biLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              ) : biData ? (
+                <>
+                  {/* Proposals KPIs */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <ExecutiveKPICard
+                      title="Total Propostas"
+                      value={biData.kpis.proposals.total}
+                      icon={FileText}
+                      color="info"
+                    />
+                    <ExecutiveKPICard
+                      title="Aceitas"
+                      value={biData.kpis.proposals.accepted}
+                      icon={TrendingUp}
+                      color="success"
+                    />
+                    <ExecutiveKPICard
+                      title="Recusadas"
+                      value={biData.kpis.proposals.rejected}
+                      icon={AlertTriangle}
+                      color="danger"
+                    />
+                    <ExecutiveKPICard
+                      title="Taxa Conversão"
+                      value={`${biData.kpis.proposals.conversionRate}%`}
+                      icon={Zap}
+                      color="warning"
+                    />
+                  </div>
+
+                  {/* Proposals Chart */}
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <ProposalsStatusChart
+                      draft={biData.kpis.proposals.draft}
+                      sent={biData.kpis.proposals.sent}
+                      viewed={biData.kpis.proposals.viewed}
+                      accepted={biData.kpis.proposals.accepted}
+                      rejected={biData.kpis.proposals.rejected}
+                      expired={biData.kpis.proposals.expired}
+                    />
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Valores de Propostas</CardTitle>
+                        <CardDescription>Resumo financeiro das propostas</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
+                          <span className="text-sm text-muted-foreground">Valor Total</span>
+                          <span className="font-bold text-lg">
+                            {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(biData.kpis.proposals.totalValue)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center p-3 bg-emerald-500/10 rounded-lg border border-emerald-500/20">
+                          <span className="text-sm text-emerald-600">Valor Aceito</span>
+                          <span className="font-bold text-lg text-emerald-600">
+                            {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(biData.kpis.proposals.acceptedValue)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
+                          <span className="text-sm text-muted-foreground">Tempo Médio Resposta</span>
+                          <span className="font-bold">
+                            {biData.kpis.proposals.avgResponseTime < 24 
+                              ? `${biData.kpis.proposals.avgResponseTime}h` 
+                              : `${Math.round(biData.kpis.proposals.avgResponseTime / 24)}d`}
+                          </span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  <Separator className="my-6" />
+
+                  {/* Contracts KPIs */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <ExecutiveKPICard
+                      title="Total Contratos"
+                      value={biData.kpis.contracts.total}
+                      icon={FileSignature}
+                      color="info"
+                    />
+                    <ExecutiveKPICard
+                      title="Ativos"
+                      value={biData.kpis.contracts.active}
+                      icon={TrendingUp}
+                      color="success"
+                    />
+                    <ExecutiveKPICard
+                      title="Vencendo (30d)"
+                      value={biData.kpis.contracts.expiringSoon}
+                      icon={Clock}
+                      color={biData.kpis.contracts.expiringSoon > 0 ? "warning" : "info"}
+                    />
+                    <ExecutiveKPICard
+                      title="MRR Contratos"
+                      value={`R$ ${biData.kpis.contracts.monthlyRecurring.toLocaleString('pt-BR', { minimumFractionDigits: 0 })}`}
+                      icon={Repeat}
+                      color="purple"
+                    />
+                  </div>
+
+                  {/* Contracts Chart */}
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <ContractsTypeChart
+                      recurring={biData.kpis.contracts.recurring}
+                      oneTime={biData.kpis.contracts.oneTime}
+                    />
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Status dos Contratos</CardTitle>
+                        <CardDescription>Distribuição por situação</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-muted-foreground">Rascunhos</span>
+                          <span className="font-medium">{biData.kpis.contracts.draft}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-muted-foreground">Aguardando Assinatura</span>
+                          <span className="font-medium">{biData.kpis.contracts.pending}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-muted-foreground">Assinados</span>
+                          <span className="font-medium">{biData.kpis.contracts.signed}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-emerald-500">Ativos</span>
+                          <span className="font-medium text-emerald-500">{biData.kpis.contracts.active}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-red-500">Cancelados</span>
+                          <span className="font-medium text-red-500">{biData.kpis.contracts.cancelled}</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Monthly Trend */}
+                  {biData.monthlyTrend && biData.monthlyTrend.length > 0 && (
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <MonthlyTrendChart data={biData.monthlyTrend} type="area" />
+                      <RevenueChart data={biData.monthlyTrend} />
+                    </div>
+                  )}
+
+                  {/* BI Alerts */}
+                  {biData.alerts && biData.alerts.length > 0 && (
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-medium flex items-center gap-2">
+                          <AlertTriangle className="w-4 h-4 text-amber-500" />
+                          Alertas Inteligentes
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <AlertsPanel alerts={biData.alerts} />
+                      </CardContent>
+                    </Card>
+                  )}
+                </>
+              ) : (
+                <div className="text-center py-12 text-muted-foreground">
+                  <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>Dados de propostas e contratos não disponíveis</p>
+                  <Button variant="outline" size="sm" className="mt-4" onClick={() => refetchBI()}>
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Tentar novamente
+                  </Button>
+                </div>
+              )}
             </TabsContent>
 
             {/* ===================== OPERATIONAL TAB ===================== */}
