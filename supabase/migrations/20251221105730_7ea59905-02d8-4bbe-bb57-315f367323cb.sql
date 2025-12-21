@@ -1,0 +1,136 @@
+-- Update existing Starter plan
+UPDATE plans SET
+  name = 'Starter',
+  slug = 'starter',
+  description = 'Feito pro lobo solo',
+  price_monthly = 67.00,
+  price_yearly = 670.00,
+  max_users = 2,
+  max_clients = 15,
+  max_leads = 100,
+  max_recurring_clients = 0,
+  storage_mb = 500,
+  features = '{
+    "funil_tarefas": true,
+    "relatorios_agencia": true,
+    "dashboard_principal": true,
+    "suporte_email": true,
+    "automacoes": false,
+    "comissoes": false,
+    "exportacao": false,
+    "relatorios_cliente": false,
+    "cobranca_stripe": false,
+    "logs_auditoria": false,
+    "dashboard_financeiro": false,
+    "integracao_alfaleads": false,
+    "suporte_whatsapp": false,
+    "acesso_antecipado": false,
+    "limite_tarefas_mes": 500
+  }'::jsonb,
+  sort_order = 1,
+  updated_at = now()
+WHERE slug = 'starter';
+
+-- Insert Pro plan if not exists
+INSERT INTO plans (
+  name, slug, description, price_monthly, price_yearly, 
+  max_users, max_clients, max_leads, max_recurring_clients,
+  storage_mb, trial_days, features, sort_order, active
+) VALUES (
+  'Pro', 
+  'pro', 
+  'Feito pra quem vive disso',
+  127.00, 
+  1270.00,
+  5,
+  50,
+  500,
+  25,
+  2000,
+  14,
+  '{
+    "funil_tarefas": true,
+    "funil_avancado": true,
+    "automacoes": true,
+    "relatorios_agencia": true,
+    "relatorios_cliente": true,
+    "dashboard_principal": true,
+    "cobranca_stripe": true,
+    "comissoes": true,
+    "logs_auditoria": true,
+    "suporte_prioritario": true,
+    "suporte_email": true,
+    "exportacao": false,
+    "dashboard_financeiro": false,
+    "integracao_alfaleads": false,
+    "suporte_whatsapp": false,
+    "acesso_antecipado": false,
+    "limite_tarefas_mes": 3000
+  }'::jsonb,
+  2,
+  true
+) ON CONFLICT (slug) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price_monthly = EXCLUDED.price_monthly,
+  price_yearly = EXCLUDED.price_yearly,
+  max_users = EXCLUDED.max_users,
+  max_clients = EXCLUDED.max_clients,
+  max_leads = EXCLUDED.max_leads,
+  max_recurring_clients = EXCLUDED.max_recurring_clients,
+  storage_mb = EXCLUDED.storage_mb,
+  features = EXCLUDED.features,
+  sort_order = EXCLUDED.sort_order,
+  updated_at = now();
+
+-- Insert Master plan if not exists
+INSERT INTO plans (
+  name, slug, description, price_monthly, price_yearly, 
+  max_users, max_clients, max_leads, max_recurring_clients,
+  storage_mb, trial_days, features, sort_order, active
+) VALUES (
+  'Master', 
+  'master', 
+  'Feito pro lobo alfa de matilha',
+  197.00, 
+  1970.00,
+  15,
+  150,
+  2000,
+  100,
+  10000,
+  14,
+  '{
+    "funil_tarefas": true,
+    "funil_avancado": true,
+    "automacoes": true,
+    "relatorios_agencia": true,
+    "relatorios_cliente": true,
+    "dashboard_principal": true,
+    "dashboard_financeiro": true,
+    "cobranca_stripe": true,
+    "comissoes": true,
+    "logs_auditoria": true,
+    "exportacao": true,
+    "integracao_alfaleads": true,
+    "suporte_email": true,
+    "suporte_prioritario": true,
+    "suporte_whatsapp": true,
+    "acesso_antecipado": true,
+    "limite_tarefas_mes": 10000
+  }'::jsonb,
+  3,
+  true
+) ON CONFLICT (slug) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  price_monthly = EXCLUDED.price_monthly,
+  price_yearly = EXCLUDED.price_yearly,
+  max_users = EXCLUDED.max_users,
+  max_clients = EXCLUDED.max_clients,
+  max_leads = EXCLUDED.max_leads,
+  max_recurring_clients = EXCLUDED.max_recurring_clients,
+  storage_mb = EXCLUDED.storage_mb,
+  features = EXCLUDED.features,
+  sort_order = EXCLUDED.sort_order,
+  updated_at = now();
