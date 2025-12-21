@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, useRef, ReactNode } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { Database } from "@/integrations/supabase/types";
@@ -55,26 +55,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [userRole, setUserRole] = useState<AppRole | null>(null);
   const [permissions, setPermissions] = useState<UserPermissions>(defaultPermissions);
   const [currentAgencyId, setCurrentAgencyId] = useState<string | null>(null);
+  
+  // Track which user data we've fetched to avoid race conditions
+  const fetchedUserIdRef = useRef<string | null>(null);
+
+  // Separate effect to fetch user data when user changes
+  // This avoids the setTimeout hack by using proper React effect dependencies
+  useEffect(() => {
+    const fetchUserData = async (authUser: User) => {
+      // Avoid duplicate fetches for the same user
+      if (fetchedUserIdRef.current === authUser.id) return;
+      fetchedUserIdRef.current = authUser.id;
+
+      // Fetch all user data in parallel
+      await Promise.all([
+        fetchUserRole(authUser.id),
+        fetchUserPermissions(authUser.id),
+        fetchCurrentAgencyId(authUser),
+      ]);
+    };
+
+    if (user) {
+      fetchUserData(user);
+    } else {
+      // Reset when user logs out
+      fetchedUserIdRef.current = null;
+      setUserRole(null);
+      setPermissions(defaultPermissions);
+      setCurrentAgencyId(null);
+    }
+  }, [user?.id]); // Only re-run when user.id changes
 
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      (_event, session) => {
+        // Only update synchronous state in the callback
+        // User data fetching is handled by the separate effect above
         setSession(session);
         setUser(session?.user ?? null);
-        
-        // Defer fetching role and permissions to avoid deadlock
-        if (session?.user) {
-          setTimeout(() => {
-            fetchUserRole(session.user.id);
-            fetchUserPermissions(session.user.id);
-            fetchCurrentAgencyId(session.user);
-          }, 0);
-        } else {
-          setUserRole(null);
-          setPermissions(defaultPermissions);
-          setCurrentAgencyId(null);
-        }
       }
     );
 
@@ -82,11 +101,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchUserRole(session.user.id);
-        fetchUserPermissions(session.user.id);
-        fetchCurrentAgencyId(session.user);
-      }
       setIsLoading(false);
     });
 
