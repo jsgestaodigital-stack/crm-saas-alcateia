@@ -53,3 +53,6 @@ verify_jwt = true
 
 [functions.generate-proposal]
 verify_jwt = true
+
+[functions.generate-contract]
+verify_jwt = true

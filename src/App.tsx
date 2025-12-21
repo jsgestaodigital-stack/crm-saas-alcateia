@@ -38,6 +38,8 @@ import SecuritySettings from "./pages/SecuritySettings";
 import ActivationDashboard from "./pages/ActivationDashboard";
 import Propostas from "./pages/Propostas";
 import PropostaPublica from "./pages/PropostaPublica";
+import Contratos from "./pages/Contratos";
+import ContratoPublico from "./pages/ContratoPublico";
 import NotFound from "./pages/NotFound";
 import { ImpersonateBanner } from "@/components/ImpersonateBanner";
 import { NPSModal } from "@/components/nps";
@@ -87,6 +89,8 @@ const App = () => (
                       <Route path="/admin/activation" element={<ActivationDashboard />} />
                       <Route path="/propostas" element={<Propostas />} />
                       <Route path="/proposta/:token" element={<PropostaPublica />} />
+                      <Route path="/contratos" element={<Contratos />} />
+                      <Route path="/contrato/:token" element={<ContratoPublico />} />
                       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                       <Route path="*" element={<NotFound />} />
                     </Routes>
