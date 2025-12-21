@@ -2224,6 +2224,27 @@ export type Database = {
           },
         ]
       }
+      role_permissions: {
+        Row: {
+          created_at: string
+          id: string
+          permission: string
+          role: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          permission: string
+          role: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          permission?: string
+          role?: string
+        }
+        Relationships: []
+      }
       scheduled_tasks: {
         Row: {
           agency_id: string
@@ -2914,24 +2935,50 @@ export type Database = {
       }
       user_roles: {
         Row: {
+          agency_id: string | null
           created_at: string
+          expires_at: string | null
+          granted_at: string | null
+          granted_by: string | null
           id: string
+          notes: string | null
           role: Database["public"]["Enums"]["app_role"]
+          updated_at: string | null
           user_id: string
         }
         Insert: {
+          agency_id?: string | null
           created_at?: string
+          expires_at?: string | null
+          granted_at?: string | null
+          granted_by?: string | null
           id?: string
+          notes?: string | null
           role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string | null
           user_id: string
         }
         Update: {
+          agency_id?: string | null
           created_at?: string
+          expires_at?: string | null
+          granted_at?: string | null
+          granted_by?: string | null
           id?: string
+          notes?: string | null
           role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -3229,6 +3276,15 @@ export type Database = {
         Args: { _registration_id: string; _temp_password?: string }
         Returns: Json
       }
+      assign_role: {
+        Args: {
+          _agency_id?: string
+          _notes?: string
+          _role: string
+          _target_user_id: string
+        }
+        Returns: string
+      }
       auto_overdue_tasks: { Args: never; Returns: number }
       build_suggestion_prompt: { Args: { _lead_id: string }; Returns: string }
       calculate_agency_usage: {
@@ -3251,6 +3307,10 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      can: {
+        Args: { _agency_id?: string; _permission: string; _user_id?: string }
+        Returns: boolean
       }
       can_access_admin: { Args: { _user_id: string }; Returns: boolean }
       can_access_agency: {
@@ -3452,6 +3512,10 @@ export type Database = {
         }[]
       }
       get_unread_notification_count: { Args: never; Returns: number }
+      get_user_role: {
+        Args: { _agency_id: string; _user_id: string }
+        Returns: string
+      }
       has_active_consent: {
         Args: { _min_version?: string; _policy_type?: string; _user_id: string }
         Returns: boolean
@@ -3460,15 +3524,24 @@ export type Database = {
         Args: { _agency_id: string; _role: string; _user_id: string }
         Returns: boolean
       }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
+      has_role:
+        | {
+            Args: {
+              _role: Database["public"]["Enums"]["app_role"]
+              _user_id: string
+            }
+            Returns: boolean
+          }
+        | {
+            Args: { _agency_id?: string; _role: string; _user_id: string }
+            Returns: boolean
+          }
       impersonate_agency: { Args: { _agency_id: string }; Returns: undefined }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_admin_or_owner: {
+        Args: { _agency_id?: string; _user_id: string }
+        Returns: boolean
+      }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
       log_action: {
         Args: {
@@ -3533,6 +3606,7 @@ export type Database = {
         Args: { p_notification_id: string }
         Returns: boolean
       }
+      my_role: { Args: { _agency_id?: string }; Returns: string }
       queue_email: {
         Args: {
           p_body_html?: string
@@ -3654,7 +3728,15 @@ export type Database = {
       update_expired_subscriptions: { Args: never; Returns: number }
     }
     Enums: {
-      app_role: "admin" | "operador" | "visualizador"
+      app_role:
+        | "admin"
+        | "operador"
+        | "visualizador"
+        | "super_admin"
+        | "owner"
+        | "manager"
+        | "sales_rep"
+        | "support"
       client_status: "on_track" | "delayed" | "pending_client"
       client_status_v2: "active" | "paused" | "cancelled"
       column_id:
@@ -3719,6 +3801,14 @@ export type Database = {
       recurring_status: "active" | "paused" | "cancelled" | "completed"
       task_priority: "low" | "medium" | "high" | "urgent"
       task_status: "pending" | "completed" | "overdue" | "cancelled"
+      user_role:
+        | "super_admin"
+        | "owner"
+        | "manager"
+        | "sales_rep"
+        | "operator"
+        | "support"
+        | "viewer"
       user_status: "ativo" | "suspenso" | "excluido"
     }
     CompositeTypes: {
@@ -3847,7 +3937,16 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "operador", "visualizador"],
+      app_role: [
+        "admin",
+        "operador",
+        "visualizador",
+        "super_admin",
+        "owner",
+        "manager",
+        "sales_rep",
+        "support",
+      ],
       client_status: ["on_track", "delayed", "pending_client"],
       client_status_v2: ["active", "paused", "cancelled"],
       column_id: [
@@ -3918,6 +4017,15 @@ export const Constants = {
       recurring_status: ["active", "paused", "cancelled", "completed"],
       task_priority: ["low", "medium", "high", "urgent"],
       task_status: ["pending", "completed", "overdue", "cancelled"],
+      user_role: [
+        "super_admin",
+        "owner",
+        "manager",
+        "sales_rep",
+        "operator",
+        "support",
+        "viewer",
+      ],
       user_status: ["ativo", "suspenso", "excluido"],
     },
   },
