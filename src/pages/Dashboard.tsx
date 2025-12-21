@@ -86,8 +86,14 @@ const Dashboard = () => {
     }
   }, [user, isLoading, navigate]);
 
-  // Note: FunnelToggle handles restoring saved views per funnel
-  // No need to listen for funnel-mode-changed event here
+  // Restore saved view on initial mount based on current funnel
+  useEffect(() => {
+    const funnelKey = isSalesMode ? 'sales' : isRecurringMode ? 'recurring' : 'delivery';
+    const savedView = localStorage.getItem(`rankeia-view-${funnelKey}`);
+    // Default to kanban if no saved view
+    const viewToSet = savedView || 'kanban';
+    setViewMode(viewToSet as any);
+  }, []); // Only run on mount
 
   // Listen for client completion events
   useEffect(() => {
