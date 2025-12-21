@@ -4,7 +4,7 @@ import { Lock, CreditCard, MessageCircle, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/contexts/AuthContext";
-import grankLogo from "@/assets/grank-logo.png";
+import { ThemeLogo } from "@/components/ThemeLogo";
 
 const SubscriptionLocked = () => {
   const { subscription } = useSubscription();
@@ -53,7 +53,7 @@ const SubscriptionLocked = () => {
       {/* Header */}
       <header className="relative z-10 p-6">
         <Link to="/" className="flex items-center gap-2 w-fit">
-          <img src={grankLogo} alt="GRank CRM" className="h-8 w-auto" />
+          <ThemeLogo className="h-8" />
           <span className="font-bold text-xl bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">
             GRank CRM
           </span>
