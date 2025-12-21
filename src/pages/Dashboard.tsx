@@ -320,7 +320,7 @@ const Dashboard = () => {
               "ml-3 font-semibold",
               isSalesMode ? "text-amber-400" : "text-primary"
             )}>
-              Alcateia
+              G Rank
             </span>
           </div>
         </div>
