@@ -327,7 +327,7 @@ const Dashboard = () => {
               "font-bold text-lg",
               isSalesMode ? "text-amber-400" : "text-primary"
             )}>
-              G Rank
+              GRank CRM
             </span>
           </div>
           

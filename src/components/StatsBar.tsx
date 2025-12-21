@@ -110,12 +110,15 @@ export function StatsBar() {
 
   return (
     <TooltipProvider delayDuration={1000}>
-      <div className={cn(
-        "flex items-center gap-2 sm:gap-3 px-3 sm:px-6 py-2 sm:py-3 border-b overflow-x-auto scrollbar-hide",
-        hasUrgentAlerts 
-          ? "bg-gradient-to-r from-status-danger/5 via-surface-1/50 to-status-warning/5 border-status-danger/20" 
-          : "bg-gradient-to-r from-surface-1/50 via-primary/5 to-surface-1/50 border-primary/10"
-      )}>
+      <div 
+        data-tour="main-stats"
+        className={cn(
+          "flex items-center gap-2 sm:gap-3 px-3 sm:px-6 py-2 sm:py-3 border-b overflow-x-auto scrollbar-hide",
+          hasUrgentAlerts 
+            ? "bg-gradient-to-r from-status-danger/5 via-surface-1/50 to-status-warning/5 border-status-danger/20" 
+            : "bg-gradient-to-r from-surface-1/50 via-primary/5 to-surface-1/50 border-primary/10"
+        )}
+      >
         {stats.map((stat) => (
           <Tooltip key={stat.label}>
             <TooltipTrigger asChild>

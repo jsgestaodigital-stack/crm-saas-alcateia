@@ -159,6 +159,7 @@ export function KanbanBoard() {
     <>
       <div
         ref={containerRef}
+        data-tour="kanban-board"
         className="flex gap-3 sm:gap-4 p-3 sm:p-6 overflow-x-auto pb-8 min-h-[calc(100vh-12rem)] cursor-grab select-none touch-pan-x animate-fade-in scroll-smooth"
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
