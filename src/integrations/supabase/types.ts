@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      activation_events: {
+        Row: {
+          agency_id: string
+          event_type: string
+          id: string
+          metadata: Json | null
+          occurred_at: string | null
+          user_id: string
+        }
+        Insert: {
+          agency_id: string
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          occurred_at?: string | null
+          user_id: string
+        }
+        Update: {
+          agency_id?: string
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          occurred_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activation_events_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agencies: {
         Row: {
           created_at: string
@@ -1888,6 +1923,44 @@ export type Database = {
             columns: ["task_id"]
             isOneToOne: false
             referencedRelation: "scheduled_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nps_responses: {
+        Row: {
+          agency_id: string
+          created_at: string | null
+          feedback: string | null
+          id: string
+          score: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          agency_id: string
+          created_at?: string | null
+          feedback?: string | null
+          id?: string
+          score: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          agency_id?: string
+          created_at?: string | null
+          feedback?: string | null
+          id?: string
+          score?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nps_responses_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
             referencedColumns: ["id"]
           },
         ]
@@ -3847,6 +3920,8 @@ export type Database = {
         }
         Returns: string
       }
+      get_activation_stats: { Args: never; Returns: Json }
+      get_activation_status: { Args: never; Returns: Json }
       get_active_sessions: {
         Args: { _user_id?: string }
         Returns: {
@@ -4008,6 +4083,10 @@ export type Database = {
           _old_value?: Json
         }
         Returns: string
+      }
+      log_activation_event: {
+        Args: { _event: string; _metadata?: Json }
+        Returns: Json
       }
       log_lead_activity: {
         Args: {
@@ -4177,7 +4256,12 @@ export type Database = {
         }[]
       }
       set_current_agency: { Args: { _agency_id: string }; Returns: undefined }
+      should_show_nps: { Args: never; Returns: Json }
       start_visual_tour: { Args: never; Returns: Json }
+      submit_nps: {
+        Args: { _feedback?: string; _score: number }
+        Returns: Json
+      }
       suggest_next_task: { Args: { p_lead_id: string }; Returns: Json }
       suspend_agency: { Args: { _agency_id: string }; Returns: undefined }
       sync_agency_limits_from_plan: {

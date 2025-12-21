@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useActivation } from '@/hooks/useActivation';
 import { toast } from 'sonner';
 import type { Step, CallBackProps, STATUS, EVENTS } from 'react-joyride';
 
@@ -94,6 +95,7 @@ interface TourStatus {
 export function useVisualTour() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { logEvent } = useActivation();
   const [isRunning, setIsRunning] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
 
@@ -148,6 +150,7 @@ export function useVisualTour() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['onboarding-status'] });
+      logEvent('completed_visual_tour');
       toast.success('Tour concluído!', {
         description: 'Você já conhece as principais funcionalidades do sistema.',
       });

@@ -35,8 +35,10 @@ import AgencyDetail from "./pages/AgencyDetail";
 import AdminPermissions from "./pages/AdminPermissions";
 import AgencyPermissions from "./pages/AgencyPermissions";
 import SecuritySettings from "./pages/SecuritySettings";
+import ActivationDashboard from "./pages/ActivationDashboard";
 import NotFound from "./pages/NotFound";
 import { ImpersonateBanner } from "@/components/ImpersonateBanner";
+import { NPSModal } from "@/components/nps";
 
 const queryClient = new QueryClient();
 
@@ -80,9 +82,12 @@ const App = () => (
                       <Route path="/admin/permissions" element={<AdminPermissions />} />
                       <Route path="/agency/settings/permissions" element={<AgencyPermissions />} />
                       <Route path="/settings/security" element={<SecuritySettings />} />
+                      <Route path="/admin/activation" element={<ActivationDashboard />} />
                       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                       <Route path="*" element={<NotFound />} />
                     </Routes>
+                    {/* Global Modals */}
+                    <NPSModal />
                     {/* QA Debug Tools */}
                     <QADebugTrigger />
                     <QADebugDrawer />
