@@ -88,7 +88,7 @@ export default function HistoricoPage() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/dashboard')}
             className="hover:bg-primary/10"
           >
             <ArrowLeft className="h-5 w-5" />

@@ -103,6 +103,15 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
 
   // Auto-start tour on first visit (only once per session)
   useEffect(() => {
+    console.log('[VisualTour] Mount state:', { 
+      autoStart, 
+      shouldAutoStart, 
+      user: !!user, 
+      hasAutoStarted: hasAutoStarted.current,
+      isExcludedRoute,
+      tourCompleted 
+    });
+    
     if (
       autoStart && 
       shouldAutoStart && 
@@ -111,6 +120,7 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
       !isExcludedRoute &&
       !tourCompleted
     ) {
+      console.log('[VisualTour] Auto-starting tour...');
       hasAutoStarted.current = true;
       // Delay to ensure DOM is ready
       const timer = setTimeout(() => {
@@ -119,6 +129,8 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
       return () => clearTimeout(timer);
     }
   }, [autoStart, shouldAutoStart, user, startTour, isExcludedRoute, tourCompleted]);
+
+  console.log('[VisualTour] Render state:', { isRunning, stepIndex, stepsLength: steps.length });
 
   return (
     <Joyride

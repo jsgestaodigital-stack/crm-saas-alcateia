@@ -174,6 +174,7 @@ export function useVisualTour() {
 
   // Start the tour
   const startTour = useCallback(() => {
+    console.log('[VisualTour] Starting tour...');
     setStepIndex(0);
     setIsRunning(true);
     startMutation.mutate();

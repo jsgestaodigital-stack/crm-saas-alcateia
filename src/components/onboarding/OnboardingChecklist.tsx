@@ -50,6 +50,8 @@ export function OnboardingChecklist({ onNewClient, onNewLead }: OnboardingCheckl
     progressPercentage,
     isStepCompleted,
     markStepDone,
+    unmarkStep,
+    toggleStep,
     dismissChecklist,
     shouldShow,
     isLoading,
@@ -57,7 +59,14 @@ export function OnboardingChecklist({ onNewClient, onNewLead }: OnboardingCheckl
   } = useOnboardingChecklist();
 
   // Handle step actions
-  const handleStepClick = (stepId: string) => {
+  const handleStepClick = (stepId: string, isCompleted: boolean) => {
+    // If already completed, unmark it
+    if (isCompleted) {
+      unmarkStep(stepId);
+      return;
+    }
+
+    // Otherwise, mark as done and navigate if needed
     switch (stepId) {
       case 'create_client':
         setMode('delivery');
@@ -203,12 +212,11 @@ export function OnboardingChecklist({ onNewClient, onNewLead }: OnboardingCheckl
                         transition={{ delay: index * 0.05 }}
                       >
                         <button
-                          onClick={() => !isCompleted && handleStepClick(step.id)}
-                          disabled={isCompleted}
+                          onClick={() => handleStepClick(step.id, isCompleted)}
                           className={cn(
                             'w-full flex items-center gap-3 p-3 rounded-lg transition-all text-left',
                             isCompleted
-                              ? 'bg-status-success/10 cursor-default'
+                              ? 'bg-status-success/10 hover:bg-status-success/20 cursor-pointer'
                               : 'hover:bg-primary/10 cursor-pointer border border-transparent hover:border-primary/30'
                           )}
                         >
@@ -239,7 +247,11 @@ export function OnboardingChecklist({ onNewClient, onNewLead }: OnboardingCheckl
                               {step.description}
                             </p>
                           </div>
-                          {!isCompleted && (
+                          {isCompleted ? (
+                            <span className="text-xs text-status-success/70 font-medium hover:text-destructive">
+                              ↩ Desfazer
+                            </span>
+                          ) : (
                             <span className="text-xs text-primary font-medium">
                               Iniciar →
                             </span>

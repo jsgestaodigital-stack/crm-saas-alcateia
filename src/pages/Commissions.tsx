@@ -196,7 +196,7 @@ export default function Commissions() {
           <XCircle className="w-16 h-16 text-status-danger mx-auto mb-4" />
           <h1 className="text-xl font-bold mb-2">Acesso Restrito</h1>
           <p className="text-muted-foreground mb-4">Você não tem permissão para acessar esta página</p>
-          <Button onClick={() => navigate("/")}>Voltar ao Dashboard</Button>
+          <Button onClick={() => navigate("/dashboard")}>Voltar ao Dashboard</Button>
         </div>
       </div>
     );
@@ -345,7 +345,7 @@ function AdminCommissionView(props: AdminViewProps) {
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
         <div className="px-4 sm:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+            <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div>
@@ -644,7 +644,7 @@ function CollaboratorCommissionView(props: CollaboratorViewProps) {
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
         <div className="px-4 sm:px-6 py-4 flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+          <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>

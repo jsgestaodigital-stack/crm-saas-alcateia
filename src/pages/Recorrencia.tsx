@@ -519,7 +519,7 @@ export default function Recorrencia() {
 
   const handleBackNavigation = () => {
     setMode('delivery');
-    navigate("/");
+    navigate("/dashboard");
   };
 
   const FREQUENCY_LABELS: Record<string, string> = {
@@ -551,7 +551,7 @@ export default function Recorrencia() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => navigate("/")} className="w-full">
+            <Button onClick={() => navigate("/dashboard")} className="w-full">
               Voltar ao Dashboard
             </Button>
           </CardContent>

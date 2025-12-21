@@ -120,7 +120,7 @@ export default function Suggestions() {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6 max-w-6xl">
         <div className="flex items-center gap-4 mb-6">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
+          <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
             <ChevronLeft className="h-5 w-5" />
           </Button>
           <div>
