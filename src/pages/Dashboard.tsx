@@ -26,6 +26,7 @@ import { useLeads } from "@/hooks/useLeads";
 import { RecurrenceView } from "@/components/RecurrenceView";
 import { RecurringOverview } from "@/components/recurring/RecurringOverview";
 import { RecurringExecutionView } from "@/components/recurring/RecurringExecutionView";
+import { NewRecurringClientDialog } from "@/components/recurring/NewRecurringClientDialog";
 
 // Common components
 import { AppSidebar } from "@/components/AppSidebar";
@@ -54,6 +55,7 @@ const Dashboard = () => {
   // Modals
   const [wizardOpen, setWizardOpen] = useState(false);
   const [newLeadOpen, setNewLeadOpen] = useState(false);
+  const [newRecurringOpen, setNewRecurringOpen] = useState(false);
   
   // Sidebar
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -266,7 +268,15 @@ const Dashboard = () => {
       {/* Sidebar */}
       <div data-tour="sidebar">
         <AppSidebar 
-          onNewClient={() => isSalesMode ? setNewLeadOpen(true) : setWizardOpen(true)} 
+          onNewClient={() => {
+            if (isSalesMode) {
+              setNewLeadOpen(true);
+            } else if (isRecurringMode) {
+              setNewRecurringOpen(true);
+            } else {
+              setWizardOpen(true);
+            }
+          }} 
           collapsed={sidebarCollapsed}
           onCollapsedChange={setSidebarCollapsed}
           mobileOpen={mobileMenuOpen}
@@ -392,6 +402,12 @@ const Dashboard = () => {
           setNewLeadOpen(open);
           if (!open) refetchLeads();
         }}
+      />
+      
+      {/* Recurring modal */}
+      <NewRecurringClientDialog
+        open={newRecurringOpen}
+        onOpenChange={setNewRecurringOpen}
       />
       
       {leadDetailOpen && selectedLead && (
