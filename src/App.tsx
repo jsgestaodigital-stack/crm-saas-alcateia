@@ -41,6 +41,7 @@ import Propostas from "./pages/Propostas";
 import PropostaPublica from "./pages/PropostaPublica";
 import Contratos from "./pages/Contratos";
 import ContratoPublico from "./pages/ContratoPublico";
+import MeuPerfil from "./pages/MeuPerfil";
 import NotFound from "./pages/NotFound";
 import { ImpersonateBanner } from "@/components/ImpersonateBanner";
 import { NPSModal } from "@/components/nps";
@@ -94,6 +95,7 @@ const App = () => (
                       <Route path="/sugestoes" element={<Suggestions />} />
                       <Route path="/agency/settings/permissions" element={<AgencyPermissions />} />
                       <Route path="/settings/security" element={<SecuritySettings />} />
+                      <Route path="/meu-perfil" element={<MeuPerfil />} />
                       <Route path="/super-admin" element={<SuperAdmin />} />
 
                       {/* ============ AUTENTICAÇÃO ============ */}
