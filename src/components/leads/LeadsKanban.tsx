@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState, useEffect, useCallback } from 'react';
 import { Lead, LeadPipelineStage, TEMPERATURE_CONFIG } from '@/types/lead';
+import { KanbanLead } from '@/hooks/useLeadsKanban';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -13,9 +14,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useIsMobile } from '@/hooks/use-mobile';
 
+// Aceita tanto KanbanLead (otimizado) quanto Lead (completo)
+type KanbanLeadItem = KanbanLead | Lead;
+
 interface LeadsKanbanProps {
-  leads: Lead[];
-  onLeadClick: (lead: Lead) => void;
+  leads: KanbanLeadItem[];
+  onLeadClick: (lead: KanbanLeadItem) => void;
   onMoveLead: (leadId: string, newStage: LeadPipelineStage) => void;
   onRefresh?: () => void;
 }
@@ -39,7 +43,7 @@ export function LeadsKanban({ leads, onLeadClick, onMoveLead, onRefresh }: Leads
 
   // Group leads by column
   const leadsByColumn = useMemo(() => {
-    const grouped: Record<string, Lead[]> = {};
+    const grouped: Record<string, KanbanLeadItem[]> = {};
     columns.forEach(col => {
       grouped[col.id] = leads.filter(l => l.pipeline_stage === col.id);
     });
@@ -377,7 +381,7 @@ function LeadCard({
   onDragStart,
   canDrag = true
 }: { 
-  lead: Lead; 
+  lead: KanbanLeadItem; 
   onClick: () => void; 
   onDragStart: (e: React.DragEvent) => void;
   canDrag?: boolean;

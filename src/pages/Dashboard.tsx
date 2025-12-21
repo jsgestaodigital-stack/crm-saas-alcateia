@@ -21,6 +21,7 @@ import { NewLeadDialog } from "@/components/leads/NewLeadDialog";
 import { SalesDashboard } from "@/components/leads/SalesDashboard";
 import { SalesOverview } from "@/components/leads/SalesOverview";
 import { useLeads } from "@/hooks/useLeads";
+import { useLeadsKanban, KanbanLead } from "@/hooks/useLeadsKanban";
 
 // Recurring views
 import { RecurrenceView } from "@/components/RecurrenceView";
@@ -67,18 +68,24 @@ const Dashboard = () => {
   
   const { showConfetti, triggerConfetti, handleConfettiComplete } = useConfetti();
   
-  // Leads hook
+  // Leads hooks - optimized for Kanban, full for modals/details
   const { 
-    leads, 
+    leads: kanbanLeads, 
+    loading: isKanbanLoading, 
+    refetch: refetchKanbanLeads 
+  } = useLeadsKanban();
+  
+  const { 
+    leads: fullLeads, 
     loading: isLeadsLoading, 
     moveLead,
     refetch: refetchLeads 
   } = useLeads();
 
-  // Filter active leads for kanban (exclude gained/lost) - MUST be before any returns
+  // Filter active leads for kanban (exclude gained/lost) - uses optimized hook
   const activeLeads = useMemo(() => {
-    return leads.filter(l => l.status === 'open' || l.status === 'future');
-  }, [leads]);
+    return kanbanLeads.filter(l => l.status === 'open' || l.status === 'future');
+  }, [kanbanLeads]);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -210,13 +217,13 @@ const Dashboard = () => {
 
     // Check viewMode for sales-specific views
     if (viewMode === 'sales-overview') {
-      return <SalesOverview leads={leads} />;
+      return <SalesOverview leads={fullLeads} />;
     }
 
     // Default to Kanban view
     return (
       <>
-        <SalesDashboard leads={leads} />
+        <SalesDashboard leads={fullLeads} />
         <LeadsKanban 
           leads={activeLeads} 
           onLeadClick={handleLeadClick} 
