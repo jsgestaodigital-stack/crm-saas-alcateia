@@ -5,7 +5,7 @@ import { Users, FileText, Bell, TrendingUp, Shield, Check, X, ArrowRight, Sparkl
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import grankLogo from "@/assets/grank-logo.png";
-import { AnimatedCounter, FloatingParticles, ScrollProgress, InteractiveDemo, HeroVideo, FeatureCard, TestimonialCard, ComparisonTable } from "@/components/landing";
+import { AnimatedCounter, FloatingParticles, ScrollProgress, InteractiveDemo, HeroVideo, FeatureCard, ComparisonTable, SectionDivider } from "@/components/landing";
 const Landing = () => {
   const [isAnnual, setIsAnnual] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -172,14 +172,13 @@ const Landing = () => {
       </header>
 
       {/* ===== HERO SECTION ===== */}
-      <section className="pt-32 pb-20 px-4 relative overflow-hidden">
+      <section className="min-h-screen relative flex items-center justify-center pt-24 pb-32 px-4 section-white overflow-hidden">
         <FloatingParticles />
         
         {/* Background gradients */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/15 rounded-full blur-[120px]" />
-          <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-secondary/15 rounded-full blur-[120px]" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent/10 rounded-full blur-[150px]" />
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/8 rounded-full blur-[120px]" />
+          <div className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] bg-teal/8 rounded-full blur-[100px]" />
         </div>
 
         <div className="container mx-auto text-center relative z-10">
@@ -201,7 +200,7 @@ const Landing = () => {
             scale: 1
           }} transition={{
             delay: 0.2
-          }} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 backdrop-blur-sm mb-8">
+          }} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 mb-8">
               <Sparkles className="h-4 w-4 text-primary" />
               <span className="text-sm text-primary font-medium">A Plataforma Operacional Completa para Google Meu Negócio</span>
             </motion.div>
@@ -212,7 +211,7 @@ const Landing = () => {
                 Pare de Fazer Tudo Sozinho.
               </span>
               <br />
-              <span className="gradient-text">
+              <span className="gradient-title-text">
                 Delegue, Controle e Escale
               </span>
               <br />
@@ -232,13 +231,13 @@ const Landing = () => {
 
             {/* CTA Principal */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
-              <Button size="lg" asChild className="gradient-primary text-primary-foreground border-0 shadow-xl neon-glow text-lg px-8 py-6 h-auto">
+              <Button size="lg" asChild className="gradient-primary text-primary-foreground border-0 shadow-xl btn-pulse btn-press text-lg px-8 py-6 h-auto min-h-[56px]">
                 <Link to="/register">
                   <Zap className="mr-2 h-5 w-5" />
                   TESTE GRÁTIS POR 14 DIAS
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" asChild className="border-border/50 hover:bg-muted text-lg px-8 py-6 h-auto">
+              <Button size="lg" variant="outline" asChild className="border-border hover:bg-muted hover:border-primary/30 text-lg px-8 py-6 h-auto min-h-[56px] btn-press">
                 <a href="#demo">
                   <MessageCircle className="mr-2 h-5 w-5" />
                   Agendar Demonstração
@@ -276,10 +275,13 @@ const Landing = () => {
             <HeroVideo />
           </motion.div>
         </div>
+
+        {/* Wave divider to next section */}
+        <SectionDivider variant="wave" fill="fill-[#F9FAFB]" className="bottom-0" />
       </section>
 
       {/* ===== SEÇÃO PROBLEMA ===== */}
-      <section className="py-20 px-4 relative bg-muted/30">
+      <section className="py-24 px-4 relative section-gray pattern-dots">
         <div className="container mx-auto">
           <motion.div initial={{
           opacity: 0,
@@ -304,22 +306,22 @@ const Landing = () => {
             icon: Users,
             title: "😰 Você Faz Tudo Sozinho",
             description: "Prospecta, vende, otimiza perfis, cria posts, responde avaliações... E quando tenta delegar, vira bagunça porque não tem processo claro.",
-            color: "text-status-danger"
+            color: "border-status-danger/30"
           }, {
             icon: FileText,
             title: "📝 Otimização Sem Padrão",
             description: "Cada operador faz do seu jeito. Um esquece categorias, outro pula atributos. Você não tem como garantir que o trabalho saiu completo.",
-            color: "text-status-info"
+            color: "border-status-info/30"
           }, {
             icon: Clock,
             title: "🔄 Recorrentes Sem Controle",
             description: "Você não sabe quais clientes tiveram posts essa semana, quais precisam de avaliações respondidas ou quais estão sem atividade há 15 dias.",
-            color: "text-status-warning"
+            color: "border-status-warning/30"
           }, {
             icon: Target,
             title: "💸 Trabalho Invisível",
             description: "Você trabalha muito, mas o cliente não vê. Na hora de renovar, ele pergunta: \"O que vocês fizeram mesmo?\"",
-            color: "text-status-purple"
+            color: "border-status-purple/30"
           }].map((problem, i) => <motion.div key={problem.title} initial={{
             opacity: 0,
             y: 20
@@ -330,9 +332,9 @@ const Landing = () => {
             once: true
           }} transition={{
             delay: i * 0.1
-          }} className="glass-card p-6">
+          }} className={`bg-white rounded-2xl border-2 ${problem.color} p-6 card-3d shadow-sm`}>
                 <h3 className="text-lg font-semibold mb-3">{problem.title}</h3>
-                <p className="text-muted-foreground text-sm">{problem.description}</p>
+                <p className="text-muted-foreground text-sm leading-relaxed">{problem.description}</p>
               </motion.div>)}
           </div>
 
@@ -348,10 +350,13 @@ const Landing = () => {
             </span>
           </motion.p>
         </div>
+
+        {/* Diagonal divider */}
+        <SectionDivider variant="diagonal" fill="fill-white" className="bottom-0" />
       </section>
 
       {/* ===== SEÇÃO SOLUÇÃO ===== */}
-      <section id="como-funciona" className="py-20 px-4 relative">
+      <section id="como-funciona" className="py-24 px-4 relative section-white shadow-inset-light">
         <div className="container mx-auto">
           <motion.div initial={{
           opacity: 0,
@@ -368,7 +373,7 @@ const Landing = () => {
             </div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 font-display">
               O G-Rank Gerencia{" "}
-              <span className="gradient-text">Todo o Ciclo Operacional</span>
+              <span className="gradient-title-text">Todo o Ciclo Operacional</span>
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto text-lg mb-4">
               Da primeira conversa com o lead até a execução recorrente mensal.
@@ -383,10 +388,13 @@ const Landing = () => {
             <InteractiveDemo />
           </div>
         </div>
+
+        {/* Wave divider */}
+        <SectionDivider variant="curve" fill="fill-[#F2F5F7]" className="bottom-0" />
       </section>
 
       {/* ===== SEÇÃO FUNCIONALIDADES ===== */}
-      <section id="funcionalidades" className="py-20 px-4 relative bg-muted/30">
+      <section id="funcionalidades" className="py-24 px-4 relative section-gray-alt">
         <div className="container mx-auto">
           <motion.div initial={{
           opacity: 0,
@@ -399,7 +407,7 @@ const Landing = () => {
         }} className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 font-display">
               Tudo Que Sua Agência{" "}
-              <span className="gradient-text">Precisa</span>
+              <span className="gradient-title-text">Precisa</span>
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Ferramentas especializadas para otimizar cada etapa do seu negócio
@@ -410,6 +418,9 @@ const Landing = () => {
             {features.map((feature, index) => <FeatureCard key={feature.title} icon={feature.icon} title={feature.title} description={feature.description} delay={index * 0.1} />)}
           </div>
         </div>
+
+        {/* Arrow divider */}
+        <SectionDivider variant="arrow" fill="fill-white" className="bottom-0" />
       </section>
 
       {/* ===== SEÇÃO ANTES VS DEPOIS ===== */}
@@ -693,7 +704,7 @@ const Landing = () => {
       </section>
 
       {/* ===== SEÇÃO PREÇOS ===== */}
-      <section id="precos" className="py-20 px-4 relative">
+      <section id="precos" className="py-24 px-4 relative section-white">
         <div className="container mx-auto">
           <motion.div initial={{
           opacity: 0,
@@ -706,7 +717,7 @@ const Landing = () => {
         }} className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 font-display">
               Quanto Custa Ter{" "}
-              <span className="gradient-text">Estrutura na Sua Operação?</span>
+              <span className="gradient-title-text">Estrutura na Sua Operação?</span>
             </h2>
             <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
               O G-Rank não é uma despesa. É infraestrutura de crescimento.
@@ -714,11 +725,11 @@ const Landing = () => {
             </p>
 
             {/* Toggle */}
-            <div className="inline-flex items-center gap-3 p-1 rounded-full bg-muted border border-border">
-              <button onClick={() => setIsAnnual(false)} className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${!isAnnual ? 'gradient-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}>
+            <div className="inline-flex items-center gap-3 p-1.5 rounded-full bg-muted border border-border">
+              <button onClick={() => setIsAnnual(false)} className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all btn-press ${!isAnnual ? 'gradient-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}>
                 Mensal
               </button>
-              <button onClick={() => setIsAnnual(true)} className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2 ${isAnnual ? 'gradient-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}>
+              <button onClick={() => setIsAnnual(true)} className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all flex items-center gap-2 btn-press ${isAnnual ? 'gradient-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}>
                 Anual
                 <span className="px-2 py-0.5 rounded-full bg-status-success/20 text-status-success text-xs">
                   -20%
@@ -740,11 +751,11 @@ const Landing = () => {
             duration: 0.4,
             delay: index * 0.1
           }} className={`relative flex flex-col min-h-[520px] ${plan.popular ? 'md:scale-105 z-10' : ''}`}>
-                {plan.popular && <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full gradient-primary text-xs font-semibold text-primary-foreground z-20">
+                {plan.popular && <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full gradient-primary text-xs font-semibold text-primary-foreground z-20 badge-pulse">
                     Mais Popular
                   </div>}
 
-                <div className={`glass-card p-6 flex-1 flex flex-col ${plan.popular ? 'border-primary/50 neon-border' : ''}`}>
+                <div className={`bg-white rounded-2xl border p-6 flex-1 flex flex-col transition-all duration-300 ${plan.popular ? 'border-primary shadow-lg card-hover-glow' : 'border-border hover:border-primary/30 hover:shadow-md'}`}>
                   <div className="text-center mb-4">
                     <div className="flex items-center justify-center gap-2 mb-1">
                       <span className="text-2xl">{plan.emoji}</span>
@@ -780,17 +791,20 @@ const Landing = () => {
                         </li>)}
                     </ul>}
 
-                  <Button asChild className={`w-full mt-auto ${plan.popular ? 'gradient-primary text-primary-foreground border-0 neon-glow' : 'bg-muted hover:bg-muted/80 text-foreground border border-border'}`}>
+                  <Button asChild className={`w-full mt-auto btn-press min-h-[48px] ${plan.popular ? 'gradient-primary text-primary-foreground border-0 btn-pulse' : 'bg-muted hover:bg-primary hover:text-primary-foreground text-foreground border border-border'}`}>
                     <Link to={`/register?plan=${plan.name.toLowerCase()}`}>{plan.cta}</Link>
                   </Button>
                 </div>
               </motion.div>)}
           </div>
         </div>
+
+        {/* Curve divider */}
+        <SectionDivider variant="curve" fill="fill-[#ECFDF5]" className="bottom-0" />
       </section>
 
       {/* ===== SEÇÃO GARANTIA ===== */}
-      <section className="py-20 px-4 relative bg-muted/30">
+      <section className="py-24 px-4 relative section-emerald-light">
         <div className="container mx-auto max-w-4xl">
           <motion.div initial={{
           opacity: 0,
@@ -801,9 +815,9 @@ const Landing = () => {
         }} viewport={{
           once: true
         }} className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 font-display">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 font-display text-foreground">
               Teste{" "}
-              <span className="gradient-text">Sem Riscos</span>{" "}
+              <span className="gradient-title-text">Sem Riscos</span>{" "}
               Por 14 Dias
             </h2>
           </motion.div>
@@ -831,15 +845,18 @@ const Landing = () => {
             once: true
           }} transition={{
             delay: i * 0.1
-          }} className="glass-card p-6 text-center">
-                <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center mx-auto mb-4">
-                  <guarantee.icon className="h-6 w-6 text-primary" />
+          }} className="bg-white rounded-2xl border border-primary/20 p-6 text-center card-3d shadow-sm">
+                <div className="w-14 h-14 rounded-xl bg-primary/15 flex items-center justify-center mx-auto mb-4">
+                  <guarantee.icon className="h-7 w-7 text-primary" />
                 </div>
-                <h3 className="font-semibold mb-2">{guarantee.title}</h3>
+                <h3 className="font-semibold mb-2 text-foreground">{guarantee.title}</h3>
                 <p className="text-sm text-muted-foreground">{guarantee.description}</p>
               </motion.div>)}
           </div>
         </div>
+
+        {/* Wave divider */}
+        <SectionDivider variant="wave" fill="fill-white" className="bottom-0" />
       </section>
 
       {/* ===== SEÇÃO CTA FINAL ===== */}
