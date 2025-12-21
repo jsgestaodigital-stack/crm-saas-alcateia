@@ -49,7 +49,6 @@ const Landing = () => {
       monthlyPrice: 67,
       annualPrice: 54,
       features: [
-        "1 agência",
         "Até 15 clientes ativos",
         "Até 50 leads",
         "Até 2 membros da equipe",
