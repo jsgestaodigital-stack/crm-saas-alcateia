@@ -164,6 +164,7 @@ export function useLeads() {
     // Get the lead before updating to check for stage change
     const lead = leads.find(l => l.id === leadId);
     const previousStage = lead?.pipeline_stage;
+    const previousStatus = lead?.status;
 
     const updates: Partial<Lead> = {
       pipeline_stage: newStage,
@@ -183,11 +184,31 @@ export function useLeads() {
     const success = await updateLead(leadId, updates);
     
     // Force immediate refetch to update UI
-    if (success) {
-      await fetchLeads();
+    if (success && lead) {
+      // LOG AUDITORIA: Registrar mudança de status
+      try {
+        await supabase.rpc('log_action', {
+          _action_type: 'status_change',
+          _entity_type: 'lead',
+          _entity_id: leadId,
+          _entity_name: lead.company_name,
+          _old_value: { pipeline_stage: previousStage, status: previousStatus },
+          _new_value: { pipeline_stage: newStage, status: updates.status },
+          _metadata: { 
+            changed_by: userName,
+            previous_stage_label: previousStage,
+            new_stage_label: newStage 
+          },
+        });
+      } catch (auditError) {
+        console.error('Error logging lead move:', auditError);
+        // Não falha a operação por erro de auditoria
+      }
+
+      await fetchLeads(0, false);
 
       // AUTO-CREATE COMMISSION when lead moves to "gained" (Venda)
-      if (newStage === 'gained' && previousStage !== 'gained' && lead && user) {
+      if (newStage === 'gained' && previousStage !== 'gained' && user) {
         const saleValue = lead.estimated_value || 0;
         const commissionAmount = saleValue * 0.10; // 10% default commission
 

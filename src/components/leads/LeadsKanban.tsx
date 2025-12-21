@@ -5,12 +5,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { format, parseISO, isBefore, isToday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Calendar, User, AlertTriangle, Plus, Settings, GripVertical, Upload, Lock } from 'lucide-react';
+import { Calendar, User, AlertTriangle, Plus, Settings, GripVertical, Upload, Lock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { usePipelineColumns } from '@/hooks/usePipelineColumns';
 import { ColumnSettingsDialog } from './ColumnSettingsDialog';
 import { ImportLeadsDialog } from './ImportLeadsDialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface LeadsKanbanProps {
   leads: Lead[];
@@ -29,10 +30,12 @@ export function LeadsKanban({ leads, onLeadClick, onMoveLead, onRefresh }: Leads
   const [scrollLeft, setScrollLeft] = useState(0);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
+  const [mobileColumnIndex, setMobileColumnIndex] = useState(0);
   
   const { columns, loading: columnsLoading } = usePipelineColumns();
   const { derived } = useAuth();
   const canEditLeads = derived?.canSalesOrAdmin ?? false;
+  const isMobile = useIsMobile();
 
   // Group leads by column
   const leadsByColumn = useMemo(() => {
@@ -217,19 +220,89 @@ export function LeadsKanban({ leads, onLeadClick, onMoveLead, onRefresh }: Leads
         </TooltipProvider>
       </div>
 
-      {/* Kanban Container */}
-      <div 
-        ref={containerRef}
-        className="h-[calc(100vh-220px)] overflow-x-auto overflow-y-hidden p-4 select-none"
-        style={{ cursor: isDraggingContainer ? 'grabbing' : 'grab' }}
-        onDragOver={handleContainerDragOver}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-      >
-        <div className="flex gap-4 h-full min-w-max pb-4">
-          {columns.map((column) => (
+      {/* Mobile View - Single Column with Navigation */}
+      {isMobile ? (
+        <div className="flex flex-col h-[calc(100vh-220px)]">
+          {/* Mobile Column Navigator */}
+          <div className="flex items-center justify-between px-4 py-2 border-b border-border/30 bg-surface-1/50">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setMobileColumnIndex(Math.max(0, mobileColumnIndex - 1))}
+              disabled={mobileColumnIndex === 0}
+              className="p-1"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+            
+            <div className="flex items-center gap-2 text-center">
+              <span className="text-lg">{columns[mobileColumnIndex]?.emoji}</span>
+              <span className="font-semibold text-sm">{columns[mobileColumnIndex]?.title}</span>
+              <Badge variant="outline" className="text-xs">
+                {leadsByColumn[columns[mobileColumnIndex]?.id]?.length || 0}
+              </Badge>
+            </div>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setMobileColumnIndex(Math.min(columns.length - 1, mobileColumnIndex + 1))}
+              disabled={mobileColumnIndex === columns.length - 1}
+              className="p-1"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </Button>
+          </div>
+
+          {/* Mobile Column Dots */}
+          <div className="flex justify-center gap-1 py-2">
+            {columns.map((col, idx) => (
+              <button
+                key={col.id}
+                onClick={() => setMobileColumnIndex(idx)}
+                className={cn(
+                  "w-2 h-2 rounded-full transition-all",
+                  idx === mobileColumnIndex 
+                    ? "bg-primary scale-125" 
+                    : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                )}
+              />
+            ))}
+          </div>
+
+          {/* Mobile Cards List */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            {leadsByColumn[columns[mobileColumnIndex]?.id]?.map((lead) => (
+              <LeadCard 
+                key={lead.id} 
+                lead={lead} 
+                onClick={() => onLeadClick(lead)}
+                onDragStart={() => {}}
+                canDrag={false}
+              />
+            ))}
+            
+            {(!leadsByColumn[columns[mobileColumnIndex]?.id] || leadsByColumn[columns[mobileColumnIndex]?.id].length === 0) && (
+              <div className="text-center py-8 text-muted-foreground text-sm">
+                Nenhum lead nesta etapa
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        /* Desktop Kanban Container */
+        <div 
+          ref={containerRef}
+          className="h-[calc(100vh-220px)] overflow-x-auto overflow-y-hidden p-4 select-none"
+          style={{ cursor: isDraggingContainer ? 'grabbing' : 'grab' }}
+          onDragOver={handleContainerDragOver}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+        >
+          <div className="flex gap-4 h-full min-w-max pb-4">
+            {columns.map((column) => (
             <div
               key={column.id}
               className={cn(
@@ -280,6 +353,7 @@ export function LeadsKanban({ leads, onLeadClick, onMoveLead, onRefresh }: Leads
           ))}
         </div>
       </div>
+      )}
 
       {/* Column Settings Dialog */}
       <ColumnSettingsDialog 
