@@ -6,6 +6,22 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Extract the first valid IP from a potentially comma-separated list
+function extractFirstIp(ipHeader: string | null): string | null {
+  if (!ipHeader || ipHeader === 'unknown') return null;
+  
+  // X-Forwarded-For can contain multiple IPs: "client, proxy1, proxy2"
+  // We want the first one (the original client)
+  const firstIp = ipHeader.split(',')[0].trim();
+  
+  // Basic validation - should look like an IP address
+  if (/^[\d.:a-fA-F]+$/.test(firstIp)) {
+    return firstIp;
+  }
+  
+  return null;
+}
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -18,7 +34,8 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const { action, ...params } = await req.json();
-    const clientIp = req.headers.get('x-forwarded-for') || req.headers.get('cf-connecting-ip') || 'unknown';
+    const rawIp = req.headers.get('x-forwarded-for') || req.headers.get('cf-connecting-ip') || 'unknown';
+    const clientIp = extractFirstIp(rawIp);
     const userAgent = req.headers.get('user-agent') || 'unknown';
 
     console.log(`[security-check] Action: ${action}, IP: ${clientIp}`);
@@ -37,7 +54,7 @@ serve(async (req) => {
 
         const { data, error } = await supabase.rpc('check_login_rate_limit', {
           _email: email,
-          _ip_address: clientIp !== 'unknown' ? clientIp : null
+          _ip_address: clientIp
         });
 
         if (error) {
@@ -67,7 +84,7 @@ serve(async (req) => {
 
         await supabase.rpc('record_failed_login', {
           _email: email,
-          _ip_address: clientIp !== 'unknown' ? clientIp : null,
+          _ip_address: clientIp,
           _user_agent: userAgent
         });
 
@@ -134,7 +151,7 @@ serve(async (req) => {
         });
 
         const { error } = await userSupabase.rpc('log_successful_login', {
-          _ip_address: clientIp !== 'unknown' ? clientIp : null,
+          _ip_address: clientIp,
           _user_agent: userAgent,
           _location: params.location || null
         });
