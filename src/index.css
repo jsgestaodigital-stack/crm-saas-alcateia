@@ -733,4 +733,165 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* === MOBILE-FIRST UTILITIES === */
+  
+  /* Safe area insets for iOS notch/home indicator */
+  .safe-area-inset-top {
+    padding-top: env(safe-area-inset-top, 0);
+  }
+
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  .safe-area-inset-left {
+    padding-left: env(safe-area-inset-left, 0);
+  }
+
+  .safe-area-inset-right {
+    padding-right: env(safe-area-inset-right, 0);
+  }
+
+  /* Minimum touch target (44x44px for iOS, 48x48dp for Android) */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .touch-target-lg {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  /* Mobile-optimized tap highlight */
+  .tap-highlight-none {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .tap-highlight-subtle {
+    -webkit-tap-highlight-color: hsl(var(--primary) / 0.15);
+  }
+
+  /* Prevent text selection on interactive elements */
+  .no-select {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  /* Mobile-friendly spacing */
+  .mobile-padding {
+    @apply px-4 py-3;
+  }
+
+  @media (min-width: 640px) {
+    .mobile-padding {
+      @apply px-6 py-4;
+    }
+  }
+
+  /* Mobile card styles with better touch feedback */
+  .mobile-card {
+    @apply bg-card/95 border border-border/50 rounded-xl transition-all duration-150;
+    box-shadow: 0 2px 8px hsl(252 50% 10% / 0.08);
+  }
+
+  .mobile-card:active {
+    @apply scale-[0.98];
+    box-shadow: 0 1px 4px hsl(252 50% 10% / 0.12);
+  }
+
+  /* Mobile list item with swipe-friendly touch area */
+  .mobile-list-item {
+    @apply flex items-center gap-3 p-4 min-h-[56px] touch-target tap-highlight-subtle no-select;
+    @apply border-b border-border/30 last:border-b-0;
+    @apply active:bg-primary/5 transition-colors duration-100;
+  }
+
+  /* Mobile button with proper touch feedback */
+  .mobile-button {
+    @apply touch-target flex items-center justify-center gap-2;
+    @apply font-medium rounded-xl transition-all duration-150;
+    @apply active:scale-95 tap-highlight-none;
+  }
+
+  /* Mobile input with larger touch area */
+  .mobile-input {
+    @apply h-12 text-base rounded-xl px-4;
+    @apply border-2 border-border/50 focus:border-primary/60;
+    @apply bg-input/80 placeholder:text-muted-foreground/60;
+  }
+
+  /* Enhanced contrast for outdoor readability */
+  .high-contrast-text {
+    text-shadow: 0 1px 2px hsl(0 0% 0% / 0.1);
+  }
+
+  /* Mobile-friendly floating action button */
+  .fab {
+    @apply fixed bottom-6 right-6 z-50;
+    @apply w-14 h-14 rounded-full;
+    @apply flex items-center justify-center;
+    @apply bg-primary text-primary-foreground;
+    @apply shadow-lg hover:shadow-xl;
+    @apply active:scale-90 transition-all duration-150;
+    box-shadow: 
+      0 4px 14px hsl(var(--primary) / 0.4),
+      0 6px 20px hsl(252 50% 10% / 0.15);
+  }
+
+  .fab.safe-bottom {
+    bottom: calc(1.5rem + env(safe-area-inset-bottom, 0));
+  }
+
+  /* Mobile drawer backdrop */
+  .mobile-drawer-backdrop {
+    @apply fixed inset-0 z-40 bg-background/80 backdrop-blur-sm;
+  }
+
+  /* Mobile drawer panel */
+  .mobile-drawer {
+    @apply fixed inset-y-0 left-0 z-50 w-[85vw] max-w-[320px];
+    @apply bg-sidebar-background border-r border-sidebar-border;
+    @apply shadow-2xl;
+    @apply safe-area-inset-top safe-area-inset-bottom safe-area-inset-left;
+  }
+
+  /* Mobile bottom sheet */
+  .bottom-sheet {
+    @apply fixed inset-x-0 bottom-0 z-50;
+    @apply bg-card rounded-t-3xl border-t border-border/50;
+    @apply safe-area-inset-bottom;
+    box-shadow: 0 -10px 40px hsl(252 50% 10% / 0.2);
+  }
+
+  .bottom-sheet-handle {
+    @apply w-12 h-1.5 rounded-full bg-muted-foreground/30 mx-auto mt-3 mb-2;
+  }
+
+  /* Improved mobile scrolling */
+  .mobile-scroll {
+    @apply overflow-y-auto overscroll-contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Mobile-optimized skeleton loading */
+  .mobile-skeleton {
+    @apply animate-pulse bg-muted/60 rounded-lg;
+  }
+
+  /* Prevent zoom on iOS inputs */
+  @supports (-webkit-touch-callout: none) {
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"],
+    input[type="number"],
+    input[type="search"],
+    textarea,
+    select {
+      font-size: 16px !important;
+    }
+  }
 }
