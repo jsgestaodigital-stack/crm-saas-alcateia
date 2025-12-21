@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
@@ -45,6 +45,14 @@ import {
 const Landing = () => {
   const [isAnnual, setIsAnnual] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Force light mode on landing page
+  useEffect(() => {
+    document.documentElement.classList.add('light');
+    return () => {
+      document.documentElement.classList.remove('light');
+    };
+  }, []);
 
   const features = [
     {
