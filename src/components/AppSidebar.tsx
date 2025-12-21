@@ -171,17 +171,17 @@ export function AppSidebar({
   const isOnRecorrencia = location.pathname === "/recorrencia";
   const sidebarContent = <>
       {/* Logo with gradient accent */}
-      <div className="h-16 flex items-center justify-between px-4 border-b border-emerald/10 bg-gradient-to-r from-emerald/5 via-transparent to-violet/5">
+      <div className="h-16 flex items-center justify-between px-4 border-b border-emerald/10 bg-gradient-to-r from-emerald/5 via-transparent to-violet/5 safe-area-inset-top">
         {!collapsed && (
           <div className="flex items-center gap-2 animate-fade-in">
             <img src={grankLogo} alt="G-Rank CRM" className="h-9 w-auto" />
           </div>
         )}
-        <Button variant="ghost" size="icon" onClick={() => onCollapsedChange(!collapsed)} className="h-8 w-8 hover:bg-emerald/10 hover:text-emerald transition-all duration-300 hidden lg:flex group">
+        <Button variant="ghost" size="icon" onClick={() => onCollapsedChange(!collapsed)} className="h-10 w-10 hover:bg-emerald/10 hover:text-emerald transition-all duration-300 hidden lg:flex group touch-target">
           {collapsed ? <ChevronRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" /> : <ChevronLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />}
         </Button>
-        <Button variant="ghost" size="icon" onClick={() => onMobileOpenChange(false)} className="h-8 w-8 hover:bg-emerald/10 hover:text-emerald transition-all lg:hidden">
-          <X className="h-4 w-4" />
+        <Button variant="ghost" size="icon" onClick={() => onMobileOpenChange(false)} className="h-12 w-12 hover:bg-emerald/10 hover:text-emerald transition-all lg:hidden touch-target-lg tap-highlight-subtle">
+          <X className="h-5 w-5" />
         </Button>
       </div>
 
@@ -206,11 +206,11 @@ export function AppSidebar({
               const isActive = viewMode === view.id && isOnDashboard;
               return <Tooltip key={view.id}>
                       <TooltipTrigger asChild>
-                        <Button variant="ghost" className={cn("w-full justify-start gap-3 h-11 transition-all duration-200", collapsed ? "px-3 justify-center" : "px-4", isActive ? "bg-primary/15 text-primary border border-primary/30 neon-border" : "hover:bg-primary/5 hover:text-primary hover:translate-x-1 border border-transparent")} onClick={() => handleNavClick(view.id)}>
+                        <Button variant="ghost" className={cn("w-full justify-start gap-3 h-12 transition-all duration-200 touch-target tap-highlight-subtle", collapsed ? "px-3 justify-center" : "px-4", isActive ? "bg-primary/15 text-primary border border-primary/30 neon-border" : "hover:bg-primary/5 hover:text-primary hover:translate-x-1 border border-transparent")} onClick={() => handleNavClick(view.id)}>
                           <view.icon className={cn("h-5 w-5 shrink-0", isActive && "scale-110")} />
                           {!collapsed && <div className="flex flex-col items-start animate-fade-in">
                               <span className="text-sm font-medium">{view.label}</span>
-                              <span className="text-[10px] text-muted-foreground">{view.description}</span>
+                              <span className="text-[11px] text-muted-foreground">{view.description}</span>
                             </div>}
                         </Button>
                       </TooltipTrigger>
@@ -557,8 +557,13 @@ export function AppSidebar({
       </div>
     </>;
   return <>
-      {/* Mobile Backdrop */}
-      {mobileOpen && <div className="fixed inset-0 bg-soft-black/70 backdrop-blur-md z-40 lg:hidden animate-fade-in" onClick={() => onMobileOpenChange(false)} />}
+      {/* Mobile Backdrop - improved with safe area */}
+      {mobileOpen && (
+        <div 
+          className="fixed inset-0 bg-background/80 backdrop-blur-md z-40 lg:hidden animate-fade-in tap-highlight-none" 
+          onClick={() => onMobileOpenChange(false)} 
+        />
+      )}
 
       {/* Desktop Sidebar */}
       <aside className={cn(
@@ -570,11 +575,13 @@ export function AppSidebar({
         {sidebarContent}
       </aside>
 
-      {/* Mobile Sidebar */}
+      {/* Mobile Sidebar - improved with safe areas and touch optimization */}
       <aside className={cn(
-        "lg:hidden fixed left-0 top-0 h-screen z-50 flex flex-col transition-transform duration-300 w-72",
+        "lg:hidden fixed left-0 top-0 h-screen z-50 flex flex-col transition-transform duration-300",
+        "w-[85vw] max-w-[320px]",
         "bg-sidebar/98 backdrop-blur-xl border-r border-emerald/10",
-        "shadow-[4px_0_32px_rgba(0,252,168,0.05)]",
+        "shadow-[4px_0_32px_rgba(0,252,168,0.08)]",
+        "safe-area-inset-top safe-area-inset-bottom safe-area-inset-left",
         mobileOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         {sidebarContent}

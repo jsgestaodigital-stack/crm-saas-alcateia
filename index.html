@@ -2,20 +2,47 @@
 <html lang="pt-BR" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
     <title>G-Rank CRM — Gestão Inteligente de Clientes</title>
     <meta name="description" content="G-Rank CRM — Sistema completo de gestão de clientes, leads, propostas e contratos para agências digitais e prestadores de serviços." />
     <meta name="author" content="G-Rank CRM" />
-    <meta name="theme-color" content="#8b5cf6" />
+    
+    <!-- Theme and Mobile Optimization -->
+    <meta name="theme-color" content="#00FCA8" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#00D68F" media="(prefers-color-scheme: light)" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="G-Rank CRM" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- iOS Safari specific -->
+    <meta name="apple-touch-fullscreen" content="yes" />
+    
+    <!-- Prevent text size adjustment on orientation change -->
+    <meta name="HandheldFriendly" content="true" />
 
+    <!-- Open Graph -->
     <meta property="og:title" content="G-Rank CRM — Gestão Inteligente" />
     <meta property="og:description" content="Sistema completo de gestão de clientes, leads, propostas e contratos para agências digitais." />
     <meta property="og:type" content="website" />
 
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
 
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- iOS Safe Area CSS Variables -->
+    <style>
+      :root {
+        --sat: env(safe-area-inset-top, 0px);
+        --sar: env(safe-area-inset-right, 0px);
+        --sab: env(safe-area-inset-bottom, 0px);
+        --sal: env(safe-area-inset-left, 0px);
+      }
+    </style>
   </head>
 
   <body>

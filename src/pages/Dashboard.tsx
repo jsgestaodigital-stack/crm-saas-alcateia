@@ -299,28 +299,34 @@ const Dashboard = () => {
         "ml-0",
         sidebarCollapsed ? "lg:ml-16" : "lg:ml-64"
       )}>
-        {/* Mobile Header with Menu Button */}
+        {/* Mobile Header with Menu Button - improved with safe area and touch targets */}
         <div className={cn(
-          "lg:hidden fixed top-0 left-0 right-0 h-14 backdrop-blur-md z-30 flex items-center justify-between px-4",
+          "lg:hidden fixed top-0 left-0 right-0 h-16 backdrop-blur-xl z-30 flex items-center justify-between px-3",
+          "safe-area-inset-top",
           isSalesMode 
-            ? "bg-background/90 border-b border-amber-500/20" 
-            : "bg-background/80 border-b border-border/50"
+            ? "bg-background/95 border-b border-amber-500/20" 
+            : "bg-background/95 border-b border-border/50"
         )}>
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setMobileMenuOpen(true)}
-              className="h-10 w-10"
+              className="h-12 w-12 touch-target-lg tap-highlight-subtle"
             >
-              <Menu className="h-5 w-5" />
+              <Menu className="h-6 w-6" />
             </Button>
             <span className={cn(
-              "ml-3 font-semibold",
+              "font-bold text-lg",
               isSalesMode ? "text-amber-400" : "text-primary"
             )}>
               G Rank
             </span>
+          </div>
+          
+          {/* Mobile Funnel Toggle */}
+          <div className="flex items-center gap-2">
+            <FunnelToggle />
           </div>
         </div>
 
@@ -329,38 +335,41 @@ const Dashboard = () => {
           <DashboardHeader />
         </div>
         
-        {/* Main area */}
+        {/* Main area - improved mobile padding */}
         <main className={cn(
           "lg:pt-16",
-          "pt-14"
+          "pt-16 pb-24", // Extra bottom padding for FAB
+          "safe-area-inset-bottom"
         )}>
-          {/* Mode-specific header bar */}
+          {/* Mode-specific header bar - improved for mobile */}
           <div className={cn(
-            "px-4 py-3 flex items-center justify-between mode-header mode-transition",
+            "px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mode-header mode-transition",
             isSalesMode 
               ? "border-b border-amber-500/20 bg-gradient-to-r from-amber-500/5 to-transparent" 
               : isRecurringMode
               ? "border-b border-violet-500/20 bg-gradient-to-r from-violet-500/5 to-transparent"
               : "border-b border-primary/20 bg-gradient-to-r from-primary/5 to-transparent"
           )}>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
               <h1 className={cn(
-                "text-xl font-bold mode-transition",
+                "text-lg sm:text-xl font-bold mode-transition",
                 isSalesMode ? "text-amber-400" : isRecurringMode ? "text-violet-400" : "text-primary"
               )}>
                 {isSalesMode ? "🎯 Funil de Vendas" : isRecurringMode ? "🔄 Recorrência" : "📋 Funil de Otimização"}
               </h1>
-              <span className="text-sm text-muted-foreground">
+              <span className="text-xs sm:text-sm text-muted-foreground">
                 {isSalesMode 
                   ? `${activeLeads.length} oportunidades ativas` 
                   : isRecurringMode
-                  ? "Tarefas periódicas dos clientes"
+                  ? "Tarefas periódicas"
                   : `${activeClients.length} clientes ativos`}
               </span>
             </div>
             
-            {/* Funnel Toggle - always visible */}
-            <FunnelToggle />
+            {/* Funnel Toggle - hidden on mobile (moved to header) */}
+            <div className="hidden sm:block">
+              <FunnelToggle />
+            </div>
           </div>
 
           {/* Global Progress Bar - only for delivery mode */}
@@ -393,8 +402,8 @@ const Dashboard = () => {
           </AnimatePresence>
         </main>
 
-        {/* Floating buttons */}
-        <div className="fixed bottom-6 right-6 z-40 flex flex-col items-center gap-3">
+        {/* Floating buttons - improved positioning with safe area */}
+        <div className="fixed bottom-6 right-4 sm:right-6 z-40 flex flex-col items-center gap-3 safe-area-inset-bottom">
           <TrashBin />
           <VoiceCommandButton />
         </div>
