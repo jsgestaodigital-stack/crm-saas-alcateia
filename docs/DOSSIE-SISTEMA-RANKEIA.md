@@ -1,8 +1,8 @@
 # DOSSIÊ TÉCNICO COMPLETO - SISTEMA RANKEIA
 ## Plataforma de Gestão de Agências de Marketing Google Meu Negócio
 
-**Versão:** 1.0  
-**Data:** Dezembro 2024  
+**Versão:** 2.0  
+**Data:** Dezembro 2024 (Atualizado em 21/12/2024)  
 **Autor:** Documentação Técnica Automatizada  
 **Propósito:** Documentar arquitetura, funcionalidades e guia de migração para SaaS
 
@@ -20,11 +20,13 @@
 8. [DESIGN SYSTEM](#8-design-system)
 9. [FLUXOS DE NEGÓCIO](#9-fluxos-de-negócio)
 10. [SEGURANÇA E RLS POLICIES](#10-segurança-e-rls-policies)
-11. [CHECKLIST DE MIGRAÇÃO PARA SAAS](#11-checklist-de-migração-para-saas)
-12. [GUIA DE IMPLEMENTAÇÃO SUPER ADMIN](#12-guia-de-implementação-super-admin)
-13. [GUIA DE IMPLEMENTAÇÃO ONBOARDING](#13-guia-de-implementação-onboarding)
-14. [ARQUIVOS CRÍTICOS DO SISTEMA](#14-arquivos-críticos-do-sistema)
-15. [PROMPT PARA NOVAS CONVERSAS](#15-prompt-para-novas-conversas)
+11. [RESPONSIVIDADE MOBILE](#11-responsividade-mobile)
+12. [SISTEMA DE PROPOSTAS E CONTRATOS](#12-sistema-de-propostas-e-contratos)
+13. [CHECKLIST DE MIGRAÇÃO PARA SAAS](#13-checklist-de-migração-para-saas)
+14. [GUIA DE IMPLEMENTAÇÃO SUPER ADMIN](#14-guia-de-implementação-super-admin)
+15. [GUIA DE IMPLEMENTAÇÃO ONBOARDING](#15-guia-de-implementação-onboarding)
+16. [ARQUIVOS CRÍTICOS DO SISTEMA](#16-arquivos-críticos-do-sistema)
+17. [PROMPT PARA NOVAS CONVERSAS](#17-prompt-para-novas-conversas)
 
 ---
 
@@ -38,8 +40,11 @@ O RANKEIA é uma plataforma completa de gestão operacional para agências de ma
 - **Gestão de Clientes (Delivery)**: Kanban de execução com checklist de 58 itens em 5 etapas
 - **Recorrência**: Gestão de clientes com planos mensais e rotinas automatizadas
 - **Comissões**: Sistema financeiro para pagamento de equipe
-- **Agentes IA**: Análises automatizadas com inteligência artificial
+- **Propostas e Contratos**: Sistema completo com variáveis dinâmicas e assinatura digital
+- **Agentes IA**: Análises automatizadas com inteligência artificial (Raio-X, SEO, Suspensões)
+- **Lead Copilot**: Assistente IA para vendedores com sugestões e análises de leads
 - **Relatórios Gerenciais**: Dashboard executivo para gestores
+- **Perfil do Usuário**: Página de perfil completa com edição de dados
 
 ## 1.2 Stack Tecnológico
 
@@ -55,16 +60,20 @@ O RANKEIA é uma plataforma completa de gestão operacional para agências de ma
 | **Autenticação** | Supabase Auth | Native |
 | **Edge Functions** | Deno (Supabase Functions) | Latest |
 | **IA** | Lovable AI (Gemini/OpenAI) | Multi-model |
+| **Animações** | Framer Motion | 12.x |
+| **Charts** | Recharts | 2.15+ |
+| **Formulários** | React Hook Form + Zod | 7.x / 3.x |
 
 ## 1.3 Métricas Atuais
 
-- **28 tabelas** no banco de dados
-- **18 tabelas** com isolamento por `agency_id` (multi-tenant)
-- **12 edge functions** para lógica de backend
-- **14 páginas** principais
-- **~150 componentes** React
-- **47 funções SQL** no banco de dados
-- **~100 RLS policies** de segurança
+- **35+ tabelas** no banco de dados
+- **18+ tabelas** com isolamento por `agency_id` (multi-tenant)
+- **20+ edge functions** para lógica de backend
+- **33 páginas** principais
+- **~180 componentes** React
+- **50+ funções SQL** no banco de dados
+- **~120 RLS policies** de segurança
+- **28 rotas** funcionais no sistema
 
 ---
 
@@ -884,7 +893,9 @@ Análise de perfis suspensos:
 | Função | Propósito | Autenticação |
 |--------|-----------|--------------|
 | `create-user` | Criar novo usuário | Requer admin |
+| `create-agency-owner` | Criar owner de agência | Requer super admin |
 | `reset-user-password` | Resetar senha | Requer admin |
+| `admin-reset-password` | Reset administrativo | Requer super admin |
 | `bootstrap-users` | Provisionar usuários iniciais | Token especial |
 | `convert-lead-to-client` | Converter lead em cliente | Autenticado |
 | `generate-recurring-tasks` | Gerar tarefas recorrentes | Autenticado |
@@ -893,8 +904,17 @@ Análise de perfis suspensos:
 | `analyze-suspensao` | Análise IA de suspensão | Autenticado |
 | `analyze-recurrence` | Relatório IA de recorrência | Autenticado |
 | `generate-manager-report` | Relatório gerencial IA | Autenticado |
+| `generate-proposal` | Gerar proposta comercial | Autenticado |
+| `generate-contract` | Gerar contrato digital | Autenticado |
+| `send-to-autentique` | Enviar para assinatura (desativado) | Autenticado |
+| `autentique-webhook` | Webhook de assinatura (desativado) | Público |
 | `process-voice-command` | Processar comando de voz | Autenticado |
-| `voice-to-text` | Transcrever áudio | Autenticado |
+| `voice-to-text` | Transcrever áudio (Whisper) | Autenticado |
+| `lead-copilot` | Assistente IA para leads | Autenticado |
+| `dashboard-bi` | Métricas de BI | Autenticado |
+| `check-notifications` | Verificar notificações | Autenticado |
+| `permissions` | Gerenciar permissões | Autenticado |
+| `security-check` | Verificação de segurança | Autenticado |
 
 ## 7.2 Estrutura de uma Edge Function
 
@@ -945,6 +965,34 @@ serve(async (req) => {
     );
   }
 });
+```
+
+## 7.3 Chamando Edge Functions do Frontend
+
+```typescript
+import { supabase } from "@/integrations/supabase/client";
+
+const { data, error } = await supabase.functions.invoke("nome-funcao", {
+  body: { parametro1: valor1 }
+});
+```
+
+## 7.4 Lead Copilot (Assistente IA)
+
+O Lead Copilot é um assistente de IA para vendedores que:
+
+- **Resumo do Lead**: Gera resumo automático das informações
+- **Sugestões de Ação**: Sugere próximos passos baseado no histórico
+- **Análise de Qualidade**: Avalia a qualidade do lead
+- **Chat Contextual**: Conversa sobre o lead específico
+
+```typescript
+// Tipos de requisição
+type CopilotRequest = {
+  leadId: string;
+  type: 'summary' | 'suggestion' | 'analysis' | 'chat';
+  userMessage?: string;
+};
 ```
 
 ## 7.3 Chamando Edge Functions do Frontend
@@ -1199,6 +1247,164 @@ Todas as funções de verificação usam `SECURITY DEFINER` para:
 - Evitar recursão em RLS policies
 - Executar com privilégios do dono da função
 - Garantir acesso consistente
+
+---
+
+# 11. RESPONSIVIDADE MOBILE
+
+## 11.1 Visão Geral
+
+O sistema foi otimizado para funcionar em dispositivos móveis iOS e Android com:
+- **Touch targets mínimos de 44px** (recomendação Apple/Google)
+- **Safe areas** para notch e bordas arredondadas
+- **Prevenção de zoom** em inputs no iOS
+- **FAB (Floating Action Button)** para ações rápidas
+
+## 11.2 Utilitários CSS Mobile
+
+```css
+/* Safe area insets */
+.safe-top { padding-top: env(safe-area-inset-top); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+.safe-left { padding-left: env(safe-area-inset-left); }
+.safe-right { padding-right: env(safe-area-inset-right); }
+
+/* Touch targets */
+.touch-target { min-height: 44px; min-width: 44px; }
+.touch-target-lg { min-height: 48px; min-width: 48px; }
+
+/* Mobile-specific */
+.mobile-card { touch-action: pan-y; -webkit-overflow-scrolling: touch; }
+.tap-highlight-none { -webkit-tap-highlight-color: transparent; }
+```
+
+## 11.3 Componentes Mobile-First
+
+### Sidebar Mobile
+- Drawer com safe-area
+- Botão de fechar 48px
+- Menu items altura 48px
+- Touch feedback visual
+
+### Inputs Mobile
+- Altura mínima 48px (h-12)
+- Fonte 16px para evitar zoom iOS
+- Espaçamento adequado para dedos
+
+### Botões Mobile
+- Variantes `mobile` e `mobile-icon`
+- Altura mínima 44px
+- Touch area expandida
+
+## 11.4 Meta Tags Mobile
+
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+```
+
+---
+
+# 12. SISTEMA DE PROPOSTAS E CONTRATOS
+
+## 12.1 Arquitetura de Variáveis
+
+O sistema utiliza um sistema unificado de variáveis para propostas e contratos:
+
+### Tipos de Variáveis
+
+1. **Defaults**: Valores padrão para todas as propostas/contratos
+2. **Derived**: Valores calculados automaticamente (ex: valor por extenso)
+3. **Overrides**: Valores específicos que sobrescrevem defaults
+
+### Arquivo Central: `src/lib/sharedVariables.ts`
+
+```typescript
+// Variáveis padrão
+export const defaultVariables = {
+  agency_name: 'Alcateia Digital',
+  agency_cnpj: 'XX.XXX.XXX/0001-XX',
+  // ... mais variáveis
+};
+
+// Merge de variáveis
+export function mergeVariables(
+  defaults: Record<string, any>,
+  derived: Record<string, any>,
+  overrides: Record<string, any>
+): Record<string, any>;
+
+// Substituição em template
+export function applyVariablesToText(
+  text: string, 
+  variables: Record<string, any>
+): string;
+```
+
+## 12.2 Fluxo de Propostas
+
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│ Criar       │────▶│ Editar      │────▶│ Preview     │
+│ Proposta    │     │ Blocos      │     │ Visual      │
+└─────────────┘     └─────────────┘     └─────────────┘
+                                               │
+                                               ▼
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│ Cliente     │◀────│ Enviar      │◀────│ Gerar       │
+│ Visualiza   │     │ Link        │     │ PDF         │
+└─────────────┘     └─────────────┘     └─────────────┘
+```
+
+## 12.3 Fluxo de Contratos
+
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│ Criar       │────▶│ Preencher   │────▶│ Preview     │
+│ Contrato    │     │ Partes      │     │ Cláusulas   │
+└─────────────┘     └─────────────┘     └─────────────┘
+                                               │
+                                               ▼
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│ Assinatura  │◀────│ Enviar      │◀────│ Gerar       │
+│ Digital     │     │ Link        │     │ PDF         │
+└─────────────┘     └─────────────┘     └─────────────┘
+```
+
+## 12.4 Tabelas de Propostas e Contratos
+
+### proposals
+- Propostas comerciais com blocos editáveis
+- Status: draft, sent, viewed, accepted, rejected
+- Vinculada a lead ou client
+
+### contracts
+- Contratos digitais com cláusulas
+- Status: draft, sent, viewed, signed, cancelled
+- Suporte a assinatura digital
+- Campos para contratante e contratado
+
+### proposal_views / contract_views
+- Rastreamento de visualizações
+- IP, user agent, duração
+
+## 12.5 Integração Autentique (Desativada)
+
+O sistema possui integração com Autentique para assinatura digital, atualmente **DESATIVADA** via flag:
+
+```typescript
+// src/lib/autentique.ts
+export const AUTENTIQUE_ENABLED = false;
+```
+
+Quando reativada, permite:
+- Envio de contratos para assinatura
+- Webhook para status de assinatura
+- Download de documentos assinados
+
 
 ---
 
@@ -1618,9 +1824,9 @@ export function ProtectedRoute({ children }) {
 
 ---
 
-# 14. ARQUIVOS CRÍTICOS DO SISTEMA
+# 16. ARQUIVOS CRÍTICOS DO SISTEMA
 
-## 14.1 Configuração
+## 16.1 Configuração
 
 | Arquivo | Propósito |
 |---------|-----------|
@@ -1630,64 +1836,82 @@ export function ProtectedRoute({ children }) {
 | `tailwind.config.ts` | Configuração Tailwind |
 | `src/index.css` | Design system e variáveis CSS |
 
-## 14.2 Core da Aplicação
+## 16.2 Core da Aplicação
 
 | Arquivo | Propósito |
 |---------|-----------|
-| `src/App.tsx` | Rotas e providers |
+| `src/App.tsx` | Rotas e providers (28 rotas) |
 | `src/contexts/AuthContext.tsx` | Autenticação e permissões |
 | `src/pages/Auth.tsx` | Página de login |
 | `src/pages/Dashboard.tsx` | Dashboard principal |
 | `src/pages/Admin.tsx` | Administração de usuários |
+| `src/pages/MeuPerfil.tsx` | Perfil do usuário |
 
-## 14.3 Módulos de Negócio
+## 16.3 Módulos de Negócio
 
 | Arquivo | Propósito |
 |---------|-----------|
 | `src/types/client.ts` | Tipos e checklist de clientes |
 | `src/types/lead.ts` | Tipos de leads e pipeline |
+| `src/types/proposal.ts` | Tipos de propostas |
+| `src/types/contract.ts` | Tipos de contratos |
 | `src/hooks/useClients.ts` | CRUD de clientes |
 | `src/hooks/useLeads.ts` | CRUD de leads |
 | `src/hooks/useCommissions.ts` | CRUD de comissões |
 | `src/hooks/useRecurring.ts` | Gestão de recorrência |
+| `src/hooks/useProposals.ts` | CRUD de propostas |
+| `src/hooks/useContracts.ts` | CRUD de contratos |
+| `src/hooks/useLeadCopilot.ts` | Assistente IA de leads |
 
-## 14.4 Componentes Principais
+## 16.4 Componentes Principais
 
 | Arquivo | Propósito |
 |---------|-----------|
 | `src/components/KanbanBoard.tsx` | Kanban de clientes |
 | `src/components/leads/LeadsKanban.tsx` | Kanban de leads |
+| `src/components/leads/LeadCopilotPanel.tsx` | Assistente IA |
 | `src/components/ClientExecutionView.tsx` | Execução de cliente |
 | `src/components/checklist/ChecklistBlock.tsx` | Bloco de checklist |
-| `src/components/AppSidebar.tsx` | Sidebar de navegação |
+| `src/components/AppSidebar.tsx` | Sidebar de navegação (mobile-first) |
+| `src/components/proposals/ProposalEditor.tsx` | Editor de propostas |
+| `src/components/contracts/ContractEditor.tsx` | Editor de contratos |
+| `src/lib/sharedVariables.ts` | Sistema de variáveis |
 
-## 14.5 Edge Functions
+## 16.5 Edge Functions
 
 | Arquivo | Propósito |
 |---------|-----------|
 | `supabase/functions/create-user/index.ts` | Criar usuário |
 | `supabase/functions/reset-user-password/index.ts` | Resetar senha |
 | `supabase/functions/convert-lead-to-client/index.ts` | Converter lead |
-| `supabase/functions/analyze-raiox/index.ts` | Análise IA |
-| `supabase/functions/generate-manager-report/index.ts` | Relatório IA |
+| `supabase/functions/analyze-raiox/index.ts` | Análise IA Raio-X |
+| `supabase/functions/analyze-seo/index.ts` | Análise IA SEO |
+| `supabase/functions/analyze-suspensao/index.ts` | Análise IA Suspensões |
+| `supabase/functions/generate-manager-report/index.ts` | Relatório gerencial IA |
+| `supabase/functions/generate-proposal/index.ts` | Gerar proposta |
+| `supabase/functions/generate-contract/index.ts` | Gerar contrato |
+| `supabase/functions/lead-copilot/index.ts` | Assistente IA de leads |
+| `supabase/functions/voice-to-text/index.ts` | Transcrição de áudio |
 
 ---
 
-# 15. PROMPT PARA NOVAS CONVERSAS
+# 17. PROMPT PARA NOVAS CONVERSAS
 
-## 15.1 Prompt Resumido (ChatGPT / Claude)
+## 17.1 Prompt Resumido (ChatGPT / Claude)
 
 ```
 Você é um desenvolvedor senior trabalhando no projeto RANKEIA, uma plataforma SaaS de gestão para agências de marketing Google Meu Negócio.
 
 ## Stack:
-- Frontend: React 18 + TypeScript + Vite + Tailwind + Shadcn/UI
+- Frontend: React 18 + TypeScript + Vite + Tailwind + Shadcn/UI + Framer Motion
 - Backend: Supabase (PostgreSQL + Edge Functions + Auth)
 - State: TanStack Query + Zustand
+- Forms: React Hook Form + Zod
+- Charts: Recharts
 
 ## Arquitetura Multi-Tenant:
 - Cada agência é um tenant isolado (agency_id)
-- 18 tabelas com RLS policies por agency_id
+- 18+ tabelas com RLS policies por agency_id
 - Função current_agency_id() retorna a agência do usuário logado
 - Triggers auto-preenchem agency_id em INSERT
 
@@ -1697,19 +1921,19 @@ Você é um desenvolvedor senior trabalhando no projeto RANKEIA, uma plataforma 
 - Funções SQL: is_admin(), is_super_admin(), can_access_*()
 
 ## Módulos:
-1. CRM de Vendas (leads): Pipeline de 10 etapas, temperatura, propostas
+1. CRM de Vendas (leads): Pipeline de 10 etapas, temperatura, Lead Copilot IA
 2. Delivery (clients): Kanban 7 colunas, checklist 58 itens em 5 etapas
 3. Recorrência: Clientes mensais, rotinas, tarefas automáticas
 4. Comissões: Sistema financeiro, fluxo pending→approved→paid
-5. Agentes IA: Análise de chamadas, SEO, suspensões
-6. Relatório Gerencial: Dashboard executivo
+5. Propostas: Editor de blocos, variáveis dinâmicas, preview, PDF
+6. Contratos: Cláusulas, assinatura digital, variáveis
+7. Agentes IA: Análise de chamadas, SEO, suspensões
+8. Relatório Gerencial: Dashboard executivo
 
-## Estrutura de Arquivos Importantes:
-- src/contexts/AuthContext.tsx (autenticação)
-- src/types/client.ts (tipos e checklist padrão)
-- src/types/lead.ts (tipos de leads e pipeline)
-- src/hooks/use*.ts (hooks de dados)
-- supabase/functions/*.ts (edge functions)
+## Responsividade:
+- Mobile-first com safe-areas iOS/Android
+- Touch targets mínimos 44px
+- Inputs otimizados para evitar zoom iOS
 
 ## Regras:
 - Não modificar arquivos auto-gerados (types.ts, client.ts, config.toml)
@@ -1718,16 +1942,16 @@ Você é um desenvolvedor senior trabalhando no projeto RANKEIA, uma plataforma 
 - Funções SECURITY DEFINER para evitar recursão
 ```
 
-## 15.2 Prompt Completo (Lovable)
+## 17.2 Prompt Completo (Lovable)
 
 ```
 Este é o projeto RANKEIA, uma plataforma de gestão para agências de marketing especializadas em Google Meu Negócio.
 
-O sistema está ~80% pronto para virar SaaS multi-tenant. A arquitetura atual inclui:
+O sistema está ~85% pronto para virar SaaS multi-tenant. A arquitetura atual inclui:
 
 1. MULTI-TENANCY IMPLEMENTADO:
 - Tabela agencies com id, name, slug, status
-- 18 tabelas com coluna agency_id + RLS policies
+- 18+ tabelas com coluna agency_id + RLS policies
 - Função current_agency_id() para filtrar dados
 - Triggers para auto-preencher agency_id
 
@@ -1736,55 +1960,71 @@ O sistema está ~80% pronto para virar SaaS multi-tenant. A arquitetura atual in
 - user_permissions: can_sales, can_ops, can_admin, can_finance, can_recurring, is_super_admin
 - AuthContext com permissões derivadas
 
-3. MÓDULOS:
+3. MÓDULOS COMPLETOS:
 - Dashboard com Kanban de clientes e leads
-- CRM de Vendas (leads) com pipeline de 10 etapas
+- CRM de Vendas (leads) com pipeline de 10 etapas + Lead Copilot IA
 - Delivery (clients) com checklist de 58 itens
 - Recorrência para clientes mensais
 - Comissões (pending → approved → paid)
+- Propostas (editor de blocos, variáveis, PDF)
+- Contratos (cláusulas, assinatura, variáveis)
 - Agentes IA (Raio-X, SEO, Suspensões)
 - Relatório Gerencial
+- Perfil do Usuário
 
-4. EDGE FUNCTIONS:
+4. EDGE FUNCTIONS (20+):
 - create-user, reset-user-password
 - convert-lead-to-client
 - analyze-raiox, analyze-seo, analyze-suspensao
 - generate-manager-report
 - generate-recurring-tasks
+- generate-proposal, generate-contract
+- lead-copilot (assistente IA)
+- voice-to-text (transcrição)
 
-5. O QUE FALTA PARA SAAS:
-- Super Admin Portal (/super-admin)
-- Onboarding self-service (/register)
-- Fluxo de aprovação de agências
-- Nova identidade visual
+5. RESPONSIVIDADE MOBILE:
+- Safe-areas para iOS/Android
+- Touch targets 44px+
+- Inputs otimizados
+
+6. INTEGRAÇÕES:
+- Autentique (assinatura digital) - DESATIVADA
+- Sistema de variáveis unificado para propostas/contratos
+
+7. O QUE FALTA PARA SAAS:
 - Landing page pública
+- Nova identidade visual (opcional)
 
-Estou migrando para um projeto remixado para separar meus dados dos dados dos clientes SaaS. Preciso implementar o Super Admin e o Onboarding com aprovação manual.
+Estou mantendo o projeto estável e funcional, pronto para uso em produção.
 ```
 
 ---
 
 # CONCLUSÃO
 
-Este dossiê documenta completamente o sistema RANKEIA, incluindo:
+Este dossiê documenta completamente o sistema RANKEIA v2.0, incluindo:
 
 - Arquitetura técnica detalhada
-- Schema completo do banco de dados (28 tabelas)
+- Schema completo do banco de dados (35+ tabelas)
 - Sistema de multi-tenancy com RLS
 - Autenticação e permissões granulares
 - Todos os módulos funcionais
-- Edge functions de backend
-- Design system
-- Fluxos de negócio
+- 20+ Edge functions de backend
+- Design system com suporte mobile
+- Responsividade iOS/Android
+- Sistema de propostas e contratos com variáveis
+- Fluxos de negócio completos
+- Lead Copilot (assistente IA para vendas)
 - Checklist completa de migração para SaaS
 - Guias de implementação do Super Admin e Onboarding
-- Prompts para continuar em novas conversas
+- Prompts atualizados para novas conversas
 
 Com este documento, qualquer desenvolvedor ou IA pode entender o sistema completo e continuar o desenvolvimento, seja no Lovable ou em qualquer outra plataforma.
 
 ---
 
-**Documento gerado em**: Dezembro 2024  
-**Tamanho aproximado**: ~10.000 palavras  
+**Documento atualizado em**: 21/12/2024  
+**Versão**: 2.0  
+**Tamanho aproximado**: ~12.000 palavras  
 **Formato**: Markdown  
 **Licença**: Privado - RANKEIA
