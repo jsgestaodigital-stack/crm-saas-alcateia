@@ -69,20 +69,28 @@ export function useOnboardingChecklist() {
   const { data: status, isLoading } = useQuery({
     queryKey: ['onboarding-status', user?.id],
     queryFn: async (): Promise<OnboardingStatus> => {
-      const { data, error } = await supabase.rpc('get_onboarding_status');
+      // Check localStorage fallback first
+      const localDismissed = localStorage.getItem('onboarding_dismissed') === 'true';
       
-      if (error) {
-        console.error('Error fetching onboarding status:', error);
-        return { completed_steps: [], dismissed: false, completed: false };
+      try {
+        const { data, error } = await supabase.rpc('get_onboarding_status');
+        
+        if (error) {
+          console.error('Error fetching onboarding status:', error);
+          return { completed_steps: [], dismissed: localDismissed, completed: false };
+        }
+        
+        // Safely parse the response
+        const result = data as unknown as OnboardingStatus;
+        return {
+          completed_steps: result?.completed_steps || [],
+          dismissed: result?.dismissed || localDismissed,
+          completed: result?.completed || false,
+        };
+      } catch (err) {
+        console.error('Error in onboarding query:', err);
+        return { completed_steps: [], dismissed: localDismissed, completed: false };
       }
-      
-      // Safely parse the response
-      const result = data as unknown as OnboardingStatus;
-      return {
-        completed_steps: result?.completed_steps || [],
-        dismissed: result?.dismissed || false,
-        completed: result?.completed || false,
-      };
     },
     enabled: !!user?.id,
     staleTime: 1000 * 60 * 5, // 5 minutes
@@ -113,15 +121,31 @@ export function useOnboardingChecklist() {
 
   const dismissMutation = useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase.rpc('dismiss_onboarding');
-      if (error) throw error;
-      return data;
+      try {
+        const { data, error } = await supabase.rpc('dismiss_onboarding');
+        if (error) {
+          console.warn('RPC dismiss_onboarding failed, using local storage fallback:', error);
+          // Fallback to localStorage if RPC fails
+          localStorage.setItem('onboarding_dismissed', 'true');
+          return { success: true, fallback: true };
+        }
+        return data;
+      } catch (err) {
+        console.warn('Error dismissing onboarding, using fallback:', err);
+        localStorage.setItem('onboarding_dismissed', 'true');
+        return { success: true, fallback: true };
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['onboarding-status'] });
-      toast.info('Checklist minimizado', {
-        description: 'Você pode reabri-lo a qualquer momento.'
+      toast.info('Checklist fechado', {
+        description: 'Você pode reabri-lo nas configurações.'
       });
+    },
+    onError: () => {
+      // Even on error, dismiss locally
+      localStorage.setItem('onboarding_dismissed', 'true');
+      queryClient.invalidateQueries({ queryKey: ['onboarding-status'] });
     }
   });
 
