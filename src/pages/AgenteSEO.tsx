@@ -54,7 +54,7 @@ export default function AgenteSEO() {
           <XCircle className="w-16 h-16 text-status-danger mx-auto mb-4" />
           <h1 className="text-xl font-bold mb-2">Acesso Restrito</h1>
           <p className="text-muted-foreground mb-4">Apenas usuários com permissão Operacional podem acessar esta página</p>
-          <Button onClick={() => navigate("/")}>Voltar ao Dashboard</Button>
+          <Button onClick={() => navigate("/dashboard")}>Voltar ao Dashboard</Button>
         </div>
       </div>
     );
@@ -131,7 +131,7 @@ export default function AgenteSEO() {
             <Button 
             variant="ghost" 
             size="sm" 
-            onClick={() => navigate("/")} 
+            onClick={() => navigate("/dashboard")} 
             className="mb-4 gap-2 text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" />

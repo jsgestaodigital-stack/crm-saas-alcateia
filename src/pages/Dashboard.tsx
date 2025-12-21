@@ -272,7 +272,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Visual Tour */}
-      <VisualTour />
+      <VisualTour autoStart />
 
       {/* Confetti celebration */}
       <Confetti 

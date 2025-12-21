@@ -164,6 +164,31 @@ export function useOnboardingChecklist() {
     }
   });
 
+  // Unmark step mutation
+  const unmarkStepMutation = useMutation({
+    mutationFn: async (stepId: string) => {
+      const { data, error } = await supabase.rpc('unmark_onboarding_step', {
+        _step: stepId
+      });
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (_data, stepId) => {
+      queryClient.invalidateQueries({ queryKey: ['onboarding-status'], exact: false });
+      const step = ONBOARDING_STEPS.find(s => s.id === stepId);
+      if (step) {
+        toast.info(`↩ ${step.label}`, {
+          description: 'Passo desmarcado'
+        });
+      }
+    },
+    onError: (error) => {
+      console.error('Error unmarking step:', error);
+      toast.error('Erro ao desmarcar passo');
+    }
+  });
+
   const completedSteps = status?.completed_steps || [];
   const completedCount = completedSteps.length;
   const totalSteps = ONBOARDING_STEPS.length;
@@ -174,6 +199,20 @@ export function useOnboardingChecklist() {
   const markStepDone = (stepId: string) => {
     if (!isStepCompleted(stepId)) {
       markStepMutation.mutate(stepId);
+    }
+  };
+
+  const unmarkStep = (stepId: string) => {
+    if (isStepCompleted(stepId)) {
+      unmarkStepMutation.mutate(stepId);
+    }
+  };
+
+  const toggleStep = (stepId: string) => {
+    if (isStepCompleted(stepId)) {
+      unmarkStep(stepId);
+    } else {
+      markStepDone(stepId);
     }
   };
 
@@ -202,12 +241,15 @@ export function useOnboardingChecklist() {
     progressPercentage,
     isStepCompleted,
     markStepDone,
+    unmarkStep,
+    toggleStep,
     dismissChecklist,
     isLoading,
     isDismissed,
     isCompleted,
     shouldShow,
     isMarkingStep: markStepMutation.isPending,
+    isUnmarkingStep: unmarkStepMutation.isPending,
   };
 }
 

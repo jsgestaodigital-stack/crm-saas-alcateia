@@ -4954,6 +4954,7 @@ export type Database = {
       }
       try_uuid: { Args: { _val: string }; Returns: string }
       unblock_user: { Args: { _user_id: string }; Returns: undefined }
+      unmark_onboarding_step: { Args: { _step: string }; Returns: boolean }
       update_agency: {
         Args: {
           _agency_id: string
