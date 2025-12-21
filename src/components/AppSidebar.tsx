@@ -531,171 +531,177 @@ export function AppSidebar({
         </TooltipProvider>
       </nav>
 
-      {/* Actions - fixed at bottom, never overlaps nav */}
-      <div className="shrink-0 p-3 border-t border-sidebar-border/50 space-y-2 bg-sidebar/95 backdrop-blur-sm">
+      {/* Actions - scrollable section that works with zoom */}
+      <div className="shrink-0 max-h-[40vh] overflow-y-auto p-3 border-t border-sidebar-border/50 space-y-2 bg-sidebar/95 backdrop-blur-sm">
         <TooltipProvider delayDuration={1000}>
           {/* Main Action Button - Only show in Sales or Delivery mode */}
           {!isRecurringMode && <Tooltip>
             <TooltipTrigger asChild>
-              <Button data-tour="new-client" className={cn("w-full gap-2 h-11 hover-lift", collapsed ? "px-3" : "px-4", isSalesMode ? "bg-amber-500 text-black hover:bg-amber-400" : "bg-primary text-primary-foreground hover:bg-primary/90 neon-glow")} onClick={() => {
+              <Button data-tour="new-client" className={cn("w-full gap-2 h-10 hover-lift", collapsed ? "px-3" : "px-4", isSalesMode ? "bg-amber-500 text-black hover:bg-amber-400" : "bg-primary text-primary-foreground hover:bg-primary/90 neon-glow")} onClick={() => {
               onNewClient?.();
               onMobileOpenChange(false);
             }}>
-                <Plus className="h-5 w-5 shrink-0" />
-                {!collapsed && <span className="animate-fade-in">
+                <Plus className="h-4 w-4 shrink-0" />
+                {!collapsed && <span className="animate-fade-in text-sm">
                     {isSalesMode ? "Novo Lead" : "Novo Cliente"}
                   </span>}
               </Button>
             </TooltipTrigger>
             <TooltipContent side="right" className="glass">
               <p className="font-medium">{isSalesMode ? "Novo Lead" : "Novo Cliente"}</p>
-              <p className="text-xs text-muted-foreground">
-                {isSalesMode ? "Adicionar lead ao pipeline" : TOOLTIP_CONTENT.navigation.newClient}
-              </p>
             </TooltipContent>
           </Tooltip>}
 
           {/* Dúvidas/Central Operacional - Only visible in Delivery mode for ops users */}
-          {canAccessOps && isDeliveryMode && <>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="outline" className={cn("w-full gap-2 h-11 border-amber-500/30 hover:bg-amber-500/10 hover:text-amber-400 transition-all relative", collapsed ? "px-3" : "px-4", location.pathname === "/duvidas" && "bg-amber-500/10 text-amber-400 border-amber-500/50")} onClick={() => {
+          {canAccessOps && isDeliveryMode && <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="outline" className={cn("w-full gap-2 h-10 border-amber-500/30 hover:bg-amber-500/10 hover:text-amber-400 transition-all relative", collapsed ? "px-3" : "px-4", location.pathname === "/duvidas" && "bg-amber-500/10 text-amber-400 border-amber-500/50")} onClick={() => {
                 navigate("/duvidas");
                 onMobileOpenChange(false);
               }}>
-                    <MessageCircleQuestion className="h-5 w-5 shrink-0" />
-                    {!collapsed && <span className="animate-fade-in">Central Operacional</span>}
-                    {pendingCount > 0 && <span className={cn("absolute bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center", collapsed ? "top-1 right-1 w-4 h-4" : "top-2 right-2 w-5 h-5")}>
-                        {pendingCount > 9 ? '9+' : pendingCount}
-                      </span>}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="right" className="glass">
-                  <p className="font-medium">Central Operacional {pendingCount > 0 && `(${pendingCount})`}</p>
-                  <p className="text-xs text-muted-foreground">Dúvidas da equipe sobre etapas de clientes</p>
-                </TooltipContent>
-              </Tooltip>
-            </>}
-
+                <MessageCircleQuestion className="h-4 w-4 shrink-0" />
+                {!collapsed && <span className="animate-fade-in text-sm">Central Operacional</span>}
+                {pendingCount > 0 && <span className={cn("absolute bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center", collapsed ? "top-0.5 right-0.5 w-4 h-4" : "top-1.5 right-1.5 w-4 h-4")}>
+                    {pendingCount > 9 ? '9+' : pendingCount}
+                  </span>}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right" className="glass">
+              <p className="font-medium">Central Operacional {pendingCount > 0 && `(${pendingCount})`}</p>
+            </TooltipContent>
+          </Tooltip>}
 
           {/* Finance - Comissões */}
           {canAccessFinance && <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" className={cn("w-full gap-2 h-11 border-status-success/30 hover:bg-status-success/10 hover:text-status-success transition-all", collapsed ? "px-3" : "px-4", location.pathname === "/commissions" && "bg-status-success/10 text-status-success border-status-success/50")} onClick={() => {
-              navigate("/commissions");
-              onMobileOpenChange(false);
-            }}>
-                  <DollarSign className="h-5 w-5 shrink-0" />
-                  {!collapsed && <span className="animate-fade-in">Comissões</span>}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right" className="glass">
-                <p className="font-medium">Comissões</p>
-                <p className="text-xs text-muted-foreground">{TOOLTIP_CONTENT.navigation.commissions}</p>
-              </TooltipContent>
-            </Tooltip>}
-
-          {/* Admin Panel */}
-          {canAccessAdmin && <Tooltip>
-              <TooltipTrigger asChild>
-                <Button data-tour="admin-button" variant="outline" className={cn("w-full gap-2 h-11 border-primary/30 hover:bg-primary/10 hover:text-primary transition-all", collapsed ? "px-3" : "px-4", location.pathname === "/admin" && "bg-primary/10 text-primary border-primary/50")} onClick={() => {
-              navigate("/admin");
-              onMobileOpenChange(false);
-            }}>
-                  <Shield className="h-5 w-5 shrink-0" />
-                  {!collapsed && <span className="animate-fade-in">Admin</span>}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right" className="glass">
-                <p className="font-medium">Painel Admin</p>
-                <p className="text-xs text-muted-foreground">{TOOLTIP_CONTENT.navigation.admin}</p>
-              </TooltipContent>
-            </Tooltip>}
-
-          {/* Gestão de Equipe - Admin only */}
-          {canAccessAdmin && <Tooltip>
-              <TooltipTrigger asChild>
-                <Button data-tour="team-button" variant="outline" className={cn("w-full gap-2 h-11 border-violet-500/30 hover:bg-violet-500/10 hover:text-violet-400 transition-all", collapsed ? "px-3" : "px-4", location.pathname === "/equipe" && "bg-violet-500/10 text-violet-400 border-violet-500/50")} onClick={() => {
-              navigate("/equipe");
-              onMobileOpenChange(false);
-            }}>
-                  <Users className="h-5 w-5 shrink-0" />
-                  {!collapsed && <span className="animate-fade-in">Equipe</span>}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right" className="glass">
-                <p className="font-medium">Gestão de Equipe</p>
-                <p className="text-xs text-muted-foreground">Gerencie membros e permissões</p>
-              </TooltipContent>
-            </Tooltip>}
-
-          {/* Manager Report - Admin only */}
-          {canAccessAdmin && <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" className={cn("w-full gap-2 h-11 border-cyan-500/30 hover:bg-cyan-500/10 hover:text-cyan-400 transition-all", collapsed ? "px-3" : "px-4", location.pathname === "/relatorio-gestor" && "bg-cyan-500/10 text-cyan-400 border-cyan-500/50")} onClick={() => {
-              navigate("/relatorio-gestor");
-              onMobileOpenChange(false);
-            }}>
-                  <FileText className="h-5 w-5 shrink-0" />
-                  {!collapsed && <span className="animate-fade-in">Relatório Gestor</span>}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right" className="glass">
-                <p className="font-medium">Relatório do Gestor</p>
-                <p className="text-xs text-muted-foreground">Visão completa do desempenho da equipe</p>
-              </TooltipContent>
-            </Tooltip>}
-
-          {/* Logs de Auditoria - Admin only */}
-          {canAccessAdmin && <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" className={cn("w-full gap-2 h-11 border-slate-500/30 hover:bg-slate-500/10 hover:text-slate-400 transition-all", collapsed ? "px-3" : "px-4", location.pathname === "/admin/audit" && "bg-slate-500/10 text-slate-400 border-slate-500/50")} onClick={() => {
-              navigate("/admin/audit");
-              onMobileOpenChange(false);
-            }}>
-                  <History className="h-5 w-5 shrink-0" />
-                  {!collapsed && <span className="animate-fade-in">Logs de Auditoria</span>}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right" className="glass">
-                <p className="font-medium">Logs de Auditoria</p>
-                <p className="text-xs text-muted-foreground">Histórico de ações na agência</p>
-              </TooltipContent>
-            </Tooltip>}
-
-          {/* Notificações */}
-          <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="outline" className={cn("w-full gap-2 h-11 border-orange-500/30 hover:bg-orange-500/10 hover:text-orange-400 transition-all", collapsed ? "px-3" : "px-4", location.pathname === "/notifications" && "bg-orange-500/10 text-orange-400 border-orange-500/50")} onClick={() => {
-                navigate("/notifications");
+              <Button variant="outline" className={cn("w-full gap-2 h-10 border-status-success/30 hover:bg-status-success/10 hover:text-status-success transition-all", collapsed ? "px-3" : "px-4", location.pathname === "/commissions" && "bg-status-success/10 text-status-success border-status-success/50")} onClick={() => {
+                navigate("/commissions");
                 onMobileOpenChange(false);
               }}>
-                <Bell className="h-5 w-5 shrink-0" />
-                {!collapsed && <span className="animate-fade-in">Notificações</span>}
+                <DollarSign className="h-4 w-4 shrink-0" />
+                {!collapsed && <span className="animate-fade-in text-sm">Comissões</span>}
               </Button>
             </TooltipTrigger>
             <TooltipContent side="right" className="glass">
-              <p className="font-medium">Notificações</p>
-              <p className="text-xs text-muted-foreground">Alertas de segurança e avisos</p>
+              <p className="font-medium">Comissões</p>
             </TooltipContent>
-          </Tooltip>
+          </Tooltip>}
 
-          {/* Sugestões - Available to all authenticated users */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="outline" className={cn("w-full gap-2 h-11 border-amber-500/30 hover:bg-amber-500/10 hover:text-amber-500 transition-all", collapsed ? "px-3" : "px-4", location.pathname === "/sugestoes" && "bg-amber-500/10 text-amber-500 border-amber-500/50")} onClick={() => {
-                navigate("/sugestoes");
-                onMobileOpenChange(false);
-              }}>
-                <Lightbulb className="h-5 w-5 shrink-0" />
-                {!collapsed && <span className="animate-fade-in">Sugestões</span>}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="right" className="glass">
-              <p className="font-medium">Mural de Sugestões</p>
-              <p className="text-xs text-muted-foreground">Envie sugestões de melhoria do sistema</p>
-            </TooltipContent>
-          </Tooltip>
+          {/* Admin Section - Collapsible group */}
+          {canAccessAdmin && (
+            <div className="space-y-1">
+              {!collapsed && (
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase px-2 pt-2 border-t border-border/30 mt-2">
+                  Administração
+                </p>
+              )}
+              
+              {/* Admin Panel */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button data-tour="admin-button" variant="ghost" className={cn("w-full justify-start gap-2 h-9 transition-all", collapsed ? "px-3 justify-center" : "px-3", location.pathname === "/admin" ? "bg-primary/10 text-primary" : "hover:bg-primary/5 hover:text-primary")} onClick={() => {
+                    navigate("/admin");
+                    onMobileOpenChange(false);
+                  }}>
+                    <Shield className="h-4 w-4 shrink-0" />
+                    {!collapsed && <span className="text-sm">Admin</span>}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="glass">
+                  <p className="font-medium">Painel Admin</p>
+                </TooltipContent>
+              </Tooltip>
+
+              {/* Equipe */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button data-tour="team-button" variant="ghost" className={cn("w-full justify-start gap-2 h-9 transition-all", collapsed ? "px-3 justify-center" : "px-3", location.pathname === "/equipe" ? "bg-violet-500/10 text-violet-400" : "hover:bg-violet-500/5 hover:text-violet-400")} onClick={() => {
+                    navigate("/equipe");
+                    onMobileOpenChange(false);
+                  }}>
+                    <Users className="h-4 w-4 shrink-0" />
+                    {!collapsed && <span className="text-sm">Equipe</span>}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="glass">
+                  <p className="font-medium">Gestão de Equipe</p>
+                </TooltipContent>
+              </Tooltip>
+
+              {/* Relatório Gestor */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" className={cn("w-full justify-start gap-2 h-9 transition-all", collapsed ? "px-3 justify-center" : "px-3", location.pathname === "/relatorio-gestor" ? "bg-cyan-500/10 text-cyan-400" : "hover:bg-cyan-500/5 hover:text-cyan-400")} onClick={() => {
+                    navigate("/relatorio-gestor");
+                    onMobileOpenChange(false);
+                  }}>
+                    <FileText className="h-4 w-4 shrink-0" />
+                    {!collapsed && <span className="text-sm">Relatório Gestor</span>}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="glass">
+                  <p className="font-medium">Relatório do Gestor</p>
+                </TooltipContent>
+              </Tooltip>
+
+              {/* Logs de Auditoria */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" className={cn("w-full justify-start gap-2 h-9 transition-all", collapsed ? "px-3 justify-center" : "px-3", location.pathname === "/admin/audit" ? "bg-slate-500/10 text-slate-400" : "hover:bg-slate-500/5 hover:text-slate-400")} onClick={() => {
+                    navigate("/admin/audit");
+                    onMobileOpenChange(false);
+                  }}>
+                    <History className="h-4 w-4 shrink-0" />
+                    {!collapsed && <span className="text-sm">Auditoria</span>}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="glass">
+                  <p className="font-medium">Logs de Auditoria</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          )}
+
+          {/* Global items - available to all */}
+          <div className={cn("space-y-1", canAccessAdmin && "pt-2 border-t border-border/30 mt-2")}>
+            {!collapsed && !canAccessAdmin && (
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase px-2 pt-2 border-t border-border/30 mt-2">
+                Mais
+              </p>
+            )}
+            
+            {/* Notificações */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" className={cn("w-full justify-start gap-2 h-9 transition-all", collapsed ? "px-3 justify-center" : "px-3", location.pathname === "/notifications" ? "bg-orange-500/10 text-orange-400" : "hover:bg-orange-500/5 hover:text-orange-400")} onClick={() => {
+                  navigate("/notifications");
+                  onMobileOpenChange(false);
+                }}>
+                  <Bell className="h-4 w-4 shrink-0" />
+                  {!collapsed && <span className="text-sm">Notificações</span>}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="glass">
+                <p className="font-medium">Notificações</p>
+              </TooltipContent>
+            </Tooltip>
+
+            {/* Sugestões */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" className={cn("w-full justify-start gap-2 h-9 transition-all", collapsed ? "px-3 justify-center" : "px-3", location.pathname === "/sugestoes" ? "bg-amber-500/10 text-amber-500" : "hover:bg-amber-500/5 hover:text-amber-500")} onClick={() => {
+                  navigate("/sugestoes");
+                  onMobileOpenChange(false);
+                }}>
+                  <Lightbulb className="h-4 w-4 shrink-0" />
+                  {!collapsed && <span className="text-sm">Sugestões</span>}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="glass">
+                <p className="font-medium">Mural de Sugestões</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
         </TooltipProvider>
       </div>
     </>;
