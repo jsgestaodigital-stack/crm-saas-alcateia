@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -81,7 +81,7 @@ export function ExportReportModal({
   };
 
   // Get initial selection from localStorage
-  const getInitialSelection = (): { modules: ExportModule[]; isAll: boolean } => {
+  const getInitialSelection = useCallback((): { modules: ExportModule[]; isAll: boolean } => {
     try {
       const storageKey = user?.id ? `${STORAGE_KEY}_${user.id}` : STORAGE_KEY;
       const saved = localStorage.getItem(storageKey);
@@ -101,7 +101,7 @@ export function ExportReportModal({
     }
     // Default: "Todos" selected
     return { modules: [], isAll: true };
-  };
+  }, [user?.id]);
 
   // Initialize selection when modal opens
   useEffect(() => {
@@ -110,7 +110,7 @@ export function ExportReportModal({
       setSelectedModules(initial.modules);
       setSelectAll(initial.isAll);
     }
-  }, [open, user?.id]);
+  }, [open, getInitialSelection]);
 
   // Save selection to localStorage
   const saveSelection = (modules: ExportModule[], isAll: boolean) => {
