@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import DOMPurify from 'dompurify';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -324,9 +325,12 @@ export default function ContratoPublico() {
                   <div 
                     className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed"
                     dangerouslySetInnerHTML={{ 
-                      __html: replaceVariables(clause.content)
-                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                        .replace(/\n/g, '<br/>') 
+                      __html: DOMPurify.sanitize(
+                        replaceVariables(clause.content)
+                          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                          .replace(/\n/g, '<br/>'),
+                        { ALLOWED_TAGS: ['strong', 'br', 'em', 'b', 'i', 'p'], ALLOWED_ATTR: [] }
+                      )
                     }}
                   />
                   {index < clauses.filter((c: ContractClause) => !c.isHidden).length - 1 && (

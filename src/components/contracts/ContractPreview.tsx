@@ -1,9 +1,9 @@
 import React from 'react';
+import DOMPurify from 'dompurify';
 import { Contract, CONTRACT_VARIABLES } from '@/types/contract';
 import { Card, CardContent } from '@/components/ui/card';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-
 interface ContractPreviewProps {
   contract: Contract;
   isPublic?: boolean;
@@ -54,7 +54,7 @@ export function ContractPreview({ contract, isPublic = false }: ContractPreviewP
     return result;
   };
 
-  // Format content with markdown-like styling
+  // Format content with markdown-like styling and sanitization
   const formatContent = (content: string): React.ReactNode => {
     const replaced = replaceVariables(content);
     
@@ -63,15 +63,21 @@ export function ContractPreview({ contract, isPublic = false }: ContractPreviewP
       // Bold
       const boldProcessed = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
       
+      // Sanitize HTML to prevent XSS
+      const sanitized = DOMPurify.sanitize(boldProcessed, {
+        ALLOWED_TAGS: ['strong', 'br', 'em', 'b', 'i'],
+        ALLOWED_ATTR: []
+      });
+      
       // Bullet points
       if (line.trim().startsWith('•') || line.trim().startsWith('-')) {
         return (
-          <li key={i} className="ml-4" dangerouslySetInnerHTML={{ __html: boldProcessed.replace(/^[•-]\s*/, '') }} />
+          <li key={i} className="ml-4" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(sanitized.replace(/^[•-]\s*/, ''), { ALLOWED_TAGS: ['strong', 'br', 'em', 'b', 'i'], ALLOWED_ATTR: [] }) }} />
         );
       }
       
       return (
-        <p key={i} className="mb-2" dangerouslySetInnerHTML={{ __html: boldProcessed }} />
+        <p key={i} className="mb-2" dangerouslySetInnerHTML={{ __html: sanitized }} />
       );
     });
   };
