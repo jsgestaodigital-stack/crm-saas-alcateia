@@ -570,7 +570,9 @@ const Landing = () => {
       </section>
 
       {/* ===== SEÇÃO PARA QUEM É ===== */}
-      <section className="py-20 px-4 relative">
+      <section className="py-20 px-4 relative bg-gradient-to-b from-primary/5 via-background to-muted/20">
+        {/* Decorative top transition */}
+        <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-muted/30 to-transparent -translate-y-full pointer-events-none" />
         <div className="container mx-auto max-w-4xl">
           <motion.div initial={{
           opacity: 0,
