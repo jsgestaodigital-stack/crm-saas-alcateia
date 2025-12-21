@@ -276,7 +276,7 @@ export function Header({ onNewClient }: HeaderProps) {
                 </div>
               </div>
               <DropdownMenuSeparator className="bg-border/30" />
-              <DropdownMenuItem className="cursor-pointer">
+              <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/settings/security")}>
                 <User className="w-4 h-4 mr-2" />
                 Meu Perfil
               </DropdownMenuItem>
