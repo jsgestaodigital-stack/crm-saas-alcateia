@@ -37,6 +37,7 @@ import { VoiceCommandButton } from "@/components/VoiceCommandButton";
 import { TrashBin } from "@/components/TrashBin";
 import { Button } from "@/components/ui/button";
 import { FunnelToggle } from "@/components/FunnelToggle";
+import { OnboardingChecklist } from "@/components/onboarding";
 
 import { useClientStore } from "@/stores/clientStore";
 import { useAuth } from "@/contexts/AuthContext";
@@ -344,6 +345,14 @@ const Dashboard = () => {
               <GlobalProgressBar />
             </div>
           )}
+
+          {/* Onboarding Checklist - show on first visit */}
+          <div className="px-4 pt-4">
+            <OnboardingChecklist 
+              onNewClient={() => setWizardOpen(true)}
+              onNewLead={() => setNewLeadOpen(true)}
+            />
+          </div>
 
           {/* View Content with Animation */}
           <AnimatePresence mode="wait">
