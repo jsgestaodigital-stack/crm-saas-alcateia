@@ -107,8 +107,9 @@ Deno.serve(async (req) => {
       );
     }
 
-    const validRoles = ["admin", "operador", "visualizador"];
-    if (!role || !validRoles.includes(role)) {
+    // Roles válidos para criação de usuários via admin
+    const assignableRoles = ["admin", "operador", "visualizador"];
+    if (!role || !assignableRoles.includes(role)) {
       return new Response(
         JSON.stringify({ error: "Nível de acesso inválido" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }

@@ -34,7 +34,7 @@ export interface LostReason {
   sort_order: number;
   created_at: string;
 }
-
+// Tipo completo do Lead (todas as colunas)
 export interface Lead {
   id: string;
   company_name: string;
@@ -68,6 +68,23 @@ export interface Lead {
   updated_at: string;
   last_activity_at: string;
 }
+
+// Tipo otimizado para listagem no Kanban (campos essenciais)
+export type LeadListItem = Pick<Lead, 
+  | 'id'
+  | 'company_name'
+  | 'contact_name'
+  | 'pipeline_stage'
+  | 'temperature'
+  | 'status'
+  | 'estimated_value'
+  | 'probability'
+  | 'next_action'
+  | 'next_action_date'
+  | 'responsible'
+  | 'last_activity_at'
+  | 'created_at'
+>;
 
 export interface LeadActivity {
   id: string;
