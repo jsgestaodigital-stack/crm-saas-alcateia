@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { z } from "zod";
-import { Mail, Lock, LogIn, AlertCircle, Loader2, UserPlus, ShieldAlert, Clock, ArrowLeft, KeyRound } from "lucide-react";
+import { Mail, Lock, LogIn, AlertCircle, Loader2, UserPlus, ShieldAlert, Clock, ArrowLeft, KeyRound, CheckCircle2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +11,9 @@ import grankLogo from "@/assets/grank-logo.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useSecurityCheck } from "@/hooks/useSecurityCheck";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Progress } from "@/components/ui/progress";
+import { validatePassword, getStrengthLabel, PASSWORD_REQUIREMENTS } from "@/lib/passwordValidation";
+import { classifyError, formatErrorForContext, logError, ErrorType } from "@/lib/errorHandler";
 
 const loginSchema = z.object({
   email: z.string().trim().email({
@@ -161,24 +164,15 @@ export default function Auth() {
     e.preventDefault();
     setErrors({});
 
-    const resetSchema = z
-      .object({
-        password: z.string().trim().min(8, { message: 'Senha deve ter pelo menos 8 caracteres' }),
-        confirmPassword: z.string().trim(),
-      })
-      .refine((v) => v.password === v.confirmPassword, {
-        message: 'As senhas não conferem',
-        path: ['confirmPassword'],
-      });
+    // Validação de senha forte
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      setErrors({ password: passwordValidation.errors[0] });
+      return;
+    }
 
-    const result = resetSchema.safeParse({ password, confirmPassword });
-    if (!result.success) {
-      const fieldErrors: { password?: string; confirmPassword?: string } = {};
-      result.error.errors.forEach((err) => {
-        if (err.path[0] === 'password') fieldErrors.password = err.message;
-        if (err.path[0] === 'confirmPassword') fieldErrors.confirmPassword = err.message;
-      });
-      setErrors(fieldErrors);
+    if (password !== confirmPassword) {
+      setErrors({ confirmPassword: 'As senhas não conferem' });
       return;
     }
 
@@ -187,7 +181,9 @@ export default function Auth() {
       const { error } = await supabase.auth.updateUser({ password });
 
       if (error) {
-        toast.error('Link inválido ou expirado. Solicite um novo e-mail de recuperação.');
+        logError(error, 'reset-password');
+        const classified = classifyError(error);
+        toast.error(formatErrorForContext(error, 'auth'));
         return;
       }
 
@@ -199,8 +195,9 @@ export default function Auth() {
       setPassword('');
       setConfirmPassword('');
       await supabase.auth.signOut();
-    } catch {
-      toast.error('Erro ao atualizar senha. Tente novamente.');
+    } catch (err) {
+      logError(err, 'reset-password');
+      toast.error(formatErrorForContext(err, 'auth'));
     } finally {
       setIsLoading(false);
     }
@@ -245,6 +242,14 @@ export default function Auth() {
     setIsLoading(true);
     try {
       if (authMode === 'signup') {
+        // Validação de senha forte no signup
+        const passwordValidation = validatePassword(password);
+        if (!passwordValidation.isValid) {
+          setErrors({ password: passwordValidation.errors[0] });
+          setIsLoading(false);
+          return;
+        }
+
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -253,10 +258,11 @@ export default function Auth() {
           }
         });
         if (error) {
+          logError(error, 'signup');
           if (error.message.includes("already registered")) {
             toast.error("Este e-mail já está cadastrado. Tente fazer login.");
           } else {
-            toast.error(error.message);
+            toast.error(formatErrorForContext(error, 'auth'));
           }
           return;
         }
@@ -265,6 +271,7 @@ export default function Auth() {
       } else {
         const { error } = await signIn(email, password);
         if (error) {
+          logError(error, 'login');
           // Registrar tentativa de login falhada
           await recordFailedLogin(email);
           
@@ -279,23 +286,42 @@ export default function Auth() {
             });
           }
 
-          if (error.message.includes("Invalid login credentials")) {
+          // Tratamento de erro diferenciado
+          const classified = classifyError(error);
+          if (classified.type === ErrorType.Authentication || 
+              error.message.includes("Invalid login credentials")) {
             toast.error("E-mail ou senha incorretos");
           } else if (error.message.includes("Email not confirmed")) {
             toast.error("E-mail não confirmado. Verifique sua caixa de entrada.");
+          } else if (classified.type === ErrorType.RateLimit) {
+            toast.error("Muitas tentativas. Aguarde antes de tentar novamente.");
+          } else if (classified.type === ErrorType.Network) {
+            toast.error("Erro de conexão. Verifique sua internet.");
           } else {
-            toast.error(error.message);
+            toast.error(classified.userMessage);
           }
           return;
         }
         // O useEffect vai cuidar do redirecionamento após verificar status
       }
-    } catch {
-      toast.error("Erro ao processar. Tente novamente.");
+    } catch (err) {
+      logError(err, 'auth-submit');
+      toast.error(formatErrorForContext(err, 'auth'));
     } finally {
       setIsLoading(false);
     }
   };
+
+  // Password strength indicator
+  const passwordStrength = useMemo(() => {
+    if (!password || authMode === 'login') return null;
+    return validatePassword(password);
+  }, [password, authMode]);
+
+  const strengthLabel = useMemo(() => {
+    if (!passwordStrength) return null;
+    return getStrengthLabel(passwordStrength.score);
+  }, [passwordStrength]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -596,6 +622,35 @@ export default function Auth() {
                       <AlertCircle className="w-3 h-3" />
                       {errors.password}
                     </p>
+                  )}
+                  
+                  {/* Indicador de força de senha - apenas no signup */}
+                  {authMode === 'signup' && password && passwordStrength && (
+                    <div className="space-y-2 mt-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">Força da senha:</span>
+                        <span className={strengthLabel?.color}>{strengthLabel?.label}</span>
+                      </div>
+                      <Progress value={(passwordStrength.score / 4) * 100} className="h-1" />
+                      <ul className="text-xs space-y-1 mt-2">
+                        <li className={`flex items-center gap-1 ${password.length >= 8 ? 'text-green-500' : 'text-muted-foreground'}`}>
+                          {password.length >= 8 ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+                          Mínimo 8 caracteres
+                        </li>
+                        <li className={`flex items-center gap-1 ${/[A-Z]/.test(password) ? 'text-green-500' : 'text-muted-foreground'}`}>
+                          {/[A-Z]/.test(password) ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+                          Uma letra maiúscula
+                        </li>
+                        <li className={`flex items-center gap-1 ${/[a-z]/.test(password) ? 'text-green-500' : 'text-muted-foreground'}`}>
+                          {/[a-z]/.test(password) ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+                          Uma letra minúscula
+                        </li>
+                        <li className={`flex items-center gap-1 ${/[0-9]/.test(password) ? 'text-green-500' : 'text-muted-foreground'}`}>
+                          {/[0-9]/.test(password) ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+                          Um número
+                        </li>
+                      </ul>
+                    </div>
                   )}
                 </div>
 

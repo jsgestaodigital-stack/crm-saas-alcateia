@@ -1,17 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Shield, Monitor, Clock, LogOut, Key, AlertTriangle, CheckCircle, Loader2 } from "lucide-react";
+import { Shield, Monitor, Clock, LogOut, Key, AlertTriangle, CheckCircle, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSecurityCheck } from "@/hooks/useSecurityCheck";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { validatePassword, getStrengthLabel } from "@/lib/passwordValidation";
+import { formatErrorForContext, logError } from "@/lib/errorHandler";
 
 export default function SecuritySettings() {
   const { user } = useAuth();
@@ -62,12 +65,16 @@ export default function SecuritySettings() {
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newPassword !== confirmPassword) {
-      toast.error("As senhas não coincidem");
+    
+    // Validação de senha forte
+    const validation = validatePassword(newPassword);
+    if (!validation.isValid) {
+      toast.error(validation.errors[0]);
       return;
     }
-    if (newPassword.length < 6) {
-      toast.error("A senha deve ter pelo menos 6 caracteres");
+    
+    if (newPassword !== confirmPassword) {
+      toast.error("As senhas não coincidem");
       return;
     }
 
@@ -81,9 +88,21 @@ export default function SecuritySettings() {
       setConfirmPassword("");
       setTimeout(() => navigate("/auth"), 2000);
     } else {
-      toast.error(result.error || "Erro ao alterar senha");
+      logError(result.error, 'change-password');
+      toast.error(formatErrorForContext(result.error, 'auth'));
     }
   };
+
+  // Password strength indicator
+  const passwordStrength = useMemo(() => {
+    if (!newPassword) return null;
+    return validatePassword(newPassword);
+  }, [newPassword]);
+
+  const strengthLabel = useMemo(() => {
+    if (!passwordStrength) return null;
+    return getStrengthLabel(passwordStrength.score);
+  }, [passwordStrength]);
 
   const parseUserAgent = (ua: string | null) => {
     if (!ua) return "Dispositivo desconhecido";
@@ -130,6 +149,30 @@ export default function SecuritySettings() {
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="••••••••"
                   />
+                  {/* Indicador de força de senha */}
+                  {newPassword && passwordStrength && (
+                    <div className="space-y-2 mt-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">Força:</span>
+                        <span className={strengthLabel?.color}>{strengthLabel?.label}</span>
+                      </div>
+                      <Progress value={(passwordStrength.score / 4) * 100} className="h-1" />
+                      <ul className="text-xs space-y-1 mt-1">
+                        <li className={`flex items-center gap-1 ${newPassword.length >= 8 ? 'text-green-500' : 'text-muted-foreground'}`}>
+                          {newPassword.length >= 8 ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+                          8+ caracteres
+                        </li>
+                        <li className={`flex items-center gap-1 ${/[A-Z]/.test(newPassword) && /[a-z]/.test(newPassword) ? 'text-green-500' : 'text-muted-foreground'}`}>
+                          {/[A-Z]/.test(newPassword) && /[a-z]/.test(newPassword) ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+                          Maiúscula e minúscula
+                        </li>
+                        <li className={`flex items-center gap-1 ${/[0-9]/.test(newPassword) ? 'text-green-500' : 'text-muted-foreground'}`}>
+                          {/[0-9]/.test(newPassword) ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+                          Um número
+                        </li>
+                      </ul>
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword">Confirmar Senha</Label>
