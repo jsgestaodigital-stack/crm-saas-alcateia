@@ -33,7 +33,7 @@ const Landing = () => {
     {
       icon: Users,
       title: "Funil de Leads Visual + CRM",
-      description: "Organize leads GMB em estágios claros com kanban. Histórico completo, temperatura de interesse e próximas ações programadas."
+      description: "Organize leads em estágios claros com kanban. Histórico completo, temperatura de interesse e próximas ações programadas."
     },
     {
       icon: FileText,
@@ -46,7 +46,7 @@ const Landing = () => {
   const executionFeatures = [
     {
       icon: ListChecks,
-      title: "Checklist de 47 Pontos GMB",
+      title: "Checklist de 47 Pontos",
       description: "Da categoria principal às fotos de fachada. Checklist completo de otimização que qualquer operador consegue seguir.",
       highlight: true
     },
@@ -90,7 +90,7 @@ const Landing = () => {
       annualPrice: 54,
       color: "google-green",
       features: [
-        "Até 15 clientes GMB ativos",
+        "Até 15 clientes ativos",
         "Até 200 leads",
         "Até 2 membros da equipe",
         "Funil e tarefas básicas",
@@ -105,12 +105,12 @@ const Landing = () => {
     {
       name: "Pro",
       emoji: "🔵",
-      tagline: "Feito pra quem vive de GMB",
+      tagline: "Feito pra quem vive de Google Meu Negócio",
       monthlyPrice: 127,
       annualPrice: 102,
       color: "google-green",
       features: [
-        "Até 50 clientes GMB ativos",
+        "Até 50 clientes ativos",
         "Até 1.000 leads",
         "Até 5 membros",
         "Funil e tarefas avançadas",
@@ -132,7 +132,7 @@ const Landing = () => {
       annualPrice: 158,
       color: "google-blue",
       features: [
-        "Até 150 clientes GMB ativos",
+        "Até 150 clientes ativos",
         "Até 5.000 leads",
         "Até 15 membros",
         "Tudo do Pro +",
@@ -156,7 +156,7 @@ const Landing = () => {
     },
     {
       question: "Funciona especificamente para Google Meu Negócio?",
-      answer: "Sim! O GRank foi construído especificamente para agências que trabalham com GMB, SEO local e otimização de perfis Google."
+      answer: "Sim! O GRank foi construído especificamente para agências que trabalham com Google Meu Negócio, SEO local e otimização de perfis Google."
     },
     {
       question: "E se eu não gostar?",
@@ -293,7 +293,7 @@ const Landing = () => {
               <br />
               <span className="gradient-google-text">Delegue, Controle e Escale</span>
               <br />
-              <span className="text-foreground">sua Agência de GMB.</span>
+              <span className="text-foreground">sua Agência de Google Meu Negócio.</span>
             </h1>
 
             {/* Subheadline */}
@@ -366,7 +366,7 @@ const Landing = () => {
             <GMBStatsCard 
               icon={MapPin} 
               value="500+" 
-              label="Perfis GMB gerenciados" 
+              label="Perfis gerenciados"
               color="green" 
               delay={0}
             />
@@ -409,7 +409,7 @@ const Landing = () => {
               Você Está <span className="text-google-red">Preso na Operação?</span>
             </h2>
             <p className="text-muted-foreground text-sm sm:text-base md:text-lg px-2">
-              Identifique se esses sintomas estão te impedindo de escalar sua agência GMB:
+              Identifique se esses sintomas estão te impedindo de escalar sua agência:
             </p>
           </motion.div>
 
@@ -618,30 +618,30 @@ const Landing = () => {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-8 mb-12">
+          <div className="grid md:grid-cols-2 gap-4 md:gap-8 mb-8 md:mb-12">
             {/* CRMs Genéricos */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="bg-white rounded-2xl border-2 border-border p-8 shadow-sm"
+              className="bg-white rounded-xl md:rounded-2xl border-2 border-border p-5 md:p-8 shadow-sm"
             >
-              <div className="text-center mb-8">
-                <div className="text-5xl mb-4">❌</div>
-                <h3 className="text-2xl font-bold text-slate-800">Outros CRMs Genéricos</h3>
+              <div className="text-center mb-6 md:mb-8">
+                <div className="text-4xl md:text-5xl mb-3 md:mb-4">❌</div>
+                <h3 className="text-lg md:text-2xl font-bold text-slate-800">Outros CRMs Genéricos</h3>
               </div>
-              <ul className="space-y-4">
+              <ul className="space-y-2 md:space-y-4">
                 {[
-                  "Feitos para qualquer nicho (imobiliário, seguros, consultoria...)",
-                  "Você precisa configurar tudo do zero (40 horas+)",
+                  "Feitos para qualquer nicho",
+                  "Você precisa configurar tudo do zero",
                   "Não entendem nada de Google Meu Negócio",
-                  "Sem checklist de otimização GMB",
-                  "Não controlam tarefas operacionais recorrentes",
-                  "Contratos genéricos sem cláusulas específicas"
+                  "Sem checklist de otimização",
+                  "Não controlam tarefas recorrentes",
+                  "Contratos genéricos"
                 ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
-                    <X className="h-5 w-5 text-google-red flex-shrink-0 mt-0.5" />
-                    <span className="text-slate-600">{item}</span>
+                  <li key={i} className="flex items-start gap-2 md:gap-3 p-2 md:p-3 bg-slate-50 rounded-lg">
+                    <X className="h-4 w-4 md:h-5 md:w-5 text-google-red flex-shrink-0 mt-0.5" />
+                    <span className="text-sm md:text-base text-slate-600">{item}</span>
                   </li>
                 ))}
               </ul>
@@ -652,29 +652,29 @@ const Landing = () => {
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="bg-white rounded-2xl border-2 border-google-green p-8 shadow-lg shadow-google-green/10 relative"
+              className="bg-white rounded-xl md:rounded-2xl border-2 border-google-green p-5 md:p-8 shadow-lg shadow-google-green/10 relative"
             >
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="px-4 py-1.5 bg-gradient-to-r from-google-green to-google-green-dark text-white text-xs font-semibold rounded-full">
-                  Especializado em GMB
+                <span className="px-3 py-1 md:px-4 md:py-1.5 bg-gradient-to-r from-google-green to-google-green-dark text-white text-[10px] md:text-xs font-semibold rounded-full whitespace-nowrap">
+                  Especializado
                 </span>
               </div>
-              <div className="text-center mb-8">
-                <div className="text-5xl mb-4">✅</div>
-                <h3 className="text-2xl font-bold text-slate-800">GRank CRM</h3>
+              <div className="text-center mb-6 md:mb-8 pt-2">
+                <div className="text-4xl md:text-5xl mb-3 md:mb-4">✅</div>
+                <h3 className="text-lg md:text-2xl font-bold text-slate-800">GRank CRM</h3>
               </div>
-              <ul className="space-y-4">
+              <ul className="space-y-2 md:space-y-4">
                 {[
-                  "100% focado em agências de Google Meu Negócio",
-                  "Já vem pronto e configurado (15 minutos para começar)",
-                  "Construído por quem vende GMB há 4 anos",
-                  "Checklist completo de 47 pontos de otimização",
-                  "Gestão de tarefas recorrentes automáticas",
-                  "Contratos com cláusulas específicas para GMB"
+                  "100% focado em Google Meu Negócio",
+                  "Pronto para usar em 15 minutos",
+                  "Construído por quem vende há 4 anos",
+                  "Checklist de 47 pontos de otimização",
+                  "Gestão de tarefas automáticas",
+                  "Contratos com cláusulas específicas"
                 ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-3 p-3 bg-gmb-light-green rounded-lg hover:bg-google-green/10 transition-colors">
-                    <Check className="h-5 w-5 text-google-green flex-shrink-0 mt-0.5" />
-                    <span className="text-slate-700">{item}</span>
+                  <li key={i} className="flex items-start gap-2 md:gap-3 p-2 md:p-3 bg-gmb-light-green rounded-lg hover:bg-google-green/10 transition-colors">
+                    <Check className="h-4 w-4 md:h-5 md:w-5 text-google-green flex-shrink-0 mt-0.5" />
+                    <span className="text-sm md:text-base text-slate-700">{item}</span>
                   </li>
                 ))}
               </ul>
@@ -686,9 +686,9 @@ const Landing = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center p-8 bg-gmb-light-green rounded-2xl border border-google-green/30"
+            className="text-center p-5 md:p-8 bg-gmb-light-green rounded-xl md:rounded-2xl border border-google-green/30"
           >
-            <p className="text-xl text-slate-700">
+            <p className="text-base md:text-xl text-slate-700">
               Não é sobre ter <strong className="text-google-green">"um CRM"</strong>. É sobre ter o sistema que{" "}
               <strong className="text-google-green">entende exatamente o que você faz</strong>.
             </p>
@@ -720,12 +720,12 @@ const Landing = () => {
           </motion.div>
 
           {/* 4 Stats Cards - 2x2 grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          <div className="grid grid-cols-2 gap-4 md:gap-6 mb-12 md:mb-16">
             {[
-              { icon: MapPin, value: 500, suffix: "+", label: "Perfis GMB Gerenciados", description: "Na nossa própria agência. Cada funcionalidade nasceu de uma dor real." },
-              { icon: Calendar, value: 4, suffix: " anos", label: "Vendendo GMB Diariamente", description: "Mais de 1.500 reuniões de vendas. Sabemos cada objeção, cada dor." },
-              { icon: Users, value: 350, suffix: "+", label: "Alunos Formados", description: "Na metodologia Alcateia. Documentamos cada desafio operacional." },
-              { icon: CheckCircle2, value: 47, suffix: "", label: "Pontos de Otimização", description: "Checklist testado em centenas de perfis. Nada foi inventado." }
+              { icon: MapPin, value: 500, suffix: "+", label: "Perfis Gerenciados", description: "Na nossa própria agência." },
+              { icon: Calendar, value: 4, suffix: " anos", label: "Experiência no Mercado", description: "Vendendo Google Meu Negócio." },
+              { icon: Users, value: 350, suffix: "+", label: "Alunos Formados", description: "Na metodologia Alcateia." },
+              { icon: CheckCircle2, value: 47, suffix: "", label: "Pontos de Otimização", description: "Checklist testado e validado." }
             ].map((stat, i) => (
               <motion.div
                 key={stat.label}
@@ -733,16 +733,16 @@ const Landing = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-white rounded-2xl border-2 border-border p-6 text-center hover:border-google-green/50 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+                className="bg-white rounded-xl md:rounded-2xl border-2 border-border p-4 md:p-6 text-center hover:border-google-green/50 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
               >
-                <div className="w-16 h-16 rounded-xl bg-gmb-light-green flex items-center justify-center mx-auto mb-4">
-                  <stat.icon className="h-8 w-8 text-google-green" />
+                <div className="w-12 h-12 md:w-16 md:h-16 rounded-lg md:rounded-xl bg-gmb-light-green flex items-center justify-center mx-auto mb-3 md:mb-4">
+                  <stat.icon className="h-6 w-6 md:h-8 md:w-8 text-google-green" />
                 </div>
-                <div className="text-4xl font-bold text-google-green mb-2">
+                <div className="text-2xl md:text-4xl font-bold text-google-green mb-1 md:mb-2">
                   <AnimatedCounter end={stat.value} suffix={stat.suffix} />
                 </div>
-                <div className="text-lg font-semibold text-slate-800 mb-2">{stat.label}</div>
-                <p className="text-sm text-muted-foreground">{stat.description}</p>
+                <div className="text-sm md:text-lg font-semibold text-slate-800 mb-1 md:mb-2">{stat.label}</div>
+                <p className="text-xs md:text-sm text-muted-foreground hidden sm:block">{stat.description}</p>
               </motion.div>
             ))}
           </div>
