@@ -86,15 +86,8 @@ const Dashboard = () => {
     }
   }, [user, isLoading, navigate]);
 
-  // Listen for funnel mode changes to reset to kanban
-  useEffect(() => {
-    const handleFunnelModeChange = () => {
-      setViewMode("kanban");
-    };
-
-    window.addEventListener("funnel-mode-changed", handleFunnelModeChange);
-    return () => window.removeEventListener("funnel-mode-changed", handleFunnelModeChange);
-  }, [setViewMode]);
+  // Note: FunnelToggle handles restoring saved views per funnel
+  // No need to listen for funnel-mode-changed event here
 
   // Listen for client completion events
   useEffect(() => {
