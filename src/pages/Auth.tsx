@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { z } from "zod";
-import { Mail, Lock, LogIn, AlertCircle, Loader2, UserPlus, ShieldAlert, Clock } from "lucide-react";
+import { Mail, Lock, LogIn, AlertCircle, Loader2, UserPlus, ShieldAlert, Clock, ArrowLeft, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,11 +21,19 @@ const loginSchema = z.object({
   })
 });
 
+const emailSchema = z.object({
+  email: z.string().trim().email({
+    message: "E-mail inválido"
+  })
+});
+
+type AuthMode = 'login' | 'signup' | 'forgot-password' | 'reset-success';
+
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [authMode, setAuthMode] = useState<AuthMode>('login');
   const [errors, setErrors] = useState<{
     email?: string;
     password?: string;
@@ -91,6 +99,36 @@ export default function Auth() {
     checkAuthAndStatus();
   }, [authLoading, user, navigate, location, checkUserStatus, logLoginSuccess]);
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrors({});
+
+    const result = emailSchema.safeParse({ email });
+    if (!result.success) {
+      setErrors({ email: result.error.errors[0]?.message });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth?mode=reset`,
+      });
+
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      setAuthMode('reset-success');
+      toast.success('E-mail de recuperação enviado!');
+    } catch {
+      toast.error('Erro ao enviar e-mail. Tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
@@ -114,7 +152,7 @@ export default function Auth() {
     }
 
     // Verificar rate limit antes de tentar login
-    if (!isSignUp) {
+    if (authMode === 'login') {
       const rateLimit = await checkRateLimit(email);
       if (rateLimit?.is_blocked) {
         setRateLimitInfo({
@@ -129,7 +167,7 @@ export default function Auth() {
 
     setIsLoading(true);
     try {
-      if (isSignUp) {
+      if (authMode === 'signup') {
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -146,7 +184,7 @@ export default function Auth() {
           return;
         }
         toast.success("Conta criada! Verifique seu e-mail para confirmar o cadastro.");
-        setIsSignUp(false);
+        setAuthMode('login');
       } else {
         const { error } = await signIn(email, password);
         if (error) {
@@ -240,95 +278,210 @@ export default function Auth() {
         )}
 
         <div className="bg-surface-2 border border-border/50 rounded-xl p-6 neon-border">
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm text-foreground">
-                E-mail
-              </Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input 
-                  id="email" 
-                  type="email" 
-                  placeholder="seu@email.com" 
-                  value={email} 
-                  onChange={e => setEmail(e.target.value)} 
-                  className="pl-10 bg-background border-border/50 focus:border-primary" 
-                  disabled={isLoading || rateLimitInfo?.isBlocked} 
-                />
+          {/* Forgot Password Success */}
+          {authMode === 'reset-success' && (
+            <div className="text-center space-y-4">
+              <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto">
+                <Mail className="w-8 h-8 text-green-500" />
               </div>
-              {errors.email && (
-                <p className="text-xs text-destructive flex items-center gap-1">
-                  <AlertCircle className="w-3 h-3" />
-                  {errors.email}
-                </p>
-              )}
+              <h2 className="text-lg font-semibold text-foreground">E-mail enviado!</h2>
+              <p className="text-sm text-muted-foreground">
+                Enviamos um link de recuperação para <strong>{email}</strong>.
+                Verifique sua caixa de entrada e spam.
+              </p>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => {
+                  setAuthMode('login');
+                  setEmail('');
+                }}
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Voltar para login
+              </Button>
             </div>
+          )}
 
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm text-foreground">
-                Senha
-              </Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input 
-                  id="password" 
-                  type="password" 
-                  placeholder="••••••••" 
-                  value={password} 
-                  onChange={e => setPassword(e.target.value)} 
-                  className="pl-10 bg-background border-border/50 focus:border-primary" 
-                  disabled={isLoading || rateLimitInfo?.isBlocked} 
-                />
+          {/* Forgot Password Form */}
+          {authMode === 'forgot-password' && (
+            <form onSubmit={handleForgotPassword} className="space-y-5">
+              <div className="text-center mb-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <KeyRound className="w-6 h-6 text-primary" />
+                </div>
+                <h2 className="text-lg font-semibold text-foreground">Recuperar senha</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Digite seu e-mail para receber o link de recuperação
+                </p>
               </div>
-              {errors.password && (
-                <p className="text-xs text-destructive flex items-center gap-1">
-                  <AlertCircle className="w-3 h-3" />
-                  {errors.password}
-                </p>
-              )}
-            </div>
 
-            <Button 
-              type="submit" 
-              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 neon-glow" 
-              disabled={isLoading || rateLimitInfo?.isBlocked}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  {isSignUp ? "Criando conta..." : "Entrando..."}
-                </>
-              ) : rateLimitInfo?.isBlocked ? (
-                <>
-                  <Clock className="w-4 h-4 mr-2" />
-                  Aguarde {formatTime(rateLimitInfo.remainingSeconds)}
-                </>
-              ) : isSignUp ? (
-                <>
-                  <UserPlus className="w-4 h-4 mr-2" />
-                  Criar Conta
-                </>
-              ) : (
-                <>
-                  <LogIn className="w-4 h-4 mr-2" />
-                  Entrar
-                </>
-              )}
-            </Button>
-          </form>
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm text-foreground">
+                  E-mail
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    placeholder="seu@email.com" 
+                    value={email} 
+                    onChange={e => setEmail(e.target.value)} 
+                    className="pl-10 bg-background border-border/50 focus:border-primary" 
+                    disabled={isLoading} 
+                  />
+                </div>
+                {errors.email && (
+                  <p className="text-xs text-destructive flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {errors.email}
+                  </p>
+                )}
+              </div>
 
-          <div className="mt-6 pt-4 border-t border-border/30 text-center">
-            <Button
-              type="button"
-              variant="ghost"
-              className="text-sm text-muted-foreground hover:text-foreground"
-              onClick={() => setIsSignUp(!isSignUp)}
-              disabled={isLoading}
-            >
-              {isSignUp ? "Já tem conta? Fazer login" : "Não tem conta? Criar conta"}
-            </Button>
-          </div>
+              <Button 
+                type="submit" 
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/90" 
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Enviando...
+                  </>
+                ) : (
+                  <>
+                    <Mail className="w-4 h-4 mr-2" />
+                    Enviar link de recuperação
+                  </>
+                )}
+              </Button>
+
+              <Button
+                type="button"
+                variant="ghost"
+                className="w-full text-sm text-muted-foreground hover:text-foreground"
+                onClick={() => setAuthMode('login')}
+                disabled={isLoading}
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Voltar para login
+              </Button>
+            </form>
+          )}
+
+          {/* Login / Signup Form */}
+          {(authMode === 'login' || authMode === 'signup') && (
+            <>
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-sm text-foreground">
+                    E-mail
+                  </Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input 
+                      id="email" 
+                      type="email" 
+                      placeholder="seu@email.com" 
+                      value={email} 
+                      onChange={e => setEmail(e.target.value)} 
+                      className="pl-10 bg-background border-border/50 focus:border-primary" 
+                      disabled={isLoading || rateLimitInfo?.isBlocked} 
+                    />
+                  </div>
+                  {errors.email && (
+                    <p className="text-xs text-destructive flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {errors.email}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-sm text-foreground">
+                    Senha
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input 
+                      id="password" 
+                      type="password" 
+                      placeholder="••••••••" 
+                      value={password} 
+                      onChange={e => setPassword(e.target.value)} 
+                      className="pl-10 bg-background border-border/50 focus:border-primary" 
+                      disabled={isLoading || rateLimitInfo?.isBlocked} 
+                    />
+                  </div>
+                  {errors.password && (
+                    <p className="text-xs text-destructive flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      {errors.password}
+                    </p>
+                  )}
+                </div>
+
+                {/* Forgot Password Link - only show on login */}
+                {authMode === 'login' && (
+                  <div className="text-right">
+                    <Button
+                      type="button"
+                      variant="link"
+                      className="text-xs text-muted-foreground hover:text-primary p-0 h-auto"
+                      onClick={() => {
+                        setAuthMode('forgot-password');
+                        setErrors({});
+                      }}
+                    >
+                      Esqueceu sua senha?
+                    </Button>
+                  </div>
+                )}
+
+                <Button 
+                  type="submit" 
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 neon-glow" 
+                  disabled={isLoading || rateLimitInfo?.isBlocked}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      {authMode === 'signup' ? "Criando conta..." : "Entrando..."}
+                    </>
+                  ) : rateLimitInfo?.isBlocked ? (
+                    <>
+                      <Clock className="w-4 h-4 mr-2" />
+                      Aguarde {formatTime(rateLimitInfo.remainingSeconds)}
+                    </>
+                  ) : authMode === 'signup' ? (
+                    <>
+                      <UserPlus className="w-4 h-4 mr-2" />
+                      Criar Conta
+                    </>
+                  ) : (
+                    <>
+                      <LogIn className="w-4 h-4 mr-2" />
+                      Entrar
+                    </>
+                  )}
+                </Button>
+              </form>
+
+              <div className="mt-6 pt-4 border-t border-border/30 text-center">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="text-sm text-muted-foreground hover:text-foreground"
+                  onClick={() => setAuthMode(authMode === 'signup' ? 'login' : 'signup')}
+                  disabled={isLoading}
+                >
+                  {authMode === 'signup' ? "Já tem conta? Fazer login" : "Não tem conta? Criar conta"}
+                </Button>
+              </div>
+            </>
+          )}
         </div>
 
         <p className="text-center text-xs text-muted-foreground mt-6">
