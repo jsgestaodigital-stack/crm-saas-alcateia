@@ -459,28 +459,7 @@ const Landing = () => {
             </motion.div>
 
             {/* DEPOIS */}
-            <motion.div initial={{
-            opacity: 0,
-            x: 20
-          }} whileInView={{
-            opacity: 1,
-            x: 0
-          }} viewport={{
-            once: true
-          }} className="glass-card p-6 border-primary/30">
-              <div className="flex items-center gap-2 mb-6">
-                <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
-                  <Check className="h-4 w-4 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold text-primary">DEPOIS</h3>
-              </div>
-              <ul className="space-y-4">
-                {["Dashboard mostra o que precisa ser feito", "Proposta pronta em 3 minutos", "Sistema alerta sobre renovações", "Você dorme tranquilo, tudo sob controle"].map(item => <li key={item} className="flex items-start gap-3 text-foreground">
-                    <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                    <span>{item}</span>
-                  </li>)}
-              </ul>
-            </motion.div>
+            
           </div>
         </div>
       </section>
