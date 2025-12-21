@@ -239,13 +239,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isAdminFlag = userRole === "admin";
   
-  // Compute derived permissions
+  // Compute derived permissions - SuperAdmin has access to EVERYTHING
+  const isSuperAdmin = permissions.isSuperAdmin;
   const derived: DerivedPermissions = {
-    canSalesOrAdmin: permissions.canSales || permissions.canAdmin || isAdminFlag,
-    canOpsOrAdmin: permissions.canOps || permissions.canAdmin || isAdminFlag,
-    canFinanceOrAdmin: permissions.canFinance || permissions.canAdmin || isAdminFlag,
-    canAdminOrIsAdmin: permissions.canAdmin || isAdminFlag,
-    canRecurringOrAdmin: permissions.canRecurring || permissions.canAdmin || isAdminFlag,
+    canSalesOrAdmin: isSuperAdmin || permissions.canSales || permissions.canAdmin || isAdminFlag,
+    canOpsOrAdmin: isSuperAdmin || permissions.canOps || permissions.canAdmin || isAdminFlag,
+    canFinanceOrAdmin: isSuperAdmin || permissions.canFinance || permissions.canAdmin || isAdminFlag,
+    canAdminOrIsAdmin: isSuperAdmin || permissions.canAdmin || isAdminFlag,
+    canRecurringOrAdmin: isSuperAdmin || permissions.canRecurring || permissions.canAdmin || isAdminFlag,
   };
 
   return (
