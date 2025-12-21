@@ -27,16 +27,18 @@ const emailSchema = z.object({
   })
 });
 
-type AuthMode = 'login' | 'signup' | 'forgot-password' | 'reset-success';
+type AuthMode = 'login' | 'signup' | 'forgot-password' | 'reset-password' | 'reset-success';
 
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [authMode, setAuthMode] = useState<AuthMode>('login');
   const [errors, setErrors] = useState<{
     email?: string;
     password?: string;
+    confirmPassword?: string;
   }>({});
   const [rateLimitInfo, setRateLimitInfo] = useState<{
     isBlocked: boolean;
@@ -76,8 +78,21 @@ export default function Auth() {
   }, [rateLimitInfo?.isBlocked, rateLimitInfo?.remainingSeconds]);
 
   useEffect(() => {
+    // If user arrived from password recovery link, show reset form instead of redirecting.
+    const params = new URLSearchParams(location.search);
+    const mode = params.get('mode');
+    const hash = location.hash || '';
+
+    if (mode === 'reset' || hash.includes('type=recovery') || hash.includes('access_token=')) {
+      setAuthMode('reset-password');
+    }
+  }, [location.search, location.hash]);
+
+  useEffect(() => {
     const checkAuthAndStatus = async () => {
       if (!authLoading && user) {
+        if (authMode === 'reset-password') return; // stay on page to allow password update
+
         // Verificar status do usuário (bloqueado ou email não verificado)
         const status = await checkUserStatus();
         
@@ -97,7 +112,7 @@ export default function Auth() {
     };
 
     checkAuthAndStatus();
-  }, [authLoading, user, navigate, location, checkUserStatus, logLoginSuccess]);
+  }, [authLoading, user, authMode, navigate, location, checkUserStatus, logLoginSuccess]);
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -278,6 +293,105 @@ export default function Auth() {
         )}
 
         <div className="bg-surface-2 border border-border/50 rounded-xl p-6 neon-border">
+          {/* Reset Password Form (from recovery link) */}
+          {authMode === 'reset-password' && (
+            <form onSubmit={handleResetPassword} className="space-y-5">
+              <div className="text-center mb-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <KeyRound className="w-6 h-6 text-primary" />
+                </div>
+                <h2 className="text-lg font-semibold text-foreground">Definir nova senha</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Escolha uma nova senha (mínimo 8 caracteres)
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="new-password" className="text-sm text-foreground">
+                  Nova senha
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="new-password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10 bg-background border-border/50 focus:border-primary"
+                    disabled={isLoading}
+                    autoComplete="new-password"
+                  />
+                </div>
+                {errors.password && (
+                  <p className="text-xs text-destructive flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {errors.password}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirm-password" className="text-sm text-foreground">
+                  Confirmar senha
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="confirm-password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="pl-10 bg-background border-border/50 focus:border-primary"
+                    disabled={isLoading}
+                    autoComplete="new-password"
+                  />
+                </div>
+                {errors.confirmPassword && (
+                  <p className="text-xs text-destructive flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {errors.confirmPassword}
+                  </p>
+                )}
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Salvando...
+                  </>
+                ) : (
+                  <>
+                    <KeyRound className="w-4 h-4 mr-2" />
+                    Salvar nova senha
+                  </>
+                )}
+              </Button>
+
+              <Button
+                type="button"
+                variant="ghost"
+                className="w-full text-sm text-muted-foreground hover:text-foreground"
+                onClick={() => {
+                  setAuthMode('login');
+                  setPassword('');
+                  setConfirmPassword('');
+                  navigate('/auth', { replace: true });
+                }}
+                disabled={isLoading}
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Voltar para login
+              </Button>
+            </form>
+          )}
+
           {/* Forgot Password Success */}
           {authMode === 'reset-success' && (
             <div className="text-center space-y-4">

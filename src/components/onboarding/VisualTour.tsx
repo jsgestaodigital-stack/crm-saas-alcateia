@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import Joyride, { Styles } from 'react-joyride';
 import { useVisualTour } from '@/hooks/useVisualTour';
 import { useAuth } from '@/contexts/AuthContext';
@@ -69,7 +70,8 @@ interface VisualTourProps {
   autoStart?: boolean;
 }
 
-export function VisualTour({ autoStart = true }: VisualTourProps) {
+export function VisualTour({ autoStart = false }: VisualTourProps) {
+  const location = useLocation();
   const { user } = useAuth();
   const {
     steps,
@@ -80,7 +82,10 @@ export function VisualTour({ autoStart = true }: VisualTourProps) {
     handleJoyrideCallback,
   } = useVisualTour();
 
-  // Auto-start tour on first visit
+  // Never run tour on auth screen.
+  if (location.pathname === '/auth') return null;
+
+  // Auto-start tour on first visit (disabled by default)
   useEffect(() => {
     if (autoStart && shouldAutoStart && user) {
       // Small delay to ensure DOM is ready
