@@ -14,7 +14,7 @@ import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import AdminUsers from "./pages/AdminUsers";
 import Dashboard from "./pages/Dashboard";
-import DashboardGerencial from "./pages/DashboardGerencial";
+
 import Commissions from "./pages/Commissions";
 import Questions from "./pages/Questions";
 import RaioX from "./pages/RaioX";
@@ -89,7 +89,7 @@ const App = () => (
                       <Route path="/admin/agencia/:id" element={<AgencyDetail />} />
                       <Route path="/equipe" element={<Equipe />} />
                       <Route path="/relatorio-gestor" element={<ManagerReport />} />
-                      <Route path="/dashboard-gerencial" element={<DashboardGerencial />} />
+                      
                       <Route path="/notifications" element={<Notifications />} />
                       <Route path="/sugestoes" element={<Suggestions />} />
                       <Route path="/agency/settings/permissions" element={<AgencyPermissions />} />
