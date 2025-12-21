@@ -15,12 +15,14 @@ import {
   User, 
   CreditCard,
   CheckCircle2,
-  Info
+  Info,
+  PenTool
 } from 'lucide-react';
 import { ContractType } from '@/types/contract';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { SignatureCanvas } from './SignatureCanvas';
 
-interface WizardData {
+export interface WizardData {
   // Step 1 - Type
   contractType: ContractType;
   
@@ -43,6 +45,11 @@ interface WizardData {
   totalValue: number;
   paymentMethod: 'a_vista' | 'parcelado' | 'permuta';
   installments: number;
+
+  // Step 5 - Signature
+  signatureDataUrl: string | null;
+  signerName: string;
+  signerCpf: string;
 }
 
 interface ContractWizardProps {
@@ -62,10 +69,11 @@ const AVAILABLE_SERVICES = [
 ];
 
 const STEPS = [
-  { id: 1, title: 'Tipo de Contrato', icon: FileText },
-  { id: 2, title: 'Dados do Cliente', icon: User },
+  { id: 1, title: 'Tipo', icon: FileText },
+  { id: 2, title: 'Cliente', icon: User },
   { id: 3, title: 'Serviços', icon: Building2 },
   { id: 4, title: 'Pagamento', icon: CreditCard },
+  { id: 5, title: 'Assinatura', icon: PenTool },
 ];
 
 export function ContractWizard({ onComplete, onCancel, initialData }: ContractWizardProps) {
@@ -86,6 +94,9 @@ export function ContractWizard({ onComplete, onCancel, initialData }: ContractWi
     totalValue: initialData?.totalValue || 0,
     paymentMethod: initialData?.paymentMethod || 'a_vista',
     installments: initialData?.installments || 1,
+    signatureDataUrl: initialData?.signatureDataUrl || null,
+    signerName: initialData?.signerName || initialData?.clientName || '',
+    signerCpf: initialData?.signerCpf || initialData?.cpf || '',
   });
 
   const progress = (step / STEPS.length) * 100;
@@ -104,6 +115,8 @@ export function ContractWizard({ onComplete, onCancel, initialData }: ContractWi
         return data.services.length > 0 || data.customServices;
       case 4:
         return data.totalValue > 0;
+      case 5:
+        return !!data.signatureDataUrl && data.signerName.trim() !== '';
       default:
         return true;
     }
@@ -173,6 +186,7 @@ export function ContractWizard({ onComplete, onCancel, initialData }: ContractWi
             {step === 2 && 'Preencha os dados do cliente contratante'}
             {step === 3 && 'Selecione os serviços que serão prestados'}
             {step === 4 && 'Defina o valor e forma de pagamento'}
+            {step === 5 && 'Capture a assinatura digital do contratante'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -392,6 +406,58 @@ export function ContractWizard({ onComplete, onCancel, initialData }: ContractWi
                   )}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Step 5: Signature */}
+          {step === 5 && (
+            <div className="space-y-6">
+              <Alert>
+                <Info className="h-4 w-4" />
+                <AlertDescription>
+                  A assinatura digital será anexada ao contrato PDF. 
+                  Peça ao cliente para assinar diretamente na tela.
+                </AlertDescription>
+              </Alert>
+
+              <div className="grid gap-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Nome Completo do Assinante *</Label>
+                    <Input
+                      value={data.signerName}
+                      onChange={(e) => updateData({ signerName: e.target.value })}
+                      placeholder="Nome como aparece no documento"
+                    />
+                  </div>
+                  <div>
+                    <Label>CPF do Assinante</Label>
+                    <Input
+                      value={data.signerCpf}
+                      onChange={(e) => updateData({ signerCpf: e.target.value })}
+                      placeholder="000.000.000-00"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <Label className="mb-3 block">Assinatura Digital *</Label>
+                <SignatureCanvas
+                  onSignatureChange={(dataUrl) => updateData({ signatureDataUrl: dataUrl })}
+                  width={500}
+                  height={200}
+                />
+              </div>
+
+              <div className="bg-muted/50 p-4 rounded-lg text-sm text-muted-foreground space-y-2">
+                <p><strong>Ao assinar, o contratante declara:</strong></p>
+                <ul className="list-disc list-inside space-y-1">
+                  <li>Ter lido e concordado com todas as cláusulas do contrato</li>
+                  <li>Estar ciente dos serviços contratados e valores acordados</li>
+                  <li>Autorizar o uso de seus dados conforme a LGPD</li>
+                </ul>
+              </div>
             </div>
           )}
         </CardContent>
