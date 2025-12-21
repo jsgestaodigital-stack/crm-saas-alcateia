@@ -2018,6 +2018,7 @@ export type Database = {
           email: string | null
           estimated_value: number | null
           id: string
+          instagram: string | null
           last_activity_at: string
           lost_notes: string | null
           lost_reason_id: string | null
@@ -2051,6 +2052,7 @@ export type Database = {
           email?: string | null
           estimated_value?: number | null
           id?: string
+          instagram?: string | null
           last_activity_at?: string
           lost_notes?: string | null
           lost_reason_id?: string | null
@@ -2084,6 +2086,7 @@ export type Database = {
           email?: string | null
           estimated_value?: number | null
           id?: string
+          instagram?: string | null
           last_activity_at?: string
           lost_notes?: string | null
           lost_reason_id?: string | null

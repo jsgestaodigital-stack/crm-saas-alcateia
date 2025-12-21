@@ -42,6 +42,7 @@ export interface Lead {
   whatsapp: string | null;
   phone: string | null;
   email: string | null;
+  instagram: string | null;
   city: string | null;
   main_category: string | null;
   source_id: string | null;
