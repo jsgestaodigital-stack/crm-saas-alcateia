@@ -156,19 +156,19 @@ const Landing = () => {
 
   const testimonials = [
     {
-      quote: "Antes eu perdia 2 horas por dia só organizando informações. Agora, em 15 minutos, sei exatamente o que fazer.",
+      quote: "Antes eu passava 2 horas por dia organizando tarefas da equipe. Agora o sistema faz isso automaticamente. Eu só acompanho.",
       author: "Ricardo Santos",
-      role: "Agência de São Paulo, 45 clientes",
+      role: "Agência de São Paulo, 45 clientes ativos",
     },
     {
-      quote: "As propostas automáticas mudaram meu jogo. Fecho mais rápido e com valor maior.",
+      quote: "O checklist de otimização mudou tudo. Agora qualquer pessoa consegue entregar com qualidade. Eu finalmente consigo delegar.",
       author: "Mariana Costa",
-      role: "Consultora autônoma, Belo Horizonte",
+      role: "Consultora de Belo Horizonte, 28 clientes",
     },
     {
-      quote: "Finalmente consigo delegar sem medo. O sistema guia meu time e eu acompanho tudo.",
+      quote: "Na hora de renovar contrato, eu mostro o relatório automático com tudo que foi feito. O cliente nem questiona.",
       author: "Fernanda Lima",
-      role: "Gestora de marketing local, Curitiba",
+      role: "Gestora de Marketing Local, Curitiba",
     },
   ];
 
@@ -306,28 +306,31 @@ const Landing = () => {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 backdrop-blur-sm mb-8"
             >
               <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-sm text-primary font-medium">O CRM #1 para Agências de Google Meu Negócio</span>
+              <span className="text-sm text-primary font-medium">A Plataforma Operacional Completa para Google Meu Negócio</span>
             </motion.div>
             
             {/* Headline Principal */}
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight font-display">
               <span className="text-foreground">
-                Pare de Perder Leads e
+                Pare de Fazer Tudo Sozinho.
+              </span>
+              <br />
+              <span className="gradient-text">
+                Delegue, Controle e Escale
               </span>
               <br />
               <span className="text-foreground">
-                Contratos por{" "}
-              </span>
-              <span className="gradient-text">
-                Desorganização
+                sua Agência de GMB.
               </span>
             </h1>
 
             {/* Subheadline */}
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed">
-              O único sistema de gestão feito especialmente para agências de Google Meu Negócio.
+              Da prospecção à execução recorrente. Da proposta ao checklist de otimização.
               <br className="hidden sm:block" />
-              Organize seus clientes, gere propostas automáticas e escale sua operação com clareza.
+              O único sistema que gerencia <strong className="text-foreground">todo o ciclo operacional</strong> da sua agência em um só lugar.
+              <br className="hidden sm:block" />
+              <span className="text-primary font-medium">Não é só um CRM. É a plataforma que te liberta da operação.</span>
             </p>
 
             {/* CTA Principal */}
@@ -362,7 +365,7 @@ const Landing = () => {
               </span>
               <span className="flex items-center gap-1">
                 <Check className="h-4 w-4 text-primary" />
-                Sem compromisso
+                Configure em 15 minutos
               </span>
               <span className="flex items-center gap-1">
                 <Check className="h-4 w-4 text-primary" />
@@ -393,30 +396,39 @@ const Landing = () => {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 font-display">
-              Sua Agência Está Crescendo,{" "}
-              <span className="text-status-danger">Mas o Caos Também?</span>
+              Você Está{" "}
+              <span className="text-status-danger">Preso na Operação?</span>
             </h2>
+            <p className="text-muted-foreground text-lg">
+              Identifique se esses sintomas estão te impedindo de escalar:
+            </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             {[
               {
                 icon: Users,
-                title: "Leads Perdidos",
-                description: "Você prospecta no Instagram, anota no bloco de notas e esquece. Oportunidades de R$ 5.000 ou R$ 10.000 evaporam porque não há processo.",
+                title: "😰 Você Faz Tudo Sozinho",
+                description: "Prospecta, vende, otimiza perfis, cria posts, responde avaliações... E quando tenta delegar, vira bagunça porque não tem processo claro.",
                 color: "text-status-danger",
               },
               {
+                icon: FileText,
+                title: "📝 Otimização Sem Padrão",
+                description: "Cada operador faz do seu jeito. Um esquece categorias, outro pula atributos. Você não tem como garantir que o trabalho saiu completo.",
+                color: "text-status-info",
+              },
+              {
                 icon: Clock,
-                title: "Propostas Lentas",
-                description: "Cada proposta leva horas para ficar pronta. Você copia, cola, ajusta valores... e quando o cliente pede urgência, você perde a venda.",
+                title: "🔄 Recorrentes Sem Controle",
+                description: "Você não sabe quais clientes tiveram posts essa semana, quais precisam de avaliações respondidas ou quais estão sem atividade há 15 dias.",
                 color: "text-status-warning",
               },
               {
                 icon: Target,
-                title: "Sem Controle",
-                description: "Você não sabe quantos contratos vencem este mês, qual cliente precisa de atenção ou se sua equipe está alinhada.",
-                color: "text-status-info",
+                title: "💸 Trabalho Invisível",
+                description: "Você trabalha muito, mas o cliente não vê. Na hora de renovar, ele pergunta: \"O que vocês fizeram mesmo?\"",
+                color: "text-status-purple",
               },
             ].map((problem, i) => (
               <motion.div
@@ -427,11 +439,8 @@ const Landing = () => {
                 transition={{ delay: i * 0.1 }}
                 className="glass-card p-6"
               >
-                <div className={`w-12 h-12 rounded-xl bg-muted flex items-center justify-center mb-4 ${problem.color}`}>
-                  <problem.icon className="h-6 w-6" />
-                </div>
-                <h3 className="text-xl font-semibold mb-3">{problem.title}</h3>
-                <p className="text-muted-foreground">{problem.description}</p>
+                <h3 className="text-lg font-semibold mb-3">{problem.title}</h3>
+                <p className="text-muted-foreground text-sm">{problem.description}</p>
               </motion.div>
             ))}
           </div>
@@ -440,9 +449,11 @@ const Landing = () => {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="text-center mt-12 text-lg text-muted-foreground italic"
+            className="text-center mt-12 text-lg max-w-2xl mx-auto"
           >
-            "Se você sente que está sempre apagando incêndio ao invés de construir algo sólido, continue lendo."
+            <span className="text-primary font-medium italic">
+              "Se você não consegue tirar férias sem que tudo desmorone, sua agência não tem estrutura — tem você."
+            </span>
           </motion.p>
         </div>
       </section>
@@ -461,11 +472,15 @@ const Landing = () => {
               <span className="text-sm text-primary font-medium">A Solução</span>
             </div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 font-display">
-              O G-Rank Organiza Sua Operação{" "}
-              <span className="gradient-text">de Ponta a Ponta</span>
+              O G-Rank Gerencia{" "}
+              <span className="gradient-text">Todo o Ciclo Operacional</span>
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-              Um sistema completo que cuida de leads, propostas, contratos, equipe e resultados. Tudo em um só lugar.
+            <p className="text-muted-foreground max-w-2xl mx-auto text-lg mb-4">
+              Da primeira conversa com o lead até a execução recorrente mensal.
+              <br />Tudo em um só sistema. Tudo sob controle.
+            </p>
+            <p className="text-foreground max-w-2xl mx-auto">
+              Não é só sobre vender mais. É sobre <strong>estruturar a operação</strong> para que você possa delegar com segurança, acompanhar com clareza e escalar sem colapsar.
             </p>
           </motion.div>
 
@@ -618,20 +633,14 @@ const Landing = () => {
             <h2 className="text-3xl md:text-4xl font-bold mb-6 font-display">
               Construído Por Quem Vive{" "}
               <span className="gradient-text">Google Meu Negócio</span>{" "}
-              Todos os Dias
+              no Campo de Batalha
             </h2>
             
-            <p className="text-muted-foreground mb-12 max-w-2xl mx-auto text-lg">
-              O G-Rank não foi feito por programadores que não entendem do mercado.
-              Foi criado com base em experiência real no campo de batalha.
-            </p>
-            
-            <div className="grid md:grid-cols-4 gap-6">
+            <div className="grid md:grid-cols-3 gap-6 mb-10">
               {[
-                { value: 5, suffix: " anos", label: "vendendo Google Meu Negócio" },
-                { value: 1500, suffix: "+", label: "reuniões de vendas reais" },
-                { value: 500, suffix: "+", label: "contratos fechados" },
-                { value: 350, suffix: "+", label: "alunos formados" },
+                { value: 500, suffix: "+", label: "Clientes gerenciados na nossa própria agência" },
+                { value: 4, suffix: " anos", label: "De experiência em SEO local e Google Perfil" },
+                { value: 1500, suffix: "+", label: "Reuniões de vendas e otimizações documentadas" },
               ].map((stat, i) => (
                 <motion.div
                   key={stat.label}
@@ -647,6 +656,21 @@ const Landing = () => {
                   <p className="text-sm text-muted-foreground">{stat.label}</p>
                 </motion.div>
               ))}
+            </div>
+            
+            <div className="glass-card p-8 text-left max-w-2xl mx-auto">
+              <p className="text-muted-foreground mb-4">
+                O G-Rank não foi criado por programadores que nunca venderam um perfil de GMB.
+              </p>
+              <p className="text-foreground mb-4">
+                Foi construído por <strong className="text-primary">João Lobo</strong>, especialista com <strong>5 anos vendendo Google Meu Negócio todos os dias</strong>. Mais de <strong>500 contratos fechados</strong>. Mais de <strong>350 alunos formados</strong> na metodologia Alcateia.
+              </p>
+              <p className="text-muted-foreground mb-4">
+                Cada funcionalidade nasceu de uma dor real. Cada checklist foi testado em centenas de perfis. Cada automação foi pensada para resolver um problema que apareceu no campo.
+              </p>
+              <p className="text-primary font-medium italic">
+                "Isso não é teoria. É experiência empacotada em sistema."
+              </p>
             </div>
           </motion.div>
         </div>
@@ -709,11 +733,13 @@ const Landing = () => {
               </h3>
               <ul className="space-y-3">
                 {[
-                  "Você tem agência de marketing local",
-                  "Vende Google Meu Negócio como serviço",
-                  "Quer escalar sem perder controle",
-                  "Precisa de processos claros e automações",
-                  "Quer transmitir mais profissionalismo",
+                  "Você vende Google Meu Negócio (ou quer vender)",
+                  "Tem 5+ clientes ativos (ou quer ter)",
+                  "Quer delegar a operação sem perder controle",
+                  "Precisa de processos claros para a equipe seguir",
+                  "Quer mostrar valor de forma organizada aos clientes",
+                  "Busca previsibilidade na receita recorrente",
+                  "Deseja escalar sem virar refém da operação",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-3">
                     <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
@@ -735,9 +761,11 @@ const Landing = () => {
               </h3>
               <ul className="space-y-3">
                 {[
-                  "Você está começando e tem menos de 5 clientes",
-                  "Prefere improvisar do que seguir processos",
-                  "Busca \"mágica\" sem trabalho real",
+                  "Você está começando do zero (menos de 3 clientes)",
+                  "Prefere trabalhar sozinho e não quer time",
+                  "Não acredita em processos estruturados",
+                  "Busca \"resultado mágico\" sem execução real",
+                  "Não está disposto a investir em infraestrutura",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-3 text-muted-foreground">
                     <X className="h-5 w-5 flex-shrink-0 mt-0.5" />
@@ -747,6 +775,17 @@ const Landing = () => {
               </ul>
             </motion.div>
           </div>
+          
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-center mt-10 text-lg"
+          >
+            <span className="text-primary font-medium">
+              "Se você quer crescer com estrutura, o G-Rank é o próximo passo."
+            </span>
+          </motion.p>
         </div>
       </section>
 
@@ -981,17 +1020,27 @@ const Landing = () => {
           >
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-display">
               Você Vai Continuar{" "}
-              <span className="text-status-danger">Improvisando</span>{" "}
+              <span className="text-status-danger">Preso na Operação</span>{" "}
               ou Vai{" "}
-              <span className="gradient-text">Profissionalizar</span>{" "}
-              Sua Operação?
+              <span className="gradient-text">Escalar com Estrutura?</span>
             </h2>
             
-            <p className="text-lg text-muted-foreground mb-10">
-              Se você ainda está controlando leads pelo WhatsApp e fazendo propostas no Canva,
-              sua agência está sendo engolida pela falta de estrutura.
+            <p className="text-muted-foreground mb-6">
+              Se você ainda está organizando clientes em planilhas, delegando por WhatsApp e controlando tarefas na memória...
               <br />
-              <strong className="text-foreground">Enquanto você improvisa, seus concorrentes estão se organizando.</strong>
+              <strong className="text-foreground">Sua agência está sendo engolida pela falta de sistema.</strong>
+            </p>
+            
+            <p className="text-muted-foreground mb-6">
+              Enquanto você improvisa, seus concorrentes estão se estruturando.
+              <br />
+              Enquanto você trabalha 12 horas, eles estão delegando.
+              <br />
+              Enquanto você explica tudo 3 vezes, o G-Rank está treinando o time operacional.
+            </p>
+            
+            <p className="text-primary font-medium italic mb-10 text-lg">
+              "O tempo que você perde sem estrutura é o tempo que seus concorrentes ganham com sistema."
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
