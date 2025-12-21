@@ -20,13 +20,13 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 export default function Contratos() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user, currentAgencyId, isAdmin } = useAuth();
+  const { user, currentAgencyId, isAdmin, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
   
   const {
     contracts,
     templates,
-    loading,
+    loading: contractsLoading,
     createContract,
     updateContract,
     deleteContract,
@@ -203,10 +203,29 @@ export default function Contratos() {
     }
   };
 
-  if (!user || !currentAgencyId) {
+  // Show loading while auth is initializing
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="text-muted-foreground">Carregando...</p>
+      </div>
+    );
+  }
+
+  // Redirect to login if not authenticated
+  if (!user) {
+    navigate('/auth');
+    return null;
+  }
+
+  // Show message if no agency is selected
+  if (!currentAgencyId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center flex-col gap-4">
+        <p className="text-muted-foreground">Nenhuma agência selecionada.</p>
+        <Button variant="outline" onClick={() => navigate('/dashboard')}>
+          Voltar ao Dashboard
+        </Button>
       </div>
     );
   }
