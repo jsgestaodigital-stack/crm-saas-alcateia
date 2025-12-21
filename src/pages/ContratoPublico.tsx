@@ -11,6 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { useContracts } from '@/hooks/useContracts';
 import { Contract, ContractClause, CONTRACT_STATUS_CONFIG, CONTRACT_TYPE_CONFIG, CONTRACT_VARIABLES } from '@/types/contract';
+import { formatCpf, validateCpf } from '@/lib/cpfValidation';
 import { 
   FileText, 
   CheckCircle2, 
@@ -148,10 +149,21 @@ export default function ContratoPublico() {
   const handleSign = async () => {
     if (!contract || !token) return;
     
-    if (!signatureName.trim() || !signatureCpf.trim()) {
+    if (!signatureName.trim()) {
       toast({
-        title: 'Preencha todos os campos',
-        description: 'Nome e CPF são obrigatórios para assinar.',
+        title: 'Nome obrigatório',
+        description: 'Digite seu nome completo para assinar.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Validate CPF with proper algorithm
+    const cpfError = validateCpf(signatureCpf);
+    if (cpfError) {
+      toast({
+        title: 'CPF inválido',
+        description: cpfError,
         variant: 'destructive',
       });
       return;
@@ -186,14 +198,6 @@ export default function ContratoPublico() {
     } finally {
       setSigning(false);
     }
-  };
-
-  const formatCpf = (value: string) => {
-    const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 3) return numbers;
-    if (numbers.length <= 6) return `${numbers.slice(0, 3)}.${numbers.slice(3)}`;
-    if (numbers.length <= 9) return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6)}`;
-    return `${numbers.slice(0, 3)}.${numbers.slice(3, 6)}.${numbers.slice(6, 9)}-${numbers.slice(9, 11)}`;
   };
 
   if (loading) {
