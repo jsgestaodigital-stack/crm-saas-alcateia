@@ -170,19 +170,23 @@ export function AppSidebar({
   const isOnAgenteSuspensoes = location.pathname === "/agente-suspensoes";
   const isOnRecorrencia = location.pathname === "/recorrencia";
   const sidebarContent = <>
-      {/* Logo */}
-      <div className="h-16 flex items-center justify-between px-4 border-b border-sidebar-border/50">
-        {!collapsed && <img src={grankLogo} alt="G-Rank CRM" className="h-9 w-auto animate-fade-in" />}
-        <Button variant="ghost" size="icon" onClick={() => onCollapsedChange(!collapsed)} className="h-8 w-8 hover:bg-primary/10 hover:text-primary transition-all hidden lg:flex">
-          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+      {/* Logo with gradient accent */}
+      <div className="h-16 flex items-center justify-between px-4 border-b border-emerald/10 bg-gradient-to-r from-emerald/5 via-transparent to-violet/5">
+        {!collapsed && (
+          <div className="flex items-center gap-2 animate-fade-in">
+            <img src={grankLogo} alt="G-Rank CRM" className="h-9 w-auto" />
+          </div>
+        )}
+        <Button variant="ghost" size="icon" onClick={() => onCollapsedChange(!collapsed)} className="h-8 w-8 hover:bg-emerald/10 hover:text-emerald transition-all duration-300 hidden lg:flex group">
+          {collapsed ? <ChevronRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" /> : <ChevronLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />}
         </Button>
-        <Button variant="ghost" size="icon" onClick={() => onMobileOpenChange(false)} className="h-8 w-8 hover:bg-primary/10 hover:text-primary transition-all lg:hidden">
+        <Button variant="ghost" size="icon" onClick={() => onMobileOpenChange(false)} className="h-8 w-8 hover:bg-emerald/10 hover:text-emerald transition-all lg:hidden">
           <X className="h-4 w-4" />
         </Button>
       </div>
 
       {/* Funnel Toggle - only when not collapsed */}
-      {!collapsed && <div className="p-3 border-b border-sidebar-border/50 animate-fade-in">
+      {!collapsed && <div className="p-3 border-b border-emerald/10 animate-fade-in bg-gradient-to-b from-transparent to-sidebar/50">
           <FunnelToggleCompact />
         </div>}
 
@@ -554,15 +558,25 @@ export function AppSidebar({
     </>;
   return <>
       {/* Mobile Backdrop */}
-      {mobileOpen && <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden animate-fade-in" onClick={() => onMobileOpenChange(false)} />}
+      {mobileOpen && <div className="fixed inset-0 bg-soft-black/70 backdrop-blur-md z-40 lg:hidden animate-fade-in" onClick={() => onMobileOpenChange(false)} />}
 
       {/* Desktop Sidebar */}
-      <aside className={cn("hidden lg:flex fixed left-0 top-0 h-screen z-30 flex-col glass-sidebar transition-all duration-300", collapsed ? "w-16" : "w-64")}>
+      <aside className={cn(
+        "hidden lg:flex fixed left-0 top-0 h-screen z-30 flex-col transition-all duration-300",
+        "bg-sidebar/95 backdrop-blur-xl border-r border-emerald/10",
+        "shadow-[4px_0_24px_rgba(0,252,168,0.03)]",
+        collapsed ? "w-16" : "w-64"
+      )}>
         {sidebarContent}
       </aside>
 
       {/* Mobile Sidebar */}
-      <aside className={cn("lg:hidden fixed left-0 top-0 h-screen z-50 flex flex-col glass-sidebar transition-transform duration-300 w-72", mobileOpen ? "translate-x-0" : "-translate-x-full")}>
+      <aside className={cn(
+        "lg:hidden fixed left-0 top-0 h-screen z-50 flex flex-col transition-transform duration-300 w-72",
+        "bg-sidebar/98 backdrop-blur-xl border-r border-emerald/10",
+        "shadow-[4px_0_32px_rgba(0,252,168,0.05)]",
+        mobileOpen ? "translate-x-0" : "-translate-x-full"
+      )}>
         {sidebarContent}
       </aside>
     </>;
