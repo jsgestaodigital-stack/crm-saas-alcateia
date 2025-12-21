@@ -1,14 +1,23 @@
 /**
- * Visual PDF Export Utility - GBP Check Style
+ * Visual PDF Export Utility - G-Rank CRM
  * Generates professional PDF with white background, clean layout
+ * 
+ * PERFORMANCE OPTIMIZATIONS FOR MOBILE:
+ * - Reduced scale on mobile devices (1.5x vs 2x)
+ * - Progressive section rendering with garbage collection
+ * - Memory cleanup between sections
+ * - Abort capability for long operations
+ * - Chunked processing to prevent UI freezing
  * 
  * @param {Object} options
  * @param {HTMLElement} options.rootEl - Root element to capture (#print-report-root)
  * @param {string} options.filename - Output filename
+ * @param {function} options.onProgress - Progress callback (0-100)
+ * @param {AbortSignal} options.signal - AbortSignal for cancellation
  * @returns {Promise<{success: boolean, error?: string}>}
  */
 export async function exportVisualPdf(options) {
-  const { rootEl, filename } = options;
+  const { rootEl, filename, onProgress, signal } = options;
 
   if (!rootEl) {
     console.error('Visual PDF Export: No root element provided');
@@ -17,22 +26,36 @@ export async function exportVisualPdf(options) {
 
   let cloneWrapper = null;
 
+  // Detect mobile device for performance adjustments
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+  const isLowMemory = navigator.deviceMemory ? navigator.deviceMemory < 4 : isMobile;
+
   try {
+    // Check for abort before starting
+    if (signal?.aborted) {
+      return { success: false, error: 'Export cancelled' };
+    }
+
+    onProgress?.(5);
+
     // Dynamic imports
     const html2canvas = (await import('html2canvas')).default;
     const jsPDF = (await import('jspdf')).jsPDF;
+
+    onProgress?.(10);
 
     // ========================================
     // 1. PREPARE DOM - scroll to top & stabilize
     // ========================================
     window.scrollTo(0, 0);
     window.dispatchEvent(new Event('resize'));
-    await new Promise(r => setTimeout(r, 300));
+    await yieldToMain(100);
 
     // ========================================
     // 2. CREATE OFFSCREEN CLONE WITH A4 WIDTH
     // ========================================
-    const A4_WIDTH_PX = 1123; // Higher quality (≈297mm at 96dpi * 4)
+    // Reduced width for mobile to lower memory usage
+    const A4_WIDTH_PX = isMobile ? 794 : 1123; // Lower for mobile
     
     cloneWrapper = document.createElement('div');
     cloneWrapper.id = 'pdf-export-wrapper';
@@ -55,7 +78,7 @@ export async function exportVisualPdf(options) {
     clone.style.boxSizing = 'border-box';
 
     // ========================================
-    // 3. INJECT PDF THEME STYLES
+    // 3. INJECT PDF THEME STYLES (Simplified for perf)
     // ========================================
     const pdfStyles = document.createElement('style');
     pdfStyles.textContent = `
@@ -71,7 +94,6 @@ export async function exportVisualPdf(options) {
         font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
       }
       
-      /* Override dark theme colors */
       #pdf-export-wrapper [class*="bg-background"],
       #pdf-export-wrapper [class*="bg-card"],
       #pdf-export-wrapper [class*="bg-muted"],
@@ -95,7 +117,6 @@ export async function exportVisualPdf(options) {
         color: #666666 !important;
       }
       
-      /* Cards - clean light style */
       #pdf-export-wrapper [class*="rounded"],
       #pdf-export-wrapper .card,
       #pdf-export-wrapper [class*="Card"] {
@@ -105,7 +126,6 @@ export async function exportVisualPdf(options) {
         box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
       }
       
-      /* Remove heavy shadows and backdrop filters */
       #pdf-export-wrapper * {
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
@@ -117,7 +137,6 @@ export async function exportVisualPdf(options) {
         box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
       }
       
-      /* Charts - ensure visibility */
       #pdf-export-wrapper .recharts-wrapper,
       #pdf-export-wrapper [class*="chart"],
       #pdf-export-wrapper svg {
@@ -129,7 +148,6 @@ export async function exportVisualPdf(options) {
         overflow: visible !important;
       }
       
-      /* KPI cards styling */
       #pdf-export-wrapper [class*="grid"] > div {
         background: #f8f9fa !important;
         border: 1px solid #e2e8f0 !important;
@@ -137,14 +155,12 @@ export async function exportVisualPdf(options) {
         border-radius: 8px !important;
       }
       
-      /* Section spacing */
       #pdf-export-wrapper .print-section {
         margin-bottom: 32px !important;
         padding: 24px !important;
         page-break-inside: avoid !important;
       }
       
-      /* Tables */
       #pdf-export-wrapper table {
         border-collapse: collapse !important;
         width: 100% !important;
@@ -163,7 +179,6 @@ export async function exportVisualPdf(options) {
         font-weight: 600 !important;
       }
       
-      /* Primary/accent colors - keep but soften */
       #pdf-export-wrapper [class*="text-primary"],
       #pdf-export-wrapper [class*="text-green"],
       #pdf-export-wrapper [class*="text-emerald"] {
@@ -177,17 +192,14 @@ export async function exportVisualPdf(options) {
         color: #ffffff !important;
       }
       
-      /* Progress bars */
       #pdf-export-wrapper [class*="progress"] {
         background: #e2e8f0 !important;
       }
       
-      /* Badges */
       #pdf-export-wrapper [class*="badge"] {
         border: 1px solid #d1d5db !important;
       }
       
-      /* Hide elements that shouldn't appear */
       #pdf-export-wrapper [role="dialog"],
       #pdf-export-wrapper [data-radix-portal],
       #pdf-export-wrapper [data-sonner-toaster],
@@ -201,6 +213,8 @@ export async function exportVisualPdf(options) {
     cloneWrapper.appendChild(pdfStyles);
     cloneWrapper.appendChild(clone);
     document.body.appendChild(cloneWrapper);
+
+    onProgress?.(15);
 
     // ========================================
     // 4. REMOVE UNWANTED ELEMENTS FROM CLONE
@@ -220,8 +234,10 @@ export async function exportVisualPdf(options) {
       clone.querySelectorAll(selector).forEach(el => el.remove());
     });
 
-    // Wait for styles to apply
-    await new Promise(r => setTimeout(r, 400));
+    // Wait for styles to apply (shorter for mobile)
+    await yieldToMain(isMobile ? 200 : 400);
+
+    onProgress?.(20);
 
     // ========================================
     // 5. PDF SETUP - A4 with margins
@@ -231,12 +247,11 @@ export async function exportVisualPdf(options) {
     const pageHeight = 297;
     const margin = 10;
     const contentWidth = pageWidth - margin * 2;
-    const contentHeight = pageHeight - margin * 2 - 10; // Leave space for page numbers
+    const contentHeight = pageHeight - margin * 2 - 10;
 
     // ========================================
     // 6. ADD HEADER/COVER PAGE
     // ========================================
-    // Background
     pdf.setFillColor(255, 255, 255);
     pdf.rect(0, 0, pageWidth, pageHeight, 'F');
     
@@ -248,7 +263,7 @@ export async function exportVisualPdf(options) {
     pdf.setTextColor(255, 255, 255);
     pdf.setFontSize(24);
     pdf.setFont('helvetica', 'bold');
-    pdf.text('RANKEIA', margin, 20);
+    pdf.text('G-RANK CRM', margin, 20);
     
     pdf.setFontSize(14);
     pdf.setFont('helvetica', 'normal');
@@ -274,11 +289,13 @@ export async function exportVisualPdf(options) {
       pdf.text(`Período: ${startDate} a ${endDate}`, margin, 62);
     }
 
+    onProgress?.(25);
+
     // ========================================
-    // 7. HTML2CANVAS OPTIONS - PRO SETTINGS
+    // 7. HTML2CANVAS OPTIONS - MOBILE OPTIMIZED
     // ========================================
     const canvasOptions = {
-      scale: 2,
+      scale: isLowMemory ? 1.5 : 2, // Lower scale for mobile/low memory
       backgroundColor: '#ffffff',
       useCORS: true,
       allowTaint: true,
@@ -287,18 +304,34 @@ export async function exportVisualPdf(options) {
       scrollY: 0,
       windowWidth: A4_WIDTH_PX,
       windowHeight: cloneWrapper.scrollHeight,
+      imageTimeout: 5000, // Limit image loading time
+      removeContainer: false,
     };
 
     // ========================================
-    // 8. FIND SECTIONS & CAPTURE
+    // 8. FIND SECTIONS & CAPTURE PROGRESSIVELY
     // ========================================
     const sections = clone.querySelectorAll('.print-section');
     const elementsToCapture = sections.length > 0 ? Array.from(sections) : [clone];
+    const totalSections = elementsToCapture.length;
 
-    for (const element of elementsToCapture) {
+    for (let i = 0; i < elementsToCapture.length; i++) {
+      // Check for abort
+      if (signal?.aborted) {
+        cleanup(cloneWrapper);
+        return { success: false, error: 'Export cancelled' };
+      }
+
+      const element = elementsToCapture[i];
+      const sectionProgress = 25 + ((i / totalSections) * 65);
+      onProgress?.(Math.round(sectionProgress));
+
       try {
         // Add new page for content
         pdf.addPage();
+
+        // Yield to main thread between sections (prevents UI freeze)
+        await yieldToMain(isMobile ? 50 : 10);
 
         // Capture this section
         const canvas = await html2canvas(element, canvasOptions);
@@ -317,8 +350,8 @@ export async function exportVisualPdf(options) {
         // ========================================
         if (imgHeight <= contentHeight) {
           // Fits in one page
-          const imgData = canvas.toDataURL('image/png', 1.0);
-          pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight);
+          const imgData = canvas.toDataURL('image/jpeg', 0.85); // JPEG is smaller
+          pdf.addImage(imgData, 'JPEG', margin, margin, imgWidth, imgHeight);
         } else {
           // Need to slice into multiple pages
           let sourceY = 0;
@@ -349,18 +382,34 @@ export async function exportVisualPdf(options) {
                 0, 0, canvas.width, thisSliceHeight
               );
 
-              const sliceData = tempCanvas.toDataURL('image/png', 1.0);
-              pdf.addImage(sliceData, 'PNG', margin, margin, contentWidth, thisSliceMm);
+              const sliceData = tempCanvas.toDataURL('image/jpeg', 0.85);
+              pdf.addImage(sliceData, 'JPEG', margin, margin, contentWidth, thisSliceMm);
             }
+
+            // Cleanup temp canvas
+            tempCanvas.width = 0;
+            tempCanvas.height = 0;
 
             sourceY += thisSliceHeight;
             pageNum++;
+
+            // Yield between slices on mobile
+            if (isMobile && pageNum % 2 === 0) {
+              await yieldToMain(10);
+            }
           }
         }
+
+        // Clear canvas memory after processing
+        canvas.width = 0;
+        canvas.height = 0;
+
       } catch (err) {
         console.warn('Failed to capture section:', err);
       }
     }
+
+    onProgress?.(90);
 
     // ========================================
     // 10. ADD PAGE NUMBERS & FOOTER
@@ -385,29 +434,154 @@ export async function exportVisualPdf(options) {
       
       // Footer text
       if (i > 1) {
-        pdf.text('RANKEIA - Relatório do Gestor', margin, pageHeight - 6);
+        pdf.text('G-Rank CRM - Relatório do Gestor', margin, pageHeight - 6);
       }
     }
+
+    onProgress?.(95);
 
     // ========================================
     // 11. CLEANUP & SAVE
     // ========================================
-    if (cloneWrapper && cloneWrapper.parentNode) {
-      cloneWrapper.parentNode.removeChild(cloneWrapper);
-    }
+    cleanup(cloneWrapper);
+    cloneWrapper = null;
 
     pdf.save(filename);
+    
+    onProgress?.(100);
     
     return { success: true };
 
   } catch (error) {
     console.error('Visual PDF Export failed:', error);
-    
-    // Cleanup on error
-    if (cloneWrapper && cloneWrapper.parentNode) {
-      cloneWrapper.parentNode.removeChild(cloneWrapper);
+    cleanup(cloneWrapper);
+    return { success: false, error: error.message || 'Unknown error' };
+  }
+}
+
+/**
+ * Cleanup helper function
+ */
+function cleanup(element) {
+  if (element && element.parentNode) {
+    element.parentNode.removeChild(element);
+  }
+}
+
+/**
+ * Yield to main thread to prevent UI freezing
+ * Uses requestIdleCallback when available, falls back to setTimeout
+ */
+function yieldToMain(minDelay = 0) {
+  return new Promise(resolve => {
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(() => {
+        setTimeout(resolve, minDelay);
+      }, { timeout: 100 });
+    } else {
+      setTimeout(resolve, Math.max(minDelay, 16));
     }
-    
+  });
+}
+
+/**
+ * Lightweight PDF export for contracts - simpler, faster
+ * Uses lower quality settings for faster processing on mobile
+ */
+export async function exportContractPdf(options) {
+  const { rootEl, filename, onProgress, signal } = options;
+
+  if (!rootEl) {
+    return { success: false, error: 'No root element provided' };
+  }
+
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth < 768;
+
+  try {
+    if (signal?.aborted) {
+      return { success: false, error: 'Export cancelled' };
+    }
+
+    onProgress?.(10);
+
+    const html2canvas = (await import('html2canvas')).default;
+    const jsPDF = (await import('jspdf')).jsPDF;
+
+    onProgress?.(20);
+
+    // Simpler capture for contracts
+    const canvas = await html2canvas(rootEl, {
+      scale: isMobile ? 1.2 : 1.5,
+      backgroundColor: '#ffffff',
+      useCORS: true,
+      logging: false,
+      imageTimeout: 3000,
+    });
+
+    onProgress?.(60);
+
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pageWidth = 210;
+    const pageHeight = 297;
+    const margin = 15;
+    const contentWidth = pageWidth - margin * 2;
+    const contentHeight = pageHeight - margin * 2;
+
+    const imgWidth = contentWidth;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    if (imgHeight <= contentHeight) {
+      const imgData = canvas.toDataURL('image/jpeg', 0.8);
+      pdf.addImage(imgData, 'JPEG', margin, margin, imgWidth, imgHeight);
+    } else {
+      // Multi-page
+      const pixelsPerMm = canvas.width / contentWidth;
+      const slicePixelHeight = contentHeight * pixelsPerMm;
+      let sourceY = 0;
+      let pageNum = 0;
+
+      while (sourceY < canvas.height) {
+        if (pageNum > 0) pdf.addPage();
+
+        const thisSliceHeight = Math.min(slicePixelHeight, canvas.height - sourceY);
+        const thisSliceMm = thisSliceHeight / pixelsPerMm;
+
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = canvas.width;
+        tempCanvas.height = thisSliceHeight;
+        const ctx = tempCanvas.getContext('2d');
+
+        if (ctx) {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+          ctx.drawImage(canvas, 0, sourceY, canvas.width, thisSliceHeight, 0, 0, canvas.width, thisSliceHeight);
+          
+          const sliceData = tempCanvas.toDataURL('image/jpeg', 0.8);
+          pdf.addImage(sliceData, 'JPEG', margin, margin, contentWidth, thisSliceMm);
+        }
+
+        tempCanvas.width = 0;
+        tempCanvas.height = 0;
+        sourceY += thisSliceHeight;
+        pageNum++;
+
+        if (isMobile) await yieldToMain(20);
+        onProgress?.(60 + (sourceY / canvas.height) * 30);
+      }
+    }
+
+    onProgress?.(95);
+
+    canvas.width = 0;
+    canvas.height = 0;
+
+    pdf.save(filename);
+    onProgress?.(100);
+
+    return { success: true };
+
+  } catch (error) {
+    console.error('Contract PDF Export failed:', error);
     return { success: false, error: error.message || 'Unknown error' };
   }
 }
