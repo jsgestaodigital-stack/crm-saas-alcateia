@@ -60,38 +60,50 @@ const App = () => (
                   <ConsentGuard>
                     <ImpersonateBanner />
                     <Routes>
+                      {/* ============ DASHBOARD / HOME ============ */}
                       <Route path="/" element={<Dashboard />} />
                       <Route path="/dashboard" element={<Dashboard />} />
+
+                      {/* ============ COMERCIAL ============ */}
+                      <Route path="/propostas" element={<Propostas />} />
+                      <Route path="/contratos" element={<Contratos />} />
+                      <Route path="/commissions" element={<Commissions />} />
+
+                      {/* ============ PRODUÇÃO / OPERACIONAL ============ */}
                       <Route path="/raio-x" element={<RaioX />} />
                       <Route path="/agente-seo" element={<AgenteSEO />} />
                       <Route path="/agente-suspensoes" element={<AgenteSuspensoes />} />
                       <Route path="/historico" element={<Historico />} />
-                      <Route path="/relatorio-gestor" element={<ManagerReport />} />
+                      <Route path="/duvidas" element={<Questions />} />
                       <Route path="/recorrencia" element={<Recorrencia />} />
-                      <Route path="/auth" element={<Auth />} />
-                      <Route path="/register" element={<Register />} />
+                      <Route path="/clientes-crm" element={<ClientsCRM />} />
+
+                      {/* ============ GESTÃO / ADMINISTRAÇÃO ============ */}
                       <Route path="/admin" element={<Admin />} />
                       <Route path="/admin/users" element={<AdminUsers />} />
                       <Route path="/admin/plan" element={<AgencyPlan />} />
                       <Route path="/admin/audit" element={<AuditLogs />} />
-                      <Route path="/admin/agencia/:id" element={<AgencyDetail />} />
-                      <Route path="/notifications" element={<Notifications />} />
-                      <Route path="/super-admin" element={<SuperAdmin />} />
-                      <Route path="/commissions" element={<Commissions />} />
-                      <Route path="/duvidas" element={<Questions />} />
-                      <Route path="/sugestoes" element={<Suggestions />} />
-                      <Route path="/clientes-crm" element={<ClientsCRM />} />
-                      <Route path="/equipe" element={<Equipe />} />
-                      <Route path="/convite/:token" element={<Convite />} />
                       <Route path="/admin/permissions" element={<AdminPermissions />} />
+                      <Route path="/admin/activation" element={<ActivationDashboard />} />
+                      <Route path="/admin/agencia/:id" element={<AgencyDetail />} />
+                      <Route path="/equipe" element={<Equipe />} />
+                      <Route path="/relatorio-gestor" element={<ManagerReport />} />
+                      <Route path="/notifications" element={<Notifications />} />
+                      <Route path="/sugestoes" element={<Suggestions />} />
                       <Route path="/agency/settings/permissions" element={<AgencyPermissions />} />
                       <Route path="/settings/security" element={<SecuritySettings />} />
-                      <Route path="/admin/activation" element={<ActivationDashboard />} />
-                      <Route path="/propostas" element={<Propostas />} />
+                      <Route path="/super-admin" element={<SuperAdmin />} />
+
+                      {/* ============ AUTENTICAÇÃO ============ */}
+                      <Route path="/auth" element={<Auth />} />
+                      <Route path="/register" element={<Register />} />
+                      <Route path="/convite/:token" element={<Convite />} />
+
+                      {/* ============ PÁGINAS PÚBLICAS (sem auth) ============ */}
                       <Route path="/proposta/:token" element={<PropostaPublica />} />
-                      <Route path="/contratos" element={<Contratos />} />
                       <Route path="/contrato/:token" element={<ContratoPublico />} />
-                      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+
+                      {/* ============ CATCH-ALL (404) ============ */}
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                     {/* Global Modals */}
