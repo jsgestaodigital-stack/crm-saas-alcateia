@@ -3570,6 +3570,32 @@ export type Database = {
         }
         Returns: string
       }
+      get_agency_details: {
+        Args: { _agency_id: string }
+        Returns: {
+          created_at: string
+          id: string
+          limits_max_clients: number
+          limits_max_leads: number
+          limits_max_recurring_clients: number
+          limits_max_users: number
+          limits_storage_mb: number
+          logo_url: string
+          members_count: number
+          name: string
+          owner_email: string
+          owner_name: string
+          settings: Json
+          slug: string
+          status: string
+          updated_at: string
+          usage_current_clients: number
+          usage_current_leads: number
+          usage_current_recurring_clients: number
+          usage_current_users: number
+          usage_storage_used_mb: number
+        }[]
+      }
       get_agency_features: { Args: { _agency_id: string }; Returns: Json }
       get_all_agencies_with_stats: {
         Args: never
@@ -3839,6 +3865,21 @@ export type Database = {
         }[]
       }
       try_uuid: { Args: { _val: string }; Returns: string }
+      update_agency: {
+        Args: {
+          _agency_id: string
+          _logo_url?: string
+          _max_clients?: number
+          _max_leads?: number
+          _max_recurring_clients?: number
+          _max_users?: number
+          _name?: string
+          _settings?: Json
+          _status?: string
+          _storage_mb?: number
+        }
+        Returns: boolean
+      }
       update_expired_subscriptions: { Args: never; Returns: number }
     }
     Enums: {
