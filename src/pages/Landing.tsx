@@ -51,16 +51,17 @@ const Landing = () => {
       features: [
         "1 agência",
         "Até 15 clientes ativos",
+        "Até 50 leads",
         "Até 2 membros da equipe",
         "Funil e tarefas básicas",
-        "Relatórios simples por agência",
+        "Relatórios por agência",
         "Dashboard principal",
         "Suporte por e-mail"
       ],
       limitations: [
         "Sem automações",
         "Sem controle de comissão",
-        "Sem exportação"
+        "Sem exportação de dados"
       ],
       cta: "Começar Grátis",
       popular: false
@@ -73,6 +74,7 @@ const Landing = () => {
       annualPrice: 102,
       features: [
         "Até 50 clientes ativos",
+        "Até 300 leads",
         "Até 5 membros",
         "Funil e tarefas avançadas",
         "Automações por status",
@@ -93,10 +95,10 @@ const Landing = () => {
       annualPrice: 158,
       features: [
         "Até 150 clientes ativos",
+        "Até 1.000 leads",
         "Até 15 membros",
+        "Tudo do Pro +",
         "Dashboard financeiro",
-        "10.000 tarefas/mês",
-        "Integração AlfaLeads",
         "Exportação de dados",
         "Suporte por WhatsApp",
         "Acesso antecipado a novos recursos"
