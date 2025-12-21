@@ -330,12 +330,12 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-3 sm:p-4 safe-area-inset-top safe-area-inset-bottom">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <img src={grankLogo} alt="G Rank CRM" className="h-24 mx-auto mb-6" />
-          <h1 className="text-2xl font-bold text-foreground">G Rank CRM</h1>
-          <p className="text-muted-foreground text-sm mt-2 max-w-xs mx-auto">CRM para vendas e gestão de perfis da empresa no Google</p>
+        <div className="text-center mb-6 sm:mb-8">
+          <img src={grankLogo} alt="G Rank CRM" className="h-16 sm:h-20 md:h-24 mx-auto mb-4 sm:mb-6" />
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">G Rank CRM</h1>
+          <p className="text-muted-foreground text-xs sm:text-sm mt-2 max-w-xs mx-auto px-2">CRM para vendas e gestão de perfis da empresa no Google</p>
         </div>
 
         {/* Alerta de usuário bloqueado */}
@@ -380,7 +380,7 @@ export default function Auth() {
           </Alert>
         )}
 
-        <div className="bg-surface-2 border border-border/50 rounded-xl p-6 neon-border">
+        <div className="bg-surface-2 border border-border/50 rounded-xl p-4 sm:p-6 neon-border">
           {/* Reset Password Form (from recovery link) */}
           {authMode === 'reset-password' && (
             <form onSubmit={handleResetPassword} className="space-y-5">
