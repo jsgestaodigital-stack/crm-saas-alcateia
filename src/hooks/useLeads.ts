@@ -15,7 +15,7 @@ import { createAutoCommission } from './useCommissions';
 export function useLeads() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { user, currentAgencyId } = useAuth();
 
   const userName = user?.user_metadata?.full_name || user?.email || 'Usuário';
 
