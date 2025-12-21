@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import grankDashboardHero from "@/assets/grank-dashboard-hero.png";
+import grankDashboardClean from "@/assets/grank-dashboard-clean.png";
 
 export const HeroVideo = () => {
   return (
@@ -15,7 +15,7 @@ export const HeroVideo = () => {
       {/* Main container */}
       <div className="relative rounded-2xl overflow-hidden border border-border/50 shadow-2xl shadow-primary/20 bg-card">
         <img 
-          src={grankDashboardHero} 
+          src={grankDashboardClean} 
           alt="G-Rank CRM Dashboard - Sistema completo de gestão para agências de Google Meu Negócio"
           className="w-full h-auto"
         />
