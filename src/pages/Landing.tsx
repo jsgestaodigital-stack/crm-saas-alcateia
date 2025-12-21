@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Users, FileText, Bell, TrendingUp, Shield, Check, X, ArrowRight, Sparkles, Zap, Calculator, Clock, MessageCircle, ChevronDown, Menu, X as CloseIcon, CreditCard, UserCheck, Target, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import grankLogo from "@/assets/grank-logo.png";
+import grankLogoDark from "@/assets/grank-logo-dark.png";
 import { AnimatedCounter, FloatingParticles, ScrollProgress, InteractiveDemo, HeroVideo, FeatureCard, ComparisonTable, SectionDivider } from "@/components/landing";
 const Landing = () => {
   const [isAnnual, setIsAnnual] = useState(false);
@@ -122,7 +122,7 @@ const Landing = () => {
       <header className="fixed top-0 left-0 right-0 z-50 glass-header safe-area-inset-top">
         <div className="container mx-auto px-3 sm:px-4 h-14 sm:h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <img src={grankLogo} alt="GRank CRM" className="h-7 sm:h-8 w-auto" />
+            <img src={grankLogoDark} alt="GRank CRM" className="h-7 sm:h-8 w-auto" />
             <span className="font-bold text-lg sm:text-xl gradient-text">GRank CRM</span>
           </Link>
           
@@ -983,7 +983,7 @@ const Landing = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-8 sm:mb-12">
             <div className="sm:col-span-2">
               <Link to="/" className="flex items-center gap-2 mb-4">
-                <img src={grankLogo} alt="GRank CRM" className="h-7 sm:h-8 w-auto" />
+                <img src={grankLogoDark} alt="GRank CRM" className="h-7 sm:h-8 w-auto" />
                 <span className="font-bold text-lg sm:text-xl gradient-text">GRank CRM</span>
               </Link>
               <p className="text-muted-foreground mb-4 text-sm sm:text-base">

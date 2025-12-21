@@ -25,7 +25,7 @@ import {
   EyeOff,
   Gift,
 } from "lucide-react";
-import grankLogo from "@/assets/grank-logo.png";
+import { ThemeLogo } from "@/components/ThemeLogo";
 
 // Validation schema
 const registerSchema = z.object({
@@ -225,11 +225,7 @@ export default function Register() {
         {/* Left: Features */}
         <div className="hidden lg:block space-y-8 pr-8">
           <div>
-            <img
-              src={grankLogo}
-              alt="GRank CRM"
-              className="h-16 object-contain mb-6"
-            />
+            <ThemeLogo className="h-16 mb-6" />
             <h1 className="text-3xl font-bold text-foreground mb-3">
               Comece seu teste grátis
             </h1>
@@ -283,11 +279,7 @@ export default function Register() {
         {/* Right: Form */}
         <Card className="border-primary/20 shadow-2xl">
           <CardHeader className="text-center space-y-4">
-            <img
-              src={grankLogo}
-              alt="GRank CRM"
-              className="h-12 mx-auto object-contain lg:hidden"
-            />
+            <ThemeLogo className="h-12 mx-auto lg:hidden" />
             <div>
               <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium mb-3">
                 <Gift className="w-4 h-4" />

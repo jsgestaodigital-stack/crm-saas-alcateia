@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import grankLogo from "@/assets/grank-logo.png";
+import { ThemeLogo } from "@/components/ThemeLogo";
 import { supabase } from "@/integrations/supabase/client";
 import { useSecurityCheck } from "@/hooks/useSecurityCheck";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -333,7 +333,7 @@ export default function Auth() {
     <div className="min-h-screen bg-background flex items-center justify-center p-3 sm:p-4 safe-area-inset-top safe-area-inset-bottom">
       <div className="w-full max-w-md">
         <div className="text-center mb-6 sm:mb-8">
-          <img src={grankLogo} alt="GRank CRM" className="h-16 sm:h-20 md:h-24 mx-auto mb-4 sm:mb-6" />
+          <ThemeLogo className="h-16 sm:h-20 md:h-24 mx-auto mb-4 sm:mb-6" />
           <h1 className="text-xl sm:text-2xl font-bold text-foreground">GRank CRM</h1>
           <p className="text-muted-foreground text-xs sm:text-sm mt-2 max-w-xs mx-auto px-2">CRM para vendas e gestão de perfis da empresa no Google</p>
         </div>
