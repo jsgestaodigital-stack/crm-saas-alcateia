@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { LayoutGrid, Table, Calendar, Clock, LayoutDashboard, ClipboardList, Plus, Shield, ChevronLeft, ChevronRight, Zap, Target, AlertTriangle, TrendingUp, X, DollarSign, MessageCircleQuestion, Flame, CalendarClock, Search, FileText, CalendarCheck, RefreshCw, CheckCircle2, Users, Lightbulb, Bell, History } from "lucide-react";
+import { LayoutGrid, Table, Calendar, Clock, LayoutDashboard, ClipboardList, Plus, Shield, ChevronLeft, ChevronRight, Zap, Target, AlertTriangle, TrendingUp, X, DollarSign, MessageCircleQuestion, Flame, CalendarClock, Search, FileText, CalendarCheck, RefreshCw, CheckCircle2, Users, Lightbulb, Bell, History, FileSignature } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useClientStore } from "@/stores/clientStore";
@@ -472,11 +472,51 @@ export function AppSidebar({
               } />
             </div>}
 
-          {/* Raio-X - Only visible in Sales mode for users with sales permission */}
+          {/* Comercial - Only visible in Sales mode for users with sales permission */}
           {canAccessSales && isSalesMode && <div className="space-y-1 pt-2 border-t border-border/30">
               {!collapsed && <p className="text-[10px] font-semibold text-muted-foreground uppercase px-2 mb-2">
-                  Ferramentas
+                  Comercial
                 </p>}
+              
+              {/* Propostas */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" className={cn("w-full justify-start gap-3 h-11 transition-all duration-200", collapsed ? "px-3 justify-center" : "px-4", location.pathname === "/propostas" ? "bg-amber-500/15 text-amber-400 border border-amber-500/30" : "hover:bg-amber-500/10 hover:text-amber-400 border border-transparent")} onClick={() => {
+                    navigate("/propostas");
+                    onMobileOpenChange(false);
+                  }}>
+                    <FileText className="h-5 w-5 shrink-0 text-amber-400/70" />
+                    {!collapsed && <div className="flex flex-col items-start">
+                        <span className="text-sm font-medium">Propostas</span>
+                        <span className="text-[10px] text-muted-foreground">Geração inteligente</span>
+                      </div>}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="glass">
+                  <p className="font-medium">Propostas</p>
+                  <p className="text-xs text-muted-foreground">Crie e gerencie propostas comerciais</p>
+                </TooltipContent>
+              </Tooltip>
+
+              {/* Contratos */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" className={cn("w-full justify-start gap-3 h-11 transition-all duration-200", collapsed ? "px-3 justify-center" : "px-4", location.pathname === "/contratos" ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "hover:bg-emerald-500/10 hover:text-emerald-400 border border-transparent")} onClick={() => {
+                    navigate("/contratos");
+                    onMobileOpenChange(false);
+                  }}>
+                    <FileSignature className="h-5 w-5 shrink-0 text-emerald-400/70" />
+                    {!collapsed && <div className="flex flex-col items-start">
+                        <span className="text-sm font-medium">Contratos</span>
+                        <span className="text-[10px] text-muted-foreground">Assinatura digital</span>
+                      </div>}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="glass">
+                  <p className="font-medium">Contratos</p>
+                  <p className="text-xs text-muted-foreground">Gere contratos com base jurídica validada</p>
+                </TooltipContent>
+              </Tooltip>
               
               <AgenteRaioXModal trigger={
                 <Button variant="ghost" className={cn("w-full justify-start gap-3 h-11 transition-all duration-200", collapsed ? "px-3 justify-center" : "px-4", "hover:bg-purple-500/10 hover:text-purple-400 border border-transparent")}>
