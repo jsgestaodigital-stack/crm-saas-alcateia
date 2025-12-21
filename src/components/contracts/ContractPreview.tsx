@@ -85,50 +85,56 @@ export function ContractPreview({ contract, isPublic = false }: ContractPreviewP
   const visibleClauses = contract.clauses?.filter(c => !c.isHidden) || [];
 
   return (
-    <Card className={`max-w-4xl mx-auto ${isPublic ? 'border-0 shadow-none' : ''}`}>
-      <CardContent className={`${isPublic ? 'p-8' : 'p-6'}`}>
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold uppercase tracking-wide">
-            {contract.title || 'CONTRATO DE PRESTAÇÃO DE SERVIÇOS'}
-          </h1>
-          {contract.contract_type === 'recurring' && (
-            <p className="text-muted-foreground mt-2">Plano de Recorrência Mensal</p>
-          )}
-        </div>
+    <div className={`max-w-4xl mx-auto ${!isPublic ? 'p-4' : ''}`}>
+      {/* Paper container - always white like a real document */}
+      <div 
+        className="bg-white text-gray-900 shadow-xl rounded-lg border border-gray-200"
+        style={{ minHeight: '29.7cm' }}
+      >
+        <div className={`${isPublic ? 'p-12' : 'p-8 md:p-12'}`}>
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-2xl font-bold uppercase tracking-wide text-gray-900">
+              {contract.title || 'CONTRATO DE PRESTAÇÃO DE SERVIÇOS'}
+            </h1>
+            {contract.contract_type === 'recurring' && (
+              <p className="text-gray-500 mt-2">Plano de Recorrência Mensal</p>
+            )}
+          </div>
 
-        {/* Clauses */}
-        <div className="space-y-6">
-          {visibleClauses.map((clause, index) => (
-            <div key={clause.id} className="space-y-2">
-              <h2 className="text-lg font-semibold uppercase">
-                {index + 1}. {clause.title}
-              </h2>
-              <div className="text-sm leading-relaxed whitespace-pre-wrap">
-                {formatContent(clause.content)}
+          {/* Clauses */}
+          <div className="space-y-6">
+            {visibleClauses.map((clause, index) => (
+              <div key={clause.id} className="space-y-2">
+                <h2 className="text-lg font-semibold uppercase text-gray-900">
+                  {index + 1}. {clause.title}
+                </h2>
+                <div className="text-sm leading-relaxed whitespace-pre-wrap text-gray-700">
+                  {formatContent(clause.content)}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Signature Section */}
+          {contract.status === 'signed' && contract.client_signature_name && (
+            <div className="mt-12 pt-8 border-t border-gray-300">
+              <div className="text-center">
+                <p className="text-green-600 font-semibold mb-4">✅ CONTRATO ASSINADO DIGITALMENTE</p>
+                <p className="text-sm text-gray-900">
+                  Assinado por: <strong>{contract.client_signature_name}</strong>
+                </p>
+                <p className="text-sm text-gray-500">
+                  CPF: {contract.client_signature_cpf}
+                </p>
+                <p className="text-sm text-gray-500">
+                  Data: {contract.client_signed_at && format(new Date(contract.client_signed_at), "dd/MM/yyyy 'às' HH:mm")}
+                </p>
               </div>
             </div>
-          ))}
+          )}
         </div>
-
-        {/* Signature Section */}
-        {contract.status === 'signed' && contract.client_signature_name && (
-          <div className="mt-12 pt-8 border-t">
-            <div className="text-center">
-              <p className="text-green-600 font-semibold mb-4">✅ CONTRATO ASSINADO DIGITALMENTE</p>
-              <p className="text-sm">
-                Assinado por: <strong>{contract.client_signature_name}</strong>
-              </p>
-              <p className="text-sm text-muted-foreground">
-                CPF: {contract.client_signature_cpf}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Data: {contract.client_signed_at && format(new Date(contract.client_signed_at), "dd/MM/yyyy 'às' HH:mm")}
-              </p>
-            </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
