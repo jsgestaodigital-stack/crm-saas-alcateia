@@ -88,7 +88,7 @@ const Landing = () => {
   }];
   const faqs = [{
     question: "Preciso ser expert em tecnologia para usar?",
-    answer: "Não. O GRank foi feito para ser simples. Se você usa WhatsApp, vai usar o GRank tranquilamente."
+    answer: "Não. O GRank CRM foi feito para ser simples. Se você usa WhatsApp, vai usar o GRank CRM tranquilamente."
   }, {
     question: "Funciona para agências pequenas?",
     answer: "Funciona melhor para quem tem 5+ clientes ativos. Se você está começando, pode não fazer sentido ainda."
@@ -122,8 +122,8 @@ const Landing = () => {
       <header className="fixed top-0 left-0 right-0 z-50 glass-header safe-area-inset-top">
         <div className="container mx-auto px-3 sm:px-4 h-14 sm:h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <img src={grankLogo} alt="GRank" className="h-7 sm:h-8 w-auto" />
-            <span className="font-bold text-lg sm:text-xl gradient-text">GRank</span>
+            <img src={grankLogo} alt="GRank CRM" className="h-7 sm:h-8 w-auto" />
+            <span className="font-bold text-lg sm:text-xl gradient-text">GRank CRM</span>
           </Link>
           
           {/* Desktop nav */}
@@ -373,7 +373,7 @@ const Landing = () => {
               <span className="text-sm text-primary font-medium">A Solução</span>
             </div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 font-display">
-              O GRank Gerencia{" "}
+              O GRank CRM Gerencia{" "}
               <span className="gradient-title-text">Todo o Ciclo Operacional</span>
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto text-lg mb-4">
@@ -648,7 +648,7 @@ const Landing = () => {
           once: true
         }} className="text-center mt-10 text-lg">
             <span className="text-primary font-medium">
-              "Se você quer crescer com estrutura, o GRank é o próximo passo."
+              "Se você quer crescer com estrutura, o GRank CRM é o próximo passo."
             </span>
           </motion.p>
         </div>
@@ -983,7 +983,7 @@ const Landing = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-8 sm:mb-12">
             <div className="sm:col-span-2">
               <Link to="/" className="flex items-center gap-2 mb-4">
-                <img src={grankLogo} alt="GRank" className="h-7 sm:h-8 w-auto" />
+                <img src={grankLogo} alt="GRank CRM" className="h-7 sm:h-8 w-auto" />
                 <span className="font-bold text-lg sm:text-xl gradient-text">GRank CRM</span>
               </Link>
               <p className="text-muted-foreground mb-4 text-sm sm:text-base">

@@ -49,7 +49,7 @@ export function DashboardHeader() {
 
         {/* Mobile menu placeholder */}
         <div className="sm:hidden">
-          <span className="text-sm font-medium text-foreground">GRank</span>
+          <span className="text-sm font-medium text-foreground">GRank CRM</span>
         </div>
 
         {/* Search */}
