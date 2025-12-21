@@ -296,7 +296,7 @@ const Landing = () => {
             </div>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto items-stretch">
             {plans.map((plan, index) => (
               <motion.div
                 key={plan.name}
@@ -304,9 +304,9 @@ const Landing = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
-                className={`relative p-6 rounded-2xl backdrop-blur-sm transition-all duration-300 ${
+                className={`relative p-6 rounded-2xl backdrop-blur-sm transition-all duration-300 flex flex-col min-h-[520px] ${
                   plan.popular
-                    ? 'bg-gradient-to-b from-cyan-500/20 to-emerald-500/10 border-2 border-cyan-500/50 scale-105'
+                    ? 'bg-gradient-to-b from-cyan-500/20 to-emerald-500/10 border-2 border-cyan-500/50 md:scale-105'
                     : 'bg-white/5 border border-white/10 hover:border-white/20'
                 }`}
               >
@@ -316,7 +316,7 @@ const Landing = () => {
                   </div>
                 )}
 
-                <div className="text-center mb-6">
+                <div className="text-center mb-4">
                   <div className="flex items-center justify-center gap-2 mb-1">
                     <span className="text-2xl">{plan.emoji}</span>
                     <h3 className="text-xl font-bold text-white">{plan.name}</h3>
@@ -324,7 +324,7 @@ const Landing = () => {
                   <p className="text-sm text-gray-400">{plan.tagline}</p>
                 </div>
 
-                <div className="text-center mb-6">
+                <div className="text-center mb-4">
                   <div className="flex items-baseline justify-center gap-1">
                     <span className="text-sm text-gray-400">R$</span>
                     <span className="text-4xl font-bold text-white">
@@ -339,20 +339,20 @@ const Landing = () => {
                   )}
                 </div>
 
-                <ul className="space-y-2 mb-4">
+                <ul className="space-y-2 mb-3 flex-1">
                   {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-2 text-sm text-gray-300">
-                      <Check className="h-4 w-4 text-cyan-400 flex-shrink-0" />
+                    <li key={feature} className="flex items-start gap-2 text-sm text-gray-300">
+                      <Check className="h-4 w-4 text-cyan-400 flex-shrink-0 mt-0.5" />
                       {feature}
                     </li>
                   ))}
                 </ul>
 
                 {plan.limitations.length > 0 && (
-                  <ul className="space-y-2 mb-6 pt-3 border-t border-white/10">
+                  <ul className="space-y-2 mb-4 pt-3 border-t border-white/10">
                     {plan.limitations.map((limitation) => (
-                      <li key={limitation} className="flex items-center gap-2 text-sm text-gray-500">
-                        <X className="h-4 w-4 text-gray-600 flex-shrink-0" />
+                      <li key={limitation} className="flex items-start gap-2 text-sm text-gray-500">
+                        <X className="h-4 w-4 text-gray-600 flex-shrink-0 mt-0.5" />
                         {limitation}
                       </li>
                     ))}
@@ -361,7 +361,7 @@ const Landing = () => {
 
                 <Button 
                   asChild 
-                  className={`w-full ${
+                  className={`w-full mt-auto ${
                     plan.popular
                       ? 'bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-600 hover:to-emerald-600 text-white border-0'
                       : 'bg-white/10 hover:bg-white/20 text-white border border-white/20'
