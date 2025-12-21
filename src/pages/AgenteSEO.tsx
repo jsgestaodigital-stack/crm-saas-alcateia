@@ -142,9 +142,9 @@ export default function AgenteSEO() {
               <Search className="h-6 w-6 text-orange-400" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">🐺 Lobo SEO Local</h1>
+              <h1 className="text-2xl font-bold text-foreground">Agente SEO Local</h1>
               <p className="text-sm text-muted-foreground">
-                Otimização Local Agressiva – G Rank CRM
+                Otimização Local Inteligente – G-Rank CRM
               </p>
             </div>
           </div>
