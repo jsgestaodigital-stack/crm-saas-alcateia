@@ -7,3 +7,14 @@ export { GlassmorphicCard, FeatureCard } from "./GlassmorphicCard";
 export { TestimonialCard } from "./TestimonialCard";
 export { ComparisonTable } from "./ComparisonTable";
 export { SectionDivider } from "./SectionDivider";
+export { 
+  FloatingMapPins, 
+  GoogleStars, 
+  GMBProfileMockup, 
+  GMBStatsCard, 
+  GMBChecklistPreview,
+  GMBBadge,
+  GMBWaveDivider,
+  GMBTestimonialCard,
+  GMBFeatureCard
+} from "./GMBElements";
