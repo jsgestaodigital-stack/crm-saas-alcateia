@@ -64,8 +64,15 @@ export function FunnelModeProvider({ children }: { children: ReactNode }) {
     if (newMode === 'sales' && !canAccessSales) return;
     if (newMode === 'delivery' && !canAccessDelivery) return;
     if (newMode === 'recurring' && !canAccessRecurring) return;
+    
+    // When switching modes, reset view to kanban
+    // We dispatch a custom event that the Dashboard can listen to
+    if (newMode !== mode) {
+      window.dispatchEvent(new CustomEvent('funnel-mode-changed', { detail: { newMode } }));
+    }
+    
     setModeState(newMode);
-  }, [canAccessSales, canAccessDelivery, canAccessRecurring]);
+  }, [mode, canAccessSales, canAccessDelivery, canAccessRecurring]);
 
   const toggleMode = useCallback(() => {
     setModeState(prev => {

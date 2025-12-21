@@ -47,7 +47,7 @@ import { cn } from "@/lib/utils";
 import { Lead, LeadPipelineStage } from "@/types/lead";
 
 const Dashboard = () => {
-  const { viewMode, clients, setSelectedClient, setDetailOpen, isLoading: isClientsLoading } = useClientStore();
+  const { viewMode, setViewMode, clients, setSelectedClient, setDetailOpen, isLoading: isClientsLoading } = useClientStore();
   const { user, isLoading, derived } = useAuth();
   const { mode, isSalesMode, isDeliveryMode, isRecurringMode, canAccessSales, canAccessDelivery, canAccessRecurring } = useFunnelMode();
   const navigate = useNavigate();
@@ -85,6 +85,16 @@ const Dashboard = () => {
       navigate("/auth");
     }
   }, [user, isLoading, navigate]);
+
+  // Listen for funnel mode changes to reset to kanban
+  useEffect(() => {
+    const handleFunnelModeChange = () => {
+      setViewMode("kanban");
+    };
+
+    window.addEventListener("funnel-mode-changed", handleFunnelModeChange);
+    return () => window.removeEventListener("funnel-mode-changed", handleFunnelModeChange);
+  }, [setViewMode]);
 
   // Listen for client completion events
   useEffect(() => {
