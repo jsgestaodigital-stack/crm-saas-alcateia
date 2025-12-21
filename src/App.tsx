@@ -34,6 +34,7 @@ import Convite from "./pages/Convite";
 import AgencyDetail from "./pages/AgencyDetail";
 import AdminPermissions from "./pages/AdminPermissions";
 import AgencyPermissions from "./pages/AgencyPermissions";
+import SecuritySettings from "./pages/SecuritySettings";
 import NotFound from "./pages/NotFound";
 import { ImpersonateBanner } from "@/components/ImpersonateBanner";
 
@@ -78,6 +79,7 @@ const App = () => (
                       <Route path="/convite/:token" element={<Convite />} />
                       <Route path="/admin/permissions" element={<AdminPermissions />} />
                       <Route path="/agency/settings/permissions" element={<AgencyPermissions />} />
+                      <Route path="/settings/security" element={<SecuritySettings />} />
                       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                       <Route path="*" element={<NotFound />} />
                     </Routes>
