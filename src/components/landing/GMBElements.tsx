@@ -116,7 +116,7 @@ export const GMBProfileMockup = ({ className = "" }: { className?: string }) => 
   );
 };
 
-// Stats Card with Google Style
+// Stats Card with Google Style - Compact for 4-column layout
 export const GMBStatsCard = ({ 
   icon: Icon, 
   value, 
@@ -137,23 +137,26 @@ export const GMBStatsCard = ({
     red: "bg-google-red/10 text-google-red border-google-red/20",
   };
 
+  const iconBgClasses = {
+    green: "bg-google-green/10",
+    blue: "bg-google-blue/10",
+    yellow: "bg-google-yellow/10",
+    red: "bg-google-red/10",
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay, duration: 0.5 }}
-      className={`p-6 rounded-2xl border-2 ${colorClasses[color]} bg-white shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1`}
+      className={`p-5 md:p-6 rounded-2xl border-2 ${colorClasses[color]} bg-white shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 text-center`}
     >
-      <div className="flex items-center gap-4">
-        <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${colorClasses[color]}`}>
-          <Icon className="h-7 w-7" />
-        </div>
-        <div>
-          <div className="text-3xl font-bold text-foreground">{value}</div>
-          <div className="text-sm text-muted-foreground">{label}</div>
-        </div>
+      <div className={`w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center mx-auto mb-3 ${iconBgClasses[color]}`}>
+        <Icon className="h-6 w-6 md:h-7 md:w-7" />
       </div>
+      <div className="text-2xl md:text-3xl font-bold text-foreground mb-1">{value}</div>
+      <div className="text-xs md:text-sm text-muted-foreground">{label}</div>
     </motion.div>
   );
 };
