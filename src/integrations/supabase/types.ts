@@ -47,6 +47,62 @@ export type Database = {
         }
         Relationships: []
       }
+      agency_invites: {
+        Row: {
+          accepted_at: string | null
+          accepted_by: string | null
+          agency_id: string
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string
+          invited_by_name: string
+          role: Database["public"]["Enums"]["app_role"]
+          status: string
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          agency_id: string
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          invited_by: string
+          invited_by_name: string
+          role?: Database["public"]["Enums"]["app_role"]
+          status?: string
+          token?: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          agency_id?: string
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string
+          invited_by_name?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          status?: string
+          token?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agency_invites_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agency_limits: {
         Row: {
           agency_id: string
@@ -3286,6 +3342,7 @@ export type Database = {
       }
     }
     Functions: {
+      accept_invite: { Args: { _token: string }; Returns: Json }
       add_client_recurring: {
         Args: {
           _amount: number
@@ -3392,6 +3449,14 @@ export type Database = {
       }
       create_agency_with_owner: {
         Args: { _name: string; _owner_user_id: string; _slug: string }
+        Returns: string
+      }
+      create_invite: {
+        Args: {
+          _agency_id?: string
+          _email: string
+          _role?: Database["public"]["Enums"]["app_role"]
+        }
         Returns: string
       }
       create_notification: {
@@ -3509,6 +3574,20 @@ export type Database = {
           slug: string
           status: string
           updated_at: string
+        }[]
+      }
+      get_invite_by_token: {
+        Args: { _token: string }
+        Returns: {
+          agency_id: string
+          agency_name: string
+          email: string
+          expires_at: string
+          id: string
+          invited_by_name: string
+          is_expired: boolean
+          role: Database["public"]["Enums"]["app_role"]
+          status: string
         }[]
       }
       get_pending_registrations: {

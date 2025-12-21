@@ -11,6 +11,9 @@ import {
   Briefcase,
   HeadphonesIcon,
   Eye,
+  Mail,
+  Clock,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,11 +26,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTeamPermissions } from "@/hooks/useTeamPermissions";
+import { useInvites } from "@/hooks/useInvites";
 import TeamMemberCard from "@/components/team/TeamMemberCard";
 import InviteMemberDialog from "@/components/team/InviteMemberDialog";
+import InviteMemberModal from "@/components/team/InviteMemberModal";
 import { Database } from "@/integrations/supabase/types";
+import { formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 type AppRole = Database["public"]["Enums"]["app_role"];
 
@@ -55,7 +63,7 @@ const roleIcons: Record<AppRole, React.ReactNode> = {
 
 export default function Equipe() {
   const navigate = useNavigate();
-  const { user, isLoading: authLoading, derived } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const {
     myRole,
     members,
@@ -66,10 +74,11 @@ export default function Equipe() {
     canManageTeam,
     canAssignRoles,
   } = useTeamPermissions();
+  const { pendingInvites, cancelInvite } = useInvites();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
-
+  const [activeTab, setActiveTab] = useState<"members" | "invites">("members");
   // Redirect if not authenticated
   if (!authLoading && !user) {
     navigate("/auth");
@@ -135,7 +144,10 @@ export default function Equipe() {
             </div>
 
             {canManageTeam && (
-              <InviteMemberDialog onSuccess={refetchMembers} />
+              <div className="flex items-center gap-2">
+                <InviteMemberModal />
+                <InviteMemberDialog onSuccess={refetchMembers} />
+              </div>
             )}
           </div>
         </div>
@@ -182,68 +194,132 @@ export default function Equipe() {
           })}
         </div>
 
-        {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-6">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar por nome..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <Select value={roleFilter} onValueChange={setRoleFilter}>
-            <SelectTrigger className="w-full sm:w-48">
-              <Filter className="h-4 w-4 mr-2" />
-              <SelectValue placeholder="Filtrar por função" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas as funções</SelectItem>
-              {Object.entries(roleLabels).map(([key, label]) => (
-                <SelectItem key={key} value={key}>
-                  <div className="flex items-center gap-2">
-                    {roleIcons[key as AppRole]}
-                    <span>{label}</span>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        {/* Tabs */}
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "members" | "invites")} className="mb-6">
+          <TabsList>
+            <TabsTrigger value="members" className="gap-2">
+              <Users className="h-4 w-4" />
+              Membros ({members?.length || 0})
+            </TabsTrigger>
+            {canManageTeam && (
+              <TabsTrigger value="invites" className="gap-2">
+                <Mail className="h-4 w-4" />
+                Convites pendentes ({pendingInvites.length})
+              </TabsTrigger>
+            )}
+          </TabsList>
 
-        {/* Members list */}
-        {isLoading ? (
-          <div className="space-y-3">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <Skeleton key={i} className="h-20 w-full" />
-            ))}
-          </div>
-        ) : filteredMembers.length === 0 ? (
-          <div className="text-center py-12">
-            <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium">Nenhum membro encontrado</h3>
-            <p className="text-muted-foreground">
-              {searchQuery || roleFilter !== "all"
-                ? "Tente ajustar os filtros"
-                : "Adicione membros à sua equipe"}
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {filteredMembers.map((member) => (
-              <TeamMemberCard
-                key={member.id}
-                member={member}
-                canAssignRoles={canAssignRoles}
-                canRemove={canManageTeam}
-                isCurrentUser={member.user_id === user?.id}
-                onRoleChange={handleRoleChange}
-                onRemove={handleRemove}
-              />
-            ))}
-          </div>
-        )}
+          <TabsContent value="members" className="mt-4">
+            {/* Filters */}
+            <div className="flex flex-col sm:flex-row gap-3 mb-6">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar por nome..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Select value={roleFilter} onValueChange={setRoleFilter}>
+                <SelectTrigger className="w-full sm:w-48">
+                  <Filter className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Filtrar por função" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas as funções</SelectItem>
+                  {Object.entries(roleLabels).map(([key, label]) => (
+                    <SelectItem key={key} value={key}>
+                      <div className="flex items-center gap-2">
+                        {roleIcons[key as AppRole]}
+                        <span>{label}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Members list */}
+            {isLoading ? (
+              <div className="space-y-3">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <Skeleton key={i} className="h-20 w-full" />
+                ))}
+              </div>
+            ) : filteredMembers.length === 0 ? (
+              <div className="text-center py-12">
+                <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium">Nenhum membro encontrado</h3>
+                <p className="text-muted-foreground">
+                  {searchQuery || roleFilter !== "all"
+                    ? "Tente ajustar os filtros"
+                    : "Adicione membros à sua equipe"}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {filteredMembers.map((member) => (
+                  <TeamMemberCard
+                    key={member.id}
+                    member={member}
+                    canAssignRoles={canAssignRoles}
+                    canRemove={canManageTeam}
+                    isCurrentUser={member.user_id === user?.id}
+                    onRoleChange={handleRoleChange}
+                    onRemove={handleRemove}
+                  />
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {canManageTeam && (
+            <TabsContent value="invites" className="mt-4">
+              {pendingInvites.length === 0 ? (
+                <div className="text-center py-12">
+                  <Mail className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium">Nenhum convite pendente</h3>
+                  <p className="text-muted-foreground">
+                    Use o botão "Convidar por email" para enviar convites
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {pendingInvites.map((invite) => (
+                    <div
+                      key={invite.id}
+                      className="flex items-center justify-between p-4 bg-card rounded-lg border border-border"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                          <Mail className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="font-medium">{invite.email}</p>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Badge variant="secondary">{roleLabels[invite.role]}</Badge>
+                            <span className="flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              Expira {formatDistanceToNow(new Date(invite.expires_at), { addSuffix: true, locale: ptBR })}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => cancelInvite.mutate(invite.id)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+          )}
+        </Tabs>
 
         {/* Current role indicator */}
         {myRole && (
