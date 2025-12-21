@@ -119,7 +119,7 @@ export default function Propostas() {
     }
   };
 
-  const handleGenerateAI = async (prompt: string): Promise<ProposalBlock[] | null> => {
+  const handleGenerateAI = async (prompt: string, keywords?: string): Promise<ProposalBlock[] | null> => {
     setIsGenerating(true);
     try {
       const { data, error } = await supabase.functions.invoke('generate-proposal', {
@@ -129,6 +129,7 @@ export default function Propostas() {
           companyName: selectedLead?.company_name || '',
           city: selectedLead?.city || '',
           category: selectedLead?.main_category || '',
+          keywords: keywords || selectedLead?.main_category || '',
           customPrompt: prompt,
         },
       });
@@ -188,12 +189,7 @@ export default function Propostas() {
             </div>
           </div>
 
-          {view === 'list' && isAdmin && (
-            <Button onClick={handleNew} className="gap-2">
-              <Plus className="h-4 w-4" />
-              Nova Proposta
-            </Button>
-          )}
+          {/* Single new proposal button - only in list view header */}
         </div>
 
         {/* Content */}

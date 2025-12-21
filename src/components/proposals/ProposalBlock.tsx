@@ -6,8 +6,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { ProposalBlock as ProposalBlockType, BLOCK_TYPE_CONFIG } from '@/types/proposal';
-import { GripVertical, Trash2, ChevronDown, ChevronUp, Plus } from 'lucide-react';
+import { GripVertical, Trash2, ChevronDown, ChevronUp, Plus, Copy, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface ProposalBlockProps {
   block: ProposalBlockType;
@@ -32,6 +33,7 @@ export function ProposalBlockComponent({
 }: ProposalBlockProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [newChecklistItem, setNewChecklistItem] = useState('');
+  const [copied, setCopied] = useState(false);
 
   const config = BLOCK_TYPE_CONFIG[block.type];
 
@@ -46,7 +48,6 @@ export function ProposalBlockComponent({
   const handleChecklistItemToggle = (index: number) => {
     if (!block.checklist) return;
     const newChecklist = [...block.checklist];
-    // For editing, we just keep the checklist as-is
     onUpdate({ ...block, checklist: newChecklist });
   };
 
@@ -72,9 +73,33 @@ export function ProposalBlockComponent({
     return result;
   };
 
+  // Get full block text for copying
+  const getBlockTextForCopy = () => {
+    let text = `${block.title}\n\n`;
+    
+    if (block.type === 'scope' && block.checklist) {
+      text += block.checklist.map(item => `✓ ${item}`).join('\n');
+    } else if (block.content) {
+      text += getPreviewContent(block.content);
+    }
+    
+    return text;
+  };
+
+  const handleCopyBlock = async () => {
+    try {
+      await navigator.clipboard.writeText(getBlockTextForCopy());
+      setCopied(true);
+      toast.success('Bloco copiado!');
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      toast.error('Erro ao copiar');
+    }
+  };
+
   return (
-    <Card className="border border-border/50 bg-surface-1/50">
-      <div className="flex items-center gap-2 p-3 border-b border-border/30">
+    <Card className="border-2 border-border/60 bg-card shadow-sm hover:shadow-md transition-shadow">
+      <div className="flex items-center gap-2 p-3 border-b border-border/50 bg-muted/30">
         <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab" />
         
         <span className="text-lg">{config.emoji}</span>
@@ -86,6 +111,19 @@ export function ProposalBlockComponent({
         />
         
         <div className="flex items-center gap-1">
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="h-7 w-7"
+            onClick={handleCopyBlock}
+            title="Copiar bloco"
+          >
+            {copied ? (
+              <Check className="h-3.5 w-3.5 text-green-500" />
+            ) : (
+              <Copy className="h-3.5 w-3.5" />
+            )}
+          </Button>
           {!isFirst && (
             <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onMoveUp}>
               <ChevronUp className="h-4 w-4" />
@@ -167,7 +205,7 @@ export function ProposalBlockComponent({
 
           {/* Preview with variables replaced */}
           {block.content && Object.keys(variables).length > 0 && (
-            <div className="pt-3 border-t border-border/30">
+            <div className="pt-3 border-t border-border/30 bg-muted/20 -mx-4 px-4 pb-2 mt-2 rounded-b-lg">
               <Label className="text-xs text-muted-foreground mb-2 block">Prévia:</Label>
               <p className="text-sm text-foreground/80 whitespace-pre-wrap">
                 {getPreviewContent(block.content)}

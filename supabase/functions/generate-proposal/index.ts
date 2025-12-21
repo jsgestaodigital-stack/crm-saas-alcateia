@@ -60,7 +60,7 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { leadId, clientName, companyName, city, category, customPrompt } = await req.json();
+    const { leadId, clientName, companyName, city, category, keywords, customPrompt } = await req.json();
 
     // Build context for AI
     let leadContext = '';
@@ -92,10 +92,12 @@ INFORMAÇÕES ADICIONAIS:
 - Empresa: ${companyName || '{{nome_empresa}}'}
 - Cidade: ${city || '{{cidade}}'}
 - Categoria/Nicho: ${category || '{{categoria}}'}
+- Palavras-chave para SEO: ${keywords || category || '{{palavras_chave}}'}
 
 ${customPrompt ? `INSTRUÇÕES ESPECÍFICAS DO USUÁRIO:\n${customPrompt}` : ''}
 
 Gere uma proposta comercial completa e persuasiva para este cliente, focando em SEO local e Google Meu Negócio.
+Use as palavras-chave fornecidas nos textos de diagnóstico e objetivo para personalizar a proposta.
 `;
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
