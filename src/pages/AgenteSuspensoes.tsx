@@ -142,9 +142,9 @@ export default function AgenteSuspensoes() {
               <AlertOctagon className="h-6 w-6 text-red-400" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">🦾 Robô da Alcatéia</h1>
+              <h1 className="text-2xl font-bold text-foreground">Agente de Recuperação</h1>
               <p className="text-sm text-muted-foreground">
-                Recuperação de perfis suspensos no Google Meu Negócio
+                Recuperação de perfis suspensos no Google Meu Negócio – G-Rank AI
               </p>
             </div>
           </div>

@@ -129,9 +129,9 @@ export function AgenteSuspensoesModal({ trigger }: AgenteSuspensoesModalProps) {
             <div className="p-2 rounded-lg bg-red-500/10">
               <AlertOctagon className="w-5 h-5 text-red-400" />
             </div>
-            🦾 Robô da Alcatéia
+            Agente de Recuperação
             <Badge variant="outline" className="ml-2 text-[10px] border-red-500/30 text-red-400">
-              Suspensões
+              G-Rank AI
             </Badge>
           </DialogTitle>
         </DialogHeader>

@@ -130,9 +130,9 @@ export function AgenteSEOModal({ trigger }: AgenteSEOModalProps) {
             <div className="p-2 rounded-lg bg-orange-500/10">
               <Search className="w-5 h-5 text-orange-400" />
             </div>
-            🐺 Lobo SEO Local
+            Agente SEO Local
             <Badge variant="outline" className="ml-2 text-[10px] border-orange-500/30 text-orange-400">
-              G Rank
+              G-Rank AI
             </Badge>
           </DialogTitle>
         </DialogHeader>

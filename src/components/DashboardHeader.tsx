@@ -49,7 +49,7 @@ export function DashboardHeader() {
 
         {/* Mobile menu placeholder */}
         <div className="sm:hidden">
-          <span className="text-sm font-medium text-foreground">Alcateia</span>
+          <span className="text-sm font-medium text-foreground">G-Rank</span>
         </div>
 
         {/* Search */}
