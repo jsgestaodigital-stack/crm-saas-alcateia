@@ -200,16 +200,12 @@ export function AppSidebar({
                 
                 {CLIENT_VIEWS.map(view => {
               const isActive = viewMode === view.id && isOnDashboard;
-              const isKanban = view.id === "kanban";
               return <Tooltip key={view.id}>
                       <TooltipTrigger asChild>
-                        <Button variant="ghost" className={cn("w-full justify-start gap-3 h-11 transition-all duration-200", collapsed ? "px-3 justify-center" : "px-4", isActive ? "bg-primary/15 text-primary border border-primary/30 neon-border" : "hover:bg-primary/5 hover:text-primary hover:translate-x-1 border border-transparent", isKanban && !isActive && isOnDashboard && "border-primary/20 bg-primary/5")} onClick={() => handleNavClick(view.id)}>
-                          <view.icon className={cn("h-5 w-5 shrink-0", isActive && "scale-110", isKanban && "text-primary")} />
+                        <Button variant="ghost" className={cn("w-full justify-start gap-3 h-11 transition-all duration-200", collapsed ? "px-3 justify-center" : "px-4", isActive ? "bg-primary/15 text-primary border border-primary/30 neon-border" : "hover:bg-primary/5 hover:text-primary hover:translate-x-1 border border-transparent")} onClick={() => handleNavClick(view.id)}>
+                          <view.icon className={cn("h-5 w-5 shrink-0", isActive && "scale-110")} />
                           {!collapsed && <div className="flex flex-col items-start animate-fade-in">
-                              <div className="flex items-center gap-2">
-                                <span className={cn("text-sm font-medium", isKanban && "text-primary")}>{view.label}</span>
-                                {isKanban && !isActive && isOnDashboard}
-                              </div>
+                              <span className="text-sm font-medium">{view.label}</span>
                               <span className="text-[10px] text-muted-foreground">{view.description}</span>
                             </div>}
                         </Button>
@@ -232,13 +228,12 @@ export function AppSidebar({
                 
                 {SALES_VIEWS.map(view => {
               const isActive = (viewMode as string) === view.id && isOnDashboard;
-              const isKanban = view.id === "kanban";
               return <Tooltip key={view.id}>
                       <TooltipTrigger asChild>
-                        <Button variant="ghost" className={cn("w-full justify-start gap-3 h-11 transition-all duration-200", collapsed ? "px-3 justify-center" : "px-4", isActive ? "bg-amber-500/15 text-amber-400 border border-amber-500/30 neon-border" : "hover:bg-amber-500/5 hover:text-amber-400 hover:translate-x-1 border border-transparent", isKanban && !isActive && isOnDashboard && "border-amber-500/20 bg-amber-500/5")} onClick={() => handleNavClick(view.id)}>
-                          <view.icon className={cn("h-5 w-5 shrink-0", isActive && "scale-110", "text-amber-400")} />
+                        <Button variant="ghost" className={cn("w-full justify-start gap-3 h-11 transition-all duration-200", collapsed ? "px-3 justify-center" : "px-4", isActive ? "bg-amber-500/15 text-amber-400 border border-amber-500/30 neon-border" : "hover:bg-amber-500/5 hover:text-amber-400 hover:translate-x-1 border border-transparent")} onClick={() => handleNavClick(view.id)}>
+                          <view.icon className={cn("h-5 w-5 shrink-0", isActive && "scale-110")} />
                           {!collapsed && <div className="flex flex-col items-start animate-fade-in">
-                              <span className="text-sm font-medium text-amber-400">{view.label}</span>
+                              <span className="text-sm font-medium">{view.label}</span>
                               <span className="text-[10px] text-muted-foreground">{view.description}</span>
                             </div>}
                         </Button>
