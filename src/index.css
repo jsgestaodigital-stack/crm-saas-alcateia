@@ -252,11 +252,8 @@
   }
 
   .neon-text-gradient {
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    filter: drop-shadow(0 0 8px hsl(var(--emerald) / 0.4));
+    @apply text-foreground font-bold;
+    text-shadow: 0 0 30px hsl(var(--emerald) / 0.6), 0 0 60px hsl(var(--emerald) / 0.4);
   }
 
   /* === GRADIENTS === */
@@ -285,10 +282,13 @@
   }
 
   .gradient-text {
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    @apply text-foreground;
+    text-shadow: 0 0 40px hsl(var(--emerald) / 0.5), 0 0 80px hsl(var(--emerald) / 0.3);
+  }
+
+  .gradient-text-subtle {
+    @apply text-primary;
+    text-shadow: 0 0 30px hsl(var(--emerald) / 0.4);
   }
 
   /* === GLASSMORPHISM (Atualizado) === */
