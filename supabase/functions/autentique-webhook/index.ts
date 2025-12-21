@@ -58,29 +58,34 @@ serve(async (req) => {
     const webhookSecret = Deno.env.get('AUTENTIQUE_WEBHOOK_SECRET');
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // SECURITY: Require webhook secret to be configured
+    if (!webhookSecret) {
+      console.error('[autentique-webhook] CRITICAL: AUTENTIQUE_WEBHOOK_SECRET not configured - rejecting all requests');
+      return new Response(JSON.stringify({ error: 'Webhook not configured' }), {
+        status: 503,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     // Get raw body for signature verification
     const rawBody = await req.text();
     
-    // Verify webhook signature if secret is configured
-    if (webhookSecret) {
-      const signature = req.headers.get('x-autentique-signature') || 
-                        req.headers.get('x-signature') ||
-                        req.headers.get('x-hub-signature-256');
-      
-      const isValid = await verifySignature(rawBody, signature, webhookSecret);
-      
-      if (!isValid) {
-        console.error('[autentique-webhook] Invalid webhook signature - rejecting request');
-        return new Response(JSON.stringify({ error: 'Invalid signature' }), {
-          status: 401,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
-      }
-      
-      console.log('[autentique-webhook] Webhook signature verified successfully');
-    } else {
-      console.warn('[autentique-webhook] WARNING: No webhook secret configured - signature verification disabled');
+    // Verify webhook signature - ALWAYS required
+    const signature = req.headers.get('x-autentique-signature') || 
+                      req.headers.get('x-signature') ||
+                      req.headers.get('x-hub-signature-256');
+    
+    const isValid = await verifySignature(rawBody, signature, webhookSecret);
+    
+    if (!isValid) {
+      console.error('[autentique-webhook] Invalid webhook signature - rejecting request');
+      return new Response(JSON.stringify({ error: 'Invalid signature' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
+    
+    console.log('[autentique-webhook] Webhook signature verified successfully');
 
     const payload = JSON.parse(rawBody);
     
