@@ -29,6 +29,7 @@ import AgencyPlan from "./pages/AgencyPlan";
 import AuditLogs from "./pages/AuditLogs";
 import Notifications from "./pages/Notifications";
 import ClientsCRM from "./pages/ClientsCRM";
+import Equipe from "./pages/Equipe";
 import NotFound from "./pages/NotFound";
 import { ImpersonateBanner } from "@/components/ImpersonateBanner";
 
@@ -68,6 +69,7 @@ const App = () => (
                       <Route path="/duvidas" element={<Questions />} />
                       <Route path="/sugestoes" element={<Suggestions />} />
                       <Route path="/clientes-crm" element={<ClientsCRM />} />
+                      <Route path="/equipe" element={<Equipe />} />
                       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                       <Route path="*" element={<NotFound />} />
                     </Routes>
