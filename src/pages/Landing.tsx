@@ -114,9 +114,6 @@ const Landing = () => {
   }, {
     label: "Preços",
     href: "#precos"
-  }, {
-    label: "Depoimentos",
-    href: "#depoimentos"
   }];
   return <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <ScrollProgress />
@@ -459,7 +456,28 @@ const Landing = () => {
             </motion.div>
 
             {/* DEPOIS */}
-            
+            <motion.div initial={{
+              opacity: 0,
+              x: 20
+            }} whileInView={{
+              opacity: 1,
+              x: 0
+            }} viewport={{
+              once: true
+            }} className="glass-card p-8 border-primary/30">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                  <Check className="h-5 w-5 text-primary" />
+                </div>
+                <h3 className="text-xl font-bold text-primary">DEPOIS</h3>
+              </div>
+              <ul className="space-y-4">
+                {["Manhã produtiva com tarefas organizadas", "Propostas geradas em minutos", "Contratos rastreados automaticamente", "Tranquilidade sabendo que nada foi esquecido"].map(item => <li key={item} className="flex items-start gap-3 text-foreground">
+                    <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                    <span>{item}</span>
+                  </li>)}
+              </ul>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -545,29 +563,6 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ===== SEÇÃO DEPOIMENTOS ===== */}
-      <section id="depoimentos" className="py-20 px-4 relative bg-muted/30">
-        <div className="container mx-auto">
-          <motion.div initial={{
-          opacity: 0,
-          y: 20
-        }} whileInView={{
-          opacity: 1,
-          y: 0
-        }} viewport={{
-          once: true
-        }} className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 font-display">
-              O Que Dizem{" "}
-              <span className="gradient-text">Nossos Clientes</span>
-            </h2>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {testimonials.map((testimonial, i) => <TestimonialCard key={testimonial.author} quote={testimonial.quote} author={testimonial.author} role={testimonial.role} delay={i * 0.1} />)}
-          </div>
-        </div>
-      </section>
 
       {/* ===== SEÇÃO PARA QUEM É ===== */}
       <section className="py-20 px-4 relative bg-gradient-to-b from-primary/5 via-background to-muted/20">
