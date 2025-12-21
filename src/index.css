@@ -959,6 +959,39 @@
     background-color: #E2E8F0;
   }
 
+  /* === GOOGLE MY BUSINESS SECTIONS === */
+  .section-gmb-light {
+    background-color: #E8F5E9;
+  }
+
+  .section-gmb-gradient {
+    background: linear-gradient(180deg, #FFFFFF 0%, #E8F5E9 100%);
+  }
+
+  .section-gmb-dark {
+    background-color: #0A1628;
+  }
+
+  .section-gmb-hero {
+    background: linear-gradient(135deg, #FFFFFF 0%, #F8FFF8 50%, #E8F5E9 100%);
+  }
+
+  /* Google-style Gradient Text */
+  .gradient-google-text {
+    background: linear-gradient(135deg, #34A853 0%, #4285F4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-google-green {
+    background: linear-gradient(135deg, #34A853 0%, #0F9D58 100%);
+  }
+
+  .gradient-google-multi {
+    background: linear-gradient(135deg, #34A853, #4285F4, #FBBC04, #EA4335);
+  }
+
   /* === 3D CARD EFFECTS === */
   .card-3d {
     @apply transition-all duration-300;

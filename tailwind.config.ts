@@ -131,6 +131,19 @@ export default {
 				delivered: 'hsl(var(--column-delivered))',
 				suspended: 'hsl(var(--column-suspended))',
 				finalized: 'hsl(var(--column-finalized))'
+			},
+			// Google My Business Colors
+			google: {
+				green: '#34A853',
+				'green-dark': '#0F9D58',
+				blue: '#4285F4',
+				yellow: '#FBBC04',
+				red: '#EA4335',
+			},
+			gmb: {
+				'light-green': '#E8F5E9',
+				'dark-bg': '#0A1628',
+				'gray': '#F8F9FA',
 			}
 		},
   		borderRadius: {
