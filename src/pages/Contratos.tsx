@@ -240,7 +240,7 @@ export default function Contratos() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             {view !== 'list' && (
-              <Button variant="ghost" size="icon" onClick={() => setView('list')}>
+              <Button variant="ghost" size="icon" onClick={() => setView('list')} aria-label="Voltar para lista de contratos">
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             )}
@@ -284,11 +284,11 @@ export default function Contratos() {
               </Button>
               {isAdmin && (
                 <>
-                  <Button variant="outline" onClick={() => handleNew('single_optimization')} className="gap-2">
+                  <Button variant="outline" onClick={() => handleNew('single_optimization')} className="gap-2" aria-label="Criar contrato de otimização única">
                     <Plus className="h-4 w-4" />
                     Otimização Única
                   </Button>
-                  <Button onClick={() => handleNew('recurring')} className="gap-2">
+                  <Button onClick={() => handleNew('recurring')} className="gap-2" aria-label="Criar contrato de recorrência">
                     <Plus className="h-4 w-4" />
                     Recorrência
                   </Button>

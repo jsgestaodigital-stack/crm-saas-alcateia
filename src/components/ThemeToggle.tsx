@@ -35,6 +35,7 @@ export function ThemeToggle() {
             variant="ghost"
             size="icon"
             onClick={toggleTheme}
+            aria-label={isDark ? "Ativar tema claro" : "Ativar tema escuro"}
             className={cn(
               "w-9 h-9 rounded-lg transition-all",
               "hover:bg-primary/10 hover:text-primary"

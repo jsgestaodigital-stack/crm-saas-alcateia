@@ -94,9 +94,9 @@ export function ProposalsList({
             className="pl-10"
           />
         </div>
-        <Button onClick={onNew}>
+        <Button onClick={onNew} aria-label="Criar nova proposta">
           <Plus className="h-4 w-4 mr-2" />
-          Nova Proposta
+          Criar Proposta
         </Button>
       </div>
 
@@ -163,7 +163,7 @@ export function ProposalsList({
                       
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Opções da proposta">
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>

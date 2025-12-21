@@ -359,10 +359,11 @@ export function NewLeadDialog({ open, onOpenChange }: NewLeadDialogProps) {
             <Input
               value={formData.company_name}
               onChange={(e) => setFormData(prev => ({ ...prev, company_name: e.target.value }))}
-              placeholder="Ex: Restaurante Bom Sabor"
+              placeholder="Ex: Restaurante Bom Sabor, Clínica Exemplo"
               className={`mt-1 ${formErrors.company_name ? 'border-red-500' : ''}`}
               autoFocus
               required
+              aria-required="true"
             />
             {formErrors.company_name && (
               <p className="text-xs text-red-500 mt-1">{formErrors.company_name}</p>
@@ -384,7 +385,7 @@ export function NewLeadDialog({ open, onOpenChange }: NewLeadDialogProps) {
               <Input
                 value={formData.contact_name}
                 onChange={(e) => setFormData(prev => ({ ...prev, contact_name: e.target.value }))}
-                placeholder="Nome"
+                placeholder="Nome do responsável pelo negócio"
                 className="mt-1"
               />
             </div>
@@ -461,7 +462,6 @@ export function NewLeadDialog({ open, onOpenChange }: NewLeadDialogProps) {
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            {/* City */}
             <div>
               <Label className="flex items-center gap-1">
                 <MapPin className="h-3 w-3" /> Cidade
@@ -469,20 +469,19 @@ export function NewLeadDialog({ open, onOpenChange }: NewLeadDialogProps) {
               <Input
                 value={formData.city}
                 onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
-                placeholder="Cidade"
+                placeholder="Ex: São Paulo, Campinas"
                 className="mt-1"
               />
             </div>
 
-            {/* Category */}
             <div>
               <Label className="flex items-center gap-1">
-                <Tag className="h-3 w-3" /> Nicho
+                <Tag className="h-3 w-3" /> Nicho / Segmento
               </Label>
               <Input
                 value={formData.main_category}
                 onChange={(e) => setFormData(prev => ({ ...prev, main_category: e.target.value }))}
-                placeholder="Restaurante"
+                placeholder="Ex: Dentista, Restaurante, Advogado"
                 className="mt-1"
               />
             </div>
