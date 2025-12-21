@@ -185,6 +185,44 @@ export type Database = {
           },
         ]
       }
+      agency_onboarding_status: {
+        Row: {
+          agency_id: string
+          completed_at: string | null
+          completed_steps: string[] | null
+          created_at: string | null
+          dismissed_at: string | null
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          agency_id: string
+          completed_at?: string | null
+          completed_steps?: string[] | null
+          created_at?: string | null
+          dismissed_at?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Update: {
+          agency_id?: string
+          completed_at?: string | null
+          completed_steps?: string[] | null
+          created_at?: string | null
+          dismissed_at?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agency_onboarding_status_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: true
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agency_sensitive_data: {
         Row: {
           agency_id: string
@@ -3733,6 +3771,7 @@ export type Database = {
           recent_ips: string[]
         }[]
       }
+      dismiss_onboarding: { Args: never; Returns: Json }
       encrypt_sensitive_data: {
         Args: { _data: string; _key?: string }
         Returns: string
@@ -3879,6 +3918,7 @@ export type Database = {
           user_agent: string
         }[]
       }
+      get_onboarding_status: { Args: never; Returns: Json }
       get_pending_registrations: {
         Args: never
         Returns: {
@@ -4022,6 +4062,7 @@ export type Database = {
         Args: { p_notification_id: string }
         Returns: boolean
       }
+      mark_onboarding_step_completed: { Args: { _step: string }; Returns: Json }
       my_role: { Args: { _agency_id?: string }; Returns: string }
       queue_email: {
         Args: {
