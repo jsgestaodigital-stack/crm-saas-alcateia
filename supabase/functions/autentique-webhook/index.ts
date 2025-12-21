@@ -3,8 +3,48 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-autentique-signature',
 };
+
+// Verify webhook signature using HMAC-SHA256
+async function verifySignature(payload: string, signature: string | null, secret: string): Promise<boolean> {
+  if (!signature) {
+    console.log('[autentique-webhook] No signature provided');
+    return false;
+  }
+
+  try {
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      'raw',
+      encoder.encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign']
+    );
+
+    const signatureBuffer = await crypto.subtle.sign('HMAC', key, encoder.encode(payload));
+    const computedSignature = btoa(String.fromCharCode(...new Uint8Array(signatureBuffer)));
+    
+    // Also check hex format
+    const hexSignature = Array.from(new Uint8Array(signatureBuffer))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+
+    const isValid = signature === computedSignature || 
+                    signature === hexSignature ||
+                    signature === `sha256=${hexSignature}`;
+    
+    if (!isValid) {
+      console.log('[autentique-webhook] Signature mismatch');
+    }
+    
+    return isValid;
+  } catch (error) {
+    console.error('[autentique-webhook] Signature verification error:', error);
+    return false;
+  }
+}
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -15,9 +55,34 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const webhookSecret = Deno.env.get('AUTENTIQUE_WEBHOOK_SECRET');
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const payload = await req.json();
+    // Get raw body for signature verification
+    const rawBody = await req.text();
+    
+    // Verify webhook signature if secret is configured
+    if (webhookSecret) {
+      const signature = req.headers.get('x-autentique-signature') || 
+                        req.headers.get('x-signature') ||
+                        req.headers.get('x-hub-signature-256');
+      
+      const isValid = await verifySignature(rawBody, signature, webhookSecret);
+      
+      if (!isValid) {
+        console.error('[autentique-webhook] Invalid webhook signature - rejecting request');
+        return new Response(JSON.stringify({ error: 'Invalid signature' }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
+      console.log('[autentique-webhook] Webhook signature verified successfully');
+    } else {
+      console.warn('[autentique-webhook] WARNING: No webhook secret configured - signature verification disabled');
+    }
+
+    const payload = JSON.parse(rawBody);
     
     console.log('[autentique-webhook] Received payload:', JSON.stringify(payload));
 
