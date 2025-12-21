@@ -7,6 +7,50 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// ============= TYPE DEFINITIONS =============
+
+interface VoiceCommandRequest {
+  transcription: string;
+  clients?: ClientContext[];
+  leads?: LeadContext[];
+  permissions?: UserPermissions;
+}
+
+interface ClientContext {
+  companyName: string;
+  columnId: string;
+  mainCategory?: string;
+}
+
+interface LeadContext {
+  companyName: string;
+  pipelineStage: string;
+  temperature?: string;
+}
+
+interface UserPermissions {
+  canSales?: boolean;
+  canOps?: boolean;
+  canAdmin?: boolean;
+  canFinance?: boolean;
+  isAdmin?: boolean;
+}
+
+type ActionPermission = "sales" | "ops" | "admin" | "none";
+
+interface ActionItem {
+  action: string;
+  params: Record<string, unknown>;
+  confidence: number;
+  permission: ActionPermission;
+}
+
+interface ParsedResponse {
+  actions: ActionItem[];
+  summary: string;
+  clientIdentified?: string;
+}
+
 const SYSTEM_PROMPT = `Você é a IA de comando de voz do CRM RANKEIA - uma agência de marketing que otimiza perfis do Google Business Profile.
 
 ## CONTEXTO DA AGÊNCIA
@@ -275,7 +319,8 @@ serve(async (req) => {
 
     console.log('Authenticated user:', user.id);
 
-    const { transcription, clients, leads, permissions } = await req.json();
+    const requestBody: VoiceCommandRequest = await req.json();
+    const { transcription, clients, leads, permissions } = requestBody;
     
     if (!transcription) {
       throw new Error('No transcription provided');
@@ -287,16 +332,16 @@ serve(async (req) => {
     // Build rich context with clients and leads
     let context = '';
     
-    if (clients?.length > 0) {
+    if (clients && clients.length > 0) {
       context += `\n\n## CLIENTES NO KANBAN OPERACIONAL\n`;
-      context += clients.map((c: any) => 
+      context += clients.map((c: ClientContext) => 
         `- "${c.companyName}" | Coluna: ${c.columnId} | Categoria: ${c.mainCategory || 'N/A'}`
       ).join('\n');
     }
 
-    if (leads?.length > 0) {
+    if (leads && leads.length > 0) {
       context += `\n\n## LEADS NO PIPELINE DE VENDAS\n`;
-      context += leads.map((l: any) => 
+      context += leads.map((l: LeadContext) => 
         `- "${l.companyName}" | Estágio: ${l.pipelineStage} | Temperatura: ${l.temperature || 'N/A'}`
       ).join('\n');
     }
@@ -344,31 +389,37 @@ serve(async (req) => {
     
     console.log('GPT-4o-mini response:', content);
 
-    let parsed;
+    let parsed: ParsedResponse;
     try {
-      parsed = JSON.parse(content);
+      const rawParsed = JSON.parse(content);
       
       // Ensure we have the expected structure
-      if (!parsed.actions) {
-        if (parsed.action) {
+      if (!rawParsed.actions) {
+        if (rawParsed.action) {
           parsed = {
             actions: [{
-              action: parsed.action,
-              params: parsed.params || {},
-              confidence: parsed.confidence || 0.8,
-              permission: parsed.permission || 'none'
+              action: rawParsed.action as string,
+              params: (rawParsed.params || {}) as Record<string, unknown>,
+              confidence: (rawParsed.confidence as number) || 0.8,
+              permission: (rawParsed.permission as ActionPermission) || 'none'
             }],
-            summary: parsed.message || 'Comando processado'
+            summary: (rawParsed.message as string) || 'Comando processado'
           };
         } else {
           throw new Error('Invalid response structure');
         }
+      } else {
+        parsed = {
+          actions: rawParsed.actions as ActionItem[],
+          summary: rawParsed.summary as string,
+          clientIdentified: rawParsed.clientIdentified as string | undefined
+        };
       }
 
       // Server-side permission validation (double-check)
       const isAdminUser = permissions?.isAdmin || permissions?.canAdmin;
       
-      parsed.actions = parsed.actions.map((action: any) => {
+      parsed.actions = parsed.actions.map((action: ActionItem): ActionItem => {
         const requiredPerm = action.permission;
         let hasPermission = true;
 
@@ -396,10 +447,10 @@ serve(async (req) => {
       });
 
       // Update summary if permission denied
-      const deniedActions = parsed.actions.filter((a: any) => a.action === 'SEM_PERMISSAO');
+      const deniedActions = parsed.actions.filter((a: ActionItem) => a.action === 'SEM_PERMISSAO');
       if (deniedActions.length > 0 && deniedActions.length === parsed.actions.length) {
-        const attempted = deniedActions[0].params.actionAttempted;
-        const required = deniedActions[0].params.requiredPermission;
+        const attempted = deniedActions[0].params.actionAttempted as string;
+        const required = deniedActions[0].params.requiredPermission as string;
         parsed.summary = `⚠️ Você não tem permissão para executar "${attempted}". Requer permissão: ${required}`;
       }
 

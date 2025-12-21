@@ -5,10 +5,93 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// ============= TYPE DEFINITIONS =============
+
 interface DashboardFilters {
   startDate?: string;
   endDate?: string;
   responsible?: string;
+}
+
+interface Lead {
+  id: string;
+  pipeline_stage: string;
+  temperature: string;
+  status: string;
+  estimated_value: number | null;
+  created_at: string;
+  converted_at: string | null;
+  responsible: string;
+  lost_reason_id: string | null;
+}
+
+interface Proposal {
+  id: string;
+  status: string;
+  full_price: number | null;
+  discounted_price: number | null;
+  sent_at: string | null;
+  first_viewed_at: string | null;
+  accepted_at: string | null;
+  rejected_at: string | null;
+  created_at: string;
+}
+
+interface Contract {
+  id: string;
+  status: string;
+  contract_type: string;
+  full_price: number | null;
+  discounted_price: number | null;
+  is_recurring: boolean | null;
+  start_date: string | null;
+  end_date: string | null;
+  signed_at: string | null;
+  created_at: string;
+}
+
+interface Client {
+  id: string;
+  column_id: string;
+  status: string;
+  plan_type: string;
+  start_date: string;
+  created_at: string;
+  updated_at: string;
+  responsible: string;
+}
+
+interface RecurringClient {
+  id: string;
+  status: string;
+  monthly_value: number | null;
+  next_execution_date: string | null;
+  created_at: string;
+}
+
+interface TeamMember {
+  id: string;
+  user_id: string;
+  role: string;
+}
+
+interface Alert {
+  type: "warning" | "info" | "error";
+  icon: string;
+  title: string;
+  description: string;
+}
+
+interface MonthlyTrendItem {
+  month: string;
+  year: number;
+  leads: number;
+  leadsValue: number;
+  proposals: number;
+  proposalsValue: number;
+  contracts: number;
+  contractsValue: number;
+  conversions: number;
 }
 
 Deno.serve(async (req) => {
@@ -340,21 +423,27 @@ Deno.serve(async (req) => {
   }
 });
 
-function calculateAvgResponseTime(proposals: any[]): number {
+function calculateAvgResponseTime(proposals: Proposal[]): number {
   const withResponse = proposals.filter(p => p.sent_at && (p.accepted_at || p.rejected_at));
   if (withResponse.length === 0) return 0;
   
   const totalHours = withResponse.reduce((sum, p) => {
-    const sent = new Date(p.sent_at).getTime();
-    const response = new Date(p.accepted_at || p.rejected_at).getTime();
+    const sent = new Date(p.sent_at!).getTime();
+    const response = new Date((p.accepted_at || p.rejected_at)!).getTime();
     return sum + (response - sent) / (1000 * 60 * 60);
   }, 0);
   
   return Math.round(totalHours / withResponse.length);
 }
 
-function generateAlerts(leads: any[], proposals: any[], contracts: any[], clients: any[], expiringContracts: any[]): any[] {
-  const alerts = [];
+function generateAlerts(
+  leads: Lead[], 
+  proposals: Proposal[], 
+  _contracts: Contract[], 
+  clients: Client[], 
+  expiringContracts: Contract[]
+): Alert[] {
+  const alerts: Alert[] = [];
   
   // Hot leads without action
   const hotLeadsNoAction = leads.filter(l => 
@@ -432,8 +521,8 @@ function generateAlerts(leads: any[], proposals: any[], contracts: any[], client
   return alerts;
 }
 
-function calculateMonthlyTrend(leads: any[], proposals: any[], contracts: any[]): any[] {
-  const months: any[] = [];
+function calculateMonthlyTrend(leads: Lead[], proposals: Proposal[], contracts: Contract[]): MonthlyTrendItem[] {
+  const months: MonthlyTrendItem[] = [];
   const now = new Date();
   
   for (let i = 5; i >= 0; i--) {
