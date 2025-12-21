@@ -67,16 +67,29 @@ const actionLabels: Record<string, { label: string; variant: "default" | "second
   export: { label: "Exportação", variant: "outline" },
   login: { label: "Login", variant: "outline" },
   logout: { label: "Logout", variant: "outline" },
+  accept: { label: "Aceitação", variant: "default" },
+  reject: { label: "Rejeição", variant: "destructive" },
+  assign: { label: "Atribuição", variant: "secondary" },
 };
 
 const entityLabels: Record<string, string> = {
   client: "Cliente",
+  clients: "Cliente",
+  clients_v2: "Cliente",
   lead: "Lead",
+  leads: "Lead",
   user: "Usuário",
+  user_roles: "Permissão",
+  agency_invites: "Convite",
   commission: "Comissão",
+  commissions_v2: "Comissão",
   task: "Tarefa",
+  scheduled_tasks: "Tarefa",
   question: "Pergunta",
+  questions: "Pergunta",
   suggestion: "Sugestão",
+  notifications: "Notificação",
+  agency_members: "Membro",
 };
 
 export default function AuditLogs() {
@@ -237,15 +250,17 @@ export default function AuditLogs() {
                   </SelectContent>
                 </Select>
                 <Select value={entityFilter} onValueChange={setEntityFilter}>
-                  <SelectTrigger className="w-[140px]">
+                  <SelectTrigger className="w-[160px]">
                     <SelectValue placeholder="Entidade" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Todas</SelectItem>
-                    <SelectItem value="client">Clientes</SelectItem>
-                    <SelectItem value="lead">Leads</SelectItem>
-                    <SelectItem value="user">Usuários</SelectItem>
-                    <SelectItem value="commission">Comissões</SelectItem>
+                    <SelectItem value="leads">Leads</SelectItem>
+                    <SelectItem value="clients_v2">Clientes</SelectItem>
+                    <SelectItem value="user_roles">Permissões</SelectItem>
+                    <SelectItem value="agency_invites">Convites</SelectItem>
+                    <SelectItem value="commissions_v2">Comissões</SelectItem>
+                    <SelectItem value="notifications">Notificações</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

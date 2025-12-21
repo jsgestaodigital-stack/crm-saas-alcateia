@@ -285,9 +285,12 @@ export type Database = {
           entity_name: string | null
           entity_type: string
           id: string
+          ip_address: string | null
           metadata: Json | null
           new_value: Json | null
           old_value: Json | null
+          request_id: string | null
+          user_agent: string | null
           user_id: string
           user_name: string
         }
@@ -299,9 +302,12 @@ export type Database = {
           entity_name?: string | null
           entity_type: string
           id?: string
+          ip_address?: string | null
           metadata?: Json | null
           new_value?: Json | null
           old_value?: Json | null
+          request_id?: string | null
+          user_agent?: string | null
           user_id: string
           user_name: string
         }
@@ -313,9 +319,12 @@ export type Database = {
           entity_name?: string | null
           entity_type?: string
           id?: string
+          ip_address?: string | null
           metadata?: Json | null
           new_value?: Json | null
           old_value?: Json | null
+          request_id?: string | null
+          user_agent?: string | null
           user_id?: string
           user_name?: string
         }
