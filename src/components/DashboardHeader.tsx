@@ -15,6 +15,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { UndoRedoButtons } from "@/components/UndoRedoButtons";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { VisualTourButton } from "@/components/onboarding/VisualTourButton";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -74,7 +75,12 @@ export function DashboardHeader() {
           <UndoRedoButtons />
 
           {/* Notification Bell */}
-          <NotificationBell />
+          <div data-tour="notifications">
+            <NotificationBell />
+          </div>
+
+          {/* Visual Tour Button */}
+          <VisualTourButton />
 
           {/* Theme Toggle */}
           <ThemeToggle />

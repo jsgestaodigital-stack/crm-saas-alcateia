@@ -497,7 +497,7 @@ export function AppSidebar({
           {/* Main Action Button - Only show in Sales or Delivery mode */}
           {!isRecurringMode && <Tooltip>
             <TooltipTrigger asChild>
-              <Button className={cn("w-full gap-2 h-11 hover-lift", collapsed ? "px-3" : "px-4", isSalesMode ? "bg-amber-500 text-black hover:bg-amber-400" : "bg-primary text-primary-foreground hover:bg-primary/90 neon-glow")} onClick={() => {
+              <Button data-tour="new-client" className={cn("w-full gap-2 h-11 hover-lift", collapsed ? "px-3" : "px-4", isSalesMode ? "bg-amber-500 text-black hover:bg-amber-400" : "bg-primary text-primary-foreground hover:bg-primary/90 neon-glow")} onClick={() => {
               onNewClient?.();
               onMobileOpenChange(false);
             }}>
@@ -558,7 +558,7 @@ export function AppSidebar({
           {/* Admin Panel */}
           {canAccessAdmin && <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" className={cn("w-full gap-2 h-11 border-primary/30 hover:bg-primary/10 hover:text-primary transition-all", collapsed ? "px-3" : "px-4", location.pathname === "/admin" && "bg-primary/10 text-primary border-primary/50")} onClick={() => {
+                <Button data-tour="admin-button" variant="outline" className={cn("w-full gap-2 h-11 border-primary/30 hover:bg-primary/10 hover:text-primary transition-all", collapsed ? "px-3" : "px-4", location.pathname === "/admin" && "bg-primary/10 text-primary border-primary/50")} onClick={() => {
               navigate("/admin");
               onMobileOpenChange(false);
             }}>
@@ -575,7 +575,7 @@ export function AppSidebar({
           {/* Gestão de Equipe - Admin only */}
           {canAccessAdmin && <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" className={cn("w-full gap-2 h-11 border-violet-500/30 hover:bg-violet-500/10 hover:text-violet-400 transition-all", collapsed ? "px-3" : "px-4", location.pathname === "/equipe" && "bg-violet-500/10 text-violet-400 border-violet-500/50")} onClick={() => {
+                <Button data-tour="team-button" variant="outline" className={cn("w-full gap-2 h-11 border-violet-500/30 hover:bg-violet-500/10 hover:text-violet-400 transition-all", collapsed ? "px-3" : "px-4", location.pathname === "/equipe" && "bg-violet-500/10 text-violet-400 border-violet-500/50")} onClick={() => {
               navigate("/equipe");
               onMobileOpenChange(false);
             }}>

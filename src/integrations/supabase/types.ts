@@ -193,6 +193,8 @@ export type Database = {
           created_at: string | null
           dismissed_at: string | null
           id: string
+          ui_tour_completed_at: string | null
+          ui_tour_started_at: string | null
           updated_at: string | null
         }
         Insert: {
@@ -202,6 +204,8 @@ export type Database = {
           created_at?: string | null
           dismissed_at?: string | null
           id?: string
+          ui_tour_completed_at?: string | null
+          ui_tour_started_at?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -211,6 +215,8 @@ export type Database = {
           created_at?: string | null
           dismissed_at?: string | null
           id?: string
+          ui_tour_completed_at?: string | null
+          ui_tour_started_at?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -3701,6 +3707,7 @@ export type Database = {
       check_notifications: { Args: never; Returns: Json }
       cleanup_old_login_attempts: { Args: never; Returns: undefined }
       complete_task: { Args: { p_task_id: string }; Returns: boolean }
+      complete_visual_tour: { Args: never; Returns: Json }
       count_clients_v2: {
         Args: {
           _custom_field_filters?: Json
@@ -4091,6 +4098,7 @@ export type Database = {
         Args: { _deletion_type?: string; _notes?: string; _user_id: string }
         Returns: string
       }
+      reset_visual_tour: { Args: never; Returns: Json }
       save_ai_interaction: {
         Args: {
           _ai_response: string
@@ -4169,6 +4177,7 @@ export type Database = {
         }[]
       }
       set_current_agency: { Args: { _agency_id: string }; Returns: undefined }
+      start_visual_tour: { Args: never; Returns: Json }
       suggest_next_task: { Args: { p_lead_id: string }; Returns: Json }
       suspend_agency: { Args: { _agency_id: string }; Returns: undefined }
       sync_agency_limits_from_plan: {
