@@ -594,11 +594,10 @@ const Landing = () => {
           </motion.div>
         </div>
 
-        <SectionDivider variant="arrow" fill="fill-gmb-dark" className="bottom-0" />
       </section>
 
       {/* ===== SEÇÃO DIFERENCIAL COMPETITIVO (COMPARISON TABLE) ===== */}
-      <section className="py-24 px-4 relative bg-gradient-to-b from-white via-gmb-light-green/30 to-white">
+      <section className="py-24 px-4 relative bg-gradient-to-b from-gmb-light-green via-white to-white">
         <div className="container mx-auto max-w-5xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
