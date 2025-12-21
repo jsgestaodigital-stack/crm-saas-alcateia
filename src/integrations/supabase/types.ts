@@ -2005,6 +2005,59 @@ export type Database = {
           },
         ]
       }
+      lead_unification_logs: {
+        Row: {
+          action_type: string
+          agency_id: string
+          created_at: string | null
+          details: Json | null
+          executed_by: string | null
+          executed_by_name: string | null
+          id: string
+          is_automatic: boolean | null
+          match_type: string
+          merged_lead_id: string | null
+          original_lead_id: string
+          similarity_score: number | null
+        }
+        Insert: {
+          action_type: string
+          agency_id: string
+          created_at?: string | null
+          details?: Json | null
+          executed_by?: string | null
+          executed_by_name?: string | null
+          id?: string
+          is_automatic?: boolean | null
+          match_type: string
+          merged_lead_id?: string | null
+          original_lead_id: string
+          similarity_score?: number | null
+        }
+        Update: {
+          action_type?: string
+          agency_id?: string
+          created_at?: string | null
+          details?: Json | null
+          executed_by?: string | null
+          executed_by_name?: string | null
+          id?: string
+          is_automatic?: boolean | null
+          match_type?: string
+          merged_lead_id?: string | null
+          original_lead_id?: string
+          similarity_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_unification_logs_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           agency_id: string
@@ -2015,14 +2068,18 @@ export type Database = {
           converted_client_id: string | null
           created_at: string
           created_by: string
+          duplicate_of: string | null
           email: string | null
           estimated_value: number | null
           id: string
           instagram: string | null
+          is_duplicate: boolean | null
           last_activity_at: string
           lost_notes: string | null
           lost_reason_id: string | null
           main_category: string | null
+          merged_at: string | null
+          merged_from: string[] | null
           next_action: string | null
           next_action_date: string | null
           notes: string | null
@@ -2049,14 +2106,18 @@ export type Database = {
           converted_client_id?: string | null
           created_at?: string
           created_by: string
+          duplicate_of?: string | null
           email?: string | null
           estimated_value?: number | null
           id?: string
           instagram?: string | null
+          is_duplicate?: boolean | null
           last_activity_at?: string
           lost_notes?: string | null
           lost_reason_id?: string | null
           main_category?: string | null
+          merged_at?: string | null
+          merged_from?: string[] | null
           next_action?: string | null
           next_action_date?: string | null
           notes?: string | null
@@ -2083,14 +2144,18 @@ export type Database = {
           converted_client_id?: string | null
           created_at?: string
           created_by?: string
+          duplicate_of?: string | null
           email?: string | null
           estimated_value?: number | null
           id?: string
           instagram?: string | null
+          is_duplicate?: boolean | null
           last_activity_at?: string
           lost_notes?: string | null
           lost_reason_id?: string | null
           main_category?: string | null
+          merged_at?: string | null
+          merged_from?: string[] | null
           next_action?: string | null
           next_action_date?: string | null
           notes?: string | null
@@ -2114,6 +2179,20 @@ export type Database = {
             columns: ["agency_id"]
             isOneToOne: false
             referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_duplicate_of_fkey"
+            columns: ["duplicate_of"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_duplicate_of_fkey"
+            columns: ["duplicate_of"]
+            isOneToOne: false
+            referencedRelation: "leads_expanded"
             referencedColumns: ["id"]
           },
           {
