@@ -14,7 +14,8 @@ import { Lead, ProposalStatus, PROPOSAL_STATUS_CONFIG } from '@/types/lead';
 import { useLeads } from '@/hooks/useLeads';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
-import { FileText, Link, ExternalLink } from 'lucide-react';
+import { FileText, Link, ExternalLink, Plus, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface LeadProposalTabProps {
   lead: Lead;
@@ -24,6 +25,7 @@ interface LeadProposalTabProps {
 export function LeadProposalTab({ lead, onUpdate }: LeadProposalTabProps) {
   const { updateLead } = useLeads();
   const { isAdmin } = useAuth();
+  const navigate = useNavigate();
 
   const handleFieldChange = async (field: keyof Lead, value: any) => {
     await updateLead(lead.id, { [field]: value });
@@ -32,8 +34,24 @@ export function LeadProposalTab({ lead, onUpdate }: LeadProposalTabProps) {
 
   const statusConfig = PROPOSAL_STATUS_CONFIG[lead.proposal_status];
 
+  const handleCreateProposal = () => {
+    navigate(`/propostas?leadId=${lead.id}`);
+  };
+
   return (
     <div className="space-y-4">
+      {/* Create Proposal Button */}
+      {isAdmin && (
+        <Button
+          onClick={handleCreateProposal}
+          className="w-full gap-2"
+          variant="default"
+        >
+          <Sparkles className="h-4 w-4" />
+          Criar Proposta com IA
+        </Button>
+      )}
+
       {/* Status */}
       <div>
         <Label className="text-xs text-muted-foreground">Status da Proposta</Label>

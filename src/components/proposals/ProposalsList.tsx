@@ -45,7 +45,7 @@ interface ProposalsListProps {
   onView: (proposal: Proposal) => void;
   onDuplicate: (proposal: Proposal) => void;
   onDelete: (id: string) => void;
-  onSend: (id: string) => void;
+  onSend: (proposal: Proposal) => void;
 }
 
 export function ProposalsList({
@@ -189,7 +189,7 @@ export function ProposalsList({
                           {proposal.status === 'draft' && (
                             <>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem onClick={() => onSend(proposal.id)}>
+                              <DropdownMenuItem onClick={() => onSend(proposal)}>
                                 <Send className="h-4 w-4 mr-2" />
                                 Marcar como Enviada
                               </DropdownMenuItem>
