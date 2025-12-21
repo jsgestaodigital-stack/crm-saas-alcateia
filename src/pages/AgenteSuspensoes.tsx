@@ -144,7 +144,7 @@ export default function AgenteSuspensoes() {
             <div>
               <h1 className="text-2xl font-bold text-foreground">Agente de Recuperação</h1>
               <p className="text-sm text-muted-foreground">
-                Recuperação de perfis suspensos no Google Meu Negócio – G-Rank AI
+                Recuperação de perfis suspensos no Google Meu Negócio – GRank AI
               </p>
             </div>
           </div>

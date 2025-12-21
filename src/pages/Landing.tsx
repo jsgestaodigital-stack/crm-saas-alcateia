@@ -88,7 +88,7 @@ const Landing = () => {
   }];
   const faqs = [{
     question: "Preciso ser expert em tecnologia para usar?",
-    answer: "Não. O G-Rank foi feito para ser simples. Se você usa WhatsApp, vai usar o G-Rank tranquilamente."
+    answer: "Não. O GRank foi feito para ser simples. Se você usa WhatsApp, vai usar o GRank tranquilamente."
   }, {
     question: "Funciona para agências pequenas?",
     answer: "Funciona melhor para quem tem 5+ clientes ativos. Se você está começando, pode não fazer sentido ainda."
@@ -122,8 +122,8 @@ const Landing = () => {
       <header className="fixed top-0 left-0 right-0 z-50 glass-header safe-area-inset-top">
         <div className="container mx-auto px-3 sm:px-4 h-14 sm:h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <img src={grankLogo} alt="G-Rank" className="h-7 sm:h-8 w-auto" />
-            <span className="font-bold text-lg sm:text-xl gradient-text">G-Rank</span>
+            <img src={grankLogo} alt="GRank" className="h-7 sm:h-8 w-auto" />
+            <span className="font-bold text-lg sm:text-xl gradient-text">GRank</span>
           </Link>
           
           {/* Desktop nav */}
@@ -373,7 +373,7 @@ const Landing = () => {
               <span className="text-sm text-primary font-medium">A Solução</span>
             </div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 font-display">
-              O G-Rank Gerencia{" "}
+              O GRank Gerencia{" "}
               <span className="gradient-title-text">Todo o Ciclo Operacional</span>
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto text-lg mb-4">
@@ -438,7 +438,7 @@ const Landing = () => {
         }} className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 font-display">
               Como Será Seu Dia{" "}
-              <span className="gradient-text">Depois do G-Rank</span>
+              <span className="gradient-text">Depois do GRank</span>
             </h2>
           </motion.div>
 
@@ -507,7 +507,7 @@ const Landing = () => {
           once: true
         }} className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 font-display">
-              Por Que o G-Rank é{" "}
+              Por Que o GRank é{" "}
               <span className="gradient-text">Diferente</span>
             </h2>
           </motion.div>
@@ -591,7 +591,7 @@ const Landing = () => {
           once: true
         }} className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 font-display">
-              O G-Rank é{" "}
+              O GRank é{" "}
               <span className="gradient-text">Para Você Se...</span>
             </h2>
           </motion.div>
@@ -648,7 +648,7 @@ const Landing = () => {
           once: true
         }} className="text-center mt-10 text-lg">
             <span className="text-primary font-medium">
-              "Se você quer crescer com estrutura, o G-Rank é o próximo passo."
+              "Se você quer crescer com estrutura, o GRank é o próximo passo."
             </span>
           </motion.p>
         </div>
@@ -721,7 +721,7 @@ const Landing = () => {
               <span className="gradient-title-text">Estrutura na Sua Operação?</span>
             </h2>
             <p className="text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto text-sm sm:text-base px-2">
-              O G-Rank não é uma despesa. É infraestrutura de crescimento.
+              O GRank não é uma despesa. É infraestrutura de crescimento.
               Se você perde 1 contrato por mês por desorganização — o sistema já se paga.
             </p>
 
@@ -895,7 +895,7 @@ const Landing = () => {
               <br />
               Enquanto você trabalha 12 horas, eles estão delegando.
               <br />
-              Enquanto você explica tudo 3 vezes, o G-Rank está treinando o time operacional.
+              Enquanto você explica tudo 3 vezes, o GRank está treinando o time operacional.
             </p>
             
             <p className="text-primary font-medium italic mb-10 text-lg">
@@ -983,8 +983,8 @@ const Landing = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-8 sm:mb-12">
             <div className="sm:col-span-2">
               <Link to="/" className="flex items-center gap-2 mb-4">
-                <img src={grankLogo} alt="G-Rank" className="h-7 sm:h-8 w-auto" />
-                <span className="font-bold text-lg sm:text-xl gradient-text">G-Rank CRM</span>
+                <img src={grankLogo} alt="GRank" className="h-7 sm:h-8 w-auto" />
+                <span className="font-bold text-lg sm:text-xl gradient-text">GRank CRM</span>
               </Link>
               <p className="text-muted-foreground mb-4 text-sm sm:text-base">
                 Gestão Profissional para Agências de Marketing Local
@@ -1015,7 +1015,7 @@ const Landing = () => {
           </div>
           
           <div className="border-t border-border pt-6 sm:pt-8 text-center text-xs sm:text-sm text-muted-foreground">
-            © {new Date().getFullYear()} G-Rank CRM. Todos os direitos reservados.
+            © {new Date().getFullYear()} GRank CRM. Todos os direitos reservados.
           </div>
         </div>
       </footer>
