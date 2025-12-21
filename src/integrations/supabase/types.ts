@@ -2126,6 +2126,228 @@ export type Database = {
           },
         ]
       }
+      proposal_templates: {
+        Row: {
+          agency_id: string
+          blocks: Json
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          is_default: boolean | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          agency_id: string
+          blocks?: Json
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          agency_id?: string
+          blocks?: Json
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_templates_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      proposal_views: {
+        Row: {
+          duration_seconds: number | null
+          id: string
+          ip_address: unknown
+          proposal_id: string
+          referrer: string | null
+          user_agent: string | null
+          viewed_at: string
+        }
+        Insert: {
+          duration_seconds?: number | null
+          id?: string
+          ip_address?: unknown
+          proposal_id: string
+          referrer?: string | null
+          user_agent?: string | null
+          viewed_at?: string
+        }
+        Update: {
+          duration_seconds?: number | null
+          id?: string
+          ip_address?: unknown
+          proposal_id?: string
+          referrer?: string | null
+          user_agent?: string | null
+          viewed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_views_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      proposals: {
+        Row: {
+          accepted_at: string | null
+          agency_id: string
+          ai_generated: boolean | null
+          ai_prompt: string | null
+          blocks: Json
+          city: string | null
+          client_id: string | null
+          client_name: string
+          company_name: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          created_by: string
+          discount_reason: string | null
+          discounted_price: number | null
+          first_viewed_at: string | null
+          full_price: number | null
+          id: string
+          installment_value: number | null
+          installments: number | null
+          last_viewed_at: string | null
+          lead_id: string | null
+          payment_method: string | null
+          public_token: string | null
+          public_url: string | null
+          rejected_at: string | null
+          rejection_reason: string | null
+          sent_at: string | null
+          status: Database["public"]["Enums"]["full_proposal_status"]
+          title: string
+          updated_at: string
+          valid_until: string | null
+          variables: Json | null
+          view_count: number | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          agency_id: string
+          ai_generated?: boolean | null
+          ai_prompt?: string | null
+          blocks?: Json
+          city?: string | null
+          client_id?: string | null
+          client_name: string
+          company_name?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          created_by: string
+          discount_reason?: string | null
+          discounted_price?: number | null
+          first_viewed_at?: string | null
+          full_price?: number | null
+          id?: string
+          installment_value?: number | null
+          installments?: number | null
+          last_viewed_at?: string | null
+          lead_id?: string | null
+          payment_method?: string | null
+          public_token?: string | null
+          public_url?: string | null
+          rejected_at?: string | null
+          rejection_reason?: string | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["full_proposal_status"]
+          title: string
+          updated_at?: string
+          valid_until?: string | null
+          variables?: Json | null
+          view_count?: number | null
+        }
+        Update: {
+          accepted_at?: string | null
+          agency_id?: string
+          ai_generated?: boolean | null
+          ai_prompt?: string | null
+          blocks?: Json
+          city?: string | null
+          client_id?: string | null
+          client_name?: string
+          company_name?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          created_by?: string
+          discount_reason?: string | null
+          discounted_price?: number | null
+          first_viewed_at?: string | null
+          full_price?: number | null
+          id?: string
+          installment_value?: number | null
+          installments?: number | null
+          last_viewed_at?: string | null
+          lead_id?: string | null
+          payment_method?: string | null
+          public_token?: string | null
+          public_url?: string | null
+          rejected_at?: string | null
+          rejection_reason?: string | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["full_proposal_status"]
+          title?: string
+          updated_at?: string
+          valid_until?: string | null
+          variables?: Json | null
+          view_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposals_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proposals_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proposals_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proposals_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_expanded"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       questions: {
         Row: {
           agency_id: string
@@ -4169,6 +4391,15 @@ export type Database = {
         Args: { _email: string; _ip_address?: unknown; _user_agent?: string }
         Returns: undefined
       }
+      record_proposal_view: {
+        Args: {
+          _ip?: string
+          _referrer?: string
+          _token: string
+          _user_agent?: string
+        }
+        Returns: Json
+      }
       reject_registration: {
         Args: { _reason?: string; _registration_id: string }
         Returns: undefined
@@ -4341,6 +4572,13 @@ export type Database = {
         | "designer"
         | "freelancer"
       commission_status: "pending" | "paid" | "cancelled"
+      full_proposal_status:
+        | "draft"
+        | "sent"
+        | "viewed"
+        | "accepted"
+        | "rejected"
+        | "expired"
       invoice_status: "draft" | "pending" | "paid" | "overdue" | "cancelled"
       lead_activity_type:
         | "whatsapp"
@@ -4553,6 +4791,14 @@ export const Constants = {
         "freelancer",
       ],
       commission_status: ["pending", "paid", "cancelled"],
+      full_proposal_status: [
+        "draft",
+        "sent",
+        "viewed",
+        "accepted",
+        "rejected",
+        "expired",
+      ],
       invoice_status: ["draft", "pending", "paid", "overdue", "cancelled"],
       lead_activity_type: [
         "whatsapp",
