@@ -44,3 +44,9 @@ verify_jwt = true
 
 [functions.permissions]
 verify_jwt = true
+
+[functions.security-check]
+verify_jwt = false
+
+[functions.check-notifications]
+verify_jwt = true

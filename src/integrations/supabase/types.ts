@@ -1047,6 +1047,33 @@ export type Database = {
           },
         ]
       }
+      failed_login_attempts: {
+        Row: {
+          attempted_at: string | null
+          created_at: string | null
+          email: string
+          id: string
+          ip_address: unknown
+          user_agent: string | null
+        }
+        Insert: {
+          attempted_at?: string | null
+          created_at?: string | null
+          email: string
+          id?: string
+          ip_address?: unknown
+          user_agent?: string | null
+        }
+        Update: {
+          attempted_at?: string | null
+          created_at?: string | null
+          email?: string
+          id?: string
+          ip_address?: unknown
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       lead_activities: {
         Row: {
           agency_id: string
@@ -1929,31 +1956,46 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          blocked: boolean | null
+          blocked_at: string | null
+          blocked_reason: string | null
           created_at: string
           current_agency_id: string | null
+          email_verified_at: string | null
           full_name: string
           id: string
           last_login: string | null
+          password_changed_at: string | null
           status: Database["public"]["Enums"]["user_status"]
           updated_at: string
         }
         Insert: {
           avatar_url?: string | null
+          blocked?: boolean | null
+          blocked_at?: string | null
+          blocked_reason?: string | null
           created_at?: string
           current_agency_id?: string | null
+          email_verified_at?: string | null
           full_name: string
           id: string
           last_login?: string | null
+          password_changed_at?: string | null
           status?: Database["public"]["Enums"]["user_status"]
           updated_at?: string
         }
         Update: {
           avatar_url?: string | null
+          blocked?: boolean | null
+          blocked_at?: string | null
+          blocked_reason?: string | null
           created_at?: string
           current_agency_id?: string | null
+          email_verified_at?: string | null
           full_name?: string
           id?: string
           last_login?: string | null
+          password_changed_at?: string | null
           status?: Database["public"]["Enums"]["user_status"]
           updated_at?: string
         }
@@ -2504,6 +2546,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      security_audit_log: {
+        Row: {
+          action_details: Json | null
+          action_type: string
+          created_at: string | null
+          id: string
+          ip_address: unknown
+          location: string | null
+          performed_by: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action_details?: Json | null
+          action_type: string
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown
+          location?: string | null
+          performed_by?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action_details?: Json | null
+          action_type?: string
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown
+          location?: string | null
+          performed_by?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
       subscription_history: {
         Row: {
@@ -3150,6 +3228,45 @@ export type Database = {
           },
         ]
       }
+      user_sessions: {
+        Row: {
+          created_at: string | null
+          device_info: string | null
+          expires_at: string | null
+          id: string
+          ip_address: unknown
+          is_active: boolean | null
+          last_activity: string | null
+          session_token: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          device_info?: string | null
+          expires_at?: string | null
+          id?: string
+          ip_address?: unknown
+          is_active?: boolean | null
+          last_activity?: string | null
+          session_token: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          device_info?: string | null
+          expires_at?: string | null
+          id?: string
+          ip_address?: unknown
+          is_active?: boolean | null
+          last_activity?: string | null
+          session_token?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       activities_last_30_days: {
@@ -3483,6 +3600,10 @@ export type Database = {
         Returns: string
       }
       auto_overdue_tasks: { Args: never; Returns: number }
+      block_user: {
+        Args: { _reason?: string; _user_id: string }
+        Returns: undefined
+      }
       build_suggestion_prompt: { Args: { _lead_id: string }; Returns: string }
       calculate_agency_usage: {
         Args: { _agency_id: string }
@@ -3535,7 +3656,12 @@ export type Database = {
         Args: { _agency_id: string; _increment?: number; _resource: string }
         Returns: Json
       }
+      check_login_rate_limit: {
+        Args: { _email: string; _ip_address?: unknown }
+        Returns: Json
+      }
       check_notifications: { Args: never; Returns: Json }
+      cleanup_old_login_attempts: { Args: never; Returns: undefined }
       complete_task: { Args: { p_task_id: string }; Returns: boolean }
       count_clients_v2: {
         Args: {
@@ -3675,6 +3801,17 @@ export type Database = {
         }
         Returns: string
       }
+      get_active_sessions: {
+        Args: { _user_id?: string }
+        Returns: {
+          created_at: string
+          device_info: string
+          id: string
+          ip_address: unknown
+          last_activity: string
+          user_agent: string
+        }[]
+      }
       get_agency_details: {
         Args: { _agency_id: string }
         Returns: {
@@ -3728,6 +3865,18 @@ export type Database = {
           is_expired: boolean
           role: Database["public"]["Enums"]["app_role"]
           status: string
+        }[]
+      }
+      get_login_history: {
+        Args: { _limit?: number; _user_id?: string }
+        Returns: {
+          created_at: string
+          failure_reason: string
+          id: string
+          ip_address: unknown
+          location: string
+          success: boolean
+          user_agent: string
         }[]
       }
       get_pending_registrations: {
@@ -3786,6 +3935,10 @@ export type Database = {
             Returns: boolean
           }
       impersonate_agency: { Args: { _agency_id: string }; Returns: undefined }
+      invalidate_all_sessions: {
+        Args: { _user_id: string }
+        Returns: undefined
+      }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_admin_or_owner: {
         Args: { _agency_id?: string; _user_id: string }
@@ -3796,6 +3949,7 @@ export type Database = {
         Returns: boolean
       }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_user_blocked: { Args: { _user_id: string }; Returns: Json }
       log_action: {
         Args: {
           _action_type: string
@@ -3846,6 +4000,15 @@ export type Database = {
         }
         Returns: string
       }
+      log_password_change: { Args: never; Returns: undefined }
+      log_successful_login: {
+        Args: {
+          _ip_address?: unknown
+          _location?: string
+          _user_agent?: string
+        }
+        Returns: undefined
+      }
       mark_all_notifications_read: { Args: never; Returns: number }
       mark_invoice_paid: {
         Args: {
@@ -3875,6 +4038,10 @@ export type Database = {
         Returns: string
       }
       reactivate_agency: { Args: { _agency_id: string }; Returns: undefined }
+      record_failed_login: {
+        Args: { _email: string; _ip_address?: unknown; _user_agent?: string }
+        Returns: undefined
+      }
       reject_registration: {
         Args: { _reason?: string; _registration_id: string }
         Returns: undefined
@@ -3978,6 +4145,7 @@ export type Database = {
         }[]
       }
       try_uuid: { Args: { _val: string }; Returns: string }
+      unblock_user: { Args: { _user_id: string }; Returns: undefined }
       update_agency: {
         Args: {
           _agency_id: string
