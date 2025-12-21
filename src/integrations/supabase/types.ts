@@ -2989,6 +2989,32 @@ export type Database = {
         }
         Relationships: []
       }
+      agency_members_with_roles: {
+        Row: {
+          agency_id: string | null
+          agency_name: string | null
+          app_role: Database["public"]["Enums"]["app_role"] | null
+          avatar_url: string | null
+          created_at: string | null
+          expires_at: string | null
+          full_name: string | null
+          id: string | null
+          last_login: string | null
+          member_role: string | null
+          role_notes: string | null
+          status: Database["public"]["Enums"]["user_status"] | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agency_members_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_commission_summary: {
         Row: {
           client_id: string | null
