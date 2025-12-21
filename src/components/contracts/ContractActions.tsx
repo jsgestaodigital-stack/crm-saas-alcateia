@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   DropdownMenu,
@@ -7,30 +7,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { Contract, CONTRACT_STATUS_CONFIG } from '@/types/contract';
 import { 
   Download, 
   Copy, 
-  Send, 
   Eye, 
-  ExternalLink,
   MoreVertical,
   FileText,
-  Printer,
-  AlertCircle,
-  CheckCircle2
+  Printer
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 
 interface ContractActionsProps {
@@ -40,10 +26,6 @@ interface ContractActionsProps {
 }
 
 export function ContractActions({ contract, onPreview, onRefresh }: ContractActionsProps) {
-  const [sendingToAutentique, setSendingToAutentique] = useState(false);
-  const [showAutentiqueDialog, setShowAutentiqueDialog] = useState(false);
-  const [autentiqueError, setAutentiqueError] = useState<string | null>(null);
-
   const statusConfig = CONTRACT_STATUS_CONFIG[contract.status];
 
   const generatePdfContent = (): string => {
@@ -206,7 +188,6 @@ export function ContractActions({ contract, onPreview, onRefresh }: ContractActi
     const blob = new Blob([html], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     
-    // Open in new window for printing
     const printWindow = window.open(url, '_blank');
     if (printWindow) {
       printWindow.onload = () => {
@@ -245,160 +226,47 @@ export function ContractActions({ contract, onPreview, onRefresh }: ContractActi
     toast.success('Contrato copiado para a área de transferência');
   };
 
-  const handleSendToAutentique = async () => {
-    setSendingToAutentique(true);
-    setAutentiqueError(null);
-
-    try {
-      const { data, error } = await supabase.functions.invoke('send-to-autentique', {
-        body: { contractId: contract.id }
-      });
-
-      if (error) throw error;
-
-      if (data?.error) {
-        setAutentiqueError(data.message || data.error);
-        return;
-      }
-
-      toast.success('Contrato enviado para assinatura!');
-      setShowAutentiqueDialog(false);
-      onRefresh();
-    } catch (err: any) {
-      console.error('Error sending to Autentique:', err);
-      setAutentiqueError(err.message || 'Erro ao enviar para Autentique');
-    } finally {
-      setSendingToAutentique(false);
-    }
-  };
-
-  const openAutentiqueSignUrl = () => {
-    if (contract.autentique_sign_url) {
-      window.open(contract.autentique_sign_url, '_blank');
-    }
-  };
-
   return (
-    <>
-      <div className="flex items-center gap-2">
-        {/* Status Badge */}
-        <Badge className={statusConfig.color}>
-          {statusConfig.emoji} {statusConfig.label}
-        </Badge>
+    <div className="flex items-center gap-2">
+      {/* Status Badge */}
+      <Badge className={statusConfig.color}>
+        {statusConfig.emoji} {statusConfig.label}
+      </Badge>
 
-        {/* Main Actions */}
-        <Button variant="outline" size="sm" onClick={onPreview}>
-          <Eye className="h-4 w-4 mr-2" />
-          Visualizar
-        </Button>
+      {/* Main Actions */}
+      <Button variant="outline" size="sm" onClick={onPreview}>
+        <Eye className="h-4 w-4 mr-2" />
+        Visualizar
+      </Button>
 
-        <Button variant="outline" size="sm" onClick={handleDownloadPdf}>
-          <Download className="h-4 w-4 mr-2" />
-          Baixar PDF
-        </Button>
+      <Button variant="outline" size="sm" onClick={handleDownloadPdf}>
+        <Download className="h-4 w-4 mr-2" />
+        Baixar PDF
+      </Button>
 
-        {contract.status === 'draft' && (
-          <Button 
-            size="sm" 
-            onClick={() => setShowAutentiqueDialog(true)}
-          >
-            <Send className="h-4 w-4 mr-2" />
-            Enviar para Assinatura
+      {/* More Actions */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="sm">
+            <MoreVertical className="h-4 w-4" />
           </Button>
-        )}
-
-        {contract.autentique_sign_url && (
-          <Button variant="secondary" size="sm" onClick={openAutentiqueSignUrl}>
-            <ExternalLink className="h-4 w-4 mr-2" />
-            Abrir no Autentique
-          </Button>
-        )}
-
-        {/* More Actions */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm">
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={handlePrint}>
-              <Printer className="h-4 w-4 mr-2" />
-              Imprimir
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleCopyText}>
-              <Copy className="h-4 w-4 mr-2" />
-              Copiar Texto
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={onPreview}>
-              <FileText className="h-4 w-4 mr-2" />
-              Pré-visualização
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
-      {/* Autentique Dialog */}
-      <Dialog open={showAutentiqueDialog} onOpenChange={setShowAutentiqueDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Enviar para Assinatura Digital</DialogTitle>
-            <DialogDescription>
-              O contrato será enviado para assinatura via Autentique.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                Certifique-se de que os e-mails do contratante e contratada estão corretos.
-                Ambas as partes receberão um link para assinar digitalmente.
-              </AlertDescription>
-            </Alert>
-
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-muted-foreground">Contratante:</p>
-                <p className="font-medium">{contract.contracted_name || 'Não informado'}</p>
-                <p>{contract.contracted_email || 'E-mail não informado'}</p>
-              </div>
-              <div>
-                <p className="text-muted-foreground">Contratada:</p>
-                <p className="font-medium">{contract.contractor_name || 'Não informado'}</p>
-                <p>{contract.contractor_email || 'E-mail não informado'}</p>
-              </div>
-            </div>
-
-            {autentiqueError && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{autentiqueError}</AlertDescription>
-              </Alert>
-            )}
-          </div>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAutentiqueDialog(false)}>
-              Cancelar
-            </Button>
-            <Button 
-              onClick={handleSendToAutentique} 
-              disabled={sendingToAutentique || !contract.contracted_email || !contract.contractor_email}
-            >
-              {sendingToAutentique ? (
-                'Enviando...'
-              ) : (
-                <>
-                  <Send className="h-4 w-4 mr-2" />
-                  Enviar
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={handlePrint}>
+            <Printer className="h-4 w-4 mr-2" />
+            Imprimir
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleCopyText}>
+            <Copy className="h-4 w-4 mr-2" />
+            Copiar Texto
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={onPreview}>
+            <FileText className="h-4 w-4 mr-2" />
+            Pré-visualização
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
 }

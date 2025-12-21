@@ -6,14 +6,12 @@ import { ContractStatusBadge } from './ContractStatusBadge';
 import { 
   FileText, 
   Eye, 
-  Send, 
   Copy, 
   Trash2, 
   ExternalLink,
   Calendar,
   Building2,
-  DollarSign,
-  Download
+  DollarSign
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -86,21 +84,6 @@ export function ContractsList({
                       <Eye className="h-4 w-4 mr-2" />
                       Editar
                     </DropdownMenuItem>
-                    {contract.status === 'draft' && (
-                      <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onSend(contract); }}>
-                        <Send className="h-4 w-4 mr-2" />
-                        Enviar para Assinatura
-                      </DropdownMenuItem>
-                    )}
-                    {contract.autentique_sign_url && (
-                      <DropdownMenuItem onClick={(e) => { 
-                        e.stopPropagation(); 
-                        window.open(contract.autentique_sign_url!, '_blank'); 
-                      }}>
-                        <ExternalLink className="h-4 w-4 mr-2" />
-                        Abrir no Autentique
-                      </DropdownMenuItem>
-                    )}
                     {contract.public_token && (
                       <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onViewPublic(contract); }}>
                         <ExternalLink className="h-4 w-4 mr-2" />
@@ -149,24 +132,8 @@ export function ContractsList({
               <div className="flex items-center justify-between">
                 <ContractStatusBadge 
                   status={contract.status} 
-                  autentiqueStatus={contract.autentique_status}
-                  viewCount={contract.view_count}
                   size="sm"
                 />
-                {contract.autentique_sign_url && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-6 text-xs"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      window.open(contract.autentique_sign_url!, '_blank');
-                    }}
-                  >
-                    <ExternalLink className="h-3 w-3 mr-1" />
-                    Autentique
-                  </Button>
-                )}
               </div>
             </CardContent>
           </Card>
