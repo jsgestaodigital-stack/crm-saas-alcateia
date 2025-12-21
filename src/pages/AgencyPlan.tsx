@@ -180,12 +180,25 @@ export default function AgencyPlan() {
           <CardContent>
             <div className="grid grid-cols-2 gap-4">
               {[
-                { key: 'ai_agents', label: 'Agentes de IA' },
-                { key: 'exports', label: 'Exportações' },
-                { key: 'api_access', label: 'Acesso à API' },
-                { key: 'priority_support', label: 'Suporte Prioritário' },
+                { key: 'funil_tarefas', label: 'Funil e Tarefas' },
+                { key: 'funil_avancado', label: 'Funil Avançado' },
+                { key: 'automacoes', label: 'Automações' },
+                { key: 'relatorios_agencia', label: 'Relatórios Agência' },
+                { key: 'relatorios_cliente', label: 'Relatórios por Cliente' },
+                { key: 'dashboard_principal', label: 'Dashboard Principal' },
+                { key: 'dashboard_financeiro', label: 'Dashboard Financeiro' },
+                { key: 'cobranca_stripe', label: 'Cobrança via Stripe' },
+                { key: 'comissoes', label: 'Controle de Comissões' },
+                { key: 'logs_auditoria', label: 'Logs e Auditoria' },
+                { key: 'exportacao', label: 'Exportação de Dados' },
+                { key: 'integracao_alfaleads', label: 'Integração AlfaLeads' },
+                { key: 'suporte_email', label: 'Suporte por Email' },
+                { key: 'suporte_prioritario', label: 'Suporte Prioritário' },
+                { key: 'suporte_whatsapp', label: 'Suporte WhatsApp' },
+                { key: 'acesso_antecipado', label: 'Acesso Antecipado' },
               ].map(({ key, label }) => {
-                const enabled = plan?.features?.[key as keyof typeof plan.features];
+                const planFeatures = (plan?.features || {}) as Record<string, boolean | number>;
+                const enabled = planFeatures[key] === true;
                 return (
                   <div key={key} className="flex items-center gap-2">
                     {enabled ? (
@@ -198,8 +211,42 @@ export default function AgencyPlan() {
                 );
               })}
             </div>
+            
+            {/* Limite de tarefas */}
+            {(plan?.features as any)?.limite_tarefas_mes && (
+              <div className="mt-4 pt-4 border-t border-border/50">
+                <p className="text-sm text-muted-foreground">
+                  <Sparkles className="inline h-4 w-4 mr-1 text-primary" />
+                  Limite de tarefas: <span className="font-medium text-foreground">{(plan?.features as any)?.limite_tarefas_mes?.toLocaleString('pt-BR')}/mês</span>
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
+
+        {/* Upgrade CTA */}
+        {plan?.slug !== 'master' && (
+          <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/30">
+            <CardContent className="py-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 rounded-xl bg-primary/20">
+                    <Sparkles className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Quer mais recursos?</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Faça upgrade e desbloqueie mais clientes, automações e muito mais.
+                    </p>
+                  </div>
+                </div>
+                <Button onClick={() => navigate("/upgrade")} className="gap-2">
+                  Fazer Upgrade
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Available Plans */}
         {plans && plans.length > 1 && (
@@ -212,7 +259,8 @@ export default function AgencyPlan() {
                 {plans.filter(p => p.id !== plan?.id).map((p) => (
                   <div 
                     key={p.id} 
-                    className="flex items-center justify-between p-4 rounded-lg border border-border/50 hover:border-primary/50 transition-colors"
+                    className="flex items-center justify-between p-4 rounded-lg border border-border/50 hover:border-primary/50 transition-colors cursor-pointer"
+                    onClick={() => navigate("/upgrade")}
                   >
                     <div>
                       <h4 className="font-medium">{p.name}</h4>
@@ -227,9 +275,13 @@ export default function AgencyPlan() {
                   </div>
                 ))}
               </div>
-              <p className="text-sm text-muted-foreground mt-4 text-center">
-                Para alterar seu plano, entre em contato com o suporte.
-              </p>
+              <Button 
+                variant="outline" 
+                className="w-full mt-4"
+                onClick={() => navigate("/upgrade")}
+              >
+                Ver detalhes dos planos
+              </Button>
             </CardContent>
           </Card>
         )}
