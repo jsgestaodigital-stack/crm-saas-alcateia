@@ -487,6 +487,35 @@ export function AppSidebar({
                     </div>}
                 </Button>
               } />
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    className={cn(
+                      "w-full justify-start gap-3 h-11 transition-all duration-200", 
+                      collapsed ? "px-3 justify-center" : "px-4", 
+                      location.pathname === "/propostas" 
+                        ? "bg-amber-500/15 text-amber-400 border border-amber-500/30" 
+                        : "hover:bg-amber-500/10 hover:text-amber-400 border border-transparent"
+                    )} 
+                    onClick={() => {
+                      navigate("/propostas");
+                      onMobileOpenChange(false);
+                    }}
+                  >
+                    <FileText className="h-5 w-5 shrink-0 text-amber-400/70" />
+                    {!collapsed && <div className="flex flex-col items-start">
+                        <span className="text-sm font-medium">Propostas</span>
+                        <span className="text-[10px] text-muted-foreground">Criar e gerenciar propostas</span>
+                      </div>}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="glass">
+                  <p className="font-medium">Propostas</p>
+                  <p className="text-xs text-muted-foreground">Sistema de propostas com IA</p>
+                </TooltipContent>
+              </Tooltip>
             </div>}
         </TooltipProvider>
       </nav>
