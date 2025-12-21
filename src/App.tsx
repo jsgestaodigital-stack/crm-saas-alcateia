@@ -29,6 +29,7 @@ import Suggestions from "./pages/Suggestions";
 import SuperAdmin from "./pages/SuperAdmin";
 import Register from "./pages/Register";
 import AgencyPlan from "./pages/AgencyPlan";
+import Upgrade from "./pages/Upgrade";
 import AuditLogs from "./pages/AuditLogs";
 import Notifications from "./pages/Notifications";
 import ClientsCRM from "./pages/ClientsCRM";
@@ -116,6 +117,9 @@ const App = () => (
                       } />
                       <Route path="/admin/plan" element={
                         <SubscriptionGuard><AgencyPlan /></SubscriptionGuard>
+                      } />
+                      <Route path="/upgrade" element={
+                        <SubscriptionGuard><Upgrade /></SubscriptionGuard>
                       } />
                       <Route path="/admin/audit" element={
                         <SubscriptionGuard><AuditLogs /></SubscriptionGuard>

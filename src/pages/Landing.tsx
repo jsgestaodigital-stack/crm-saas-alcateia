@@ -367,7 +367,7 @@ const Landing = () => {
                       : 'bg-white/10 hover:bg-white/20 text-white border border-white/20'
                   }`}
                 >
-                  <Link to="/register">{plan.cta}</Link>
+                  <Link to={`/register?plan=${plan.name.toLowerCase()}`}>{plan.cta}</Link>
                 </Button>
               </motion.div>
             ))}
