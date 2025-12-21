@@ -78,6 +78,8 @@ import {
   WeeklyHeatmap,
   TrendComparisonTable,
 } from "@/components/manager-report";
+import { ProFeatureGate } from "@/components/plan";
+import { useTrialFeatures } from "@/hooks/useTrialFeatures";
 
 // Types
 interface Metrics {
@@ -197,6 +199,7 @@ const ManagerReport = () => {
   const navigate = useNavigate();
   const { user, isLoading: authLoading, derived } = useAuth();
   const { toast } = useToast();
+  const { isManagerReportBlocked, isTrial } = useTrialFeatures();
   
   const [loading, setLoading] = useState(false);
   const [metrics, setMetrics] = useState<Metrics | null>(null);
@@ -477,6 +480,10 @@ const ManagerReport = () => {
   }
 
   return (
+    <ProFeatureGate
+      feature="Relatório do Gestor"
+      isBlocked={isManagerReportBlocked}
+    >
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-40 glass-header">
@@ -1498,6 +1505,7 @@ const ManagerReport = () => {
         )}
       </main>
     </div>
+    </ProFeatureGate>
   );
 };
 

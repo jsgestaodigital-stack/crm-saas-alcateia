@@ -148,7 +148,7 @@ Deno.serve(async (req) => {
       is_recurring: true,
     }, { onConflict: "user_id,agency_id" });
 
-    // Create trial limits (more generous for trial)
+    // Create trial limits (generous limits, but some features blocked)
     await supabaseClient.from("agency_limits").upsert({
       agency_id: newAgency.id,
       max_users: 3,
@@ -157,9 +157,23 @@ Deno.serve(async (req) => {
       max_recurring_clients: 10,
       storage_mb: 1024,
       features: { 
+        // Core features - ALL enabled in trial
         ai_agents: true, 
-        exports: true, 
+        funil_tarefas: true,
+        funil_avancado: true,
+        automacoes: true,
+        dashboard_principal: true,
+        dashboard_financeiro: true,
+        comissoes: true,
+        suporte_email: true,
+        
+        // BLOCKED in trial (PRO features)
+        exportacao: false,           // Export PDF reports
+        relatorios_agencia: false,   // Manager Report
+        assinatura_digital: false,   // Digital signature (Autentique)
         api_access: false,
+        
+        // Trial flag
         is_trial: true,
       },
     }, { onConflict: "agency_id" });

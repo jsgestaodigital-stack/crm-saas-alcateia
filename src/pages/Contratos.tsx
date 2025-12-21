@@ -6,14 +6,16 @@ import { useContracts } from '@/hooks/useContracts';
 import { useProposals } from '@/hooks/useProposals';
 import { useLeads } from '@/hooks/useLeads';
 import { useToast } from '@/hooks/use-toast';
+import { useTrialFeatures } from '@/hooks/useTrialFeatures';
 import {
   ContractsList,
   ContractEditor,
   ContractPreview,
   ContractHelpSection,
 } from '@/components/contracts';
+import { ProFeatureBadge } from '@/components/plan';
 import { Contract, ContractType } from '@/types/contract';
-import { ArrowLeft, FileText, Plus, HelpCircle } from 'lucide-react';
+import { ArrowLeft, FileText, Plus, HelpCircle, Crown } from 'lucide-react';
 import { useState as useToggleState } from 'react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
@@ -22,6 +24,7 @@ export default function Contratos() {
   const [searchParams] = useSearchParams();
   const { user, currentAgencyId, isAdmin, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
+  const { isDigitalSignatureBlocked, isTrial } = useTrialFeatures();
   
   const {
     contracts,
@@ -241,7 +244,7 @@ export default function Contratos() {
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             )}
-            <div>
+            <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
                 <FileText className="h-6 w-6 text-primary" />
                 {view === 'list' && 'Contratos'}
@@ -249,6 +252,13 @@ export default function Contratos() {
                 {view === 'edit' && 'Editar Contrato'}
                 {view === 'preview' && 'Visualizar Contrato'}
               </h1>
+              {isDigitalSignatureBlocked && (
+                <ProFeatureBadge 
+                  feature="Assinatura Digital" 
+                  showUpgradeDialog={true}
+                />
+              )}
+            </div>
               {selectedLead && (view === 'new' || view === 'edit') && (
                 <p className="text-sm text-muted-foreground">
                   Para: {selectedLead.company_name}
@@ -259,7 +269,6 @@ export default function Contratos() {
                   Baseado na proposta: {selectedProposal.title}
                 </p>
               )}
-            </div>
           </div>
 
           {view === 'list' && (

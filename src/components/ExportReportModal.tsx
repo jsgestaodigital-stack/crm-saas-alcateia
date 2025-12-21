@@ -17,9 +17,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { FileText, Download, Lock, AlertTriangle } from "lucide-react";
+import { FileText, Download, Lock, AlertTriangle, Crown } from "lucide-react";
 import { useAuth, DerivedPermissions } from "@/contexts/AuthContext";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useTrialFeatures } from "@/hooks/useTrialFeatures";
+import { useNavigate } from "react-router-dom";
 
 export type ExportFormat = "pdf" | "csv";
 
@@ -64,6 +66,8 @@ export function ExportReportModal({
   onExport,
 }: ExportReportModalProps) {
   const { user, derived } = useAuth();
+  const navigate = useNavigate();
+  const { isExportBlocked, isTrial } = useTrialFeatures();
   
   const [selectedModules, setSelectedModules] = useState<ExportModule[]>([]);
   const [selectAll, setSelectAll] = useState(false);
@@ -195,8 +199,36 @@ export function ExportReportModal({
         </DialogHeader>
 
         <div className="space-y-4 py-4">
+          {/* Trial blocked warning */}
+          {isExportBlocked && format === "pdf" && (
+            <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <div className="p-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500">
+                  <Crown className="h-4 w-4 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-semibold text-foreground">Recurso Premium</h4>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Exportação de relatórios em PDF está disponível nos planos pagos.
+                  </p>
+                  <Button
+                    size="sm"
+                    className="mt-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+                    onClick={() => {
+                      onOpenChange(false);
+                      navigate("/upgrade");
+                    }}
+                  >
+                    <Crown className="h-3.5 w-3.5 mr-1.5" />
+                    Ver Planos
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Warning if no permissions */}
-          {!hasAnyPermission && (
+          {!hasAnyPermission && !isExportBlocked && (
             <Alert variant="destructive">
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
@@ -320,7 +352,7 @@ export function ExportReportModal({
           </Button>
           <Button
             onClick={handleExport}
-            disabled={!hasSelection || !hasAnyPermission}
+            disabled={!hasSelection || !hasAnyPermission || (isExportBlocked && format === "pdf")}
             className="gap-2"
           >
             {format === "pdf" ? (
