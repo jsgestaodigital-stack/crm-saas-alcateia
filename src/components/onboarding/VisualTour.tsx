@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import Joyride, { Styles } from 'react-joyride';
 import { useVisualTour } from '@/hooks/useVisualTour';
@@ -66,6 +66,9 @@ const tourStyles: Partial<Styles> = {
   },
 };
 
+// Routes where tour should never run
+const EXCLUDED_ROUTES = ['/auth', '/register', '/convite'];
+
 interface VisualTourProps {
   autoStart?: boolean;
 }
@@ -73,35 +76,54 @@ interface VisualTourProps {
 export function VisualTour({ autoStart = false }: VisualTourProps) {
   const location = useLocation();
   const { user } = useAuth();
+  const hasAutoStarted = useRef(false);
   const {
     steps,
     isRunning,
     stepIndex,
     shouldAutoStart,
+    tourCompleted,
     startTour,
     handleJoyrideCallback,
   } = useVisualTour();
 
-  // Never run tour on auth screen.
-  if (location.pathname === '/auth') return null;
+  // Check if on excluded route
+  const isExcludedRoute = EXCLUDED_ROUTES.some(route => 
+    location.pathname === route || location.pathname.startsWith('/convite/')
+  );
 
-  // Auto-start tour on first visit (disabled by default)
+  // Never run tour on excluded routes
+  if (isExcludedRoute) return null;
+
+  // Don't render if no user
+  if (!user) return null;
+
+  // Don't auto-start if already completed
+  if (tourCompleted) return null;
+
+  // Auto-start tour on first visit (only once per session)
   useEffect(() => {
-    if (autoStart && shouldAutoStart && user) {
-      // Small delay to ensure DOM is ready
+    if (
+      autoStart && 
+      shouldAutoStart && 
+      user && 
+      !hasAutoStarted.current &&
+      !isExcludedRoute &&
+      !tourCompleted
+    ) {
+      hasAutoStarted.current = true;
+      // Delay to ensure DOM is ready
       const timer = setTimeout(() => {
         startTour();
-      }, 1500);
+      }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [autoStart, shouldAutoStart, user, startTour]);
-
-  if (!user) return null;
+  }, [autoStart, shouldAutoStart, user, startTour, isExcludedRoute, tourCompleted]);
 
   return (
     <Joyride
       steps={steps}
-      run={isRunning}
+      run={isRunning && !isExcludedRoute}
       stepIndex={stepIndex}
       continuous
       showProgress
@@ -110,6 +132,8 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
       scrollToFirstStep
       spotlightClicks={false}
       disableOverlayClose
+      disableCloseOnEsc={false}
+      disableScrolling={false}
       callback={handleJoyrideCallback}
       styles={tourStyles}
       locale={{
@@ -121,7 +145,8 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
         skip: 'Pular tour',
       }}
       floaterProps={{
-        disableAnimation: false,
+        disableAnimation: true,
+        hideArrow: false,
       }}
     />
   );
