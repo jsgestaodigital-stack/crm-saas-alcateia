@@ -3,6 +3,27 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Json } from "@/integrations/supabase/types";
 
+// Features JSONB unificado com o banco de dados
+export interface PlanFeaturesDB {
+  funil_tarefas?: boolean;
+  funil_avancado?: boolean;
+  automacoes?: boolean;
+  relatorios_agencia?: boolean;
+  relatorios_cliente?: boolean;
+  dashboard_principal?: boolean;
+  dashboard_financeiro?: boolean;
+  cobranca_stripe?: boolean;
+  comissoes?: boolean;
+  logs_auditoria?: boolean;
+  exportacao?: boolean;
+  integracao_alfaleads?: boolean;
+  suporte_email?: boolean;
+  suporte_prioritario?: boolean;
+  suporte_whatsapp?: boolean;
+  acesso_antecipado?: boolean;
+  limite_tarefas_mes?: number;
+}
+
 export interface Plan {
   id: string;
   name: string;
@@ -15,12 +36,7 @@ export interface Plan {
   max_clients: number;
   max_recurring_clients: number;
   storage_mb: number;
-  features: {
-    ai_agents?: boolean;
-    exports?: boolean;
-    api_access?: boolean;
-    priority_support?: boolean;
-  };
+  features: PlanFeaturesDB;
   trial_days: number;
   active: boolean;
   sort_order: number;

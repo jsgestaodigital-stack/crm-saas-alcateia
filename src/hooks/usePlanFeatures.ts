@@ -1,6 +1,11 @@
-import { useSubscription, AgencyFeatures } from "./useSubscription";
+import { useSubscription, AgencyFeatures, PlanFeaturesDB } from "./useSubscription";
 import { useAuth } from "@/contexts/AuthContext";
+import { PlanFeatures as CheckPlanFeatures, PlanLimits as CheckPlanLimits } from "@/lib/checkPlanLimits";
 
+// Re-export types para uso externo
+export type { CheckPlanFeatures as PlanFeaturesDB, CheckPlanLimits };
+
+// Limites do plano (valores numéricos)
 export interface PlanLimits {
   maxUsers: number;
   maxClients: number;
@@ -10,6 +15,7 @@ export interface PlanLimits {
   limiteTarefasMes: number;
 }
 
+// Feature flags tipadas (camelCase para uso em componentes)
 export interface PlanFeatureFlags {
   funilTarefas: boolean;
   funilAvancado: boolean;
@@ -35,7 +41,7 @@ export interface UsePlanFeaturesReturn {
   planSlug: string | null;
   isLoading: boolean;
   
-  // Feature checks
+  // Feature checks (aceita tanto camelCase quanto snake_case)
   hasFeature: (feature: keyof PlanFeatureFlags | string) => boolean;
   hasAllFeatures: (features: (keyof PlanFeatureFlags | string)[]) => boolean;
   hasAnyFeature: (features: (keyof PlanFeatureFlags | string)[]) => boolean;
@@ -45,8 +51,11 @@ export interface UsePlanFeaturesReturn {
   isWithinLimit: (type: 'users' | 'clients' | 'leads' | 'recurring' | 'tasks', currentCount: number) => boolean;
   getRemainingQuota: (type: 'users' | 'clients' | 'leads' | 'recurring' | 'tasks', currentCount: number) => number;
   
-  // Feature flags (typed)
+  // Feature flags (typed camelCase)
   features: PlanFeatureFlags;
+  
+  // Raw DB features (snake_case)
+  rawDbFeatures: PlanFeaturesDB;
   
   // Plan tier helpers
   isStarter: boolean;
@@ -214,6 +223,7 @@ export function usePlanFeatures(): UsePlanFeaturesReturn {
     isWithinLimit,
     getRemainingQuota,
     features: typedFeatures,
+    rawDbFeatures: rawDbFeatures as PlanFeaturesDB,
     isStarter,
     isPro,
     isMaster,
