@@ -174,7 +174,7 @@ export function AppSidebar({
       <div className="h-16 flex items-center justify-between px-4 border-b border-emerald/10 bg-gradient-to-r from-emerald/5 via-transparent to-violet/5 safe-area-inset-top">
         {!collapsed && (
           <div className="flex items-center gap-2 animate-fade-in">
-            <img src={grankLogo} alt="G-Rank CRM" className="h-9 w-auto" />
+            <img src={grankLogo} alt="GRank CRM" className="h-9 w-auto" />
           </div>
         )}
         <Button variant="ghost" size="icon" onClick={() => onCollapsedChange(!collapsed)} className="h-10 w-10 hover:bg-emerald/10 hover:text-emerald transition-all duration-300 hidden lg:flex group touch-target">

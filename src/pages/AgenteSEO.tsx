@@ -144,7 +144,7 @@ export default function AgenteSEO() {
             <div>
               <h1 className="text-2xl font-bold text-foreground">Agente SEO Local</h1>
               <p className="text-sm text-muted-foreground">
-                Otimização Local Inteligente – G-Rank CRM
+                Otimização Local Inteligente – GRank CRM
               </p>
             </div>
           </div>

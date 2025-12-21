@@ -205,7 +205,7 @@ export const InteractiveDemo = () => {
               <div className="h-3 w-3 rounded-full bg-status-success" />
             </div>
             <div className="flex-1 text-center">
-              <span className="text-xs text-muted-foreground">G-Rank CRM</span>
+              <span className="text-xs text-muted-foreground">GRank CRM</span>
             </div>
           </div>
 

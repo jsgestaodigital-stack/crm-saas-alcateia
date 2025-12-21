@@ -227,7 +227,7 @@ export default function Register() {
           <div>
             <img
               src={grankLogo}
-              alt="G-Rank CRM"
+              alt="GRank CRM"
               className="h-16 object-contain mb-6"
             />
             <h1 className="text-3xl font-bold text-foreground mb-3">
@@ -285,7 +285,7 @@ export default function Register() {
           <CardHeader className="text-center space-y-4">
             <img
               src={grankLogo}
-              alt="G-Rank CRM"
+              alt="GRank CRM"
               className="h-12 mx-auto object-contain lg:hidden"
             />
             <div>

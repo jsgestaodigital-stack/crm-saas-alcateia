@@ -509,7 +509,7 @@ export default function Admin() {
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <img src={grankLogo} alt="G-Rank CRM" className="h-8" />
+            <img src={grankLogo} alt="GRank CRM" className="h-8" />
             <div className="h-6 w-px bg-border/50" />
             <h1 className="text-lg font-semibold text-foreground flex items-center gap-2">
               <Shield className="w-5 h-5 text-primary" />
