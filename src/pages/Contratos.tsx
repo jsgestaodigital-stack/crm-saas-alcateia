@@ -40,6 +40,7 @@ export default function Contratos() {
   const [selectedProposalId, setSelectedProposalId] = useState<string | null>(null);
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
   const [contractType, setContractType] = useState<ContractType>('single_optimization');
+  const [initialVariables, setInitialVariables] = useState<Record<string, string>>({});
 
   // Check for proposalId or leadId in URL params
   useEffect(() => {
@@ -63,6 +64,63 @@ export default function Contratos() {
   // Get selected data
   const selectedProposal = proposals.find(p => p.id === selectedProposalId);
   const selectedLead = leads.find(l => l.id === (selectedLeadId || selectedProposal?.lead_id));
+
+  // Generate initial variables from proposal data
+  useEffect(() => {
+    if (selectedProposal) {
+      const vars: Record<string, string> = { ...selectedProposal.variables };
+      
+      // Map proposal data to contract variables
+      if (selectedProposal.client_name) vars['nome_cliente'] = selectedProposal.client_name;
+      if (selectedProposal.company_name) vars['nome_empresa'] = selectedProposal.company_name;
+      if (selectedProposal.contact_email) vars['email'] = selectedProposal.contact_email;
+      if (selectedProposal.contact_phone) vars['telefone'] = selectedProposal.contact_phone;
+      if (selectedProposal.city) vars['cidade'] = selectedProposal.city;
+      
+      // Financial data
+      if (selectedProposal.discounted_price || selectedProposal.full_price) {
+        vars['valor_total'] = new Intl.NumberFormat('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        }).format(selectedProposal.discounted_price || selectedProposal.full_price || 0);
+      }
+      if (selectedProposal.installments) {
+        vars['parcelas'] = selectedProposal.installments.toString();
+      }
+      if (selectedProposal.installment_value) {
+        vars['valor_parcela'] = new Intl.NumberFormat('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        }).format(selectedProposal.installment_value);
+      }
+      if (selectedProposal.payment_method) {
+        vars['forma_pagamento'] = selectedProposal.payment_method;
+      }
+      
+      // Extract services from scope block
+      const scopeBlock = selectedProposal.blocks.find(b => b.type === 'scope');
+      if (scopeBlock?.checklist) {
+        vars['servicos_contratados'] = scopeBlock.checklist.join(', ');
+      }
+      
+      setInitialVariables(vars);
+    } else if (selectedLead) {
+      const vars: Record<string, string> = {};
+      if (selectedLead.company_name) vars['nome_empresa'] = selectedLead.company_name;
+      if (selectedLead.contact_name) vars['nome_cliente'] = selectedLead.contact_name;
+      if (selectedLead.email) vars['email'] = selectedLead.email;
+      if (selectedLead.phone) vars['telefone'] = selectedLead.phone;
+      if (selectedLead.city) vars['cidade'] = selectedLead.city;
+      if (selectedLead.whatsapp) vars['whatsapp'] = selectedLead.whatsapp;
+      if (selectedLead.estimated_value) {
+        vars['valor_total'] = new Intl.NumberFormat('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        }).format(selectedLead.estimated_value);
+      }
+      setInitialVariables(vars);
+    }
+  }, [selectedProposal, selectedLead]);
 
   const handleNew = (type?: ContractType) => {
     setSelectedContract(null);
@@ -210,7 +268,23 @@ export default function Contratos() {
 
         {(view === 'new' || view === 'edit') && (
           <ContractEditor
-            contract={selectedContract || { contract_type: contractType }}
+            contract={selectedContract || { 
+              contract_type: contractType,
+              variables: initialVariables,
+              title: selectedProposal 
+                ? `Contrato - ${selectedProposal.company_name || selectedProposal.client_name}` 
+                : selectedLead 
+                  ? `Contrato - ${selectedLead.company_name}`
+                  : 'Contrato de Prestação de Serviços',
+              contractor_name: selectedProposal?.company_name || selectedLead?.company_name,
+              contractor_email: selectedProposal?.contact_email || selectedLead?.email,
+              contractor_phone: selectedProposal?.contact_phone || selectedLead?.phone,
+              contractor_responsible: selectedProposal?.client_name || selectedLead?.contact_name,
+              full_price: selectedProposal?.discounted_price || selectedProposal?.full_price,
+              installments: selectedProposal?.installments,
+              installment_value: selectedProposal?.installment_value,
+              payment_method: selectedProposal?.payment_method,
+            }}
             onSave={handleSave}
             onSend={selectedContract ? async () => { await handleSend(selectedContract); } : undefined}
             onCancel={() => setView('list')}

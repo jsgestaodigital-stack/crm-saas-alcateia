@@ -1,18 +1,26 @@
+import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Proposal, PROPOSAL_STATUS_CONFIG } from '@/types/proposal';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import { FileSignature, Copy, Send, ExternalLink } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface ProposalPreviewProps {
   proposal: Proposal;
   isPublic?: boolean;
+  onSend?: () => void;
 }
 
-export function ProposalPreview({ proposal, isPublic = false }: ProposalPreviewProps) {
+export function ProposalPreview({ proposal, isPublic = false, onSend }: ProposalPreviewProps) {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const statusConfig = PROPOSAL_STATUS_CONFIG[proposal.status];
 
   // Replace variables in content
@@ -30,6 +38,35 @@ export function ProposalPreview({ proposal, isPublic = false }: ProposalPreviewP
       style: 'currency',
       currency: 'BRL'
     }).format(value);
+  };
+
+  const handleGenerateContract = () => {
+    // Determine contract type based on proposal content
+    const hasRecurring = proposal.blocks.some(b => 
+      b.content?.toLowerCase().includes('mensal') || 
+      b.content?.toLowerCase().includes('recorrência') ||
+      b.content?.toLowerCase().includes('gestão contínua')
+    );
+    const contractType = hasRecurring ? 'recurring' : 'single_optimization';
+    
+    navigate(`/contratos?proposalId=${proposal.id}&type=${contractType}`);
+  };
+
+  const handleCopyLink = () => {
+    if (proposal.public_url) {
+      navigator.clipboard.writeText(proposal.public_url);
+      toast({ title: 'Link copiado!' });
+    } else if (proposal.public_token) {
+      const url = `${window.location.origin}/proposta/${proposal.public_token}`;
+      navigator.clipboard.writeText(url);
+      toast({ title: 'Link copiado!' });
+    }
+  };
+
+  const handleViewPublic = () => {
+    if (proposal.public_token) {
+      window.open(`/proposta/${proposal.public_token}`, '_blank');
+    }
   };
 
   return (
@@ -55,6 +92,50 @@ export function ProposalPreview({ proposal, isPublic = false }: ProposalPreviewP
             <p className="text-sm text-muted-foreground mt-4">
               Válida até: {format(new Date(proposal.valid_until), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
             </p>
+          )}
+
+          {/* Actions - Only show for internal view */}
+          {!isPublic && (
+            <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-border/30">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      onClick={handleGenerateContract} 
+                      className="gap-2"
+                      variant="default"
+                    >
+                      <FileSignature className="h-4 w-4" />
+                      Gerar Contrato
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Cria um contrato a partir desta proposta,</p>
+                    <p className="text-xs text-muted-foreground">preenchendo automaticamente os dados</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
+              {proposal.public_token && (
+                <>
+                  <Button variant="outline" onClick={handleCopyLink} className="gap-2">
+                    <Copy className="h-4 w-4" />
+                    Copiar Link
+                  </Button>
+                  <Button variant="outline" onClick={handleViewPublic} className="gap-2">
+                    <ExternalLink className="h-4 w-4" />
+                    Ver Página Pública
+                  </Button>
+                </>
+              )}
+
+              {proposal.status === 'draft' && onSend && (
+                <Button variant="outline" onClick={onSend} className="gap-2">
+                  <Send className="h-4 w-4" />
+                  Enviar Proposta
+                </Button>
+              )}
+            </div>
           )}
         </div>
       </Card>
