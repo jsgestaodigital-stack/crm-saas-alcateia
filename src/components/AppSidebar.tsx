@@ -336,7 +336,7 @@ export function AppSidebar({
         </div>}
 
       {/* Navigation - Only show when in Delivery mode */}
-      <nav className="flex-1 p-3 space-y-4 overflow-y-auto">
+      <nav className="flex-1 min-h-0 p-3 space-y-4 overflow-y-auto">
         <TooltipProvider delayDuration={1000}>
           
           {/* Only show navigation options when in Delivery mode */}
@@ -531,8 +531,8 @@ export function AppSidebar({
         </TooltipProvider>
       </nav>
 
-      {/* Actions */}
-      <div className="p-3 border-t border-sidebar-border/50 space-y-2">
+      {/* Actions - fixed at bottom, never overlaps nav */}
+      <div className="shrink-0 p-3 border-t border-sidebar-border/50 space-y-2 bg-sidebar/95 backdrop-blur-sm">
         <TooltipProvider delayDuration={1000}>
           {/* Main Action Button - Only show in Sales or Delivery mode */}
           {!isRecurringMode && <Tooltip>
