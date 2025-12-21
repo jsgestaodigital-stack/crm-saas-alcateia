@@ -48,6 +48,7 @@ import MeuPerfil from "./pages/MeuPerfil";
 import SubscriptionLocked from "./pages/SubscriptionLocked";
 import NotFound from "./pages/NotFound";
 import { ImpersonateBanner } from "@/components/ImpersonateBanner";
+import { PendingRegistrationsBanner } from "@/components/admin/PendingRegistrationsBanner";
 import { NPSModal } from "@/components/nps";
 
 const queryClient = new QueryClient();
@@ -64,6 +65,7 @@ const App = () => (
               <ClientsProvider>
                 <QADebugProvider>
                   <ConsentGuard>
+                    <PendingRegistrationsBanner />
                     <ImpersonateBanner />
                     <Routes>
                       {/* ============ LANDING PAGE PÚBLICA ============ */}
