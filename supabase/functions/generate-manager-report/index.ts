@@ -6,10 +6,107 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// ============= TYPE DEFINITIONS =============
+
 interface ReportRequest {
   startDate: string;
   endDate: string;
   format?: 'json' | 'pdf';
+}
+
+interface StalledClient {
+  id: string;
+  name: string;
+  daysSinceUpdate: number;
+}
+
+interface OverdueAction {
+  id: string;
+  name: string;
+  nextAction: string;
+  dueDate: string;
+}
+
+interface HotLeadWithoutActivity {
+  id: string;
+  name: string;
+  daysSinceActivity: number;
+}
+
+interface RecipientAmount {
+  name: string;
+  amount: number;
+}
+
+interface ClientCommission {
+  name: string;
+  amount: number;
+}
+
+interface RoleAmount {
+  role: string;
+  amount: number;
+}
+
+interface LostReasonCount {
+  reason: string;
+  count: number;
+}
+
+interface TimelineItem {
+  date: string;
+  count: number;
+  byType: Record<string, number>;
+}
+
+interface HeatmapItem {
+  dayOfWeek: number;
+  count: number;
+}
+
+interface Activity {
+  id: string;
+  createdAt: string;
+  userName: string;
+  actionType: string;
+  entityType: string;
+  entityName: string;
+  metadata: Record<string, unknown>;
+}
+
+interface TrendData {
+  current: number;
+  previous: number;
+  monthAgo: number;
+}
+
+interface RecurringByRoutine {
+  routine: string;
+  completed: number;
+  total: number;
+}
+
+interface AtRiskClient {
+  name: string;
+  complianceRate: number;
+  daysSinceAction: number;
+}
+
+interface Risk {
+  type: string;
+  entity: string;
+  days: number;
+}
+
+interface ChecklistProgress {
+  section: string;
+  completed: number;
+  total: number;
+}
+
+interface CommissionStatus {
+  count: number;
+  amount: number;
 }
 
 interface Metrics {
@@ -17,8 +114,8 @@ interface Metrics {
     total: number;
     byColumn: Record<string, number>;
     movements: { from: string; to: string; count: number }[];
-    stalled: { id: string; name: string; daysSinceUpdate: number }[];
-    checklistProgress: { section: string; completed: number; total: number }[];
+    stalled: StalledClient[];
+    checklistProgress: ChecklistProgress[];
   };
   leads: {
     total: number;
@@ -26,18 +123,18 @@ interface Metrics {
     created: number;
     gained: number;
     lost: number;
-    lostReasons: { reason: string; count: number }[];
-    overdueActions: { id: string; name: string; nextAction: string; dueDate: string }[];
-    hotWithoutActivity: { id: string; name: string; daysSinceActivity: number }[];
+    lostReasons: LostReasonCount[];
+    overdueActions: OverdueAction[];
+    hotWithoutActivity: HotLeadWithoutActivity[];
   };
   commissions: {
-    pending: { count: number; amount: number };
-    approved: { count: number; amount: number };
-    paid: { count: number; amount: number };
-    cancelled: { count: number; amount: number };
-    byRole: { role: string; amount: number }[];
-    topRecipients: { name: string; amount: number }[];
-    topClients: { name: string; amount: number }[];
+    pending: CommissionStatus;
+    approved: CommissionStatus;
+    paid: CommissionStatus;
+    cancelled: CommissionStatus;
+    byRole: RoleAmount[];
+    topRecipients: RecipientAmount[];
+    topClients: ClientCommission[];
   };
   recurring: {
     totalClients: number;
@@ -45,44 +142,118 @@ interface Metrics {
     completedTasks: number;
     overdueTasks: number;
     weeklyComplianceRate: number;
-    byRoutine: { routine: string; completed: number; total: number }[];
-    atRiskClients: { name: string; complianceRate: number; daysSinceAction: number }[];
+    byRoutine: RecurringByRoutine[];
+    atRiskClients: AtRiskClient[];
     mrr: number;
     annualValue: number;
     avgContractValue: number;
   };
-  timeline: {
-    date: string;
-    count: number;
-    byType: Record<string, number>;
-  }[];
-  activities: {
-    id: string;
-    createdAt: string;
-    userName: string;
-    actionType: string;
-    entityType: string;
-    entityName: string;
-    metadata: Record<string, unknown>;
-  }[];
+  timeline: TimelineItem[];
+  activities: Activity[];
   trends: {
-    leadsTrend: { current: number; previous: number; monthAgo: number };
-    gainedTrend: { current: number; previous: number; monthAgo: number };
-    lostTrend: { current: number; previous: number; monthAgo: number };
-    deliveredTrend: { current: number; previous: number; monthAgo: number };
-    activitiesTrend: { current: number; previous: number; monthAgo: number };
+    leadsTrend: TrendData;
+    gainedTrend: TrendData;
+    lostTrend: TrendData;
+    deliveredTrend: TrendData;
+    activitiesTrend: TrendData;
   };
   insights: {
     operationalBottleneck: { column: string; count: number } | null;
     salesBottleneck: { stage: string; count: number } | null;
-    topLossReasons: { reason: string; count: number }[];
+    topLossReasons: LostReasonCount[];
     focusActions: string[];
-    risks: { type: string; entity: string; days: number }[];
+    risks: Risk[];
   };
-  heatmap: {
-    dayOfWeek: number;
-    count: number;
-  }[];
+  heatmap: HeatmapItem[];
+}
+
+// Database record types
+interface ClientRecord {
+  id: string;
+  company_name: string;
+  column_id: string;
+  checklist: unknown;
+  updated_at: string;
+  start_date: string;
+}
+
+interface LeadRecord {
+  id: string;
+  company_name: string;
+  pipeline_stage: string;
+  status: string;
+  temperature: string | null;
+  next_action: string | null;
+  next_action_date: string | null;
+  last_activity_at: string;
+  lost_reason_id: string | null;
+  created_at: string;
+  updated_at: string;
+  converted_at: string | null;
+}
+
+interface CommissionRecord {
+  id: string;
+  amount: number;
+  status: string;
+  recipient_name: string;
+  recipient_type: string;
+  recipient_role_id: string | null;
+  client_name: string | null;
+  created_at: string;
+}
+
+interface AuditLogRecord {
+  id: string;
+  user_name: string;
+  action_type: string;
+  entity_type: string;
+  entity_name: string | null;
+  metadata: Record<string, unknown> | null;
+  created_at: string;
+}
+
+interface LeadActivityRecord {
+  id: string;
+  type: string;
+  created_at: string;
+}
+
+interface LostReasonRecord {
+  id: string;
+  label: string;
+}
+
+interface CommissionRoleRecord {
+  id: string;
+  label: string;
+}
+
+interface RecurringClientRecord {
+  id: string;
+  company_name: string;
+  monthly_value: number | null;
+  status: string;
+}
+
+interface RecurringTaskRecord {
+  id: string;
+  routine_id: string;
+  recurring_client_id: string;
+  status: string;
+  due_date: string;
+  completed_at: string | null;
+}
+
+interface RecurringRoutineRecord {
+  id: string;
+  title: string;
+  active: boolean;
+}
+
+interface ChecklistSection {
+  title: string;
+  items: { done: boolean }[];
 }
 
 function calculateDaysBetween(date1: string, date2: string): number {
@@ -334,12 +505,12 @@ serve(async (req) => {
       .sort((a, b) => b.daysSinceUpdate - a.daysSinceUpdate);
 
     // Calculate checklist progress (aggregate)
-    const checklistProgress: { section: string; completed: number; total: number }[] = [];
+    const checklistProgress: ChecklistProgress[] = [];
     const sectionStats: Record<string, { completed: number; total: number }> = {};
     
-    clients.forEach(client => {
+    clients.forEach((client: ClientRecord) => {
       if (Array.isArray(client.checklist)) {
-        client.checklist.forEach((section: { title: string; items: { done: boolean }[] }) => {
+        (client.checklist as ChecklistSection[]).forEach((section: ChecklistSection) => {
           if (!sectionStats[section.title]) {
             sectionStats[section.title] = { completed: 0, total: 0 };
           }
@@ -564,8 +735,8 @@ serve(async (req) => {
 
     // Calculate recurring metrics
     const totalRecurringTasks = recurringTasks?.length || 0;
-    const completedRecurringTasks = recurringTasks?.filter((t: any) => t.status === 'done').length || 0;
-    const overdueRecurringTasks = recurringTasks?.filter((t: any) => {
+    const completedRecurringTasks = recurringTasks?.filter((t: RecurringTaskRecord) => t.status === 'done').length || 0;
+    const overdueRecurringTasks = recurringTasks?.filter((t: RecurringTaskRecord) => {
       return t.status === 'todo' && new Date(t.due_date) < new Date();
     }).length || 0;
     const weeklyComplianceRate = totalRecurringTasks > 0 
@@ -573,7 +744,7 @@ serve(async (req) => {
       : 0;
 
     // Calculate MRR and annual value
-    const mrr = (recurringClients || []).reduce((sum: number, client: any) => {
+    const mrr = (recurringClients || []).reduce((sum: number, client: RecurringClientRecord) => {
       return sum + (Number(client.monthly_value) || 500);
     }, 0);
     const annualValue = mrr * 12;
@@ -581,9 +752,9 @@ serve(async (req) => {
     const avgContractValue = clientCount > 0 ? mrr / clientCount : 0;
 
     // Recurring by routine
-    const recurringByRoutine = (recurringRoutines || []).map((routine: any) => {
-      const routineTasks = (recurringTasks || []).filter((t: any) => t.routine_id === routine.id);
-      const completed = routineTasks.filter((t: any) => t.status === 'done').length;
+    const recurringByRoutine: RecurringByRoutine[] = (recurringRoutines || []).map((routine: RecurringRoutineRecord) => {
+      const routineTasks = (recurringTasks || []).filter((t: RecurringTaskRecord) => t.routine_id === routine.id);
+      const completed = routineTasks.filter((t: RecurringTaskRecord) => t.status === 'done').length;
       return {
         routine: routine.title,
         completed,
@@ -592,13 +763,13 @@ serve(async (req) => {
     });
 
     // At risk recurring clients  
-    const atRiskRecurringClients = (recurringClients || []).map((client: any) => {
-      const clientTasks = (recurringTasks || []).filter((t: any) => t.recurring_client_id === client.id);
-      const completed = clientTasks.filter((t: any) => t.status === 'done').length;
+    const atRiskRecurringClients: AtRiskClient[] = (recurringClients || []).map((client: RecurringClientRecord) => {
+      const clientTasks = (recurringTasks || []).filter((t: RecurringTaskRecord) => t.recurring_client_id === client.id);
+      const completed = clientTasks.filter((t: RecurringTaskRecord) => t.status === 'done').length;
       const complianceRate = clientTasks.length > 0 ? Math.round((completed / clientTasks.length) * 100) : 0;
-      const completedTasksArr = clientTasks.filter((t: any) => t.completed_at);
+      const completedTasksArr = clientTasks.filter((t: RecurringTaskRecord) => t.completed_at);
       const lastAction = completedTasksArr.length > 0
-        ? completedTasksArr.sort((a: any, b: any) => new Date(b.completed_at!).getTime() - new Date(a.completed_at!).getTime())[0].completed_at
+        ? completedTasksArr.sort((a: RecurringTaskRecord, b: RecurringTaskRecord) => new Date(b.completed_at!).getTime() - new Date(a.completed_at!).getTime())[0].completed_at
         : null;
       const daysSinceAction = lastAction 
         ? calculateDaysBetween(lastAction, new Date().toISOString())
@@ -609,7 +780,7 @@ serve(async (req) => {
         complianceRate,
         daysSinceAction
       };
-    }).filter((c: any) => c.complianceRate < 50 || c.daysSinceAction > 7);
+    }).filter((c: AtRiskClient) => c.complianceRate < 50 || c.daysSinceAction > 7);
 
     const metrics: Metrics = {
       clients: {
