@@ -386,10 +386,10 @@ export function AppSidebar({
       {/* Actions - scrollable section that works with zoom */}
       <div className="shrink-0 max-h-[40vh] overflow-y-auto p-3 border-t border-sidebar-border/50 space-y-2 bg-sidebar/95 backdrop-blur-sm">
         <TooltipProvider delayDuration={1000}>
-          {/* Main Action Button - Only show in Sales or Delivery mode */}
-          {!isRecurringMode && <Tooltip>
+          {/* Main Action Button - Show in all modes */}
+          <Tooltip>
             <TooltipTrigger asChild>
-              <Button data-tour="new-client" className={cn("w-full gap-2 h-10 hover-lift", collapsed ? "px-3" : "px-4", isSalesMode ? "bg-amber-500 text-black hover:bg-amber-400" : "bg-primary text-primary-foreground hover:bg-primary/90 neon-glow")} onClick={() => {
+              <Button data-tour="new-client" className={cn("w-full gap-2 h-10 hover-lift", collapsed ? "px-3" : "px-4", isSalesMode ? "bg-amber-500 text-black hover:bg-amber-400" : isRecurringMode ? "bg-violet-500 text-white hover:bg-violet-400" : "bg-primary text-primary-foreground hover:bg-primary/90 neon-glow")} onClick={() => {
               onNewClient?.();
               onMobileOpenChange(false);
             }}>
@@ -400,9 +400,9 @@ export function AppSidebar({
               </Button>
             </TooltipTrigger>
             <TooltipContent side="right" className="glass">
-              <p className="font-medium">{isSalesMode ? "Novo Lead" : "Novo Cliente"}</p>
+              <p className="font-medium">{isSalesMode ? "Novo Lead" : isRecurringMode ? "Novo Cliente Recorrente" : "Novo Cliente"}</p>
             </TooltipContent>
-          </Tooltip>}
+          </Tooltip>
 
           {/* Dúvidas/Central Operacional - Only visible in Delivery mode for ops users */}
           {canAccessOps && isDeliveryMode && <Tooltip>
