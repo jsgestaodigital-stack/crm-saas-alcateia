@@ -2289,6 +2289,78 @@ export type Database = {
           },
         ]
       }
+      role_permission_templates: {
+        Row: {
+          can_admin: boolean
+          can_delete_clients: boolean
+          can_delete_leads: boolean
+          can_edit_clients: boolean
+          can_edit_leads: boolean
+          can_export_data: boolean
+          can_finance: boolean
+          can_manage_commissions: boolean
+          can_manage_settings: boolean
+          can_manage_team: boolean
+          can_ops: boolean
+          can_recurring: boolean
+          can_sales: boolean
+          can_view_audit_logs: boolean
+          can_view_leads: boolean
+          can_view_reports: boolean
+          created_at: string
+          description: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string
+        }
+        Insert: {
+          can_admin?: boolean
+          can_delete_clients?: boolean
+          can_delete_leads?: boolean
+          can_edit_clients?: boolean
+          can_edit_leads?: boolean
+          can_export_data?: boolean
+          can_finance?: boolean
+          can_manage_commissions?: boolean
+          can_manage_settings?: boolean
+          can_manage_team?: boolean
+          can_ops?: boolean
+          can_recurring?: boolean
+          can_sales?: boolean
+          can_view_audit_logs?: boolean
+          can_view_leads?: boolean
+          can_view_reports?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+        }
+        Update: {
+          can_admin?: boolean
+          can_delete_clients?: boolean
+          can_delete_leads?: boolean
+          can_edit_clients?: boolean
+          can_edit_leads?: boolean
+          can_export_data?: boolean
+          can_finance?: boolean
+          can_manage_commissions?: boolean
+          can_manage_settings?: boolean
+          can_manage_team?: boolean
+          can_ops?: boolean
+          can_recurring?: boolean
+          can_sales?: boolean
+          can_view_audit_logs?: boolean
+          can_view_leads?: boolean
+          can_view_reports?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       role_permissions: {
         Row: {
           created_at: string
@@ -2965,10 +3037,21 @@ export type Database = {
       user_permissions: {
         Row: {
           can_admin: boolean
+          can_delete_clients: boolean
+          can_delete_leads: boolean
+          can_edit_clients: boolean
+          can_edit_leads: boolean
+          can_export_data: boolean
           can_finance: boolean
+          can_manage_commissions: boolean
+          can_manage_settings: boolean
+          can_manage_team: boolean
           can_ops: boolean
           can_recurring: boolean
           can_sales: boolean
+          can_view_audit_logs: boolean
+          can_view_leads: boolean
+          can_view_reports: boolean
           created_at: string
           is_super_admin: boolean
           updated_at: string
@@ -2976,10 +3059,21 @@ export type Database = {
         }
         Insert: {
           can_admin?: boolean
+          can_delete_clients?: boolean
+          can_delete_leads?: boolean
+          can_edit_clients?: boolean
+          can_edit_leads?: boolean
+          can_export_data?: boolean
           can_finance?: boolean
+          can_manage_commissions?: boolean
+          can_manage_settings?: boolean
+          can_manage_team?: boolean
           can_ops?: boolean
           can_recurring?: boolean
           can_sales?: boolean
+          can_view_audit_logs?: boolean
+          can_view_leads?: boolean
+          can_view_reports?: boolean
           created_at?: string
           is_super_admin?: boolean
           updated_at?: string
@@ -2987,10 +3081,21 @@ export type Database = {
         }
         Update: {
           can_admin?: boolean
+          can_delete_clients?: boolean
+          can_delete_leads?: boolean
+          can_edit_clients?: boolean
+          can_edit_leads?: boolean
+          can_export_data?: boolean
           can_finance?: boolean
+          can_manage_commissions?: boolean
+          can_manage_settings?: boolean
+          can_manage_team?: boolean
           can_ops?: boolean
           can_recurring?: boolean
           can_sales?: boolean
+          can_view_audit_logs?: boolean
+          can_view_leads?: boolean
+          can_view_reports?: boolean
           created_at?: string
           is_super_admin?: boolean
           updated_at?: string
@@ -3652,6 +3757,10 @@ export type Database = {
         }[]
       }
       get_unread_notification_count: { Args: never; Returns: number }
+      get_user_permissions: {
+        Args: { _agency_id?: string; _user_id: string }
+        Returns: Json
+      }
       get_user_role: {
         Args: { _agency_id: string; _user_id: string }
         Returns: string
@@ -3680,6 +3789,10 @@ export type Database = {
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_admin_or_owner: {
         Args: { _agency_id?: string; _user_id: string }
+        Returns: boolean
+      }
+      is_allowed: {
+        Args: { _agency_id: string; _permission: string; _user_id: string }
         Returns: boolean
       }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
@@ -3881,6 +3994,21 @@ export type Database = {
         Returns: boolean
       }
       update_expired_subscriptions: { Args: never; Returns: number }
+      update_member_role: {
+        Args: {
+          _agency_id?: string
+          _new_role: Database["public"]["Enums"]["app_role"]
+          _target_user_id: string
+        }
+        Returns: Json
+      }
+      update_role_template: {
+        Args: {
+          _permissions: Json
+          _role: Database["public"]["Enums"]["app_role"]
+        }
+        Returns: Json
+      }
     }
     Enums: {
       app_role:
