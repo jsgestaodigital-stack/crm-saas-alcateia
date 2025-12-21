@@ -12,6 +12,7 @@ import {
   LeadActivityType
 } from '@/types/lead';
 import { createAutoCommission } from './useCommissions';
+import { classifyError, formatErrorForContext, logError, ErrorType } from '@/lib/errorHandler';
 
 // Campos mínimos para listagem no Kanban (performance)
 const LEAD_LIST_FIELDS = `
@@ -68,8 +69,19 @@ export function useLeads() {
       setHasMore(count ? from + newLeads.length < count : false);
       setPage(pageNum);
     } catch (error) {
-      console.error('Error fetching leads:', error);
-      toast.error('Erro ao carregar leads');
+      logError(error, 'fetchLeads');
+      const classified = classifyError(error);
+      
+      // Mensagem diferenciada por tipo de erro
+      if (classified.type === ErrorType.Permission) {
+        toast.error('Você não tem permissão para visualizar estes leads');
+      } else if (classified.type === ErrorType.Network) {
+        toast.error('Erro de conexão. Verifique sua internet e tente novamente.');
+      } else if (classified.type === ErrorType.Server) {
+        toast.error('Erro no servidor. Nossa equipe foi notificada.');
+      } else {
+        toast.error(formatErrorForContext(error, 'leads'));
+      }
     } finally {
       setLoading(false);
     }
@@ -135,8 +147,8 @@ export function useLeads() {
       toast.success(`Lead "${leadData.company_name}" criado!`);
       return data as unknown as Lead;
     } catch (error) {
-      console.error('Error creating lead:', error);
-      toast.error('Erro ao criar lead');
+      logError(error, 'createLead');
+      toast.error(formatErrorForContext(error, 'leads'));
       return null;
     }
   };
@@ -154,8 +166,8 @@ export function useLeads() {
       if (error) throw error;
       return true;
     } catch (error) {
-      console.error('Error updating lead:', error);
-      toast.error('Erro ao atualizar lead');
+      logError(error, 'updateLead');
+      toast.error(formatErrorForContext(error, 'leads'));
       return false;
     }
   };
@@ -244,8 +256,8 @@ export function useLeads() {
       toast.success('Lead excluído');
       return true;
     } catch (error) {
-      console.error('Error deleting lead:', error);
-      toast.error('Erro ao excluir lead');
+      logError(error, 'deleteLead');
+      toast.error(formatErrorForContext(error, 'leads'));
       return false;
     }
   };
