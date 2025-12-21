@@ -32,6 +32,8 @@ import ClientsCRM from "./pages/ClientsCRM";
 import Equipe from "./pages/Equipe";
 import Convite from "./pages/Convite";
 import AgencyDetail from "./pages/AgencyDetail";
+import AdminPermissions from "./pages/AdminPermissions";
+import AgencyPermissions from "./pages/AgencyPermissions";
 import NotFound from "./pages/NotFound";
 import { ImpersonateBanner } from "@/components/ImpersonateBanner";
 
@@ -74,6 +76,8 @@ const App = () => (
                       <Route path="/clientes-crm" element={<ClientsCRM />} />
                       <Route path="/equipe" element={<Equipe />} />
                       <Route path="/convite/:token" element={<Convite />} />
+                      <Route path="/admin/permissions" element={<AdminPermissions />} />
+                      <Route path="/agency/settings/permissions" element={<AgencyPermissions />} />
                       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                       <Route path="*" element={<NotFound />} />
                     </Routes>
