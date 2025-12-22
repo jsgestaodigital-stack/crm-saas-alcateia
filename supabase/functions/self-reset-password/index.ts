@@ -89,8 +89,8 @@ function nameMatches(inputName: string, storedName: string): { matches: boolean;
   // Full string similarity
   const fullSimilarity = similarity(input, stored);
   return { 
-    matches: fullSimilarity >= 50, // Lowered from 60 to 50 for more tolerance
-    similarity: fullSimilarity 
+    matches: fullSimilarity >= 40, // Lowered to 40% for maximum tolerance
+    similarity: fullSimilarity
   };
 }
 
@@ -232,7 +232,7 @@ Deno.serve(async (req) => {
     const agencySimilarity = similarity(agency_name, storedAgencyName);
     console.log(`Agency similarity: ${agencySimilarity}%`);
 
-    const MIN_AGENCY_SIMILARITY = 50; // Lowered for more tolerance
+    const MIN_AGENCY_SIMILARITY = 40; // Lowered to 40% for maximum tolerance
 
     if (!nameCheck.matches) {
       console.error(`Name mismatch: "${full_name}" vs "${storedName}" (${nameCheck.similarity}%)`);
