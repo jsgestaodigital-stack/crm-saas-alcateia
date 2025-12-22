@@ -181,12 +181,18 @@ export default function Auth() {
 
       if (error) {
         console.error("Self reset error:", error);
-        toast.error("Erro ao processar solicitação. Tente novamente.");
+        logError(error, 'self-reset-password');
+        toast.error("Erro de conexão. Verifique sua internet e tente novamente.");
         return;
       }
 
       if (data?.error) {
-        toast.error(data.error);
+        // Show hint if available
+        if (data.hint) {
+          toast.error(data.error, { description: data.hint });
+        } else {
+          toast.error(data.error);
+        }
         return;
       }
 
