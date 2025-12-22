@@ -84,67 +84,50 @@ const Landing = () => {
 
   const plans = [
     {
-      name: "Starter",
-      emoji: "🟢",
-      tagline: "Feito pro lobo solo",
+      name: "Lobinho",
+      emoji: "🐺",
+      tagline: "Para quem está começando",
       monthlyPrice: 67,
       annualPrice: 54,
       color: "google-green",
       features: [
-        "Até 15 clientes ativos",
+        "1 usuário (admin)",
         "Até 200 leads",
-        "Até 2 membros da equipe",
-        "Funil e tarefas básicas",
-        "Checklist de otimização",
-        "Dashboard principal",
+        "Até 30 clientes em otimização",
+        "Até 30 clientes recorrentes",
+        "Checklist completo de otimização",
+        "Funil visual de leads",
+        "Propostas + Contratos digitais",
+        "Agentes IA (SEO, Suspensões, Raio-X)",
+        "Dashboard e relatórios",
         "Suporte por e-mail"
       ],
-      limitations: ["Sem automações", "Sem controle de comissão", "Sem exportação de dados"],
-      cta: "Começar Grátis",
+      limitations: [],
+      cta: "Começar Agora",
       popular: false
     },
     {
-      name: "Pro",
-      emoji: "🔵",
-      tagline: "Feito pra quem vive de Google Meu Negócio",
-      monthlyPrice: 127,
-      annualPrice: 102,
+      name: "Lobão",
+      emoji: "🐺🔥",
+      tagline: "Para equipes que querem crescer",
+      monthlyPrice: 97,
+      annualPrice: 78,
       color: "google-green",
       features: [
-        "Até 50 clientes ativos",
-        "Até 1.000 leads",
-        "Até 5 membros",
-        "Funil e tarefas avançadas",
-        "Automações por status",
-        "Relatórios por cliente",
+        "6 usuários (1 admin + 5 equipe)",
+        "Leads ilimitados",
+        "Clientes em otimização ilimitados",
+        "Clientes recorrentes ilimitados",
+        "Tudo do Lobinho +",
         "Controle de comissões",
-        "Logs e auditoria",
-        "Suporte prioritário"
-      ],
-      limitations: [],
-      cta: "Testar Grátis",
-      popular: true
-    },
-    {
-      name: "Master",
-      emoji: "🟣",
-      tagline: "Feito pro lobo alfa de matilha",
-      monthlyPrice: 197,
-      annualPrice: 158,
-      color: "google-blue",
-      features: [
-        "Até 150 clientes ativos",
-        "Até 5.000 leads",
-        "Até 15 membros",
-        "Tudo do Pro +",
-        "Dashboard financeiro",
-        "Exportação de dados",
+        "Logs e auditoria completos",
+        "Suporte prioritário",
         "Suporte por WhatsApp",
-        "Acesso antecipado"
+        "Acesso antecipado a novidades"
       ],
       limitations: [],
-      cta: "Testar Grátis",
-      popular: false
+      cta: "Escolher Lobão",
+      popular: true
     }
   ];
 
