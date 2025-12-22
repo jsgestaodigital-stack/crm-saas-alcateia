@@ -42,7 +42,7 @@ export function AppSidebar({
   const { viewMode, setViewMode, clients } = useClientStore();
   const { isAdmin, derived } = useAuth();
   const { 
-    mode, isSalesMode, isDeliveryMode, isRecurringMode,
+    mode, setMode, isSalesMode, isDeliveryMode, isRecurringMode,
     canAccessSales: salesAccess, canAccessDelivery: deliveryAccess, canAccessRecurring: recurringAccess
   } = useFunnelMode();
   const { pendingCount } = useQuestions();
@@ -393,9 +393,7 @@ export function AppSidebar({
                 label="Vendas"
                 isActive={isSalesMode && isOnDashboard}
                 onClick={() => {
-                  if (!isSalesMode) {
-                    // Switch to sales mode logic would go here
-                  }
+                  setMode('sales');
                   handleNavClick("kanban");
                 }}
                 count={openLeads}
@@ -411,6 +409,7 @@ export function AppSidebar({
                 label="Otimização"
                 isActive={isDeliveryMode && isOnDashboard}
                 onClick={() => {
+                  setMode('delivery');
                   handleNavClick("kanban");
                 }}
                 count={activeClients}
@@ -426,6 +425,7 @@ export function AppSidebar({
                 label="Recorrência"
                 isActive={isRecurringMode && isOnDashboard}
                 onClick={() => {
+                  setMode('recurring');
                   handleNavClick("kanban");
                 }}
                 count={todayRecurringTasks}
