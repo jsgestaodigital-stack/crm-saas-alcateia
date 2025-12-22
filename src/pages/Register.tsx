@@ -52,6 +52,9 @@ const registerSchema = z.object({
     .regex(/[0-9]/, "Senha deve conter pelo menos um número"),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
+  message: "As senhas não coincidem",
+  path: ["confirmPassword"],
+});
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
@@ -140,7 +143,7 @@ export default function Register() {
           console.error("Auto-login error:", signInError);
           navigate("/auth");
         } else {
-          navigate("/");
+          navigate("/dashboard");
         }
       }, 2000);
       
