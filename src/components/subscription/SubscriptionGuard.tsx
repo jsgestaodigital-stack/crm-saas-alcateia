@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useSubscriptionStatus } from "@/hooks/useSubscriptionStatus";
+import { useAuth } from "@/contexts/AuthContext";
 import { Loader2 } from "lucide-react";
 
 interface SubscriptionGuardProps {
@@ -12,10 +13,18 @@ const ALLOWED_ROUTES = ['/meu-perfil', '/auth', '/register', '/locked'];
 
 export function SubscriptionGuard({ children }: SubscriptionGuardProps) {
   const { status, isBlocked, isSuperAdmin } = useSubscriptionStatus();
+  const { permissions, isLoading: authLoading } = useAuth();
   const location = useLocation();
 
-  // While loading, show loading state
-  if (status === 'loading') {
+  // Super admins bypass ALL checks immediately - even during loading
+  // Check both the hook result and direct permissions
+  if (isSuperAdmin || permissions?.isSuperAdmin) {
+    return <>{children}</>;
+  }
+
+  // While loading auth or subscription, show loading state
+  // But ONLY if we haven't confirmed the user is NOT a super admin
+  if (status === 'loading' || authLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
@@ -24,11 +33,6 @@ export function SubscriptionGuard({ children }: SubscriptionGuardProps) {
         </div>
       </div>
     );
-  }
-
-  // Super admins bypass all checks
-  if (isSuperAdmin) {
-    return <>{children}</>;
   }
 
   // Check if current route is in allowed list
