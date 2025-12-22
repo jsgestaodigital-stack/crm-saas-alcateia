@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import grankLogoDark from "@/assets/grank-logo-dark.png";
+import joaoLoboPhoto from "@/assets/joao-lobo.jpg";
 import { 
   AnimatedCounter, ScrollProgress, InteractiveDemo, HeroVideo, ComparisonTable, SectionDivider,
   FloatingMapPins, GoogleStars, GMBProfileMockup, GMBStatsCard, GMBChecklistPreview, GMBBadge,
@@ -259,13 +260,11 @@ const Landing = () => {
       </header>
 
       {/* ===== HERO SECTION ===== */}
-      <section className="min-h-screen relative flex items-center justify-center pt-20 sm:pt-24 pb-16 sm:pb-32 px-3 sm:px-4 section-gmb-hero overflow-hidden">
-        <FloatingMapPins />
-        
-        {/* Background gradients */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-1/4 left-1/4 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-google-green/10 rounded-full blur-[80px] sm:blur-[120px]" />
-          <div className="absolute bottom-1/3 right-1/4 w-[250px] sm:w-[400px] h-[250px] sm:h-[400px] bg-google-blue/8 rounded-full blur-[60px] sm:blur-[100px]" />
+      <section className="min-h-[90vh] md:min-h-screen relative flex items-center justify-center pt-16 sm:pt-20 pb-8 sm:pb-16 px-3 sm:px-4 section-gmb-hero overflow-hidden">
+        {/* Background gradients - hidden on mobile */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden hidden sm:block">
+          <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-google-green/10 rounded-full blur-[120px]" />
+          <div className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] bg-google-blue/8 rounded-full blur-[100px]" />
         </div>
 
         <div className="container mx-auto text-center relative z-10 px-2 sm:px-4">
@@ -274,72 +273,52 @@ const Landing = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            {/* GMB Badge */}
+            {/* Google Badge - Compact */}
             <motion.div 
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-google-green/10 border-2 border-google-green/30 mb-6 sm:mb-8"
+              className="inline-flex items-center gap-1.5 px-3 sm:px-5 py-1.5 sm:py-2.5 rounded-full bg-google-green/10 border border-google-green/30 mb-4 sm:mb-6"
             >
-              <MapPin className="h-4 sm:h-5 w-4 sm:w-5 text-google-red flex-shrink-0" />
-              <span className="text-xs sm:text-sm text-google-green font-semibold text-center">
-                🗺️ A Plataforma #1 para Google Meu Negócio
+              <span className="text-[10px] sm:text-sm text-google-green font-semibold">
+                🗺️ CRM #1 para Google Meu Negócio
               </span>
             </motion.div>
             
-            {/* Headline Principal */}
-            <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 sm:mb-6 leading-tight font-display">
-              <span className="text-foreground">Pare de Fazer Tudo Sozinho.</span>
+            {/* Headline Principal - Mobile Optimized */}
+            <h1 className="text-[22px] sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-3 sm:mb-5 leading-[1.2] font-display px-1">
+              <span className="text-foreground">Escale sua Agência de</span>
               <br />
-              <span className="gradient-google-text">Delegue, Controle e Escale</span>
-              <br />
-              <span className="text-foreground">sua Agência de Google Meu Negócio.</span>
+              <span className="gradient-google-text">Google Meu Negócio</span>
             </h1>
 
             {/* Subheadline */}
-            <p className="text-sm sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-6 sm:mb-8 leading-relaxed px-2">
-              Da prospecção à execução recorrente. Da proposta ao checklist de otimização.
-              <br className="hidden sm:block" />
-              O único sistema que gerencia <strong className="text-foreground">todo o ciclo operacional</strong> de perfis Google em um só lugar.
+            <p className="text-xs sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-5 sm:mb-6 leading-relaxed px-2">
+              Da prospecção à execução recorrente. O único sistema que gerencia <strong className="text-foreground">todo o ciclo operacional</strong> de perfis Google.
             </p>
 
-            {/* CTA Principal */}
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-4 sm:mb-6 px-2">
+            {/* CTA Principal - Only Testar Grátis */}
+            <div className="flex justify-center mb-4 sm:mb-5 px-2">
               <Button 
                 size="lg" 
                 asChild 
-                className="bg-google-green hover:bg-google-green-dark text-white border-0 shadow-xl shadow-google-green/30 btn-pulse btn-press text-sm sm:text-lg px-6 sm:px-8 py-4 sm:py-6 h-auto min-h-[48px] sm:min-h-[56px] w-full sm:w-auto"
+                className="bg-google-green hover:bg-google-green-dark text-white border-0 shadow-xl shadow-google-green/30 btn-pulse btn-press text-sm sm:text-lg px-6 sm:px-10 py-4 sm:py-6 h-auto min-h-[48px] sm:min-h-[56px] w-full sm:w-auto max-w-xs sm:max-w-none"
               >
                 <Link to="/register">
                   <Zap className="mr-2 h-4 sm:h-5 w-4 sm:w-5" />
-                  TESTE GRÁTIS POR 14 DIAS
+                  TESTAR GRÁTIS POR 14 DIAS
                 </Link>
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                asChild 
-                className="border-2 border-google-green text-google-green hover:bg-google-green hover:text-white text-sm sm:text-lg px-6 sm:px-8 py-4 sm:py-6 h-auto min-h-[48px] sm:min-h-[56px] btn-press w-full sm:w-auto"
-              >
-                <a href="#demo">
-                  <MessageCircle className="mr-2 h-4 sm:h-5 w-4 sm:w-5" />
-                  Agendar Demonstração
-                </a>
               </Button>
             </div>
             
-            <p className="text-xs sm:text-sm text-muted-foreground flex items-center justify-center gap-2 sm:gap-4 flex-wrap px-2 mb-6">
+            <p className="text-[10px] sm:text-sm text-muted-foreground flex items-center justify-center gap-3 sm:gap-4 flex-wrap px-2 mb-4">
               <span className="flex items-center gap-1">
-                <Check className="h-4 w-4 text-google-green" />
-                Mais de 500 perfis gerenciados
+                <Check className="h-3 sm:h-4 w-3 sm:w-4 text-google-green" />
+                500+ perfis gerenciados
               </span>
               <span className="flex items-center gap-1">
-                <Star className="h-4 w-4 text-google-yellow fill-google-yellow" />
-                4.9/5 estrelas
-              </span>
-              <span className="flex items-center gap-1">
-                <Check className="h-4 w-4 text-google-green" />
-                Sem cartão de crédito
+                <Check className="h-3 sm:h-4 w-3 sm:w-4 text-google-green" />
+                Sem cartão
               </span>
             </p>
           </motion.div>
@@ -349,20 +328,20 @@ const Landing = () => {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.8 }}
-            className="mt-12"
+            className="mt-6 sm:mt-10"
           >
             <HeroVideo />
           </motion.div>
         </div>
 
-        {/* Wave divider to next section */}
+        {/* Wave divider to next section - smaller */}
         <GMBWaveDivider position="bottom" color="green" />
       </section>
 
       {/* ===== SEÇÃO ESTATÍSTICAS - 4 CARDS SIMÉTRICOS ===== */}
-      <section className="py-20 px-4 relative section-gmb-light">
+      <section className="py-10 sm:py-14 px-3 sm:px-4 relative section-gmb-light">
         <div className="container mx-auto">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5 max-w-4xl mx-auto">
             <GMBStatsCard 
               icon={MapPin} 
               value="500+" 
@@ -397,7 +376,7 @@ const Landing = () => {
       </section>
 
       {/* ===== SEÇÃO PROBLEMA ===== */}
-      <section className="py-16 md:py-24 px-4 relative section-white">
+      <section className="py-10 sm:py-14 md:py-16 px-3 sm:px-4 relative section-white">
         <div className="container mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -458,10 +437,10 @@ const Landing = () => {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="text-center mt-12 text-lg max-w-2xl mx-auto"
+            className="text-center mt-8 sm:mt-10 text-sm sm:text-base max-w-xl mx-auto px-4"
           >
             <span className="text-google-green font-medium italic">
-              "Se você não consegue tirar férias sem que tudo desmorone, sua agência não tem estrutura — tem você."
+              "Se você ainda gerencia perfis em planilhas, sua agência está crescendo no freio de mão."
             </span>
           </motion.p>
         </div>
@@ -470,7 +449,7 @@ const Landing = () => {
       </section>
 
       {/* ===== SEÇÃO SOLUÇÃO ===== */}
-      <section id="como-funciona" className="py-24 px-4 relative section-gmb-light">
+      <section id="como-funciona" className="py-12 sm:py-16 px-3 sm:px-4 relative section-gmb-light">
         <div className="container mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -501,7 +480,7 @@ const Landing = () => {
       </section>
 
       {/* ===== SEÇÃO FUNCIONALIDADES ===== */}
-      <section id="funcionalidades" className="py-24 px-4 relative section-white">
+      <section id="funcionalidades" className="py-12 sm:py-16 px-3 sm:px-4 relative section-white">
         <div className="container mx-auto">
           {/* Prospecção & Venda */}
           <motion.div
@@ -597,13 +576,13 @@ const Landing = () => {
       </section>
 
       {/* ===== SEÇÃO DIFERENCIAL COMPETITIVO (COMPARISON TABLE) ===== */}
-      <section className="py-24 px-4 relative bg-gradient-to-b from-gmb-light-green via-white to-white">
+      <section className="py-10 sm:py-14 px-3 sm:px-4 relative bg-gradient-to-b from-gmb-light-green via-white to-white">
         <div className="container mx-auto max-w-5xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-8 sm:mb-12"
           >
             <GMBBadge variant="green">
               <Star className="h-4 w-4" />
@@ -618,52 +597,24 @@ const Landing = () => {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-4 md:gap-8 mb-8 md:mb-12">
-            {/* CRMs Genéricos */}
+          <div className="grid md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-10">
+            {/* GRank CRM - PRIMEIRO */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="bg-white rounded-xl md:rounded-2xl border-2 border-border p-5 md:p-8 shadow-sm"
+              className="bg-white rounded-xl md:rounded-2xl border-2 border-google-green p-4 md:p-6 shadow-lg shadow-google-green/10 relative order-1"
             >
-              <div className="text-center mb-6 md:mb-8">
-                <div className="text-4xl md:text-5xl mb-3 md:mb-4">❌</div>
-                <h3 className="text-lg md:text-2xl font-bold text-slate-800">Outros CRMs Genéricos</h3>
-              </div>
-              <ul className="space-y-2 md:space-y-4">
-                {[
-                  "Feitos para qualquer nicho",
-                  "Você precisa configurar tudo do zero",
-                  "Não entendem nada de Google Meu Negócio",
-                  "Sem checklist de otimização",
-                  "Não controlam tarefas recorrentes",
-                  "Contratos genéricos"
-                ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 md:gap-3 p-2 md:p-3 bg-slate-50 rounded-lg">
-                    <X className="h-4 w-4 md:h-5 md:w-5 text-google-red flex-shrink-0 mt-0.5" />
-                    <span className="text-sm md:text-base text-slate-600">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-
-            {/* GRank CRM */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="bg-white rounded-xl md:rounded-2xl border-2 border-google-green p-5 md:p-8 shadow-lg shadow-google-green/10 relative"
-            >
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="px-3 py-1 md:px-4 md:py-1.5 bg-gradient-to-r from-google-green to-google-green-dark text-white text-[10px] md:text-xs font-semibold rounded-full whitespace-nowrap">
+              <div className="absolute -top-2.5 left-1/2 -translate-x-1/2">
+                <span className="px-3 py-1 bg-gradient-to-r from-google-green to-google-green-dark text-white text-[10px] md:text-xs font-semibold rounded-full whitespace-nowrap">
                   Especializado
                 </span>
               </div>
-              <div className="text-center mb-6 md:mb-8 pt-2">
-                <div className="text-4xl md:text-5xl mb-3 md:mb-4">✅</div>
-                <h3 className="text-lg md:text-2xl font-bold text-slate-800">GRank CRM</h3>
+              <div className="text-center mb-4 md:mb-6 pt-2">
+                <div className="text-3xl md:text-4xl mb-2 md:mb-3">✅</div>
+                <h3 className="text-base md:text-xl font-bold text-slate-800">GRank CRM</h3>
               </div>
-              <ul className="space-y-2 md:space-y-4">
+              <ul className="space-y-2 md:space-y-3">
                 {[
                   "100% focado em Google Meu Negócio",
                   "Pronto para usar em 15 minutos",
@@ -672,38 +623,65 @@ const Landing = () => {
                   "Gestão de tarefas automáticas",
                   "Contratos com cláusulas específicas"
                 ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 md:gap-3 p-2 md:p-3 bg-gmb-light-green rounded-lg hover:bg-google-green/10 transition-colors">
-                    <Check className="h-4 w-4 md:h-5 md:w-5 text-google-green flex-shrink-0 mt-0.5" />
-                    <span className="text-sm md:text-base text-slate-700">{item}</span>
+                  <li key={i} className="flex items-start gap-2 p-2 bg-gmb-light-green rounded-lg">
+                    <Check className="h-4 w-4 text-google-green flex-shrink-0 mt-0.5" />
+                    <span className="text-xs md:text-sm text-slate-700">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+
+            {/* CRMs Genéricos - SEGUNDO */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="bg-white rounded-xl md:rounded-2xl border-2 border-border p-4 md:p-6 shadow-sm order-2"
+            >
+              <div className="text-center mb-4 md:mb-6">
+                <div className="text-3xl md:text-4xl mb-2 md:mb-3">❌</div>
+                <h3 className="text-base md:text-xl font-bold text-slate-800">Outros CRMs</h3>
+              </div>
+              <ul className="space-y-2 md:space-y-3">
+                {[
+                  "Feitos para qualquer nicho",
+                  "Você precisa configurar tudo do zero",
+                  "Não entendem Google Meu Negócio",
+                  "Sem checklist de otimização",
+                  "Não controlam tarefas recorrentes",
+                  "Contratos genéricos"
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start gap-2 p-2 bg-slate-50 rounded-lg">
+                    <X className="h-4 w-4 text-google-red flex-shrink-0 mt-0.5" />
+                    <span className="text-xs md:text-sm text-slate-600">{item}</span>
                   </li>
                 ))}
               </ul>
             </motion.div>
           </div>
 
-          {/* Conclusão */}
+          {/* Conclusão - Menor */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center p-5 md:p-8 bg-gmb-light-green rounded-xl md:rounded-2xl border border-google-green/30"
+            className="text-center p-4 md:p-6 bg-gmb-light-green rounded-xl border border-google-green/30"
           >
-            <p className="text-base md:text-xl text-slate-700">
-              Não é sobre ter <strong className="text-google-green">"um CRM"</strong>. É sobre ter o sistema que{" "}
-              <strong className="text-google-green">entende exatamente o que você faz</strong>.
+            <p className="text-sm md:text-base text-slate-700">
+              Não é sobre ter <strong className="text-google-green">"um CRM"</strong>. É sobre ter o sistema <strong className="text-google-green">feito para sua operação</strong>.
             </p>
           </motion.div>
         </div>
       </section>
 
       {/* ===== SEÇÃO NOSSA EXPERIÊNCIA (SUBSTITUINDO DEPOIMENTOS) ===== */}
-      <section className="py-24 px-4 relative section-white">
+      <section className="py-10 sm:py-14 px-3 sm:px-4 relative section-white">
         <div className="container mx-auto max-w-5xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-8 sm:mb-12"
           >
             <GMBBadge variant="green">
               <Award className="h-4 w-4" />
@@ -720,12 +698,12 @@ const Landing = () => {
           </motion.div>
 
           {/* 4 Stats Cards - 2x2 grid */}
-          <div className="grid grid-cols-2 gap-4 md:gap-6 mb-12 md:mb-16">
+          <div className="grid grid-cols-2 gap-3 md:gap-5 mb-8 md:mb-12">
             {[
               { icon: MapPin, value: 500, suffix: "+", label: "Perfis Gerenciados", description: "Na nossa própria agência." },
-              { icon: Calendar, value: 4, suffix: " anos", label: "Experiência no Mercado", description: "Vendendo Google Meu Negócio." },
+              { icon: Calendar, value: 4, suffix: " anos", label: "Experiência", description: "Vendendo Google Meu Negócio." },
               { icon: Users, value: 350, suffix: "+", label: "Alunos Formados", description: "Na metodologia Alcateia." },
-              { icon: CheckCircle2, value: 47, suffix: "", label: "Pontos de Otimização", description: "Checklist testado e validado." }
+              { icon: CheckCircle2, value: 47, suffix: "", label: "Pontos de Otimização", description: "Checklist testado." }
             ].map((stat, i) => (
               <motion.div
                 key={stat.label}
@@ -733,40 +711,41 @@ const Landing = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-white rounded-xl md:rounded-2xl border-2 border-border p-4 md:p-6 text-center hover:border-google-green/50 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+                className="bg-white rounded-xl border-2 border-border p-3 md:p-5 text-center hover:border-google-green/50 transition-all duration-300"
               >
-                <div className="w-12 h-12 md:w-16 md:h-16 rounded-lg md:rounded-xl bg-gmb-light-green flex items-center justify-center mx-auto mb-3 md:mb-4">
-                  <stat.icon className="h-6 w-6 md:h-8 md:w-8 text-google-green" />
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-gmb-light-green flex items-center justify-center mx-auto mb-2 md:mb-3">
+                  <stat.icon className="h-5 w-5 md:h-6 md:w-6 text-google-green" />
                 </div>
-                <div className="text-2xl md:text-4xl font-bold text-google-green mb-1 md:mb-2">
+                <div className="text-xl md:text-3xl font-bold text-google-green mb-1">
                   <AnimatedCounter end={stat.value} suffix={stat.suffix} />
                 </div>
-                <div className="text-sm md:text-lg font-semibold text-slate-800 mb-1 md:mb-2">{stat.label}</div>
-                <p className="text-xs md:text-sm text-muted-foreground hidden sm:block">{stat.description}</p>
+                <div className="text-xs md:text-sm font-semibold text-slate-800">{stat.label}</div>
               </motion.div>
             ))}
           </div>
 
-          {/* Founder Card */}
+          {/* Founder Card - Com foto real */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="bg-gradient-to-br from-gmb-light-green to-white rounded-2xl border border-google-green/30 p-8 md:p-12"
+            className="bg-gradient-to-br from-gmb-light-green to-white rounded-xl md:rounded-2xl border border-google-green/30 p-5 md:p-8"
           >
-            <div className="grid md:grid-cols-3 gap-8 items-center">
-              <div className="md:col-span-2 order-2 md:order-1">
-                <h3 className="text-2xl md:text-3xl font-bold text-slate-800 mb-2">João Lobo</h3>
-                <p className="text-google-green font-semibold mb-6">Fundador & Especialista em Google Meu Negócio</p>
-                <p className="text-lg text-slate-600 italic leading-relaxed">
-                  "Criei o G-Rank porque sentia na pele a dor de gerenciar dezenas de perfis sem um sistema adequado. 
-                  Cada funcionalidade aqui resolveu um problema real que enfrentei na operação da minha agência."
+            <div className="grid md:grid-cols-3 gap-5 md:gap-8 items-center">
+              <div className="md:col-span-2 order-2 md:order-1 text-center md:text-left">
+                <h3 className="text-xl md:text-2xl font-bold text-slate-800 mb-1">João Lobo</h3>
+                <p className="text-google-green font-semibold text-sm mb-3 md:mb-4">Fundador & Especialista em Google Meu Negócio</p>
+                <p className="text-sm md:text-base text-slate-600 italic leading-relaxed">
+                  "Criei o GRank porque sentia na pele a dor de gerenciar dezenas de perfis sem um sistema adequado. 
+                  Cada funcionalidade aqui resolveu um problema real da minha operação."
                 </p>
               </div>
               <div className="flex justify-center order-1 md:order-2">
-                <div className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-gradient-to-br from-google-green to-google-green-dark flex items-center justify-center text-white text-5xl md:text-6xl font-bold border-4 border-white shadow-xl">
-                  JL
-                </div>
+                <img 
+                  src={joaoLoboPhoto}
+                  alt="João Lobo - Fundador GRank CRM" 
+                  className="w-28 h-28 md:w-36 md:h-36 rounded-full object-cover border-4 border-google-green shadow-xl"
+                />
               </div>
             </div>
           </motion.div>
@@ -907,7 +886,7 @@ const Landing = () => {
       </section>
 
       {/* ===== SEÇÃO CTA FINAL ===== */}
-      <section className="py-24 px-4 relative overflow-hidden bg-google-green">
+      <section className="py-12 sm:py-16 md:py-20 px-3 sm:px-4 relative overflow-hidden bg-google-green">
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIyIiBmaWxsPSIjZmZmIi8+PC9zdmc+')]" />
@@ -936,24 +915,16 @@ const Landing = () => {
               "O tempo que você perde sem estrutura é o tempo que seus concorrentes ganham com sistema."
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
+            <div className="flex justify-center mb-6">
               <Button 
                 size="lg" 
                 asChild 
-                className="bg-white text-google-green hover:bg-gray-100 border-0 shadow-xl text-lg px-10 py-7 h-auto font-bold"
+                className="bg-white text-google-green hover:bg-gray-100 border-0 shadow-xl text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 h-auto font-bold w-full sm:w-auto max-w-sm"
               >
                 <Link to="/register">
                   <Zap className="mr-2 h-5 w-5" />
-                  COMEÇAR TESTE GRÁTIS AGORA
+                  TESTAR GRÁTIS AGORA
                 </Link>
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                asChild 
-                className="border-2 border-white text-white hover:bg-white/10 text-lg px-8 py-7 h-auto bg-transparent"
-              >
-                <a href="#demo">Agendar Demonstração</a>
               </Button>
             </div>
 
@@ -976,7 +947,7 @@ const Landing = () => {
       </section>
 
       {/* ===== SEÇÃO FAQ ===== */}
-      <section className="py-20 px-4 relative section-white">
+      <section className="py-10 sm:py-14 px-3 sm:px-4 relative section-white">
         <div className="container mx-auto max-w-3xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
