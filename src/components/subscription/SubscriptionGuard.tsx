@@ -9,7 +9,7 @@ interface SubscriptionGuardProps {
 }
 
 // Routes that are always allowed, even when subscription is blocked
-const ALLOWED_ROUTES = ['/meu-perfil', '/auth', '/register', '/locked'];
+const ALLOWED_ROUTES = ['/meu-perfil', '/auth', '/register', '/locked', '/admin/plan', '/upgrade'];
 
 export function SubscriptionGuard({ children }: SubscriptionGuardProps) {
   const { status, isBlocked, isSuperAdmin } = useSubscriptionStatus();
@@ -45,5 +45,8 @@ export function SubscriptionGuard({ children }: SubscriptionGuardProps) {
     return <Navigate to="/locked" replace />;
   }
 
-  return <>{children}</>;
+  // If NOT blocked, never allow staying on /locked (evita ficar preso após um falso redirecionamento)
+  if (!isBlocked && location.pathname.startsWith('/locked')) {
+    return <Navigate to="/dashboard" replace />;
+  }
 }
