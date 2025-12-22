@@ -162,24 +162,20 @@ const LandingAlcateia = () => {
       </header>
 
       {/* ===== HERO SECTION ===== */}
-      <section className="relative flex items-center justify-center pt-20 sm:pt-24 pb-8 px-3 sm:px-4 overflow-hidden bg-gradient-to-b from-amber-50 to-white">
-        {/* Wolf Hero Background Image */}
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[300px] sm:w-[500px] lg:w-[700px] h-full pointer-events-none overflow-hidden opacity-20 sm:opacity-30">
+      <section className="relative flex items-center justify-center pt-20 sm:pt-24 pb-12 px-3 sm:px-4 overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-amber-900">
+        {/* Wolf Hero Background Image - Full bleed */}
+        <div className="absolute inset-0 pointer-events-none">
           <img 
             src={wolfHero} 
             alt="" 
-            className="w-full h-full object-cover object-left scale-150 sm:scale-125"
+            className="w-full h-full object-cover opacity-40 sm:opacity-50"
             style={{ 
-              maskImage: 'linear-gradient(to left, transparent 0%, black 30%, black 70%, transparent 100%)',
-              WebkitMaskImage: 'linear-gradient(to left, transparent 0%, black 30%, black 70%, transparent 100%)'
+              maskImage: 'linear-gradient(to bottom, black 0%, black 60%, transparent 100%)',
+              WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 60%, transparent 100%)'
             }}
           />
-        </div>
-        
-        {/* Background gradients */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden hidden sm:block">
-          <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[120px]" />
-          <div className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] bg-amber-600/8 rounded-full blur-[100px]" />
+          {/* Overlay gradient for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/70 to-transparent" />
         </div>
 
         <div className="container mx-auto text-center relative z-10 px-2 sm:px-4">
@@ -193,25 +189,25 @@ const LandingAlcateia = () => {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-1.5 px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-amber-600/10 border-2 border-amber-600/50 mb-4 sm:mb-6"
+              className="inline-flex items-center gap-1.5 px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-amber-500/20 border-2 border-amber-400/60 mb-4 sm:mb-6 backdrop-blur-sm"
             >
-              <Lock className="h-4 w-4 text-amber-600" />
-              <span className="text-sm sm:text-base text-amber-700 font-bold">
+              <Lock className="h-4 w-4 text-amber-400" />
+              <span className="text-sm sm:text-base text-amber-300 font-bold">
                 🐺 EXCLUSIVO PARA ALUNOS ALCATEIA
               </span>
             </motion.div>
             
             {/* Headline Principal */}
-            <h1 className="text-[24px] sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-5 leading-[1.15] font-display px-1">
-              <span className="text-foreground">Você Faz Parte da</span>
+            <h1 className="text-[26px] sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-5 leading-[1.15] font-display px-1 drop-shadow-lg">
+              <span className="text-white">Você Faz Parte da</span>
               <br />
-              <span className="text-amber-600">Construção do GRank CRM</span>
+              <span className="text-amber-400">Construção do GRank CRM</span>
             </h1>
 
             {/* Subheadline */}
-            <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-5 sm:mb-6 leading-relaxed px-2">
-              Juntos, estamos criando o <strong className="text-foreground">melhor CRM de Google Meu Negócio</strong> do mercado. 
-              Quem entrar agora, ganha <strong className="text-amber-600">acesso vitalício</strong>.
+            <p className="text-sm sm:text-base md:text-lg text-gray-300 max-w-2xl mx-auto mb-5 sm:mb-6 leading-relaxed px-2">
+              Juntos, estamos criando o <strong className="text-white">melhor CRM de Google Meu Negócio</strong> do mercado. 
+              Quem entrar agora, ganha <strong className="text-amber-400">acesso vitalício</strong>.
             </p>
 
             {/* CTA Principal */}
@@ -219,7 +215,7 @@ const LandingAlcateia = () => {
               <Button 
                 size="lg" 
                 asChild 
-                className="bg-amber-600 hover:bg-amber-700 text-white border-0 shadow-xl shadow-amber-600/30 text-sm sm:text-lg px-6 sm:px-10 py-3 sm:py-5 h-auto min-h-[44px] sm:min-h-[52px] w-full sm:w-auto max-w-xs sm:max-w-none"
+                className="bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold border-0 shadow-xl shadow-amber-500/40 text-sm sm:text-lg px-6 sm:px-10 py-3 sm:py-5 h-auto min-h-[44px] sm:min-h-[52px] w-full sm:w-auto max-w-xs sm:max-w-none"
               >
                 <Link to="/register-alcateia">
                   <Crown className="mr-2 h-4 sm:h-5 w-4 sm:w-5" />
@@ -228,17 +224,17 @@ const LandingAlcateia = () => {
               </Button>
             </div>
             
-            <p className="text-[10px] sm:text-sm text-muted-foreground flex items-center justify-center gap-3 sm:gap-4 flex-wrap px-2">
+            <p className="text-[10px] sm:text-sm text-gray-400 flex items-center justify-center gap-3 sm:gap-4 flex-wrap px-2">
               <span className="flex items-center gap-1">
-                <Check className="h-3 sm:h-4 w-3 sm:w-4 text-amber-600" />
+                <Check className="h-3 sm:h-4 w-3 sm:w-4 text-amber-400" />
                 Acesso imediato
               </span>
               <span className="flex items-center gap-1">
-                <Check className="h-3 sm:h-4 w-3 sm:w-4 text-amber-600" />
+                <Check className="h-3 sm:h-4 w-3 sm:w-4 text-amber-400" />
                 Sem mensalidade
               </span>
               <span className="flex items-center gap-1">
-                <Check className="h-3 sm:h-4 w-3 sm:w-4 text-amber-600" />
+                <Check className="h-3 sm:h-4 w-3 sm:w-4 text-amber-400" />
                 Vitalício
               </span>
             </p>
@@ -290,20 +286,16 @@ const LandingAlcateia = () => {
       </section>
 
       {/* ===== SEÇÃO POR QUE AGORA ===== */}
-      <section id="porque" className="py-6 sm:py-10 px-3 sm:px-4 relative bg-gradient-to-b from-amber-50/50 to-white overflow-hidden">
-        {/* Wolf Pack Background */}
+      <section id="porque" className="py-10 sm:py-16 px-3 sm:px-4 relative overflow-hidden">
+        {/* Wolf Pack Background - Full section */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute bottom-0 left-0 right-0 h-[250px] sm:h-[350px] opacity-10 sm:opacity-15">
-            <img 
-              src={wolfPack} 
-              alt="" 
-              className="w-full h-full object-cover object-top"
-              style={{ 
-                maskImage: 'linear-gradient(to top, transparent 0%, black 30%, black 100%)',
-                WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 30%, black 100%)'
-              }}
-            />
-          </div>
+          <img 
+            src={wolfPack} 
+            alt="" 
+            className="w-full h-full object-cover opacity-25 sm:opacity-35"
+          />
+          {/* Overlay for readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-amber-50/95 via-amber-50/85 to-white/95" />
         </div>
         
         <div className="container mx-auto max-w-4xl relative z-10">
@@ -456,22 +448,20 @@ const LandingAlcateia = () => {
 
       {/* ===== SEÇÃO CTA FINAL ===== */}
       <section id="cta" className="py-10 sm:py-14 px-3 sm:px-4 relative overflow-hidden bg-gradient-to-br from-amber-500 to-amber-700">
-        {/* Wolf Abstract Background */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] pointer-events-none opacity-10 sm:opacity-15">
+        {/* Wolf Abstract Background - More visible */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] sm:w-[800px] h-[500px] sm:h-[800px] pointer-events-none opacity-25 sm:opacity-35">
           <img 
             src={wolfAbstract} 
             alt="" 
             className="w-full h-full object-contain"
             style={{
-              filter: 'brightness(2) contrast(0.8)'
+              filter: 'brightness(1.5) contrast(1.1)'
             }}
           />
         </div>
         
-        {/* Background pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIyIiBmaWxsPSIjZmZmIi8+PC9zdmc+')]" />
-        </div>
+        {/* Subtle overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-amber-700/50 via-transparent to-amber-600/30" />
         
         <div className="container mx-auto max-w-3xl text-center relative z-10">
           <motion.div
