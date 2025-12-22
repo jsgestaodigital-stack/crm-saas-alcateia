@@ -68,3 +68,12 @@ verify_jwt = true
 
 [functions.autentique-webhook]
 verify_jwt = false
+
+[functions.self-reset-password]
+verify_jwt = false
+
+[functions.unify-leads]
+verify_jwt = true
+
+[functions.auto-register-agency]
+verify_jwt = false

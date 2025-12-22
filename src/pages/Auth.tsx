@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { z } from "zod";
-import { Mail, Lock, LogIn, AlertCircle, Loader2, UserPlus, ShieldAlert, Clock, ArrowLeft, KeyRound, CheckCircle2, XCircle } from "lucide-react";
+import { Mail, Lock, LogIn, AlertCircle, Loader2, UserPlus, ShieldAlert, Clock, ArrowLeft, KeyRound, CheckCircle2, XCircle, User, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -36,12 +36,16 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [agencyName, setAgencyName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [authMode, setAuthMode] = useState<AuthMode>('login');
   const [errors, setErrors] = useState<{
     email?: string;
     password?: string;
     confirmPassword?: string;
+    fullName?: string;
+    agencyName?: string;
   }>({});
   const [rateLimitInfo, setRateLimitInfo] = useState<{
     isBlocked: boolean;
@@ -134,27 +138,67 @@ export default function Auth() {
     e.preventDefault();
     setErrors({});
 
-    const result = emailSchema.safeParse({ email });
-    if (!result.success) {
-      setErrors({ email: result.error.errors[0]?.message });
+    // Validate all fields
+    const newErrors: typeof errors = {};
+    
+    const emailResult = emailSchema.safeParse({ email });
+    if (!emailResult.success) {
+      newErrors.email = emailResult.error.errors[0]?.message;
+    }
+    
+    if (!fullName.trim()) {
+      newErrors.fullName = "Nome é obrigatório";
+    }
+    
+    if (!agencyName.trim()) {
+      newErrors.agencyName = "Nome da agência é obrigatório";
+    }
+    
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.isValid) {
+      newErrors.password = passwordValidation.errors[0];
+    }
+    
+    if (password !== confirmPassword) {
+      newErrors.confirmPassword = "As senhas não conferem";
+    }
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
 
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth?mode=reset`,
+      const { data, error } = await supabase.functions.invoke("self-reset-password", {
+        body: {
+          email: email.trim().toLowerCase(),
+          full_name: fullName.trim(),
+          agency_name: agencyName.trim(),
+          new_password: password,
+        },
       });
 
       if (error) {
-        toast.error(error.message);
+        console.error("Self reset error:", error);
+        toast.error("Erro ao processar solicitação. Tente novamente.");
         return;
       }
 
-      setAuthMode('reset-success');
-      toast.success('E-mail de recuperação enviado!');
-    } catch {
-      toast.error('Erro ao enviar e-mail. Tente novamente.');
+      if (data?.error) {
+        toast.error(data.error);
+        return;
+      }
+
+      toast.success("Senha alterada com sucesso! Faça login com a nova senha.");
+      setAuthMode('login');
+      setPassword('');
+      setConfirmPassword('');
+      setFullName('');
+      setAgencyName('');
+    } catch (err) {
+      console.error("Self reset catch:", err);
+      toast.error("Erro ao processar solicitação. Tente novamente.");
     } finally {
       setIsLoading(false);
     }
@@ -505,27 +549,27 @@ export default function Auth() {
             </div>
           )}
 
-          {/* Forgot Password Form */}
+          {/* Forgot Password Form - Self Service */}
           {authMode === 'forgot-password' && (
-            <form onSubmit={handleForgotPassword} className="space-y-5">
+            <form onSubmit={handleForgotPassword} className="space-y-4">
               <div className="text-center mb-4">
                 <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
                   <KeyRound className="w-6 h-6 text-primary" />
                 </div>
                 <h2 className="text-lg font-semibold text-foreground">Recuperar senha</h2>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Digite seu e-mail para receber o link de recuperação
+                  Confirme seus dados para criar uma nova senha
                 </p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm text-foreground">
+                <Label htmlFor="reset-email" className="text-sm text-foreground">
                   E-mail
                 </Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input 
-                    id="email" 
+                    id="reset-email" 
                     type="email" 
                     placeholder="seu@email.com" 
                     value={email} 
@@ -542,6 +586,104 @@ export default function Auth() {
                 )}
               </div>
 
+              <div className="space-y-2">
+                <Label htmlFor="reset-name" className="text-sm text-foreground">
+                  Seu nome
+                </Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input 
+                    id="reset-name" 
+                    type="text" 
+                    placeholder="Nome como está no cadastro" 
+                    value={fullName} 
+                    onChange={e => setFullName(e.target.value)} 
+                    className="pl-10 bg-background border-border/50 focus:border-primary" 
+                    disabled={isLoading} 
+                  />
+                </div>
+                {errors.fullName && (
+                  <p className="text-xs text-destructive flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {errors.fullName}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="reset-agency" className="text-sm text-foreground">
+                  Nome da agência
+                </Label>
+                <div className="relative">
+                  <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input 
+                    id="reset-agency" 
+                    type="text" 
+                    placeholder="Nome da sua agência" 
+                    value={agencyName} 
+                    onChange={e => setAgencyName(e.target.value)} 
+                    className="pl-10 bg-background border-border/50 focus:border-primary" 
+                    disabled={isLoading} 
+                  />
+                </div>
+                {errors.agencyName && (
+                  <p className="text-xs text-destructive flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {errors.agencyName}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="reset-new-password" className="text-sm text-foreground">
+                  Nova senha
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input 
+                    id="reset-new-password" 
+                    type="password" 
+                    placeholder="Mínimo 8 caracteres" 
+                    value={password} 
+                    onChange={e => setPassword(e.target.value)} 
+                    className="pl-10 bg-background border-border/50 focus:border-primary" 
+                    disabled={isLoading}
+                    autoComplete="new-password"
+                  />
+                </div>
+                {errors.password && (
+                  <p className="text-xs text-destructive flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {errors.password}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="reset-confirm-password" className="text-sm text-foreground">
+                  Confirmar nova senha
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input 
+                    id="reset-confirm-password" 
+                    type="password" 
+                    placeholder="Confirme a nova senha" 
+                    value={confirmPassword} 
+                    onChange={e => setConfirmPassword(e.target.value)} 
+                    className="pl-10 bg-background border-border/50 focus:border-primary" 
+                    disabled={isLoading}
+                    autoComplete="new-password"
+                  />
+                </div>
+                {errors.confirmPassword && (
+                  <p className="text-xs text-destructive flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    {errors.confirmPassword}
+                  </p>
+                )}
+              </div>
+
               <Button 
                 type="submit" 
                 className="w-full bg-primary text-primary-foreground hover:bg-primary/90" 
@@ -550,12 +692,12 @@ export default function Auth() {
                 {isLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Enviando...
+                    Verificando...
                   </>
                 ) : (
                   <>
-                    <Mail className="w-4 h-4 mr-2" />
-                    Enviar link de recuperação
+                    <KeyRound className="w-4 h-4 mr-2" />
+                    Redefinir senha
                   </>
                 )}
               </Button>
@@ -564,7 +706,13 @@ export default function Auth() {
                 type="button"
                 variant="ghost"
                 className="w-full text-sm text-muted-foreground hover:text-foreground"
-                onClick={() => setAuthMode('login')}
+                onClick={() => {
+                  setAuthMode('login');
+                  setFullName('');
+                  setAgencyName('');
+                  setPassword('');
+                  setConfirmPassword('');
+                }}
                 disabled={isLoading}
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
