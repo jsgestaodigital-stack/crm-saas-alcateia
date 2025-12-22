@@ -260,7 +260,7 @@ const Landing = () => {
       </header>
 
       {/* ===== HERO SECTION ===== */}
-      <section className="min-h-[90vh] md:min-h-screen relative flex items-center justify-center pt-16 sm:pt-20 pb-8 sm:pb-16 px-3 sm:px-4 section-gmb-hero overflow-hidden">
+      <section className="min-h-[85vh] md:min-h-[90vh] relative flex items-center justify-center pt-14 sm:pt-16 pb-0 px-3 sm:px-4 section-gmb-hero overflow-hidden">
         {/* Background gradients - hidden on mobile */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden hidden sm:block">
           <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-google-green/10 rounded-full blur-[120px]" />
@@ -333,15 +333,12 @@ const Landing = () => {
             <HeroVideo />
           </motion.div>
         </div>
-
-        {/* Wave divider to next section - smaller */}
-        <GMBWaveDivider position="bottom" color="green" />
       </section>
 
-      {/* ===== SEÇÃO ESTATÍSTICAS - 4 CARDS SIMÉTRICOS ===== */}
-      <section className="py-10 sm:py-14 px-3 sm:px-4 relative section-gmb-light">
+      {/* ===== SEÇÃO ESTATÍSTICAS ===== */}
+      <section className="py-4 sm:py-6 px-3 sm:px-4 relative section-gmb-light">
         <div className="container mx-auto">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5 max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 max-w-4xl mx-auto">
             <GMBStatsCard 
               icon={MapPin} 
               value="500+" 
@@ -372,17 +369,16 @@ const Landing = () => {
             />
           </div>
         </div>
-        <GMBWaveDivider position="bottom" color="white" />
       </section>
 
       {/* ===== SEÇÃO PROBLEMA ===== */}
-      <section className="py-10 sm:py-14 md:py-16 px-3 sm:px-4 relative section-white">
+      <section className="py-6 sm:py-8 px-3 sm:px-4 relative section-white">
         <div className="container mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-12 md:mb-16"
+            className="text-center mb-6 sm:mb-8"
           >
             <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold mb-3 sm:mb-4 font-display px-2">
               Você Está <span className="text-google-red">Preso na Operação?</span>
@@ -392,7 +388,7 @@ const Landing = () => {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 max-w-6xl mx-auto">
             {[
               {
                 icon: Users,
@@ -437,35 +433,33 @@ const Landing = () => {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="text-center mt-8 sm:mt-10 text-sm sm:text-base max-w-xl mx-auto px-4"
+            className="text-center mt-4 sm:mt-6 text-sm sm:text-base max-w-xl mx-auto px-4"
           >
             <span className="text-google-green font-medium italic">
               "Se você ainda gerencia perfis em planilhas, sua agência está crescendo no freio de mão."
             </span>
           </motion.p>
         </div>
-
-        <SectionDivider variant="diagonal" fill="fill-gmb-light-green" className="bottom-0" />
       </section>
 
       {/* ===== SEÇÃO SOLUÇÃO ===== */}
-      <section id="como-funciona" className="py-12 sm:py-16 px-3 sm:px-4 relative section-gmb-light">
+      <section id="como-funciona" className="py-6 sm:py-8 px-3 sm:px-4 relative section-gmb-light">
         <div className="container mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-6 sm:mb-8"
           >
             <GMBBadge variant="green">
               <Sparkles className="h-4 w-4" />
               A Solução
             </GMBBadge>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 font-display mt-6">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 font-display mt-4">
               O GRank CRM Gerencia{" "}
               <span className="gradient-google-text">Todo o Ciclo Operacional</span>
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto text-lg mb-4">
+            <p className="text-muted-foreground max-w-2xl mx-auto text-sm sm:text-base mb-3">
               Da primeira conversa com o lead até a execução recorrente mensal.
               <br />Tudo em um só sistema. Tudo sob controle.
             </p>
@@ -475,27 +469,25 @@ const Landing = () => {
             <InteractiveDemo />
           </div>
         </div>
-
-        <GMBWaveDivider position="bottom" color="white" />
       </section>
 
       {/* ===== SEÇÃO FUNCIONALIDADES ===== */}
-      <section id="funcionalidades" className="py-12 sm:py-16 px-3 sm:px-4 relative section-white">
+      <section id="funcionalidades" className="py-6 sm:py-8 px-3 sm:px-4 relative section-white">
         <div className="container mx-auto">
           {/* Prospecção & Venda */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="mb-16"
+            className="mb-6"
           >
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-10 h-10 rounded-xl bg-google-blue/10 flex items-center justify-center">
-                <Target className="h-5 w-5 text-google-blue" />
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-google-blue/10 flex items-center justify-center">
+                <Target className="h-4 w-4 text-google-blue" />
               </div>
-              <h3 className="text-2xl font-bold text-foreground">🎯 PROSPECÇÃO & VENDA</h3>
+              <h3 className="text-lg sm:text-xl font-bold text-foreground">🎯 PROSPECÇÃO & VENDA</h3>
             </div>
-            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-3 sm:gap-4 max-w-4xl mx-auto">
               {prospectionFeatures.map((feature, index) => (
                 <GMBFeatureCard 
                   key={feature.title}
@@ -513,22 +505,22 @@ const Landing = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="mb-16 p-8 rounded-3xl section-gmb-light border-2 border-google-green/20"
+            className="mb-6 p-4 sm:p-6 rounded-2xl section-gmb-light border border-google-green/20"
           >
-            <div className="flex items-center justify-between flex-wrap gap-4 mb-8">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-google-green/15 flex items-center justify-center">
-                  <ListChecks className="h-5 w-5 text-google-green" />
+            <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-google-green/15 flex items-center justify-center">
+                  <ListChecks className="h-4 w-4 text-google-green" />
                 </div>
-                <h3 className="text-2xl font-bold text-foreground">⚙️ EXECUÇÃO OPERACIONAL</h3>
+                <h3 className="text-lg sm:text-xl font-bold text-foreground">⚙️ EXECUÇÃO OPERACIONAL</h3>
               </div>
               <GMBBadge variant="green">
-                <Star className="h-4 w-4" />
-                NOSSO DIFERENCIAL
+                <Star className="h-3 w-3" />
+                DIFERENCIAL
               </GMBBadge>
             </div>
             
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-3 sm:gap-4">
               {executionFeatures.map((feature, index) => (
                 <GMBFeatureCard 
                   key={feature.title}
@@ -541,9 +533,8 @@ const Landing = () => {
               ))}
             </div>
 
-            {/* Mini Checklist Visual */}
-            <div className="mt-8 flex justify-center">
-              <GMBChecklistPreview className="max-w-sm" />
+            <div className="mt-4 flex justify-center">
+              <GMBChecklistPreview className="max-w-xs" />
             </div>
           </motion.div>
 
@@ -553,13 +544,13 @@ const Landing = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-10 h-10 rounded-xl bg-status-purple/10 flex items-center justify-center">
-                <BarChart3 className="h-5 w-5 text-status-purple" />
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-status-purple/10 flex items-center justify-center">
+                <BarChart3 className="h-4 w-4 text-status-purple" />
               </div>
-              <h3 className="text-2xl font-bold text-foreground">📊 GESTÃO & INTELIGÊNCIA</h3>
+              <h3 className="text-lg sm:text-xl font-bold text-foreground">📊 GESTÃO & INTELIGÊNCIA</h3>
             </div>
-            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-3 sm:gap-4 max-w-4xl mx-auto">
               {managementFeatures.map((feature, index) => (
                 <GMBFeatureCard 
                   key={feature.title}
@@ -575,29 +566,29 @@ const Landing = () => {
 
       </section>
 
-      {/* ===== SEÇÃO DIFERENCIAL COMPETITIVO (COMPARISON TABLE) ===== */}
-      <section className="py-10 sm:py-14 px-3 sm:px-4 relative bg-gradient-to-b from-gmb-light-green via-white to-white">
+      {/* ===== SEÇÃO DIFERENCIAL COMPETITIVO ===== */}
+      <section className="py-6 sm:py-8 px-3 sm:px-4 relative bg-gradient-to-b from-gmb-light-green to-white">
         <div className="container mx-auto max-w-5xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-8 sm:mb-12"
+            className="text-center mb-5 sm:mb-6"
           >
             <GMBBadge variant="green">
-              <Star className="h-4 w-4" />
+              <Star className="h-3 w-3" />
               Comparação
             </GMBBadge>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 font-display mt-6">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 font-display mt-3">
               Por Que o GRank é{" "}
-              <span className="gradient-google-text">Diferente de Qualquer Outro CRM?</span>
+              <span className="gradient-google-text">Diferente?</span>
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-              Não somos um CRM genérico. Somos especializados em Google Meu Negócio.
+            <p className="text-muted-foreground max-w-xl mx-auto text-sm sm:text-base">
+              Somos especializados em Google Meu Negócio.
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-10">
+          <div className="grid md:grid-cols-2 gap-3 sm:gap-4 mb-4">
             {/* GRank CRM - PRIMEIRO */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -665,7 +656,7 @@ const Landing = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center p-4 md:p-6 bg-gmb-light-green rounded-xl border border-google-green/30"
+            className="text-center p-3 sm:p-4 bg-gmb-light-green rounded-lg border border-google-green/30"
           >
             <p className="text-sm md:text-base text-slate-700">
               Não é sobre ter <strong className="text-google-green">"um CRM"</strong>. É sobre ter o sistema <strong className="text-google-green">feito para sua operação</strong>.
@@ -674,31 +665,30 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ===== SEÇÃO NOSSA EXPERIÊNCIA (SUBSTITUINDO DEPOIMENTOS) ===== */}
-      <section className="py-10 sm:py-14 px-3 sm:px-4 relative section-white">
+      {/* ===== SEÇÃO NOSSA EXPERIÊNCIA ===== */}
+      <section className="py-6 sm:py-8 px-3 sm:px-4 relative section-white">
         <div className="container mx-auto max-w-5xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-8 sm:mb-12"
+            className="text-center mb-5 sm:mb-6"
           >
             <GMBBadge variant="green">
-              <Award className="h-4 w-4" />
+              <Award className="h-3 w-3" />
               Experiência Real
             </GMBBadge>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 font-display mt-6">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 font-display mt-3">
               Construído Por Quem Vive{" "}
-              <span className="gradient-google-text">Google Meu Negócio</span>{" "}
-              Todos os Dias
+              <span className="gradient-google-text">Google Meu Negócio</span>
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-              Não é teoria de programadores. É experiência real empacotada em sistema.
+            <p className="text-muted-foreground max-w-xl mx-auto text-sm sm:text-base">
+              Experiência real empacotada em sistema.
             </p>
           </motion.div>
 
-          {/* 4 Stats Cards - 2x2 grid */}
-          <div className="grid grid-cols-2 gap-3 md:gap-5 mb-8 md:mb-12">
+          {/* 4 Stats Cards */}
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-4 sm:mb-6">
             {[
               { icon: MapPin, value: 500, suffix: "+", label: "Perfis Gerenciados", description: "Na nossa própria agência." },
               { icon: Calendar, value: 4, suffix: " anos", label: "Experiência", description: "Vendendo Google Meu Negócio." },
@@ -750,25 +740,22 @@ const Landing = () => {
             </div>
           </motion.div>
         </div>
-        
-        <GMBWaveDivider position="bottom" color="gray" />
       </section>
 
       {/* ===== SEÇÃO PREÇOS ===== */}
-      <section id="precos" className="py-12 sm:py-16 md:py-20 lg:py-24 px-3 sm:px-4 relative section-gmb-gradient">
+      <section id="precos" className="py-6 sm:py-8 px-3 sm:px-4 relative section-gmb-gradient">
         <div className="container mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-8 sm:mb-12"
+            className="text-center mb-4 sm:mb-6"
           >
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 font-display px-2">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 font-display px-2">
               Quanto Custa Ter{" "}
-              <span className="gradient-google-text">Estrutura na Sua Operação?</span>
+              <span className="gradient-google-text">Estrutura?</span>
             </h2>
-            <p className="text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto text-sm sm:text-base px-2">
-              O GRank não é uma despesa. É infraestrutura de crescimento.
+            <p className="text-muted-foreground mb-3 sm:mb-4 max-w-xl mx-auto text-xs sm:text-sm px-2">
               Se você perde 1 contrato por mês por desorganização — o sistema já se paga.
             </p>
 
@@ -881,12 +868,10 @@ const Landing = () => {
             ))}
           </div>
         </div>
-
-        <GMBWaveDivider position="bottom" color="green" />
       </section>
 
       {/* ===== SEÇÃO CTA FINAL ===== */}
-      <section className="py-12 sm:py-16 md:py-20 px-3 sm:px-4 relative overflow-hidden bg-google-green">
+      <section className="py-8 sm:py-10 px-3 sm:px-4 relative overflow-hidden bg-google-green">
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIyIiBmaWxsPSIjZmZmIi8+PC9zdmc+')]" />
@@ -898,48 +883,35 @@ const Landing = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-display text-white">
-              Você Vai Continuar{" "}
-              <span className="text-google-yellow">Preso na Operação</span>{" "}
-              ou Vai{" "}
-              <span className="underline decoration-4 decoration-white/50">Escalar com Estrutura?</span>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-3 font-display text-white">
+              Vai Continuar <span className="text-google-yellow">Preso na Operação</span> ou <span className="underline decoration-2 decoration-white/50">Escalar?</span>
             </h2>
             
-            <p className="text-white/80 mb-6 text-lg">
-              Se você ainda está organizando perfis GMB em planilhas e delegando por WhatsApp...
-              <br />
-              <strong className="text-white">Sua agência está sendo engolida pela falta de sistema.</strong>
-            </p>
-            
-            <p className="text-white italic mb-10 text-lg font-medium">
-              "O tempo que você perde sem estrutura é o tempo que seus concorrentes ganham com sistema."
+            <p className="text-white/80 mb-4 text-sm sm:text-base">
+              <strong className="text-white">Sua agência precisa de sistema, não de mais trabalho.</strong>
             </p>
 
-            <div className="flex justify-center mb-6">
+            <div className="flex justify-center mb-4">
               <Button 
                 size="lg" 
                 asChild 
-                className="bg-white text-google-green hover:bg-gray-100 border-0 shadow-xl text-base sm:text-lg px-8 sm:px-10 py-5 sm:py-6 h-auto font-bold w-full sm:w-auto max-w-sm"
+                className="bg-white text-google-green hover:bg-gray-100 border-0 shadow-xl text-sm sm:text-base px-6 sm:px-8 py-4 sm:py-5 h-auto font-bold w-full sm:w-auto max-w-xs"
               >
                 <Link to="/register">
-                  <Zap className="mr-2 h-5 w-5" />
+                  <Zap className="mr-2 h-4 w-4" />
                   TESTAR GRÁTIS AGORA
                 </Link>
               </Button>
             </div>
 
-            <p className="text-sm text-white/70 flex items-center justify-center gap-4 flex-wrap">
+            <p className="text-xs text-white/70 flex items-center justify-center gap-3 flex-wrap">
               <span className="flex items-center gap-1">
-                <Check className="h-4 w-4 text-white" />
+                <Check className="h-3 w-3 text-white" />
                 14 dias grátis
               </span>
               <span className="flex items-center gap-1">
-                <Check className="h-4 w-4 text-white" />
-                Sem cartão de crédito
-              </span>
-              <span className="flex items-center gap-1">
-                <Check className="h-4 w-4 text-white" />
-                Suporte em português
+                <Check className="h-3 w-3 text-white" />
+                Sem cartão
               </span>
             </p>
           </motion.div>
@@ -947,21 +919,20 @@ const Landing = () => {
       </section>
 
       {/* ===== SEÇÃO FAQ ===== */}
-      <section className="py-10 sm:py-14 px-3 sm:px-4 relative section-white">
+      <section className="py-6 sm:py-8 px-3 sm:px-4 relative section-white">
         <div className="container mx-auto max-w-3xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-12"
+            className="text-center mb-4"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 font-display">
-              Perguntas{" "}
-              <span className="gradient-google-text">Frequentes</span>
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold font-display">
+              Perguntas <span className="gradient-google-text">Frequentes</span>
             </h2>
           </motion.div>
 
-          <Accordion type="single" collapsible className="space-y-4">
+          <Accordion type="single" collapsible className="space-y-2">
             {faqs.map((faq, i) => (
               <motion.div
                 key={faq.question}
@@ -972,12 +943,12 @@ const Landing = () => {
               >
                 <AccordionItem 
                   value={`item-${i}`} 
-                  className="bg-white rounded-xl border-2 border-border hover:border-google-green/30 transition-colors px-6"
+                  className="bg-white rounded-lg border border-border hover:border-google-green/30 transition-colors px-4"
                 >
-                  <AccordionTrigger className="text-left font-medium hover:no-underline py-4 text-foreground">
+                  <AccordionTrigger className="text-left font-medium hover:no-underline py-3 text-foreground text-sm">
                     {faq.question}
                   </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground pb-4">
+                  <AccordionContent className="text-muted-foreground pb-3 text-sm">
                     {faq.answer}
                   </AccordionContent>
                 </AccordionItem>
@@ -988,9 +959,9 @@ const Landing = () => {
       </section>
 
       {/* ===== FOOTER ===== */}
-      <footer className="py-10 sm:py-12 md:py-16 px-3 sm:px-4 bg-gmb-dark text-white safe-area-inset-bottom">
+      <footer className="py-6 sm:py-8 px-3 sm:px-4 bg-gmb-dark text-white safe-area-inset-bottom">
         <div className="container mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-8 sm:mb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-4 sm:mb-6">
             <div className="sm:col-span-2">
               <Link to="/" className="flex items-center gap-2 mb-4">
                 <img src={grankLogoDark} alt="GRank CRM" className="h-7 sm:h-8 w-auto brightness-0 invert" />
