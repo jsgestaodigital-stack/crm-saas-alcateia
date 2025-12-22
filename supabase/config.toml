@@ -77,3 +77,6 @@ verify_jwt = true
 
 [functions.auto-register-agency]
 verify_jwt = false
+
+[functions.log-error]
+verify_jwt = false

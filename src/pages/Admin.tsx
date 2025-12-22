@@ -61,6 +61,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { formatDateTime } from "@/lib/clientUtils";
 import { ThemeLogo } from "@/components/ThemeLogo";
+import { SystemHealthPanel } from "@/components/admin/SystemHealthPanel";
 import { Database } from "@/integrations/supabase/types";
 
 type AppRole = Database["public"]["Enums"]["app_role"];
@@ -559,6 +560,9 @@ export default function Admin() {
               </div>
             </div>
           </div>
+
+          {/* System Health Panel */}
+          <SystemHealthPanel />
         </div>
 
         {/* Users Management */}
