@@ -2484,13 +2484,16 @@ export type Database = {
           agency_slug: string
           created_at: string
           id: string
+          is_alcateia: boolean
           owner_email: string
           owner_name: string
           owner_phone: string | null
           rejection_reason: string | null
           reviewed_at: string | null
           reviewed_by: string | null
+          source: string
           status: string
+          temp_password_hash: string | null
           updated_at: string
         }
         Insert: {
@@ -2498,13 +2501,16 @@ export type Database = {
           agency_slug: string
           created_at?: string
           id?: string
+          is_alcateia?: boolean
           owner_email: string
           owner_name: string
           owner_phone?: string | null
           rejection_reason?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          source?: string
           status?: string
+          temp_password_hash?: string | null
           updated_at?: string
         }
         Update: {
@@ -2512,13 +2518,16 @@ export type Database = {
           agency_slug?: string
           created_at?: string
           id?: string
+          is_alcateia?: boolean
           owner_email?: string
           owner_name?: string
           owner_phone?: string | null
           rejection_reason?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          source?: string
           status?: string
+          temp_password_hash?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -4743,9 +4752,11 @@ export type Database = {
           agency_slug: string
           created_at: string
           id: string
+          is_alcateia: boolean
           owner_email: string
           owner_name: string
           owner_phone: string
+          source: string
           status: string
         }[]
       }
