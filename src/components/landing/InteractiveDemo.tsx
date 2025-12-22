@@ -151,16 +151,15 @@ export const InteractiveDemo = () => {
       {/* Controls */}
       <div className="space-y-4">
         {demoSteps.map((step, i) => (
-          <motion.button
+          <motion.div
             key={step.id}
-            onClick={() => setActiveStep(i)}
-            className={`w-full text-left p-4 rounded-xl border transition-all duration-300 ${
+            onMouseEnter={() => setActiveStep(i)}
+            className={`w-full text-left p-4 rounded-xl border transition-all duration-300 cursor-pointer ${
               activeStep === i
                 ? "bg-primary/10 border-primary/50 shadow-lg shadow-primary/10"
                 : "bg-card/50 border-border/50 hover:border-primary/30"
             }`}
             whileHover={{ x: 4 }}
-            whileTap={{ scale: 0.98 }}
           >
             <div className="flex items-center gap-3">
               <div className={`h-10 w-10 rounded-lg flex items-center justify-center transition-colors ${
@@ -185,7 +184,7 @@ export const InteractiveDemo = () => {
                 </motion.div>
               )}
             </div>
-          </motion.button>
+          </motion.div>
         ))}
       </div>
 
