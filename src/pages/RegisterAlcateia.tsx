@@ -21,7 +21,8 @@ import {
   Eye,
   EyeOff,
   Sparkles,
-  ArrowLeft
+  ArrowLeft,
+  Clock
 } from "lucide-react";
 import alcateiaLogo from "@/assets/alcateia-logo.png";
 import grankLogoDark from "@/assets/grank-logo-dark.png";
@@ -61,6 +62,7 @@ export default function RegisterAlcateia() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isPendingApproval, setIsPendingApproval] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState<RegisterFormData>({
@@ -112,14 +114,13 @@ export default function RegisterAlcateia() {
           ownerEmail: formData.ownerEmail.trim().toLowerCase(),
           ownerPhone: formData.ownerPhone?.trim() || null,
           password: formData.password,
-          isAlcateia: true, // Flag for lifetime access
+          isAlcateia: true, // Flag for lifetime access - goes to pending_registrations
         },
       });
 
       // Handle edge function errors
       if (error) {
         console.error("Registration error:", error);
-        // Parse error message for better UX
         let errorMessage = "Erro ao criar conta. Tente novamente.";
         if (error.message?.includes("non-2xx")) {
           errorMessage = "Erro de conexão. Verifique sua internet e tente novamente.";
@@ -139,6 +140,15 @@ export default function RegisterAlcateia() {
         return;
       }
 
+      // Check if registration is pending (Alcateia flow)
+      if (data?.pending) {
+        setIsSuccess(true);
+        setIsPendingApproval(true);
+        toast.success("Solicitação enviada! Aguarde aprovação.");
+        return;
+      }
+
+      // Fallback for immediate access (shouldn't happen for Alcateia)
       setIsSuccess(true);
       toast.success("Conta criada com sucesso! Bem-vindo à Alcateia!");
       
@@ -181,7 +191,94 @@ export default function RegisterAlcateia() {
     }
   };
 
-  // Success Screen
+  // Success Screen - Pending Approval (Alcateia)
+  if (isSuccess && isPendingApproval) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-50/30 flex items-center justify-center p-4">
+        <div className="w-full max-w-lg">
+          <Card className="border-amber-300 shadow-2xl">
+            <CardHeader className="text-center space-y-4 pb-2">
+              <div className="mx-auto w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center animate-fade-in-scale">
+                <Clock className="w-12 h-12 text-amber-600" />
+              </div>
+              <CardTitle className="text-2xl">Solicitação Recebida! 🐺</CardTitle>
+              <CardDescription className="text-base">
+                Seu pedido de acesso vitalício foi enviado para aprovação.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Registration Details */}
+              <div className="bg-amber-50 rounded-xl p-4 space-y-3 border border-amber-200">
+                <div className="flex items-center gap-3">
+                  <Building2 className="w-5 h-5 text-amber-600" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">Agência</p>
+                    <p className="font-medium">{formData.agencyName}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <User className="w-5 h-5 text-amber-600" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">Responsável</p>
+                    <p className="font-medium">{formData.ownerName}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Mail className="w-5 h-5 text-amber-600" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">Email</p>
+                    <p className="font-medium">{formData.ownerEmail}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Pending Approval Info */}
+              <div className="bg-gradient-to-r from-amber-500 to-amber-600 rounded-lg p-4 text-white">
+                <div className="flex items-center gap-3">
+                  <Clock className="w-6 h-6" />
+                  <div>
+                    <p className="font-semibold">Aguardando Aprovação</p>
+                    <p className="text-sm text-white/90">
+                      Seu acesso será liberado em até 24 horas.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* What happens next */}
+              <div className="bg-white border border-amber-200 rounded-lg p-4 space-y-3">
+                <p className="font-medium text-sm text-foreground">O que acontece agora?</p>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                    <span>Vamos verificar sua solicitação</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                    <span>Você receberá um email com os dados de acesso</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                    <span>Prazo máximo: 24 horas úteis</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Back to home */}
+              <Link to="/alcateia">
+                <Button variant="outline" className="w-full border-amber-300 hover:bg-amber-50">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Voltar para a página inicial
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // Success Screen - Immediate access (fallback, shouldn't happen for Alcateia)
   if (isSuccess) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-50/30 flex items-center justify-center p-4">
@@ -229,7 +326,7 @@ export default function RegisterAlcateia() {
                   <div>
                     <p className="font-semibold">Acesso Vitalício Ativado!</p>
                     <p className="text-sm text-white/90">
-                      Você agora é um membro fundador do GRank.
+                      Você agora é um membro fundador do GBRank CRM.
                     </p>
                   </div>
                 </div>

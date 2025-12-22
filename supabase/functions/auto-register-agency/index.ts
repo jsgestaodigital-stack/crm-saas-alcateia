@@ -15,6 +15,44 @@ interface AutoRegisterRequest {
   isAlcateia?: boolean; // Flag for lifetime access (Alcateia members)
 }
 
+// List of temporary/disposable email domains to block
+const BLOCKED_EMAIL_DOMAINS = [
+  // Major temporary email providers
+  "tempmail.com", "temp-mail.org", "temp-mail.io", "tempmailo.com",
+  "guerrillamail.com", "guerrillamail.org", "guerrillamail.net", "guerrillamail.biz",
+  "guerrillamail.de", "grr.la", "sharklasers.com", "guerrillamailblock.com",
+  "10minutemail.com", "10minutemail.net", "10minutemail.org", "10minemail.com",
+  "mailinator.com", "mailinator.net", "mailinator.org", "mailinator2.com",
+  "mailinater.com", "trashmail.com", "trashmail.net", "trashmail.org",
+  "throwaway.email", "throwawaymail.com", "throam.com",
+  "fakemailgenerator.com", "fakeinbox.com", "fakemail.net",
+  "getnada.com", "nada.email", "tempail.com",
+  "yopmail.com", "yopmail.fr", "yopmail.net", "cool.fr.nf", "jetable.fr.nf",
+  "mohmal.com", "mohmal.im", "mohmal.in", "mohmal.tech",
+  "dispostable.com", "mailcatch.com", "maildrop.cc",
+  "mintemail.com", "emailondeck.com", "spamgourmet.com",
+  "tempr.email", "discard.email", "discardmail.com",
+  "tempinbox.com", "mailnesia.com", "tmails.net",
+  "tmpmail.org", "tmpmail.net", "burnermail.io",
+  "mailsac.com", "inboxkitten.com", "emailfake.com",
+  "crazymailing.com", "tempemailco.com", "tmail.com",
+  "moakt.com", "mytemp.email", "mt2015.com",
+  "emailtemporario.com.br", "emailtemporar.io",
+  "getairmail.com", "generator.email", "harakirimail.com",
+  "33mail.com", "anonaddy.com", "spamex.com",
+  "mailexpire.com", "tempsky.com", "anonymbox.com",
+  // Brazilian temporary mail services
+  "emailfalso.com", "emailfake.com.br", "emailtemporario.com",
+];
+
+function isBlockedEmailDomain(email: string): boolean {
+  const domain = email.toLowerCase().split("@")[1];
+  if (!domain) return false;
+  return BLOCKED_EMAIL_DOMAINS.some(blocked => 
+    domain === blocked || domain.endsWith(`.${blocked}`)
+  );
+}
+
 // Helper to create error response with proper logging
 function errorResponse(message: string, status = 400) {
   console.error(`[auto-register-agency] Error: ${message}`);
@@ -88,6 +126,11 @@ Deno.serve(async (req) => {
       return errorResponse("Formato de email inválido.");
     }
 
+    // Block temporary/disposable email domains (only for Alcateia)
+    if (isAlcateia && isBlockedEmailDomain(ownerEmail)) {
+      return errorResponse("Emails temporários não são permitidos. Use seu email pessoal ou profissional.");
+    }
+
     // Password strength validation
     if (password.length < 8) {
       return errorResponse("Senha deve ter pelo menos 8 caracteres.");
@@ -132,6 +175,52 @@ Deno.serve(async (req) => {
       return errorResponse("Este email já está cadastrado. Faça login ou use outro email.");
     }
 
+    // ===== CHECK PENDING REGISTRATIONS DUPLICATES =====
+    const { data: existingPending } = await supabaseClient
+      .from("pending_registrations")
+      .select("id, status")
+      .eq("owner_email", ownerEmail.toLowerCase())
+      .in("status", ["pending"])
+      .maybeSingle();
+
+    if (existingPending) {
+      return errorResponse("Já existe uma solicitação pendente com este email. Aguarde a aprovação.");
+    }
+
+    // ===== ALCATEIA: SAVE TO PENDING REGISTRATIONS =====
+    if (isAlcateia) {
+      console.log("[auto-register-agency] Alcateia registration - saving to pending_registrations...");
+      
+      const { data: pendingReg, error: pendingError } = await supabaseClient
+        .from("pending_registrations")
+        .insert({
+          agency_name: agencyName.trim(),
+          agency_slug: agencySlug,
+          owner_name: ownerName.trim(),
+          owner_email: ownerEmail.toLowerCase().trim(),
+          owner_phone: ownerPhone?.trim() || null,
+          status: "pending",
+        })
+        .select()
+        .single();
+
+      if (pendingError) {
+        console.error("[auto-register-agency] Pending registration insert error:", pendingError);
+        return errorResponse("Erro ao registrar solicitação. Tente novamente.");
+      }
+
+      console.log(`[auto-register-agency] Alcateia pending registration created: ${pendingReg.id}`);
+
+      // Return success with pending status
+      return successResponse({
+        pending: true,
+        registrationId: pendingReg.id,
+        message: "Solicitação recebida! Seu acesso será liberado em até 24 horas.",
+      });
+    }
+
+    // ===== REGULAR REGISTRATION (TRIAL) - CONTINUE NORMAL FLOW =====
+
     // ===== GET STARTER PLAN =====
     console.log("[auto-register-agency] Fetching starter plan...");
     const { data: starterPlan, error: starterPlanError } = await supabaseClient
@@ -146,22 +235,17 @@ Deno.serve(async (req) => {
       return errorResponse("Plano padrão não encontrado. Contate o suporte.", 500);
     }
 
-    // ===== CALCULATE DATES =====
-    const isLifetime = isAlcateia === true;
+    // ===== CALCULATE DATES (Trial flow only - Alcateia already returned above) =====
     const trialDays = Number(starterPlan.trial_days ?? 14);
     const normalizedTrialDays = Number.isFinite(trialDays) && trialDays > 0 ? trialDays : 14;
     
     const endDate = new Date();
-    if (isLifetime) {
-      endDate.setFullYear(endDate.getFullYear() + 100); // Lifetime = 100 years
-    } else {
-      endDate.setDate(endDate.getDate() + normalizedTrialDays);
-    }
+    endDate.setDate(endDate.getDate() + normalizedTrialDays);
 
-    const agencyStatus = isLifetime ? "active" : "trial";
-    const subscriptionStatus = isLifetime ? "active" : "trial";
+    const agencyStatus = "trial";
+    const subscriptionStatus = "trial";
 
-    console.log(`[auto-register-agency] Creating agency with status: ${agencyStatus}, lifetime: ${isLifetime}`);
+    console.log(`[auto-register-agency] Creating agency with status: ${agencyStatus}`);
 
     // ===== CREATE AGENCY =====
     const { data: newAgency, error: agencyError } = await supabaseClient
@@ -170,16 +254,10 @@ Deno.serve(async (req) => {
         name: agencyName.trim(),
         slug: agencySlug,
         status: agencyStatus,
-        settings: isLifetime 
-          ? {
-              is_alcateia: true,
-              lifetime_access: true,
-              alcateia_enrolled_at: new Date().toISOString(),
-            }
-          : {
-              trial_started_at: new Date().toISOString(),
-              trial_ends_at: endDate.toISOString(),
-            },
+        settings: {
+          trial_started_at: new Date().toISOString(),
+          trial_ends_at: endDate.toISOString(),
+        },
       })
       .select()
       .single();
@@ -224,10 +302,10 @@ Deno.serve(async (req) => {
         agency_id: newAgency.id,
         plan_id: starterPlan.id,
         status: subscriptionStatus,
-        trial_ends_at: isLifetime ? null : endDate.toISOString(),
+        trial_ends_at: endDate.toISOString(),
         current_period_start: new Date().toISOString(),
         current_period_end: endDate.toISOString(),
-        metadata: { source: isLifetime ? "alcateia-lifetime" : "auto-register-agency" },
+        metadata: { source: "auto-register-agency" },
       });
 
     if (subscriptionError) {
@@ -245,7 +323,7 @@ Deno.serve(async (req) => {
       user_metadata: { 
         full_name: ownerName.trim(),
         phone: ownerPhone?.trim() || null,
-        is_alcateia: isLifetime,
+        is_alcateia: false,
       },
     });
 
@@ -339,32 +417,32 @@ Deno.serve(async (req) => {
       return errorResponse("Erro ao definir permissões do usuário. Tente novamente.");
     }
 
-    // ===== CREATE AGENCY LIMITS (with generous limits for Alcateia) =====
+    // ===== CREATE AGENCY LIMITS (Trial limits) =====
     console.log("[auto-register-agency] Creating agency limits...");
     const { error: limitsError } = await supabaseClient.from("agency_limits").upsert(
       {
         agency_id: newAgency.id,
-        max_users: isLifetime ? 10 : 3,
-        max_leads: isLifetime ? 1000 : 100,
-        max_clients: isLifetime ? 100 : 20,
-        max_recurring_clients: isLifetime ? 50 : 10,
-        storage_mb: isLifetime ? 5120 : 1024,
+        max_users: 3,
+        max_leads: 100,
+        max_clients: 20,
+        max_recurring_clients: 10,
+        storage_mb: 1024,
         features: {
           ai_agents: true,
           funil_tarefas: true,
           funil_avancado: true,
           automacoes: true,
           dashboard_principal: true,
-          dashboard_financeiro: isLifetime,
+          dashboard_financeiro: false,
           comissoes: true,
           suporte_email: true,
-          exportacao: isLifetime,
-          relatorios_agencia: isLifetime,
-          assinatura_digital: isLifetime,
+          exportacao: false,
+          relatorios_agencia: false,
+          assinatura_digital: false,
           api_access: false,
-          is_trial: !isLifetime,
-          is_alcateia: isLifetime,
-          lifetime_access: isLifetime,
+          is_trial: true,
+          is_alcateia: false,
+          lifetime_access: false,
         },
       },
       { onConflict: "agency_id" }
@@ -407,7 +485,7 @@ Deno.serve(async (req) => {
     // ===== AUDIT LOG (best-effort) =====
     try {
       await supabaseClient.from("audit_log").insert({
-        action_type: isLifetime ? "register_agency_alcateia" : "register_agency",
+        action_type: "register_agency",
         entity_type: "agency",
         entity_id: newAgency.id,
         entity_name: newAgency.name,
@@ -416,8 +494,8 @@ Deno.serve(async (req) => {
         user_name: ownerName.trim(),
         metadata: {
           owner_email: ownerEmail.toLowerCase(),
-          source: isLifetime ? "alcateia-lifetime" : "auto-register-agency",
-          is_alcateia: isLifetime,
+          source: "auto-register-agency",
+          is_alcateia: false,
         },
       });
     } catch (e) {
@@ -431,11 +509,9 @@ Deno.serve(async (req) => {
       userId,
       agencyId: newAgency.id,
       email: ownerEmail.toLowerCase(),
-      isLifetime,
-      trialEndsAt: isLifetime ? null : endDate.toISOString(),
-      message: isLifetime 
-        ? "Conta criada com sucesso! Você tem acesso vitalício." 
-        : "Conta criada com sucesso! Você tem 14 dias de teste grátis.",
+      isLifetime: false,
+      trialEndsAt: endDate.toISOString(),
+      message: "Conta criada com sucesso! Você tem 14 dias de teste grátis.",
     });
 
   } catch (error: unknown) {
