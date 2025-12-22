@@ -874,7 +874,7 @@ const Landing = () => {
             viewport={{ once: true }}
           >
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-3 font-display text-white">
-              Vai Continuar <span className="text-google-yellow">Preso na Operação</span> ou <span className="underline decoration-2 decoration-white/50">Escalar?</span>
+              Vai Continuar <span className="text-google-red" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>Preso na Operação</span> ou <span className="underline decoration-2 decoration-white/50">Escalar?</span>
             </h2>
             
             <p className="text-white/80 mb-4 text-sm sm:text-base">
