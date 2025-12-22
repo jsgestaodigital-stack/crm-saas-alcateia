@@ -426,7 +426,7 @@ const Landing = () => {
             className="text-center mt-4 sm:mt-6 text-sm sm:text-base max-w-xl mx-auto px-4"
           >
             <span className="text-google-green font-medium italic">
-              "Se você ainda gerencia perfis em planilhas, sua agência está crescendo no freio de mão."
+              "Escalar sem um sistema especializado é multiplicar problemas."
             </span>
           </motion.p>
         </div>
