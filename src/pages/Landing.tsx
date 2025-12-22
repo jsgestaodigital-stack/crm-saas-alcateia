@@ -260,7 +260,7 @@ const Landing = () => {
       </header>
 
       {/* ===== HERO SECTION ===== */}
-      <section className="relative flex items-center justify-center pt-16 sm:pt-20 pb-2 px-3 sm:px-4 section-gmb-hero overflow-hidden">
+      <section className="relative flex items-center justify-center pt-20 sm:pt-24 pb-4 px-3 sm:px-4 section-gmb-hero overflow-hidden">
         {/* Background gradients - hidden on mobile */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden hidden sm:block">
           <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-google-green/10 rounded-full blur-[120px]" />
@@ -278,7 +278,7 @@ const Landing = () => {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-1.5 px-3 sm:px-5 py-1.5 sm:py-2.5 rounded-full bg-google-green/10 border border-google-green/30 mb-2 sm:mb-4"
+              className="inline-flex items-center gap-1.5 px-3 sm:px-5 py-1.5 sm:py-2.5 rounded-full bg-google-green/10 border border-google-green/30 mb-3 sm:mb-5"
             >
               <span className="text-[10px] sm:text-sm text-google-green font-semibold">
                 🗺️ CRM #1 para Google Meu Negócio
@@ -286,19 +286,19 @@ const Landing = () => {
             </motion.div>
             
             {/* Headline Principal - Mobile Optimized */}
-            <h1 className="text-[22px] sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-2 sm:mb-3 leading-[1.2] font-display px-1">
+            <h1 className="text-[22px] sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-3 sm:mb-4 leading-[1.2] font-display px-1">
               <span className="text-foreground">Escale sua Agência de</span>
               <br />
               <span className="gradient-google-text">Google Meu Negócio</span>
             </h1>
 
             {/* Subheadline */}
-            <p className="text-xs sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-3 sm:mb-4 leading-relaxed px-2">
+            <p className="text-xs sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-4 sm:mb-5 leading-relaxed px-2">
               Da prospecção à execução recorrente. O único sistema que gerencia <strong className="text-foreground">todo o ciclo operacional</strong> de perfis Google.
             </p>
 
             {/* CTA Principal - Only Testar Grátis */}
-            <div className="flex justify-center mb-2 sm:mb-3 px-2">
+            <div className="flex justify-center mb-3 sm:mb-4 px-2">
               <Button 
                 size="lg" 
                 asChild 
@@ -311,7 +311,7 @@ const Landing = () => {
               </Button>
             </div>
             
-            <p className="text-[10px] sm:text-sm text-muted-foreground flex items-center justify-center gap-3 sm:gap-4 flex-wrap px-2 mb-2">
+            <p className="text-[10px] sm:text-sm text-muted-foreground flex items-center justify-center gap-3 sm:gap-4 flex-wrap px-2 mb-3">
               <span className="flex items-center gap-1">
                 <Check className="h-3 sm:h-4 w-3 sm:w-4 text-google-green" />
                 500+ perfis gerenciados
@@ -328,7 +328,7 @@ const Landing = () => {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.8 }}
-            className="mt-3 sm:mt-6"
+            className="mt-4 sm:mt-8"
           >
             <HeroVideo />
           </motion.div>
