@@ -1,13 +1,41 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Process base64 in chunks to prevent memory issues
+// ========================================
+// TEMPORARIAMENTE DESATIVADO
+// Comando de voz desativado para economia de custos
+// Remova este bloco e descomente o código abaixo para reativar
+// ========================================
+
+serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  return new Response(
+    JSON.stringify({ 
+      error: 'Comando de voz temporariamente desativado',
+      disabled: true 
+    }),
+    { 
+      status: 503, 
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+    }
+  );
+});
+
+/*
+// ========================================
+// CÓDIGO ORIGINAL - DESCOMENTE PARA REATIVAR
+// ========================================
+
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
 function processBase64Chunks(base64String: string, chunkSize = 32768) {
   const chunks: Uint8Array[] = [];
   let position = 0;
@@ -43,12 +71,10 @@ serve(async (req) => {
   }
 
   try {
-    // Verify authentication
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
-      console.error('No authorization header provided');
       return new Response(
-        JSON.stringify({ error: 'Unauthorized - No authorization header' }),
+        JSON.stringify({ error: 'Unauthorized' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -62,36 +88,26 @@ serve(async (req) => {
 
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
-      console.error('User verification failed:', userError?.message);
       return new Response(
-        JSON.stringify({ error: 'Unauthorized - Invalid token' }),
+        JSON.stringify({ error: 'Unauthorized' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('Authenticated user:', user.id);
-
     const { audio } = await req.json();
-    
     if (!audio) {
       throw new Error('No audio data provided');
     }
 
-    console.log('Processing audio for transcription...');
-
-    // Process audio in chunks
     const binaryAudio = processBase64Chunks(audio);
     
-    // Prepare form data
     const formData = new FormData();
     const blob = new Blob([binaryAudio], { type: 'audio/webm' });
     formData.append('file', blob, 'audio.webm');
     formData.append('model', 'whisper-1');
-    formData.append('language', 'pt'); // Portuguese
-    // Add context prompt to improve accuracy for business names and commands
-    formData.append('prompt', 'Transcrição de comandos de voz para sistema de CRM. Nomes de empresas brasileiras como: posto, restaurante, padaria, loja, mercado, supermercado, farmácia, clínica, consultório, escritório, academia, salão, barbearia, pet shop, oficina, borracharia, lanchonete, pizzaria, hamburgueria, bar, choperia, hotel, pousada, imobiliária, construtora, transportadora. Exemplos: Posto Morretes, Restaurante da Maria, Padaria São Jorge, Mercado Bom Preço.');
+    formData.append('language', 'pt');
+    formData.append('prompt', 'Transcrição de comandos de voz para sistema de CRM.');
 
-    // Send to OpenAI Whisper
     const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
       method: 'POST',
       headers: {
@@ -102,12 +118,10 @@ serve(async (req) => {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('OpenAI API error:', errorText);
       throw new Error(`OpenAI API error: ${errorText}`);
     }
 
     const result = await response.json();
-    console.log('Transcription result:', result.text);
 
     return new Response(
       JSON.stringify({ text: result.text }),
@@ -115,14 +129,11 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('Error in voice-to-text:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return new Response(
       JSON.stringify({ error: errorMessage }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });
+*/
