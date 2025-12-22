@@ -330,30 +330,30 @@ const Landing = () => {
         <div className="container mx-auto">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 max-w-5xl mx-auto">
             <GMBStatsCard 
-              icon={ListChecks} 
-              value="Checklist" 
-              label="47 pontos de otimização prontos"
+              icon={MapPin} 
+              value="Feito pra GMB" 
+              label="Único CRM 100% focado em Google Meu Negócio"
               color="green" 
               delay={0}
             />
             <GMBStatsCard 
-              icon={Users} 
-              value="Funil" 
-              label="Leads até conversão em cliente" 
+              icon={ListChecks} 
+              value="47 Pontos" 
+              label="Checklist completo de otimização de perfis" 
               color="blue" 
               delay={0.1}
             />
             <GMBStatsCard 
-              icon={Calendar} 
-              value="Recorrência" 
-              label="Tarefas e posts automatizados" 
+              icon={Rocket} 
+              value="Tudo em 1" 
+              label="Leads, execução, recorrência e comissões" 
               color="red" 
               delay={0.2}
             />
             <GMBStatsCard 
-              icon={FileText} 
-              value="Contratos" 
-              label="Propostas e assinatura digital" 
+              icon={UserCheck} 
+              value="Gestor + Op" 
+              label="Controle claro entre quem vende e quem executa" 
               color="yellow" 
               delay={0.3}
             />
