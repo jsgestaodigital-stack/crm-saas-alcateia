@@ -115,9 +115,9 @@ const Landing = () => {
       color: "google-green",
       features: [
         "6 usuários (1 admin + 5 equipe)",
-        "Leads ilimitados",
-        "Clientes em otimização ilimitados",
-        "Clientes recorrentes ilimitados",
+        "Até 5.000 leads",
+        "Até 500 clientes em otimização",
+        "Até 500 clientes recorrentes",
         "Tudo do Lobinho +",
         "Controle de comissões",
         "Logs e auditoria completos",
