@@ -187,11 +187,92 @@ Deno.serve(async (req) => {
       return errorResponse("Já existe uma solicitação pendente com este email. Aguarde a aprovação.");
     }
 
-    // ===== ALCATEIA: CREATE USER IMMEDIATELY, SAVE PENDING REGISTRATION =====
+    // ===== ALCATEIA: CREATE FULL ACCESS IMMEDIATELY (NO APPROVAL NEEDED) =====
     if (isAlcateia) {
-      console.log("[auto-register-agency] Alcateia registration - creating user immediately...");
+      console.log("[auto-register-agency] Alcateia registration - creating FULL access immediately...");
       
-      // Create user right away so they can login with their chosen password
+      // Get the lifetime/alcateia plan or fallback to starter
+      const { data: alcateiaPlan } = await supabaseClient
+        .from("plans")
+        .select("id")
+        .eq("slug", "lifetime")
+        .eq("active", true)
+        .maybeSingle();
+
+      // Fallback to starter plan if lifetime doesn't exist
+      const { data: fallbackPlan } = await supabaseClient
+        .from("plans")
+        .select("id")
+        .eq("slug", "starter")
+        .eq("active", true)
+        .maybeSingle();
+
+      const planId = alcateiaPlan?.id || fallbackPlan?.id;
+      if (!planId) {
+        console.error("[auto-register-agency] No plan found for Alcateia");
+        return errorResponse("Plano não encontrado. Contate o suporte.", 500);
+      }
+
+      // ===== CREATE AGENCY FOR ALCATEIA =====
+      const { data: alcateiaAgency, error: alcateiaAgencyError } = await supabaseClient
+        .from("agencies")
+        .insert({
+          name: agencyName.trim(),
+          slug: agencySlug,
+          status: "active", // Immediate active status for Alcateia
+          settings: {
+            is_alcateia: true,
+            lifetime_access: true,
+            registered_at: new Date().toISOString(),
+          },
+        })
+        .select()
+        .single();
+
+      if (alcateiaAgencyError || !alcateiaAgency) {
+        console.error("[auto-register-agency] Alcateia agency creation error:", alcateiaAgencyError);
+        return errorResponse(`Erro ao criar agência: ${alcateiaAgencyError?.message || 'Unknown error'}`);
+      }
+
+      console.log(`[auto-register-agency] Alcateia agency created: ${alcateiaAgency.id}`);
+
+      // Rollback helper for Alcateia
+      const rollbackAlcateia = async (reason: string, userId?: string) => {
+        console.error(`[auto-register-agency] Alcateia rolling back: ${reason}`);
+        try {
+          if (userId) await supabaseClient.auth.admin.deleteUser(userId);
+        } catch (e) { console.warn("Rollback: user delete failed", e); }
+        try {
+          await supabaseClient.from("subscriptions").delete().eq("agency_id", alcateiaAgency.id);
+        } catch (e) { console.warn("Rollback: subscription delete failed", e); }
+        try {
+          await supabaseClient.from("agencies").delete().eq("id", alcateiaAgency.id);
+        } catch (e) { console.warn("Rollback: agency delete failed", e); }
+      };
+
+      // ===== CREATE SUBSCRIPTION (LIFETIME) =====
+      const farFutureDate = new Date();
+      farFutureDate.setFullYear(farFutureDate.getFullYear() + 100); // 100 years = lifetime
+
+      const { error: alcateiaSubError } = await supabaseClient
+        .from("subscriptions")
+        .insert({
+          agency_id: alcateiaAgency.id,
+          plan_id: planId,
+          status: "active", // Immediate active subscription
+          trial_ends_at: null, // No trial
+          current_period_start: new Date().toISOString(),
+          current_period_end: farFutureDate.toISOString(), // "Forever"
+          metadata: { source: "alcateia-lifetime", is_alcateia: true },
+        });
+
+      if (alcateiaSubError) {
+        console.error("[auto-register-agency] Alcateia subscription error:", alcateiaSubError);
+        await rollbackAlcateia(`Subscription failed: ${alcateiaSubError.message}`);
+        return errorResponse("Erro ao criar assinatura. Tente novamente.");
+      }
+
+      // ===== CREATE USER =====
       const { data: alcateiaAuth, error: alcateiaAuthError } = await supabaseClient.auth.admin.createUser({
         email: ownerEmail.toLowerCase().trim(),
         password: password,
@@ -200,24 +281,25 @@ Deno.serve(async (req) => {
           full_name: ownerName.trim(),
           phone: ownerPhone?.trim() || null,
           is_alcateia: true,
-          pending_approval: true, // Mark as pending approval
+          lifetime_access: true,
         },
       });
 
       if (alcateiaAuthError || !alcateiaAuth?.user) {
         console.error("[auto-register-agency] Alcateia user creation error:", alcateiaAuthError);
+        await rollbackAlcateia(`User creation failed: ${alcateiaAuthError?.message || 'No user'}`);
         return errorResponse(`Erro ao criar usuário: ${alcateiaAuthError?.message || 'Unknown error'}`);
       }
 
       const alcateiaUserId = alcateiaAuth.user.id;
       console.log(`[auto-register-agency] Alcateia user created: ${alcateiaUserId}`);
 
-      // Create basic profile (without agency - will be set on approval)
+      // ===== CREATE PROFILE WITH AGENCY =====
       const { error: alcateiaProfileError } = await supabaseClient.from("profiles").upsert(
         {
           id: alcateiaUserId,
           full_name: ownerName.trim(),
-          current_agency_id: null, // Will be set on approval
+          current_agency_id: alcateiaAgency.id, // LINKED TO AGENCY
           status: "ativo",
         },
         { onConflict: "id" }
@@ -225,42 +307,135 @@ Deno.serve(async (req) => {
 
       if (alcateiaProfileError) {
         console.error("[auto-register-agency] Alcateia profile creation error:", alcateiaProfileError);
-        // Rollback user
-        await supabaseClient.auth.admin.deleteUser(alcateiaUserId);
+        await rollbackAlcateia(`Profile failed: ${alcateiaProfileError.message}`, alcateiaUserId);
         return errorResponse("Erro ao criar perfil. Tente novamente.");
       }
 
-      // Save to pending_registrations (WITHOUT storing password - user already created)
-      const { data: pendingReg, error: pendingError } = await supabaseClient
-        .from("pending_registrations")
-        .insert({
-          agency_name: agencyName.trim(),
-          agency_slug: agencySlug,
-          owner_name: ownerName.trim(),
-          owner_email: ownerEmail.toLowerCase().trim(),
-          owner_phone: ownerPhone?.trim() || null,
-          status: "pending",
-          is_alcateia: true,
-          source: "alcateia",
-          temp_password_hash: null, // NO password stored - user already has account
-        })
-        .select()
-        .single();
+      // ===== ADD AS AGENCY OWNER =====
+      const { error: alcateiaMemberError } = await supabaseClient.from("agency_members").insert({
+        agency_id: alcateiaAgency.id,
+        user_id: alcateiaUserId,
+        role: "owner",
+      });
 
-      if (pendingError) {
-        console.error("[auto-register-agency] Pending registration insert error:", pendingError);
-        // Non-critical - user still created, just approval tracking failed
-        console.warn("[auto-register-agency] User created but pending registration failed - manual approval needed");
+      if (alcateiaMemberError) {
+        console.error("[auto-register-agency] Alcateia member error:", alcateiaMemberError);
+        await rollbackAlcateia(`Member failed: ${alcateiaMemberError.message}`, alcateiaUserId);
+        return errorResponse("Erro ao vincular usuário à agência. Tente novamente.");
       }
 
-      console.log(`[auto-register-agency] Alcateia pending registration created: ${pendingReg?.id || 'manual'}`);
+      // ===== SET USER ROLE =====
+      const { error: alcateiaRoleError } = await supabaseClient.from("user_roles").upsert(
+        {
+          user_id: alcateiaUserId,
+          agency_id: alcateiaAgency.id,
+          role: "admin",
+        },
+        { onConflict: "user_id,agency_id" }
+      );
 
-      // Return success - user can't access dashboard yet (no agency), but password is set
+      if (alcateiaRoleError) {
+        console.error("[auto-register-agency] Alcateia role error:", alcateiaRoleError);
+        await rollbackAlcateia(`Role failed: ${alcateiaRoleError.message}`, alcateiaUserId);
+        return errorResponse("Erro ao definir papel do usuário. Tente novamente.");
+      }
+
+      // ===== SET FULL PERMISSIONS =====
+      const { error: alcateiaPermError } = await supabaseClient.from("user_permissions").upsert(
+        {
+          user_id: alcateiaUserId,
+          can_sales: true,
+          can_ops: true,
+          can_admin: true,
+          can_finance: true,
+          can_recurring: true,
+          can_manage_team: true,
+          can_manage_settings: true,
+          can_manage_commissions: true,
+          can_view_reports: true,
+          can_view_audit_logs: true,
+          can_view_leads: true,
+          can_export_data: true,
+          can_edit_leads: true,
+          can_delete_leads: true,
+          can_edit_clients: true,
+          can_delete_clients: true,
+          is_super_admin: false,
+        },
+        { onConflict: "user_id" }
+      );
+
+      if (alcateiaPermError) {
+        console.error("[auto-register-agency] Alcateia permissions error:", alcateiaPermError);
+        // Non-critical, continue
+      }
+
+      // ===== SET AGENCY LIMITS (GENEROUS FOR ALCATEIA) =====
+      const { error: alcateiaLimitsError } = await supabaseClient.from("agency_limits").upsert(
+        {
+          agency_id: alcateiaAgency.id,
+          max_clients: 100,
+          max_leads: 500,
+          max_users: 10,
+          max_recurring_clients: 50,
+          storage_mb: 5000,
+          features: { ai_agents: true, advanced_reports: true, contracts: true, proposals: true },
+        },
+        { onConflict: "agency_id" }
+      );
+
+      if (alcateiaLimitsError) {
+        console.error("[auto-register-agency] Alcateia limits error:", alcateiaLimitsError);
+        // Non-critical, continue
+      }
+
+      // ===== INITIALIZE USAGE =====
+      await supabaseClient.from("agency_usage").upsert(
+        {
+          agency_id: alcateiaAgency.id,
+          current_clients: 0,
+          current_leads: 0,
+          current_users: 1,
+          current_recurring_clients: 0,
+          storage_used_mb: 0,
+        },
+        { onConflict: "agency_id" }
+      );
+
+      // ===== ONBOARDING STATUS =====
+      try {
+        await supabaseClient.from("agency_onboarding_status").insert({
+          agency_id: alcateiaAgency.id,
+          completed_steps: [],
+        });
+      } catch (e) {
+        console.warn("[auto-register-agency] Onboarding status insert failed (non-critical)", e);
+      }
+
+      // ===== AUDIT LOG =====
+      try {
+        await supabaseClient.from("audit_log").insert({
+          agency_id: alcateiaAgency.id,
+          user_id: alcateiaUserId,
+          user_name: ownerName.trim(),
+          action_type: "create",
+          entity_type: "agency",
+          entity_id: alcateiaAgency.id,
+          entity_name: agencyName.trim(),
+          new_value: { source: "alcateia-lifetime", is_alcateia: true },
+        });
+      } catch (e) {
+        console.warn("[auto-register-agency] Audit log insert failed (non-critical)", e);
+      }
+
+      console.log(`[auto-register-agency] Alcateia registration COMPLETE for ${ownerEmail}`);
+
+      // Return success - user has FULL access now
       return successResponse({
-        pending: true,
-        registrationId: pendingReg?.id || null,
+        pending: false,
+        agencyId: alcateiaAgency.id,
         userId: alcateiaUserId,
-        message: "Conta criada! Seu acesso será liberado em até 24 horas. Use o email e senha que você cadastrou para entrar.",
+        message: "Conta criada com sucesso! Você já pode acessar o sistema.",
       });
     }
 

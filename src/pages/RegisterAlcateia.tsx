@@ -21,8 +21,7 @@ import {
   Eye,
   EyeOff,
   Sparkles,
-  ArrowLeft,
-  Clock
+  ArrowLeft
 } from "lucide-react";
 import alcateiaLogo from "@/assets/alcateia-logo.png";
 import grankLogoDark from "@/assets/grank-logo-dark.png";
@@ -62,7 +61,6 @@ export default function RegisterAlcateia() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [isPendingApproval, setIsPendingApproval] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState<RegisterFormData>({
@@ -114,17 +112,15 @@ export default function RegisterAlcateia() {
           ownerEmail: formData.ownerEmail.trim().toLowerCase(),
           ownerPhone: formData.ownerPhone?.trim() || null,
           password: formData.password,
-          isAlcateia: true, // Flag for lifetime access - goes to pending_registrations
+          isAlcateia: true, // Flag for lifetime access - IMMEDIATE ACCESS
         },
       });
 
-      // Handle edge function errors - check response body for actual error message
+      // Handle edge function errors
       if (error) {
         console.error("Registration error:", error);
-        // Try to extract error from response context (edge function may return error in body)
         let errorMessage = "Erro ao criar conta. Tente novamente.";
         
-        // The error.context?.body or data may contain the actual error message from the function
         const errorBody = (error as any)?.context?.body;
         if (errorBody) {
           try {
@@ -136,7 +132,6 @@ export default function RegisterAlcateia() {
             // Ignore parsing errors
           }
         } else if (data?.error) {
-          // Sometimes error is in data even when error object exists
           errorMessage = data.error;
         } else if (!navigator.onLine) {
           errorMessage = "Sem conexão com a internet. Verifique e tente novamente.";
@@ -155,21 +150,16 @@ export default function RegisterAlcateia() {
         return;
       }
 
-      // Check if registration is pending (Alcateia flow)
-      if (data?.pending) {
-        setIsSuccess(true);
-        setIsPendingApproval(true);
-        toast.success("Solicitação enviada! Aguarde aprovação.");
-        return;
-      }
-
-      // Fallback for immediate access (shouldn't happen for Alcateia)
+      // Success! Alcateia now has immediate access
       setIsSuccess(true);
       toast.success("Conta criada com sucesso! Bem-vindo à Alcateia!");
       
       // Auto-login the user with retry
       const attemptLogin = async (retries = 3): Promise<boolean> => {
         for (let i = 0; i < retries; i++) {
+          // Small delay to ensure backend is ready
+          await new Promise(resolve => setTimeout(resolve, 500));
+          
           const { error: signInError } = await supabase.auth.signInWithPassword({
             email: formData.ownerEmail.trim().toLowerCase(),
             password: formData.password,
@@ -187,6 +177,7 @@ export default function RegisterAlcateia() {
         return false;
       };
 
+      // Give backend a moment then attempt login
       setTimeout(async () => {
         const loginSuccess = await attemptLogin();
         if (loginSuccess) {
@@ -196,7 +187,7 @@ export default function RegisterAlcateia() {
           toast.error("Login automático falhou. Por favor, faça login manualmente.");
           navigate("/auth");
         }
-      }, 1500);
+      }, 1000);
       
     } catch (err) {
       console.error("Unexpected error:", err);
@@ -206,119 +197,7 @@ export default function RegisterAlcateia() {
     }
   };
 
-  // Success Screen - Pending Approval (Alcateia)
-  if (isSuccess && isPendingApproval) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-50/30 flex items-center justify-center p-4">
-        <div className="w-full max-w-lg">
-          <Card className="border-amber-300 shadow-2xl">
-            <CardHeader className="text-center space-y-4 pb-2">
-              <div className="mx-auto w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center animate-fade-in-scale">
-                <Clock className="w-12 h-12 text-amber-600" />
-              </div>
-              <CardTitle className="text-2xl">Solicitação Recebida! 🐺</CardTitle>
-              <CardDescription className="text-base">
-                Seu pedido de acesso vitalício foi enviado para aprovação.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Registration Details */}
-              <div className="bg-amber-50 rounded-xl p-4 space-y-3 border border-amber-200">
-                <div className="flex items-center gap-3">
-                  <Building2 className="w-5 h-5 text-amber-600" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Agência</p>
-                    <p className="font-medium">{formData.agencyName}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <User className="w-5 h-5 text-amber-600" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Responsável</p>
-                    <p className="font-medium">{formData.ownerName}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Mail className="w-5 h-5 text-amber-600" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Email</p>
-                    <p className="font-medium">{formData.ownerEmail}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Pending Approval Info */}
-              <div className="bg-gradient-to-r from-amber-500 to-amber-600 rounded-lg p-4 text-white">
-                <div className="flex items-center gap-3">
-                  <Clock className="w-6 h-6" />
-                  <div>
-                    <p className="font-semibold">Aguardando Aprovação</p>
-                    <p className="text-sm text-white/90">
-                      Seu acesso será liberado em até 24 horas.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* WhatsApp Group CTA */}
-              <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-5 text-white shadow-lg">
-                <div className="text-center space-y-3">
-                  <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mx-auto">
-                    <Phone className="w-7 h-7" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-lg">Entre no Grupo de Lançamento</p>
-                    <p className="text-sm text-white/90 mt-1">
-                      Grupo exclusivo de membros fundadores. Novidades, troca de ideias e melhorias no sistema em primeira mão.
-                    </p>
-                  </div>
-                  <a 
-                    href="https://chat.whatsapp.com/JKe4iNy4sfoLSY4wmD9A1w" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                  >
-                    <Button className="w-full bg-white text-green-600 hover:bg-green-50 font-semibold h-12 mt-2">
-                      <Phone className="w-5 h-5 mr-2" />
-                      Entrar no Grupo VIP
-                    </Button>
-                  </a>
-                </div>
-              </div>
-
-              {/* What happens next */}
-              <div className="bg-white border border-amber-200 rounded-lg p-4 space-y-3">
-                <p className="font-medium text-sm text-foreground">O que acontece agora?</p>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-                    <span>Vamos verificar sua solicitação</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-                    <span>Você receberá um email com os dados de acesso</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-                    <span>Prazo máximo: 24 horas úteis</span>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Back to home */}
-              <Link to="/alcateia">
-                <Button variant="outline" className="w-full border-amber-300 hover:bg-amber-50">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Voltar para a página inicial
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
-
-  // Success Screen - Immediate access (fallback, shouldn't happen for Alcateia)
+  // Success Screen - Immediate access for Alcateia
   if (isSuccess) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-50/30 flex items-center justify-center p-4">
@@ -366,9 +245,34 @@ export default function RegisterAlcateia() {
                   <div>
                     <p className="font-semibold">Acesso Vitalício Ativado!</p>
                     <p className="text-sm text-white/90">
-                      Você agora é um membro fundador do GBRank CRM.
+                      Você agora é um membro fundador do GRank CRM.
                     </p>
                   </div>
+                </div>
+              </div>
+
+              {/* WhatsApp Group CTA */}
+              <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-5 text-white shadow-lg">
+                <div className="text-center space-y-3">
+                  <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mx-auto">
+                    <Phone className="w-7 h-7" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-lg">Entre no Grupo de Lançamento</p>
+                    <p className="text-sm text-white/90 mt-1">
+                      Grupo exclusivo de membros fundadores. Novidades, troca de ideias e melhorias no sistema em primeira mão.
+                    </p>
+                  </div>
+                  <a 
+                    href="https://chat.whatsapp.com/JKe4iNy4sfoLSY4wmD9A1w" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    <Button className="w-full bg-white text-green-600 hover:bg-green-50 font-semibold h-12 mt-2">
+                      <Phone className="w-5 h-5 mr-2" />
+                      Entrar no Grupo VIP
+                    </Button>
+                  </a>
                 </div>
               </div>
 
