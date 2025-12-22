@@ -49,4 +49,6 @@ export function SubscriptionGuard({ children }: SubscriptionGuardProps) {
   if (!isBlocked && location.pathname.startsWith('/locked')) {
     return <Navigate to="/dashboard" replace />;
   }
+
+  return <>{children}</>;
 }

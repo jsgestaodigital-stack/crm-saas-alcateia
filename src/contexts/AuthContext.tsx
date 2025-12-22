@@ -109,10 +109,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUserRole = async (userId: string) => {
     try {
+      // Always pick the most recent role (avoid maybeSingle error when multiple rows exist)
       const { data, error } = await supabase
         .from("user_roles")
-        .select("role")
+        .select("role, created_at")
         .eq("user_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(1)
         .maybeSingle();
 
       if (error) {
@@ -130,10 +133,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUserPermissions = async (userId: string) => {
     try {
+      // Always pick the most recent permissions row (defensive)
       const { data, error } = await supabase
         .from("user_permissions")
-        .select("can_sales, can_ops, can_admin, can_finance, can_recurring, is_super_admin")
+        .select(
+          "can_sales, can_ops, can_admin, can_finance, can_recurring, is_super_admin, updated_at"
+        )
         .eq("user_id", userId)
+        .order("updated_at", { ascending: false })
+        .limit(1)
         .maybeSingle();
 
       if (error) {
@@ -141,10 +149,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Fallback: if no permissions row, check if admin (admins have all permissions)
         const { data: roleData } = await supabase
           .from("user_roles")
-          .select("role")
+          .select("role, created_at")
           .eq("user_id", userId)
+          .order("created_at", { ascending: false })
+          .limit(1)
           .maybeSingle();
-        
+
         if (roleData?.role === "admin") {
           setPermissions({
             canSales: true,
