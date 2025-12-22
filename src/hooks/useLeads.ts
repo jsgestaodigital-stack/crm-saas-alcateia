@@ -175,49 +175,56 @@ export function useLeads() {
   const moveLead = async (leadId: string, newStage: LeadPipelineStage) => {
     // Get the lead before updating to check for stage change
     const lead = leads.find(l => l.id === leadId);
-    const previousStage = lead?.pipeline_stage;
-    const previousStatus = lead?.status;
+    if (!lead) return false;
+    
+    const previousStage = lead.pipeline_stage;
+    const previousStatus = lead.status;
+
+    // Calculate new status based on stage
+    let newStatus = 'open';
+    if (newStage === 'gained') {
+      newStatus = 'gained';
+    } else if (newStage === 'lost') {
+      newStatus = 'lost';
+    } else if (newStage === 'future') {
+      newStatus = 'future';
+    }
+
+    // OPTIMISTIC UPDATE - Update UI immediately BEFORE server call
+    setLeads(prev => prev.map(l => 
+      l.id === leadId 
+        ? { ...l, pipeline_stage: newStage, status: newStatus as Lead['status'] }
+        : l
+    ));
 
     const updates: Partial<Lead> = {
       pipeline_stage: newStage,
+      status: newStatus as Lead['status'],
     };
-
-    // Auto-update status based on stage
-    if (newStage === 'gained') {
-      updates.status = 'gained';
-    } else if (newStage === 'lost') {
-      updates.status = 'lost';
-    } else if (newStage === 'future') {
-      updates.status = 'future';
-    } else {
-      updates.status = 'open';
-    }
 
     const success = await updateLead(leadId, updates);
     
-    // Force immediate refetch to update UI
-    if (success && lead) {
-      // LOG AUDITORIA: Registrar mudança de status
-      try {
-        await supabase.rpc('log_action', {
-          _action_type: 'status_change',
-          _entity_type: 'lead',
-          _entity_id: leadId,
-          _entity_name: lead.company_name,
-          _old_value: { pipeline_stage: previousStage, status: previousStatus },
-          _new_value: { pipeline_stage: newStage, status: updates.status },
-          _metadata: { 
-            changed_by: userName,
-            previous_stage_label: previousStage,
-            new_stage_label: newStage 
-          },
-        });
-      } catch (auditError) {
-        console.error('Error logging lead move:', auditError);
-        // Não falha a operação por erro de auditoria
-      }
-
-      await fetchLeads(0, false);
+    if (success) {
+      // LOG AUDITORIA: Registrar mudança de status (background, não bloqueia)
+      (async () => {
+        try {
+          await supabase.rpc('log_action', {
+            _action_type: 'status_change',
+            _entity_type: 'lead',
+            _entity_id: leadId,
+            _entity_name: lead.company_name,
+            _old_value: { pipeline_stage: previousStage, status: previousStatus },
+            _new_value: { pipeline_stage: newStage, status: newStatus },
+            _metadata: { 
+              changed_by: userName,
+              previous_stage_label: previousStage,
+              new_stage_label: newStage 
+            },
+          });
+        } catch (auditError) {
+          console.error('Error logging lead move:', auditError);
+        }
+      })();
 
       // AUTO-CREATE COMMISSION when lead moves to "gained" (Venda)
       if (newStage === 'gained' && previousStage !== 'gained' && user) {
@@ -226,7 +233,7 @@ export function useLeads() {
 
         // Create commission for SDR (who created the lead)
         if (commissionAmount > 0) {
-          await createAutoCommission({
+          createAutoCommission({
             leadId: lead.id,
             clientName: lead.company_name,
             saleValue,
@@ -238,6 +245,13 @@ export function useLeads() {
           });
         }
       }
+    } else {
+      // ROLLBACK - Revert optimistic update on failure
+      setLeads(prev => prev.map(l => 
+        l.id === leadId 
+          ? { ...l, pipeline_stage: previousStage, status: previousStatus }
+          : l
+      ));
     }
     
     return success;

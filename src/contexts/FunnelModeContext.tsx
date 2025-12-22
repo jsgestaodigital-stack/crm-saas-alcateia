@@ -25,31 +25,53 @@ export function FunnelModeProvider({ children }: { children: ReactNode }) {
   const canAccessDelivery = derived?.canOpsOrAdmin ?? false;
   const canAccessRecurring = derived?.canRecurringOrAdmin ?? false;
 
-  // Default mode based on permissions
-  const getDefaultMode = (): FunnelMode => {
+  // Read saved mode from localStorage immediately (synchronous)
+  const getSavedMode = (): FunnelMode => {
     const saved = localStorage.getItem('rankeia-funnel-mode') as FunnelMode | null;
-    
-    // If user has saved preference and can access it, use it
-    if (saved === 'sales' && canAccessSales) return 'sales';
-    if (saved === 'delivery' && canAccessDelivery) return 'delivery';
-    if (saved === 'recurring' && canAccessRecurring) return 'recurring';
-    
-    // Otherwise default to first available
-    if (canAccessDelivery) return 'delivery';
-    if (canAccessSales) return 'sales';
-    if (canAccessRecurring) return 'recurring';
-    
-    return 'delivery'; // Fallback
+    if (saved && ['delivery', 'sales', 'recurring'].includes(saved)) {
+      return saved;
+    }
+    return 'delivery';
   };
 
-  const [mode, setModeState] = useState<FunnelMode>('delivery');
+  // Initialize with saved value immediately to prevent flicker
+  const [mode, setModeState] = useState<FunnelMode>(getSavedMode);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
-  // Update mode when permissions load
+  // Validate mode against permissions once they load
   useEffect(() => {
-    if (!isLoading) {
-      setModeState(getDefaultMode());
+    if (isLoading || hasInitialized) return;
+    
+    const saved = localStorage.getItem('rankeia-funnel-mode') as FunnelMode | null;
+    
+    // If saved mode is valid for user's permissions, keep it
+    if (saved === 'sales' && canAccessSales) {
+      setModeState('sales');
+      setHasInitialized(true);
+      return;
     }
-  }, [isLoading, canAccessSales, canAccessDelivery, canAccessRecurring]);
+    if (saved === 'delivery' && canAccessDelivery) {
+      setModeState('delivery');
+      setHasInitialized(true);
+      return;
+    }
+    if (saved === 'recurring' && canAccessRecurring) {
+      setModeState('recurring');
+      setHasInitialized(true);
+      return;
+    }
+    
+    // Saved mode not accessible, default to first available
+    if (canAccessDelivery) {
+      setModeState('delivery');
+    } else if (canAccessSales) {
+      setModeState('sales');
+    } else if (canAccessRecurring) {
+      setModeState('recurring');
+    }
+    
+    setHasInitialized(true);
+  }, [isLoading, hasInitialized, canAccessSales, canAccessDelivery, canAccessRecurring]);
 
   useEffect(() => {
     localStorage.setItem('rankeia-funnel-mode', mode);
