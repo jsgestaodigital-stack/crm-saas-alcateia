@@ -239,11 +239,14 @@ export default function Contratos() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            {view !== 'list' && (
-              <Button variant="ghost" size="icon" onClick={() => setView('list')} aria-label="Voltar para lista de contratos">
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-            )}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => view === 'list' ? navigate(-1) : setView('list')} 
+              aria-label={view === 'list' ? "Voltar" : "Voltar para lista de contratos"}
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
                 <FileText className="h-6 w-6 text-primary" />
