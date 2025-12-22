@@ -36,7 +36,7 @@ const LandingAlcateia = () => {
     {
       icon: Crown,
       title: "Status Fundador",
-      description: "Você faz parte do grupo que ajudou a construir o GRank. Seu feedback molda o produto."
+      description: "Você faz parte do grupo que ajudou a construir o GRank CRM. Seu feedback molda o produto."
     },
     {
       icon: Rocket,
@@ -188,7 +188,7 @@ const LandingAlcateia = () => {
             <h1 className="text-[24px] sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-5 leading-[1.15] font-display px-1">
               <span className="text-foreground">Você Faz Parte da</span>
               <br />
-              <span className="text-amber-600">Construção do GRank</span>
+              <span className="text-amber-600">Construção do GRank CRM</span>
             </h1>
 
             {/* Subheadline */}
@@ -297,7 +297,7 @@ const LandingAlcateia = () => {
           >
             <div className="space-y-4 text-muted-foreground">
               <p className="text-sm sm:text-base leading-relaxed">
-                O GRank CRM nasceu da minha própria necessidade gerenciando <strong className="text-foreground">mais de 500 perfis</strong> na minha agência.
+                O GRank CRM nasceu da minha própria necessidade atendendo <strong className="text-foreground">mais de 500 empresas</strong> na minha agência.
               </p>
               <p className="text-sm sm:text-base leading-relaxed">
                 Agora, estou abrindo para vocês da <strong className="text-amber-600">Alcateia</strong> participarem desse período de construção. 
@@ -308,7 +308,7 @@ const LandingAlcateia = () => {
               </p>
               <div className="pt-4 border-t border-amber-100">
                 <p className="text-amber-700 font-semibold italic">
-                  "Quando o GRank for lançado oficialmente, vocês já vão estar dentro — de graça, para sempre."
+                  "Quando o GRank CRM for lançado oficialmente, vocês já vão estar dentro — de graça, para sempre."
                 </p>
                 <p className="text-sm text-muted-foreground mt-2">— João Lobo</p>
               </div>
@@ -318,7 +318,7 @@ const LandingAlcateia = () => {
           {/* Stats */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
             {[
-              { value: "500+", label: "Perfis Gerenciados" },
+              { value: "500+", label: "Empresas Atendidas" },
               { value: "4 anos", label: "Experiência" },
               { value: "350+", label: "Alunos Alcateia" },
               { value: "47", label: "Pontos Checklist" }
@@ -406,8 +406,8 @@ const LandingAlcateia = () => {
                 <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-1">João Lobo</h3>
                 <p className="text-amber-600 font-semibold text-sm mb-4">Fundador Alcateia & GRank CRM</p>
                 <p className="text-sm sm:text-base text-muted-foreground italic leading-relaxed">
-                  "Vocês são a minha comunidade. Por isso, vocês serão os primeiros a ter acesso ao GRank. 
-                  Quem estiver presente nas lives semanais e participar ativamente, vai ter esse sistema de graça — para sempre."
+                  "Parabéns por ter dedicado sua quinta-feira à tarde para estar na nossa live! 
+                  Por isso, você está sendo presenteado com acesso vitalício ao GRank CRM. É a minha forma de agradecer quem está junto comigo desde o início."
                 </p>
               </div>
               <div className="flex justify-center order-1 md:order-2">
@@ -445,8 +445,8 @@ const LandingAlcateia = () => {
             </h2>
             
             <p className="text-white/90 mb-6 text-sm sm:text-base max-w-xl mx-auto">
-              Essa oportunidade é exclusiva para alunos da Alcateia que participarem do período de testes.
-              <strong className="text-white"> Depois, não haverá outra chance.</strong>
+              Você participou da live e está recebendo essa oportunidade exclusiva.
+              <strong className="text-white"> Aproveite — depois não haverá outra chance.</strong>
             </p>
 
             <div className="flex justify-center mb-4">
