@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Check, X } from "lucide-react";
+import React from "react";
 
 const comparisonItems = [
   { gbrank: "100% focado em Google Meu Negócio", others: "Feitos para qualquer nicho" },
