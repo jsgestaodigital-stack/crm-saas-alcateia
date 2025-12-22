@@ -16,7 +16,7 @@ import { useQuestions } from "@/hooks/useQuestions";
 import { useLeads } from "@/hooks/useLeads";
 import { useRecurring } from "@/hooks/useRecurring";
 import { calculateProgress, getDaysSinceUpdate } from "@/lib/clientUtils";
-import { FunnelToggleCompact } from "@/components/FunnelToggle";
+
 import { ThemeLogo } from "@/components/ThemeLogo";
 import { cn } from "@/lib/utils";
 import { isBefore, parseISO, isToday } from "date-fns";
@@ -334,12 +334,7 @@ export function AppSidebar({
         </Button>
       </div>
 
-      {/* Funnel Toggle */}
-      {!collapsed && (
-        <div className="p-3 border-b border-border/30 bg-gradient-to-b from-transparent to-muted/20">
-          <FunnelToggleCompact />
-        </div>
-      )}
+      {/* Funnel Toggle removed - using Principais section instead */}
 
       {/* Dynamic Action Button */}
       <div className="p-3 border-b border-border/30">
