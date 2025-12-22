@@ -52,6 +52,19 @@ export function ContractEditor({ contract, onSave, onSend, onCancel }: ContractE
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
 
+  // Calculate installment value automatically when price or installments change
+  useEffect(() => {
+    if (formData.full_price && formData.installments && formData.installments > 0) {
+      const calculatedInstallmentValue = formData.full_price / formData.installments;
+      if (formData.installment_value !== calculatedInstallmentValue) {
+        setFormData(prev => ({ 
+          ...prev, 
+          installment_value: parseFloat(calculatedInstallmentValue.toFixed(2))
+        }));
+      }
+    }
+  }, [formData.full_price, formData.installments]);
+
   // Update clauses when contract type changes
   useEffect(() => {
     if (!contract?.id) {
@@ -233,15 +246,67 @@ export function ContractEditor({ contract, onSave, onSend, onCancel }: ContractE
                       type="number"
                       value={formData.installments || 1}
                       onChange={(e) => setFormData(prev => ({ ...prev, installments: parseInt(e.target.value) || 1 }))}
+                      min={1}
+                      max={24}
                     />
                   </div>
                   <div>
-                    <Label>Prazo (dias)</Label>
+                    <Label>Valor da Parcela</Label>
                     <Input
                       type="number"
-                      value={formData.execution_term_days || 30}
-                      onChange={(e) => setFormData(prev => ({ ...prev, execution_term_days: parseInt(e.target.value) || 30 }))}
+                      value={formData.installment_value || ''}
+                      disabled
+                      className="bg-muted"
                     />
+                    <p className="text-[10px] text-muted-foreground mt-1">Calculado automaticamente</p>
+                  </div>
+                </div>
+                <div>
+                  <Label>Prazo de Execução (dias)</Label>
+                  <Input
+                    type="number"
+                    value={formData.execution_term_days || 30}
+                    onChange={(e) => setFormData(prev => ({ ...prev, execution_term_days: parseInt(e.target.value) || 30 }))}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* City - Important for contract */}
+            <Card className="col-span-2">
+              <CardHeader>
+                <CardTitle className="text-base">📍 Local do Contrato</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Cidade (para assinatura e foro)</Label>
+                    <Input
+                      value={(formData.variables as Record<string, string>)?.cidade || ''}
+                      onChange={(e) => setFormData(prev => ({ 
+                        ...prev, 
+                        variables: { ...(prev.variables || {}), cidade: e.target.value }
+                      }))}
+                      placeholder="Ex: São Paulo"
+                    />
+                    <p className="text-[10px] text-muted-foreground mt-1">Usada nas variáveis {"{{cidade}}"}</p>
+                  </div>
+                  <div>
+                    <Label>Forma de Pagamento</Label>
+                    <Select
+                      value={formData.payment_method || 'pix'}
+                      onValueChange={(value) => setFormData(prev => ({ ...prev, payment_method: value }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pix">PIX</SelectItem>
+                        <SelectItem value="boleto">Boleto</SelectItem>
+                        <SelectItem value="cartao">Cartão de Crédito</SelectItem>
+                        <SelectItem value="transferencia">Transferência</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </CardContent>
