@@ -67,7 +67,7 @@ const tourStyles: Partial<Styles> = {
 };
 
 // Routes where tour SHOULD run (only dashboard has all required elements)
-const ALLOWED_ROUTES = ['/dashboard'];
+const ALLOWED_ROUTES = ['/', '/dashboard'];
 
 interface VisualTourProps {
   autoStart?: boolean;
@@ -96,9 +96,6 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
   // Don't render if no user
   if (!user) return null;
 
-  // Don't auto-start if already completed
-  if (tourCompleted) return null;
-
   // Auto-start tour on first visit (only once per session)
   useEffect(() => {
     console.log('[VisualTour] Mount state:', { 
@@ -110,6 +107,7 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
       tourCompleted 
     });
     
+    // Auto-start for new users who haven't seen the tour
     if (
       autoStart && 
       shouldAutoStart && 
@@ -120,10 +118,10 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
     ) {
       console.log('[VisualTour] Auto-starting tour...');
       hasAutoStarted.current = true;
-      // Delay to ensure DOM is ready
+      // Delay to ensure DOM is fully rendered
       const timer = setTimeout(() => {
         startTour();
-      }, 2000);
+      }, 2500);
       return () => clearTimeout(timer);
     }
   }, [autoStart, shouldAutoStart, user, startTour, isAllowedRoute, tourCompleted]);
@@ -149,13 +147,13 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
       locale={{
         back: 'Voltar',
         close: 'Fechar',
-        last: 'Finalizar',
+        last: 'Concluir',
         next: 'Próximo',
         open: 'Abrir',
         skip: 'Pular tour',
       }}
       floaterProps={{
-        disableAnimation: true,
+        disableAnimation: false,
         hideArrow: false,
       }}
     />
