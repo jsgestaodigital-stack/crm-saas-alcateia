@@ -13,8 +13,14 @@ const ALLOWED_ROUTES = ['/meu-perfil', '/auth', '/register', '/locked', '/admin/
 
 export function SubscriptionGuard({ children }: SubscriptionGuardProps) {
   const { status, isBlocked, isSuperAdmin } = useSubscriptionStatus();
-  const { permissions, isLoading: authLoading } = useAuth();
+  const { user, permissions, isLoading: authLoading } = useAuth();
   const location = useLocation();
+
+  // CRITICAL: If not authenticated and not loading, redirect to auth
+  // This is the primary authentication gate
+  if (!authLoading && !user) {
+    return <Navigate to="/auth" replace />;
+  }
 
   // Super admins bypass ALL checks immediately - even during loading
   // Check both the hook result and direct permissions
