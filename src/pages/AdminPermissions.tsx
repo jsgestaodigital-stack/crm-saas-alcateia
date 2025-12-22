@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useSafeBack } from "@/hooks/useSafeBack";
 import { ArrowLeft, Shield, Users, Check, X, Save, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -46,7 +46,7 @@ const permissionGroups = {
 };
 
 export default function AdminPermissions() {
-  const navigate = useNavigate();
+  const goBack = useSafeBack();
   const { permissions: authPermissions } = useAuth();
   const { roleTemplates, isLoading, updateRoleTemplate, isSuperAdmin } = usePermissions();
   const [editingRole, setEditingRole] = useState<AppRole | null>(null);
@@ -68,7 +68,7 @@ export default function AdminPermissions() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => navigate(-1)} variant="outline">
+            <Button onClick={goBack} variant="outline">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Voltar
             </Button>
@@ -149,7 +149,7 @@ export default function AdminPermissions() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+            <Button variant="ghost" size="icon" onClick={goBack} aria-label="Voltar">
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>

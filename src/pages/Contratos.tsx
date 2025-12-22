@@ -16,11 +16,11 @@ import {
 import { ProFeatureBadge } from '@/components/plan';
 import { Contract, ContractType } from '@/types/contract';
 import { ArrowLeft, FileText, Plus, HelpCircle, Crown } from 'lucide-react';
-import { useState as useToggleState } from 'react';
+import { useSafeBack } from '@/hooks/useSafeBack';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 export default function Contratos() {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); const goBack = useSafeBack();
   const [searchParams] = useSearchParams();
   const { user, currentAgencyId, isAdmin, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
@@ -242,7 +242,7 @@ export default function Contratos() {
             <Button 
               variant="ghost" 
               size="icon" 
-              onClick={() => view === 'list' ? navigate(-1) : setView('list')} 
+              onClick={() => view === 'list' ? goBack() : setView('list')} 
               aria-label={view === 'list' ? "Voltar" : "Voltar para lista de contratos"}
             >
               <ArrowLeft className="h-4 w-4" />
