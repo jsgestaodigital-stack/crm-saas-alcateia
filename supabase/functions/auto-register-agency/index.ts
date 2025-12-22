@@ -187,10 +187,50 @@ Deno.serve(async (req) => {
       return errorResponse("Já existe uma solicitação pendente com este email. Aguarde a aprovação.");
     }
 
-    // ===== ALCATEIA: SAVE TO PENDING REGISTRATIONS =====
+    // ===== ALCATEIA: CREATE USER IMMEDIATELY, SAVE PENDING REGISTRATION =====
     if (isAlcateia) {
-      console.log("[auto-register-agency] Alcateia registration - saving to pending_registrations...");
+      console.log("[auto-register-agency] Alcateia registration - creating user immediately...");
       
+      // Create user right away so they can login with their chosen password
+      const { data: alcateiaAuth, error: alcateiaAuthError } = await supabaseClient.auth.admin.createUser({
+        email: ownerEmail.toLowerCase().trim(),
+        password: password,
+        email_confirm: true,
+        user_metadata: { 
+          full_name: ownerName.trim(),
+          phone: ownerPhone?.trim() || null,
+          is_alcateia: true,
+          pending_approval: true, // Mark as pending approval
+        },
+      });
+
+      if (alcateiaAuthError || !alcateiaAuth?.user) {
+        console.error("[auto-register-agency] Alcateia user creation error:", alcateiaAuthError);
+        return errorResponse(`Erro ao criar usuário: ${alcateiaAuthError?.message || 'Unknown error'}`);
+      }
+
+      const alcateiaUserId = alcateiaAuth.user.id;
+      console.log(`[auto-register-agency] Alcateia user created: ${alcateiaUserId}`);
+
+      // Create basic profile (without agency - will be set on approval)
+      const { error: alcateiaProfileError } = await supabaseClient.from("profiles").upsert(
+        {
+          id: alcateiaUserId,
+          full_name: ownerName.trim(),
+          current_agency_id: null, // Will be set on approval
+          status: "ativo",
+        },
+        { onConflict: "id" }
+      );
+
+      if (alcateiaProfileError) {
+        console.error("[auto-register-agency] Alcateia profile creation error:", alcateiaProfileError);
+        // Rollback user
+        await supabaseClient.auth.admin.deleteUser(alcateiaUserId);
+        return errorResponse("Erro ao criar perfil. Tente novamente.");
+      }
+
+      // Save to pending_registrations (WITHOUT storing password - user already created)
       const { data: pendingReg, error: pendingError } = await supabaseClient
         .from("pending_registrations")
         .insert({
@@ -200,25 +240,27 @@ Deno.serve(async (req) => {
           owner_email: ownerEmail.toLowerCase().trim(),
           owner_phone: ownerPhone?.trim() || null,
           status: "pending",
-          is_alcateia: true, // Mark as Alcateia for lifetime access
+          is_alcateia: true,
           source: "alcateia",
-          temp_password_hash: password, // Store password temporarily for when approved
+          temp_password_hash: null, // NO password stored - user already has account
         })
         .select()
         .single();
 
       if (pendingError) {
         console.error("[auto-register-agency] Pending registration insert error:", pendingError);
-        return errorResponse("Erro ao registrar solicitação. Tente novamente.");
+        // Non-critical - user still created, just approval tracking failed
+        console.warn("[auto-register-agency] User created but pending registration failed - manual approval needed");
       }
 
-      console.log(`[auto-register-agency] Alcateia pending registration created: ${pendingReg.id}`);
+      console.log(`[auto-register-agency] Alcateia pending registration created: ${pendingReg?.id || 'manual'}`);
 
-      // Return success with pending status
+      // Return success - user can't access dashboard yet (no agency), but password is set
       return successResponse({
         pending: true,
-        registrationId: pendingReg.id,
-        message: "Solicitação recebida! Seu acesso será liberado em até 24 horas.",
+        registrationId: pendingReg?.id || null,
+        userId: alcateiaUserId,
+        message: "Conta criada! Seu acesso será liberado em até 24 horas. Use o email e senha que você cadastrou para entrar.",
       });
     }
 

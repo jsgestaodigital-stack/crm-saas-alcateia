@@ -171,6 +171,7 @@ Deno.serve(async (req) => {
 
     if (existingUser) {
       userId = existingUser.id;
+      console.log(`[create-agency-owner] User already exists: ${userId}, linking to agency...`);
       
       // Add to agency as owner
       await supabaseClient.from("agency_members").upsert({
@@ -179,12 +180,24 @@ Deno.serve(async (req) => {
         role: "owner",
       }, { onConflict: "agency_id,user_id" });
 
-      // Update profile current_agency
+      // Update profile current_agency AND clear pending_approval flag
       await supabaseClient.from("profiles").update({
         current_agency_id: finalAgencyId,
       }).eq("id", userId);
+
+      // Update user metadata to remove pending_approval flag
+      await supabaseClient.auth.admin.updateUserById(userId, {
+        user_metadata: { 
+          ...existingUser.user_metadata,
+          pending_approval: false,
+          approved_at: new Date().toISOString(),
+        },
+      });
+
+      console.log(`[create-agency-owner] Existing user ${userId} linked to agency ${finalAgencyId}`);
     } else {
-      // Create new user
+      // Create new user (fallback for non-Alcateia or edge cases)
+      console.log(`[create-agency-owner] Creating new user for ${email}...`);
       const { data: authData, error: authError } = await supabaseClient.auth.admin.createUser({
         email: email.toLowerCase(),
         password: finalPassword,
@@ -216,6 +229,8 @@ Deno.serve(async (req) => {
         user_id: userId,
         role: "owner",
       });
+
+      console.log(`[create-agency-owner] New user ${userId} created and linked to agency ${finalAgencyId}`);
     }
 
     // Set user role as admin for this agency
