@@ -35,8 +35,6 @@ import { DashboardHeader } from "@/components/DashboardHeader";
 import { GlobalProgressBar } from "@/components/GlobalProgressBar";
 import { Confetti, useConfetti } from "@/components/Confetti";
 import { NewClientWizard } from "@/components/NewClientWizard";
-// TEMPORARIAMENTE DESATIVADO - Comando de voz
-// import { VoiceCommandButton } from "@/components/VoiceCommandButton";
 import { TrashBin } from "@/components/TrashBin";
 import { Button } from "@/components/ui/button";
 import { FunnelToggle } from "@/components/FunnelToggle";
@@ -413,8 +411,6 @@ const Dashboard = () => {
         {/* Floating buttons - improved positioning with safe area */}
         <div className="fixed bottom-6 right-4 sm:right-6 z-40 flex flex-col items-center gap-3 safe-area-inset-bottom">
           <TrashBin />
-          {/* TEMPORARIAMENTE DESATIVADO - Comando de voz */}
-          {/* <VoiceCommandButton /> */}
         </div>
       </div>
 
