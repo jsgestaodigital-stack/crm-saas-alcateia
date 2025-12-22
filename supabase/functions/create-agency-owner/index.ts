@@ -190,13 +190,24 @@ Deno.serve(async (req) => {
     // Set permissions (full access for owner)
     await supabaseClient.from("user_permissions").upsert({
       user_id: userId,
-      agency_id: finalAgencyId,
-      is_sales: true,
-      is_ops: true,
-      is_admin: true,
-      is_finance: true,
-      is_recurring: true,
-    }, { onConflict: "user_id,agency_id" });
+      can_sales: true,
+      can_ops: true,
+      can_admin: true,
+      can_finance: true,
+      can_recurring: true,
+      can_manage_team: true,
+      can_manage_settings: true,
+      can_manage_commissions: true,
+      can_view_reports: true,
+      can_view_audit_logs: true,
+      can_view_leads: true,
+      can_export_data: true,
+      can_edit_leads: true,
+      can_delete_leads: true,
+      can_edit_clients: true,
+      can_delete_clients: true,
+      is_super_admin: false,
+    }, { onConflict: "user_id" });
 
     // Create agency limits if agency was just created
     if (agencyCreated) {
