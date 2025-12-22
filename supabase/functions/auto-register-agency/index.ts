@@ -15,49 +15,95 @@ interface AutoRegisterRequest {
   isAlcateia?: boolean; // Flag for lifetime access (Alcateia members)
 }
 
+// Helper to create error response with proper logging
+function errorResponse(message: string, status = 400) {
+  console.error(`[auto-register-agency] Error: ${message}`);
+  return new Response(
+    JSON.stringify({ success: false, error: message }),
+    { status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+  );
+}
+
+// Helper to create success response
+function successResponse(data: Record<string, unknown>) {
+  console.log(`[auto-register-agency] Success:`, JSON.stringify(data));
+  return new Response(
+    JSON.stringify({ success: true, ...data }),
+    { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+  );
+}
+
 Deno.serve(async (req) => {
+  // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
+  console.log("[auto-register-agency] Request received");
+
   try {
+    // Environment validation
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
     if (!supabaseUrl || !supabaseServiceKey) {
-      throw new Error("Missing Supabase environment variables");
+      return errorResponse("Configuração do servidor incompleta. Contate o suporte.", 500);
     }
 
     const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
 
-    const body: AutoRegisterRequest = await req.json();
+    // Parse request body
+    let body: AutoRegisterRequest;
+    try {
+      body = await req.json();
+    } catch (parseError) {
+      console.error("[auto-register-agency] JSON parse error:", parseError);
+      return errorResponse("Dados inválidos. Tente novamente.");
+    }
+
     const { agencyName, agencySlug, ownerName, ownerEmail, ownerPhone, password, isAlcateia } = body;
 
-    // Validate required fields
-    if (!agencyName || !agencySlug || !ownerName || !ownerEmail || !password) {
-      throw new Error("Missing required fields");
+    console.log(`[auto-register-agency] Processing registration for: ${ownerEmail}, isAlcateia: ${isAlcateia}`);
+
+    // ===== INPUT VALIDATION =====
+    if (!agencyName?.trim()) {
+      return errorResponse("Nome da agência é obrigatório.");
+    }
+    if (!agencySlug?.trim()) {
+      return errorResponse("Slug da agência é obrigatório.");
+    }
+    if (!ownerName?.trim()) {
+      return errorResponse("Nome do responsável é obrigatório.");
+    }
+    if (!ownerEmail?.trim()) {
+      return errorResponse("Email é obrigatório.");
+    }
+    if (!password) {
+      return errorResponse("Senha é obrigatória.");
     }
 
-    // Validate email format
+    // Email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(ownerEmail)) {
-      throw new Error("Invalid email format");
+      return errorResponse("Formato de email inválido.");
     }
 
-    // Validate password strength (mínimo: 8+, 1 maiúscula, 1 minúscula, 1 número)
+    // Password strength validation
     if (password.length < 8) {
-      throw new Error("Senha deve ter pelo menos 8 caracteres");
+      return errorResponse("Senha deve ter pelo menos 8 caracteres.");
     }
     if (!/[A-Z]/.test(password)) {
-      throw new Error("Senha deve conter pelo menos uma letra maiúscula");
+      return errorResponse("Senha deve conter pelo menos uma letra maiúscula.");
     }
     if (!/[a-z]/.test(password)) {
-      throw new Error("Senha deve conter pelo menos uma letra minúscula");
+      return errorResponse("Senha deve conter pelo menos uma letra minúscula.");
     }
     if (!/[0-9]/.test(password)) {
-      throw new Error("Senha deve conter pelo menos um número");
+      return errorResponse("Senha deve conter pelo menos um número.");
     }
-    // Check if agency slug already exists
+
+    // ===== CHECK DUPLICATES =====
+    console.log("[auto-register-agency] Checking for duplicate agency slug...");
     const { data: existingAgency, error: existingAgencyError } = await supabaseClient
       .from("agencies")
       .select("id")
@@ -65,23 +111,29 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (existingAgencyError) {
-      console.error("Agency slug check error:", existingAgencyError);
-      throw new Error("Erro ao validar nome da agência. Tente novamente.");
+      console.error("[auto-register-agency] Agency slug check error:", existingAgencyError);
+      return errorResponse("Erro ao validar nome da agência. Tente novamente.");
     }
 
     if (existingAgency) {
-      throw new Error("Uma agência com esse nome já existe. Tente outro nome.");
+      return errorResponse("Uma agência com esse nome já existe. Tente outro nome.");
     }
 
-    // Check if user already exists
-    const { data: existingUsers } = await supabaseClient.auth.admin.listUsers();
-    const existingUser = existingUsers?.users?.find(u => u.email === ownerEmail.toLowerCase());
+    console.log("[auto-register-agency] Checking for duplicate email...");
+    const { data: existingUsers, error: listUsersError } = await supabaseClient.auth.admin.listUsers();
+    
+    if (listUsersError) {
+      console.error("[auto-register-agency] List users error:", listUsersError);
+      return errorResponse("Erro ao verificar email. Tente novamente.");
+    }
 
+    const existingUser = existingUsers?.users?.find(u => u.email?.toLowerCase() === ownerEmail.toLowerCase());
     if (existingUser) {
-      throw new Error("Este email já está cadastrado. Faça login ou use outro email.");
+      return errorResponse("Este email já está cadastrado. Faça login ou use outro email.");
     }
 
-    // Get default plan (Starter) to link the trial subscription
+    // ===== GET STARTER PLAN =====
+    console.log("[auto-register-agency] Fetching starter plan...");
     const { data: starterPlan, error: starterPlanError } = await supabaseClient
       .from("plans")
       .select("id, trial_days")
@@ -90,18 +142,15 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (starterPlanError || !starterPlan?.id) {
-      console.error("Starter plan fetch error:", starterPlanError);
-      throw new Error(
-        "Não foi possível iniciar o teste grátis (plano padrão não encontrado)."
-      );
+      console.error("[auto-register-agency] Starter plan fetch error:", starterPlanError);
+      return errorResponse("Plano padrão não encontrado. Contate o suporte.", 500);
     }
 
-    // Create agency with trial status OR alcateia (lifetime)
+    // ===== CALCULATE DATES =====
+    const isLifetime = isAlcateia === true;
     const trialDays = Number(starterPlan.trial_days ?? 14);
     const normalizedTrialDays = Number.isFinite(trialDays) && trialDays > 0 ? trialDays : 14;
-
-    // Alcateia members get lifetime access (100 years in the future)
-    const isLifetime = isAlcateia === true;
+    
     const endDate = new Date();
     if (isLifetime) {
       endDate.setFullYear(endDate.getFullYear() + 100); // Lifetime = 100 years
@@ -110,34 +159,65 @@ Deno.serve(async (req) => {
     }
 
     const agencyStatus = isLifetime ? "active" : "trial";
+    const subscriptionStatus = isLifetime ? "active" : "trial";
 
+    console.log(`[auto-register-agency] Creating agency with status: ${agencyStatus}, lifetime: ${isLifetime}`);
+
+    // ===== CREATE AGENCY =====
     const { data: newAgency, error: agencyError } = await supabaseClient
       .from("agencies")
       .insert({
-        name: agencyName,
+        name: agencyName.trim(),
         slug: agencySlug,
         status: agencyStatus,
-        settings: {
-          ...(isLifetime ? {
-            is_alcateia: true,
-            lifetime_access: true,
-            alcateia_enrolled_at: new Date().toISOString(),
-          } : {
-            trial_started_at: new Date().toISOString(),
-            trial_ends_at: endDate.toISOString(),
-          }),
-        },
+        settings: isLifetime 
+          ? {
+              is_alcateia: true,
+              lifetime_access: true,
+              alcateia_enrolled_at: new Date().toISOString(),
+            }
+          : {
+              trial_started_at: new Date().toISOString(),
+              trial_ends_at: endDate.toISOString(),
+            },
       })
       .select()
       .single();
 
-    if (agencyError) {
-      console.error("Agency creation error:", agencyError);
-      throw new Error(`Erro ao criar agência: ${agencyError.message}`);
+    if (agencyError || !newAgency) {
+      console.error("[auto-register-agency] Agency creation error:", agencyError);
+      return errorResponse(`Erro ao criar agência: ${agencyError?.message || 'Unknown error'}`);
     }
 
-    // Create subscription row (required for access checks)
-    const subscriptionStatus = isLifetime ? "active" : "trial";
+    console.log(`[auto-register-agency] Agency created: ${newAgency.id}`);
+
+    // ===== ROLLBACK HELPER =====
+    const rollback = async (reason: string, userId?: string) => {
+      console.error(`[auto-register-agency] Rolling back due to: ${reason}`);
+      try {
+        if (userId) {
+          await supabaseClient.auth.admin.deleteUser(userId);
+          console.log("[auto-register-agency] Rolled back: user deleted");
+        }
+      } catch (e) {
+        console.warn("[auto-register-agency] Rollback: failed to delete user", e);
+      }
+      try {
+        await supabaseClient.from("subscriptions").delete().eq("agency_id", newAgency.id);
+        console.log("[auto-register-agency] Rolled back: subscription deleted");
+      } catch (e) {
+        console.warn("[auto-register-agency] Rollback: failed to delete subscription", e);
+      }
+      try {
+        await supabaseClient.from("agencies").delete().eq("id", newAgency.id);
+        console.log("[auto-register-agency] Rolled back: agency deleted");
+      } catch (e) {
+        console.warn("[auto-register-agency] Rollback: failed to delete agency", e);
+      }
+    };
+
+    // ===== CREATE SUBSCRIPTION =====
+    console.log("[auto-register-agency] Creating subscription...");
     const { error: subscriptionError } = await supabaseClient
       .from("subscriptions")
       .insert({
@@ -151,71 +231,53 @@ Deno.serve(async (req) => {
       });
 
     if (subscriptionError) {
-      console.error("Subscription creation error:", subscriptionError);
-      await supabaseClient.from("subscriptions").delete().eq("agency_id", newAgency.id);
-      await supabaseClient.from("agencies").delete().eq("id", newAgency.id);
-      throw new Error(`Erro ao iniciar teste grátis: ${subscriptionError.message}`);
+      console.error("[auto-register-agency] Subscription creation error:", subscriptionError);
+      await rollback(`Subscription creation failed: ${subscriptionError.message}`);
+      return errorResponse("Erro ao criar assinatura. Tente novamente.");
     }
 
-    // Create user
+    // ===== CREATE USER =====
+    console.log("[auto-register-agency] Creating user...");
     const { data: authData, error: authError } = await supabaseClient.auth.admin.createUser({
-      email: ownerEmail.toLowerCase(),
+      email: ownerEmail.toLowerCase().trim(),
       password: password,
-      email_confirm: true, // Auto confirm email for trial
+      email_confirm: true,
       user_metadata: { 
-        full_name: ownerName,
-        phone: ownerPhone,
+        full_name: ownerName.trim(),
+        phone: ownerPhone?.trim() || null,
+        is_alcateia: isLifetime,
       },
     });
 
-    if (authError) {
-      // Rollback agency creation
-      await supabaseClient.from("agencies").delete().eq("id", newAgency.id);
-      console.error("User creation error:", authError);
-      throw new Error(`Erro ao criar usuário: ${authError.message}`);
+    if (authError || !authData?.user) {
+      console.error("[auto-register-agency] User creation error:", authError);
+      await rollback(`User creation failed: ${authError?.message || 'No user returned'}`);
+      return errorResponse(`Erro ao criar usuário: ${authError?.message || 'Unknown error'}`);
     }
 
     const userId = authData.user.id;
+    console.log(`[auto-register-agency] User created: ${userId}`);
 
-    const rollback = async (reason: string) => {
-      try {
-        await supabaseClient.auth.admin.deleteUser(userId);
-      } catch (e) {
-        console.warn("Rollback: failed to delete user", e);
-      }
-      try {
-        await supabaseClient.from("subscriptions").delete().eq("agency_id", newAgency.id);
-      } catch (e) {
-        console.warn("Rollback: failed to delete subscription", e);
-      }
-      try {
-        await supabaseClient.from("agencies").delete().eq("id", newAgency.id);
-      } catch (e) {
-        console.warn("Rollback: failed to delete agency", e);
-      }
-      throw new Error(reason);
-    };
-
-    // Create profile (required for selecting current agency)
+    // ===== CREATE PROFILE (CRITICAL) =====
+    console.log("[auto-register-agency] Creating profile...");
     const { error: profileError } = await supabaseClient.from("profiles").upsert(
       {
         id: userId,
-        full_name: ownerName,
-        current_agency_id: newAgency.id,
-        // user_status enum: ativo | suspenso | excluido
+        full_name: ownerName.trim(),
+        current_agency_id: newAgency.id, // CRITICAL: This is needed for subscription check
         status: "ativo",
-        // Nota: a tabela public.profiles não possui a coluna 'phone'.
-        // O telefone permanece salvo em auth.user_metadata.
       },
       { onConflict: "id" }
     );
 
     if (profileError) {
-      console.error("Profile creation error:", profileError);
-      await rollback(`Erro ao criar perfil: ${profileError.message}`);
+      console.error("[auto-register-agency] Profile creation error:", profileError);
+      await rollback(`Profile creation failed: ${profileError.message}`, userId);
+      return errorResponse("Erro ao criar perfil. Tente novamente.");
     }
 
-    // Add as agency owner
+    // ===== ADD AS AGENCY OWNER =====
+    console.log("[auto-register-agency] Adding user as agency owner...");
     const { error: memberError } = await supabaseClient.from("agency_members").insert({
       agency_id: newAgency.id,
       user_id: userId,
@@ -223,11 +285,13 @@ Deno.serve(async (req) => {
     });
 
     if (memberError) {
-      console.error("Agency member creation error:", memberError);
-      await rollback(`Erro ao vincular usuário à agência: ${memberError.message}`);
+      console.error("[auto-register-agency] Agency member creation error:", memberError);
+      await rollback(`Agency member creation failed: ${memberError.message}`, userId);
+      return errorResponse("Erro ao vincular usuário à agência. Tente novamente.");
     }
 
-    // Set user role as admin (per-agency)
+    // ===== SET USER ROLE =====
+    console.log("[auto-register-agency] Setting user role...");
     const { error: roleError } = await supabaseClient.from("user_roles").upsert(
       {
         user_id: userId,
@@ -238,11 +302,13 @@ Deno.serve(async (req) => {
     );
 
     if (roleError) {
-      console.error("User role upsert error:", roleError);
-      await rollback(`Erro ao definir papel do usuário: ${roleError.message}`);
+      console.error("[auto-register-agency] User role upsert error:", roleError);
+      await rollback(`User role creation failed: ${roleError.message}`, userId);
+      return errorResponse("Erro ao definir papel do usuário. Tente novamente.");
     }
 
-    // Set full permissions for owner (global)
+    // ===== SET FULL PERMISSIONS =====
+    console.log("[auto-register-agency] Setting user permissions...");
     const { error: permError } = await supabaseClient.from("user_permissions").upsert(
       {
         user_id: userId,
@@ -268,49 +334,49 @@ Deno.serve(async (req) => {
     );
 
     if (permError) {
-      console.error("User permissions upsert error:", permError);
-      await rollback(`Erro ao definir permissões do usuário: ${permError.message}`);
+      console.error("[auto-register-agency] User permissions upsert error:", permError);
+      await rollback(`User permissions creation failed: ${permError.message}`, userId);
+      return errorResponse("Erro ao definir permissões do usuário. Tente novamente.");
     }
 
-    // Create trial limits (required by features/limits checks)
+    // ===== CREATE AGENCY LIMITS (with generous limits for Alcateia) =====
+    console.log("[auto-register-agency] Creating agency limits...");
     const { error: limitsError } = await supabaseClient.from("agency_limits").upsert(
       {
         agency_id: newAgency.id,
-        max_users: 3,
-        max_leads: 100,
-        max_clients: 20,
-        max_recurring_clients: 10,
-        storage_mb: 1024,
+        max_users: isLifetime ? 10 : 3,
+        max_leads: isLifetime ? 1000 : 100,
+        max_clients: isLifetime ? 100 : 20,
+        max_recurring_clients: isLifetime ? 50 : 10,
+        storage_mb: isLifetime ? 5120 : 1024,
         features: {
-          // Core features - ALL enabled in trial
           ai_agents: true,
           funil_tarefas: true,
           funil_avancado: true,
           automacoes: true,
           dashboard_principal: true,
-          dashboard_financeiro: true,
+          dashboard_financeiro: isLifetime,
           comissoes: true,
           suporte_email: true,
-
-          // BLOCKED in trial (PRO features)
-          exportacao: false,
-          relatorios_agencia: false,
-          assinatura_digital: false,
+          exportacao: isLifetime,
+          relatorios_agencia: isLifetime,
+          assinatura_digital: isLifetime,
           api_access: false,
-
-          // Trial flag
-          is_trial: true,
+          is_trial: !isLifetime,
+          is_alcateia: isLifetime,
+          lifetime_access: isLifetime,
         },
       },
       { onConflict: "agency_id" }
     );
 
     if (limitsError) {
-      console.error("Agency limits upsert error:", limitsError);
-      await rollback(`Erro ao configurar limites do teste: ${limitsError.message}`);
+      console.error("[auto-register-agency] Agency limits upsert error:", limitsError);
+      // Non-critical, continue
     }
 
-    // Initialize usage
+    // ===== INITIALIZE USAGE =====
+    console.log("[auto-register-agency] Initializing agency usage...");
     const { error: usageError } = await supabaseClient.from("agency_usage").upsert(
       {
         agency_id: newAgency.id,
@@ -324,41 +390,44 @@ Deno.serve(async (req) => {
     );
 
     if (usageError) {
-      console.error("Agency usage upsert error:", usageError);
-      await rollback(`Erro ao inicializar uso da agência: ${usageError.message}`);
+      console.error("[auto-register-agency] Agency usage upsert error:", usageError);
+      // Non-critical, continue
     }
 
-    // Create onboarding status (best-effort)
-    const { error: onboardingError } = await supabaseClient.from("agency_onboarding_status").insert({
-      agency_id: newAgency.id,
-      completed_steps: [],
-    });
-
-    if (onboardingError) {
-      console.warn("Onboarding status insert failed (non-blocking):", onboardingError);
+    // ===== CREATE ONBOARDING STATUS (best-effort) =====
+    try {
+      await supabaseClient.from("agency_onboarding_status").insert({
+        agency_id: newAgency.id,
+        completed_steps: [],
+      });
+    } catch (e) {
+      console.warn("[auto-register-agency] Onboarding status insert failed (non-blocking):", e);
     }
 
-    // Audit log (best-effort)
+    // ===== AUDIT LOG (best-effort) =====
     try {
       await supabaseClient.from("audit_log").insert({
-        action_type: "register_agency",
+        action_type: isLifetime ? "register_agency_alcateia" : "register_agency",
         entity_type: "agency",
         entity_id: newAgency.id,
         entity_name: newAgency.name,
         agency_id: newAgency.id,
         user_id: userId,
-        user_name: ownerName,
+        user_name: ownerName.trim(),
         metadata: {
           owner_email: ownerEmail.toLowerCase(),
-          source: "auto-register-agency",
+          source: isLifetime ? "alcateia-lifetime" : "auto-register-agency",
+          is_alcateia: isLifetime,
         },
       });
     } catch (e) {
-      console.warn("Failed to write audit log:", e);
+      console.warn("[auto-register-agency] Failed to write audit log:", e);
     }
 
-    return new Response(JSON.stringify({
-      success: true,
+    console.log(`[auto-register-agency] Registration complete for ${ownerEmail}`);
+
+    // ===== SUCCESS RESPONSE =====
+    return successResponse({
       userId,
       agencyId: newAgency.id,
       email: ownerEmail.toLowerCase(),
@@ -367,18 +436,11 @@ Deno.serve(async (req) => {
       message: isLifetime 
         ? "Conta criada com sucesso! Você tem acesso vitalício." 
         : "Conta criada com sucesso! Você tem 14 dias de teste grátis.",
-    }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
-  } catch (error: any) {
-    console.error("Error in auto-register:", error);
-    return new Response(JSON.stringify({
-      success: false,
-      error: error.message,
-    }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
+    console.error("[auto-register-agency] Unhandled error:", error);
+    return errorResponse(`Erro inesperado: ${errorMessage}`);
   }
 });
