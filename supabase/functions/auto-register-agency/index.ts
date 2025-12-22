@@ -191,27 +191,35 @@ Deno.serve(async (req) => {
     if (isAlcateia) {
       console.log("[auto-register-agency] Alcateia registration - creating FULL access immediately...");
       
-      // Get the lifetime/alcateia plan or fallback to starter
-      const { data: alcateiaPlan } = await supabaseClient
+      // Get the best available plan for Alcateia (lobao > lobinho > any active)
+      const { data: lobaooPlan } = await supabaseClient
         .from("plans")
         .select("id")
-        .eq("slug", "lifetime")
+        .eq("slug", "lobao")
         .eq("active", true)
         .maybeSingle();
 
-      // Fallback to starter plan if lifetime doesn't exist
-      const { data: fallbackPlan } = await supabaseClient
+      const { data: lobinhoPlan } = await supabaseClient
         .from("plans")
         .select("id")
-        .eq("slug", "starter")
+        .eq("slug", "lobinho")
         .eq("active", true)
         .maybeSingle();
 
-      const planId = alcateiaPlan?.id || fallbackPlan?.id;
+      // Fallback: get ANY active plan
+      const { data: anyActivePlan } = await supabaseClient
+        .from("plans")
+        .select("id")
+        .eq("active", true)
+        .limit(1)
+        .maybeSingle();
+
+      const planId = lobaooPlan?.id || lobinhoPlan?.id || anyActivePlan?.id;
       if (!planId) {
-        console.error("[auto-register-agency] No plan found for Alcateia");
-        return errorResponse("Plano não encontrado. Contate o suporte.", 500);
+        console.error("[auto-register-agency] No active plan found at all");
+        return errorResponse("Nenhum plano ativo encontrado. Contate o suporte.", 500);
       }
+      console.log(`[auto-register-agency] Using plan: ${planId}`);
 
       // ===== CREATE AGENCY FOR ALCATEIA =====
       const { data: alcateiaAgency, error: alcateiaAgencyError } = await supabaseClient
@@ -441,22 +449,32 @@ Deno.serve(async (req) => {
 
     // ===== REGULAR REGISTRATION (TRIAL) - CONTINUE NORMAL FLOW =====
 
-    // ===== GET STARTER PLAN =====
-    console.log("[auto-register-agency] Fetching starter plan...");
+    // ===== GET DEFAULT PLAN (lobinho as trial plan) =====
+    console.log("[auto-register-agency] Fetching default plan...");
     const { data: starterPlan, error: starterPlanError } = await supabaseClient
       .from("plans")
       .select("id, trial_days")
-      .eq("slug", "starter")
+      .eq("slug", "lobinho")
       .eq("active", true)
       .maybeSingle();
 
-    if (starterPlanError || !starterPlan?.id) {
-      console.error("[auto-register-agency] Starter plan fetch error:", starterPlanError);
+    // Fallback: get ANY active plan if lobinho doesn't exist
+    const { data: fallbackPlanRegular } = !starterPlan ? await supabaseClient
+      .from("plans")
+      .select("id, trial_days")
+      .eq("active", true)
+      .limit(1)
+      .maybeSingle() : { data: null };
+
+    const effectivePlan = starterPlan || fallbackPlanRegular;
+
+    if (starterPlanError || !effectivePlan?.id) {
+      console.error("[auto-register-agency] Default plan fetch error:", starterPlanError);
       return errorResponse("Plano padrão não encontrado. Contate o suporte.", 500);
     }
 
     // ===== CALCULATE DATES (Trial flow only - Alcateia already returned above) =====
-    const trialDays = Number(starterPlan.trial_days ?? 14);
+    const trialDays = Number(effectivePlan.trial_days ?? 14);
     const normalizedTrialDays = Number.isFinite(trialDays) && trialDays > 0 ? trialDays : 14;
     
     const endDate = new Date();
@@ -520,7 +538,7 @@ Deno.serve(async (req) => {
       .from("subscriptions")
       .insert({
         agency_id: newAgency.id,
-        plan_id: starterPlan.id,
+        plan_id: effectivePlan.id,
         status: subscriptionStatus,
         trial_ends_at: endDate.toISOString(),
         current_period_start: new Date().toISOString(),
