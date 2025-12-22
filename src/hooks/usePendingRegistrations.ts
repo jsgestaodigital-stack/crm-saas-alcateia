@@ -46,21 +46,35 @@ export function usePendingRegistrations() {
 
       const result = data as { success: boolean; agency_id: string; owner_email: string; temp_password: string };
 
-      // Criar usuário via edge function
-      const { error: createError } = await supabase.functions.invoke("create-agency-owner", {
-        body: {
-          agencyId: result.agency_id,
-          email: result.owner_email,
-          password: result.temp_password,
-          registrationId,
-        },
-      });
+      // Criar/vincular usuário via backend function
+      const { data: createData, error: createError } = await supabase.functions.invoke(
+        "create-agency-owner",
+        {
+          body: {
+            agencyId: result.agency_id,
+            email: result.owner_email,
+            password: result.temp_password,
+            registrationId,
+          },
+        }
+      );
 
       if (createError) {
         console.error("Error creating owner:", createError);
-        toast.warning("Agência aprovada, mas erro ao criar usuário. Crie manualmente.");
+        toast.warning("Agência aprovada, mas erro ao configurar o usuário. Verifique no admin.");
       } else {
-        toast.success(`Agência aprovada! Senha temporária: ${result.temp_password}`);
+        const payload = createData as
+          | { userCreated?: boolean; password?: string }
+          | null
+          | undefined;
+
+        if (payload?.userCreated && payload?.password) {
+          toast.success(`Agência aprovada! Senha temporária: ${payload.password}`);
+        } else {
+          toast.success(
+            "Agência aprovada! O usuário já tinha conta — ele deve entrar com a senha que criou (ou usar 'Esqueceu sua senha')."
+          );
+        }
       }
 
       await fetchRegistrations();
