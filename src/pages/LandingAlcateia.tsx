@@ -12,6 +12,9 @@ import grankLogoDark from "@/assets/grank-logo-dark.png";
 import grankLogoLight from "@/assets/grank-logo-light.png";
 import alcateiaLogo from "@/assets/alcateia-logo.png";
 import joaoLoboPhoto from "@/assets/joao-lobo.jpg";
+import wolfHero from "@/assets/alcateia-wolf-hero.png";
+import wolfPack from "@/assets/alcateia-wolf-pack.png";
+import wolfAbstract from "@/assets/alcateia-wolf-abstract.png";
 import { 
   AnimatedCounter, ScrollProgress, InteractiveDemo,
   GMBStatsCard, GMBBadge, GMBFeatureCard
@@ -160,6 +163,19 @@ const LandingAlcateia = () => {
 
       {/* ===== HERO SECTION ===== */}
       <section className="relative flex items-center justify-center pt-20 sm:pt-24 pb-8 px-3 sm:px-4 overflow-hidden bg-gradient-to-b from-amber-50 to-white">
+        {/* Wolf Hero Background Image */}
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[300px] sm:w-[500px] lg:w-[700px] h-full pointer-events-none overflow-hidden opacity-20 sm:opacity-30">
+          <img 
+            src={wolfHero} 
+            alt="" 
+            className="w-full h-full object-cover object-left scale-150 sm:scale-125"
+            style={{ 
+              maskImage: 'linear-gradient(to left, transparent 0%, black 30%, black 70%, transparent 100%)',
+              WebkitMaskImage: 'linear-gradient(to left, transparent 0%, black 30%, black 70%, transparent 100%)'
+            }}
+          />
+        </div>
+        
         {/* Background gradients */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden hidden sm:block">
           <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[120px]" />
@@ -274,8 +290,23 @@ const LandingAlcateia = () => {
       </section>
 
       {/* ===== SEÇÃO POR QUE AGORA ===== */}
-      <section id="porque" className="py-6 sm:py-10 px-3 sm:px-4 relative bg-gradient-to-b from-amber-50/50 to-white">
-        <div className="container mx-auto max-w-4xl">
+      <section id="porque" className="py-6 sm:py-10 px-3 sm:px-4 relative bg-gradient-to-b from-amber-50/50 to-white overflow-hidden">
+        {/* Wolf Pack Background */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute bottom-0 left-0 right-0 h-[250px] sm:h-[350px] opacity-10 sm:opacity-15">
+            <img 
+              src={wolfPack} 
+              alt="" 
+              className="w-full h-full object-cover object-top"
+              style={{ 
+                maskImage: 'linear-gradient(to top, transparent 0%, black 30%, black 100%)',
+                WebkitMaskImage: 'linear-gradient(to top, transparent 0%, black 30%, black 100%)'
+              }}
+            />
+          </div>
+        </div>
+        
+        <div className="container mx-auto max-w-4xl relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -425,6 +456,18 @@ const LandingAlcateia = () => {
 
       {/* ===== SEÇÃO CTA FINAL ===== */}
       <section id="cta" className="py-10 sm:py-14 px-3 sm:px-4 relative overflow-hidden bg-gradient-to-br from-amber-500 to-amber-700">
+        {/* Wolf Abstract Background */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] sm:w-[600px] h-[400px] sm:h-[600px] pointer-events-none opacity-10 sm:opacity-15">
+          <img 
+            src={wolfAbstract} 
+            alt="" 
+            className="w-full h-full object-contain"
+            style={{
+              filter: 'brightness(2) contrast(0.8)'
+            }}
+          />
+        </div>
+        
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIyIiBmaWxsPSIjZmZmIi8+PC9zdmc+')]" />
