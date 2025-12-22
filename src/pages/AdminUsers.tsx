@@ -12,7 +12,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Loader2, Plus, Users, Shield, RefreshCw, ArrowLeft } from "lucide-react";
+import { Loader2, Plus, Users, Shield, RefreshCw, ArrowLeft, KeyRound, MoreHorizontal } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface AgencyMember {
   id: string;
@@ -39,6 +40,10 @@ export default function AdminUsers() {
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<AgencyMember | null>(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [newUser, setNewUser] = useState({
     email: "",
     fullName: "",
@@ -150,6 +155,45 @@ export default function AdminUsers() {
       toast.error(error.message || "Erro ao criar colaborador");
     } finally {
       setIsCreating(false);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!selectedMember || !newPassword) {
+      toast.error("Defina uma nova senha");
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      toast.error("A senha deve ter no mínimo 8 caracteres");
+      return;
+    }
+
+    setIsResettingPassword(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("reset-user-password", {
+        body: {
+          user_id: selectedMember.user_id,
+          new_password: newPassword,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.error) {
+        toast.error(data.error);
+        return;
+      }
+
+      toast.success(`Senha alterada para ${selectedMember.profile?.full_name || "usuário"}`);
+      setResetPasswordDialogOpen(false);
+      setNewPassword("");
+      setSelectedMember(null);
+    } catch (error: any) {
+      console.error("Error resetting password:", error);
+      toast.error(error.message || "Erro ao resetar senha");
+    } finally {
+      setIsResettingPassword(false);
     }
   };
 
@@ -364,6 +408,7 @@ export default function AdminUsers() {
                     <TableHead>Permissões</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Desde</TableHead>
+                    <TableHead className="w-10"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -382,6 +427,26 @@ export default function AdminUsers() {
                       <TableCell className="text-muted-foreground text-sm">
                         {new Date(member.created_at).toLocaleDateString("pt-BR")}
                       </TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setSelectedMember(member);
+                                setResetPasswordDialogOpen(true);
+                              }}
+                            >
+                              <KeyRound className="w-4 h-4 mr-2" />
+                              Resetar senha
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -390,6 +455,52 @@ export default function AdminUsers() {
           </CardContent>
         </Card>
       </main>
+
+      {/* Reset Password Dialog */}
+      <Dialog open={resetPasswordDialogOpen} onOpenChange={setResetPasswordDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <KeyRound className="w-5 h-5" />
+              Resetar Senha
+            </DialogTitle>
+            <DialogDescription>
+              Defina uma nova senha para {selectedMember?.profile?.full_name || "este usuário"}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="newPassword">Nova Senha</Label>
+              <Input
+                id="newPassword"
+                type="password"
+                placeholder="Mínimo 8 caracteres"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setResetPasswordDialogOpen(false);
+              setNewPassword("");
+              setSelectedMember(null);
+            }}>
+              Cancelar
+            </Button>
+            <Button onClick={handleResetPassword} disabled={isResettingPassword}>
+              {isResettingPassword ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Salvando...
+                </>
+              ) : (
+                "Salvar nova senha"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
