@@ -11,6 +11,8 @@ export interface PendingRegistration {
   owner_phone: string | null;
   status: string;
   created_at: string;
+  is_alcateia?: boolean;
+  source?: string;
 }
 
 export function usePendingRegistrations() {

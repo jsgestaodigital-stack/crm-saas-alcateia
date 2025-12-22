@@ -200,6 +200,9 @@ Deno.serve(async (req) => {
           owner_email: ownerEmail.toLowerCase().trim(),
           owner_phone: ownerPhone?.trim() || null,
           status: "pending",
+          is_alcateia: true, // Mark as Alcateia for lifetime access
+          source: "alcateia",
+          temp_password_hash: password, // Store password temporarily for when approved
         })
         .select()
         .single();

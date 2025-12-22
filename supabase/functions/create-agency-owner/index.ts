@@ -72,45 +72,79 @@ Deno.serve(async (req) => {
       throw new Error("Missing required field: email");
     }
 
-    // Determine owner name
-    let finalOwnerName = ownerName;
-    if (!finalOwnerName && registrationId) {
-      const { data: regData } = await supabaseClient
+    console.log(`[create-agency-owner] Processing for email: ${email}, registrationId: ${registrationId}`);
+
+    // Fetch registration data if registrationId provided
+    let registrationData: any = null;
+    let isAlcateia = false;
+    let storedPassword: string | null = null;
+
+    if (registrationId) {
+      const { data: regData, error: regError } = await supabaseClient
         .from("pending_registrations")
-        .select("owner_name")
+        .select("*")
         .eq("id", registrationId)
         .single();
-      finalOwnerName = regData?.owner_name;
+
+      if (regError) {
+        console.error("[create-agency-owner] Failed to fetch registration:", regError);
+      } else {
+        registrationData = regData;
+        isAlcateia = regData?.is_alcateia === true;
+        storedPassword = regData?.temp_password_hash || null;
+        console.log(`[create-agency-owner] Registration data - isAlcateia: ${isAlcateia}`);
+      }
+    }
+
+    // Determine owner name
+    let finalOwnerName = ownerName;
+    if (!finalOwnerName && registrationData) {
+      finalOwnerName = registrationData.owner_name;
     }
     if (!finalOwnerName) {
       finalOwnerName = email.split("@")[0];
     }
 
-    // Generate password if not provided
-    const finalPassword = password || Math.random().toString(36).slice(-10) + "A1!";
+    // Use stored password from registration, or generate one
+    const finalPassword = storedPassword || password || Math.random().toString(36).slice(-10) + "A1!";
 
     // Determine agency ID (use existing or create new)
     let finalAgencyId = agencyId;
     let agencyCreated = false;
+    const finalAgencyName = agencyName || registrationData?.agency_name;
+    const finalAgencySlug = agencySlug || registrationData?.agency_slug;
 
-    if (!finalAgencyId && agencyName && agencySlug) {
-      // Create new agency
+    if (!finalAgencyId && finalAgencyName && finalAgencySlug) {
+      // Check if slug already exists
       const { data: existingAgency } = await supabaseClient
         .from("agencies")
         .select("id")
-        .eq("slug", agencySlug)
+        .eq("slug", finalAgencySlug)
         .single();
 
       if (existingAgency) {
         throw new Error("Agency slug already exists");
       }
 
+      // Create new agency with appropriate status
+      const agencyStatus = isAlcateia ? "active" : "trial";
+      const agencySettings = isAlcateia 
+        ? {
+            is_alcateia: true,
+            lifetime_access: true,
+            alcateia_enrolled_at: new Date().toISOString(),
+          }
+        : {
+            trial_started_at: new Date().toISOString(),
+          };
+
       const { data: newAgency, error: agencyError } = await supabaseClient
         .from("agencies")
         .insert({
-          name: agencyName,
-          slug: agencySlug,
-          status: "active",
+          name: finalAgencyName,
+          slug: finalAgencySlug,
+          status: agencyStatus,
+          settings: agencySettings,
         })
         .select()
         .single();
@@ -121,6 +155,7 @@ Deno.serve(async (req) => {
 
       finalAgencyId = newAgency.id;
       agencyCreated = true;
+      console.log(`[create-agency-owner] Agency created: ${finalAgencyId}, isAlcateia: ${isAlcateia}`);
     }
 
     if (!finalAgencyId) {
@@ -154,7 +189,10 @@ Deno.serve(async (req) => {
         email: email.toLowerCase(),
         password: finalPassword,
         email_confirm: true,
-        user_metadata: { full_name: finalOwnerName },
+        user_metadata: { 
+          full_name: finalOwnerName,
+          is_alcateia: isAlcateia,
+        },
       });
 
       if (authError) {
@@ -169,7 +207,7 @@ Deno.serve(async (req) => {
         id: userId,
         full_name: finalOwnerName,
         current_agency_id: finalAgencyId,
-        status: "active",
+        status: "ativo",
       }, { onConflict: "id" });
 
       // Add as agency owner
@@ -209,16 +247,65 @@ Deno.serve(async (req) => {
       is_super_admin: false,
     }, { onConflict: "user_id" });
 
-    // Create agency limits if agency was just created
+    // Create subscription if agency was just created
     if (agencyCreated) {
+      // Get starter plan
+      const { data: starterPlan } = await supabaseClient
+        .from("plans")
+        .select("id")
+        .eq("slug", "starter")
+        .eq("active", true)
+        .maybeSingle();
+
+      if (starterPlan) {
+        const endDate = new Date();
+        if (isAlcateia) {
+          endDate.setFullYear(endDate.getFullYear() + 100); // Lifetime = 100 years
+        } else {
+          endDate.setDate(endDate.getDate() + 14); // 14 day trial
+        }
+
+        await supabaseClient.from("subscriptions").upsert({
+          agency_id: finalAgencyId,
+          plan_id: starterPlan.id,
+          status: isAlcateia ? "active" : "trial",
+          trial_ends_at: isAlcateia ? null : endDate.toISOString(),
+          current_period_start: new Date().toISOString(),
+          current_period_end: endDate.toISOString(),
+          metadata: { 
+            source: isAlcateia ? "alcateia-approval" : "manual-approval",
+            is_alcateia: isAlcateia,
+          },
+        }, { onConflict: "agency_id" });
+
+        console.log(`[create-agency-owner] Subscription created - isAlcateia: ${isAlcateia}`);
+      }
+
+      // Create agency limits with appropriate values
       await supabaseClient.from("agency_limits").upsert({
         agency_id: finalAgencyId,
-        max_users: 10,
-        max_leads: 500,
-        max_clients: 100,
-        max_recurring_clients: 50,
-        storage_mb: 5120,
-        features: { ai_agents: true, exports: true, api_access: false },
+        max_users: isAlcateia ? 10 : 3,
+        max_leads: isAlcateia ? 1000 : 100,
+        max_clients: isAlcateia ? 100 : 20,
+        max_recurring_clients: isAlcateia ? 50 : 10,
+        storage_mb: isAlcateia ? 5120 : 1024,
+        features: {
+          ai_agents: true,
+          funil_tarefas: true,
+          funil_avancado: true,
+          automacoes: true,
+          dashboard_principal: true,
+          dashboard_financeiro: isAlcateia,
+          comissoes: true,
+          suporte_email: true,
+          exportacao: isAlcateia,
+          relatorios_agencia: isAlcateia,
+          assinatura_digital: isAlcateia,
+          api_access: false,
+          is_trial: !isAlcateia,
+          is_alcateia: isAlcateia,
+          lifetime_access: isAlcateia,
+        },
       }, { onConflict: "agency_id" });
 
       await supabaseClient.from("agency_usage").upsert({
@@ -229,6 +316,26 @@ Deno.serve(async (req) => {
         current_recurring_clients: 0,
         storage_used_mb: 0,
       }, { onConflict: "agency_id" });
+
+      // Create onboarding status
+      try {
+        await supabaseClient.from("agency_onboarding_status").insert({
+          agency_id: finalAgencyId,
+          completed_steps: [],
+        });
+      } catch (e) {
+        console.warn("[create-agency-owner] Onboarding status insert failed (non-blocking):", e);
+      }
+
+      console.log(`[create-agency-owner] Agency limits created - isAlcateia: ${isAlcateia}`);
+    }
+
+    // Clear temp password from pending_registrations for security
+    if (registrationId) {
+      await supabaseClient
+        .from("pending_registrations")
+        .update({ temp_password_hash: null })
+        .eq("id", registrationId);
     }
 
     // Log the action
@@ -236,7 +343,7 @@ Deno.serve(async (req) => {
       super_admin_user_id: userData.user.id,
       super_admin_name: callerProfile?.full_name || "Super Admin",
       agency_id: finalAgencyId,
-      agency_name: agencyName || null,
+      agency_name: finalAgencyName || null,
       action: agencyCreated ? "create_agency" : "create_agency_owner",
       metadata: {
         owner_email: email,
@@ -244,8 +351,11 @@ Deno.serve(async (req) => {
         registration_id: registrationId || null,
         user_created: userCreated,
         agency_created: agencyCreated,
+        is_alcateia: isAlcateia,
       },
     });
+
+    console.log(`[create-agency-owner] Completed successfully for ${email}`);
 
     return new Response(JSON.stringify({
       success: true,
@@ -255,9 +365,12 @@ Deno.serve(async (req) => {
       password: userCreated ? finalPassword : undefined,
       userCreated,
       agencyCreated,
-      message: agencyCreated 
-        ? "Agency and owner created successfully" 
-        : "Agency owner created successfully",
+      isAlcateia,
+      message: isAlcateia 
+        ? "Membro Alcateia criado com acesso vitalício!" 
+        : agencyCreated 
+          ? "Agency and owner created successfully" 
+          : "Agency owner created successfully",
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

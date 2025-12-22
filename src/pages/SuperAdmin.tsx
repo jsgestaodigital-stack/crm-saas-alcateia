@@ -422,7 +422,14 @@ export default function SuperAdmin() {
                         <TableRow key={reg.id}>
                           <TableCell>
                             <div>
-                              <p className="font-medium">{reg.agency_name}</p>
+                              <div className="flex items-center gap-2">
+                                <p className="font-medium">{reg.agency_name}</p>
+                                {reg.is_alcateia && (
+                                  <Badge className="bg-amber-500/20 text-amber-500 border-amber-500/30 text-xs">
+                                    Alcateia
+                                  </Badge>
+                                )}
+                              </div>
                               <p className="text-xs text-muted-foreground">/{reg.agency_slug}</p>
                             </div>
                           </TableCell>
