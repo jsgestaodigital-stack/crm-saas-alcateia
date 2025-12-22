@@ -67,7 +67,7 @@ const tourStyles: Partial<Styles> = {
 };
 
 // Routes where tour SHOULD run (only dashboard has all required elements)
-const ALLOWED_ROUTES = ['/', '/dashboard'];
+const ALLOWED_ROUTES = ['/dashboard'];
 
 interface VisualTourProps {
   autoStart?: boolean;
