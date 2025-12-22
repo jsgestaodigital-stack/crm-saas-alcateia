@@ -746,7 +746,7 @@ const Landing = () => {
               <span className="gradient-google-text">Estrutura?</span>
             </h2>
             <p className="text-muted-foreground mb-3 sm:mb-4 max-w-xl mx-auto text-xs sm:text-sm px-2">
-              Se você perde 1 contrato por mês por desorganização — o sistema já se paga.
+              1 contrato fechado já paga o ano todo do sistema.
             </p>
 
             {/* Toggle Anual/Mensal */}
