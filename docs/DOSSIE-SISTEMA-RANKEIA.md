@@ -1,8 +1,10 @@
-# DOSSIÊ TÉCNICO COMPLETO - SISTEMA RANKEIA
+# DOSSIÊ TÉCNICO COMPLETO - GBRANK CRM
 ## Plataforma de Gestão de Agências de Marketing Google Meu Negócio
 
+📸 Instagram: [@gbrankcrm](https://instagram.com/gbrankcrm)
+
 **Versão:** 2.0  
-**Data:** Dezembro 2024 (Atualizado em 21/12/2024)  
+**Data:** Dezembro 2024 (Atualizado em 22/12/2024)  
 **Autor:** Documentação Técnica Automatizada  
 **Propósito:** Documentar arquitetura, funcionalidades e guia de migração para SaaS
 
@@ -32,9 +34,9 @@
 
 # 1. VISÃO GERAL DO SISTEMA
 
-## 1.1 O que é o RANKEIA?
+## 1.1 O que é o GBRank CRM?
 
-O RANKEIA é uma plataforma completa de gestão operacional para agências de marketing especializadas em Google Meu Negócio (Google Business Profile). O sistema foi desenvolvido para otimizar todo o fluxo de trabalho desde a captação de leads até a entrega final do serviço, incluindo:
+O GBRank CRM é uma plataforma completa de gestão operacional para agências de marketing especializadas em Google Meu Negócio (Google Business Profile). O sistema foi desenvolvido para otimizar todo o fluxo de trabalho desde a captação de leads até a entrega final do serviço, incluindo:
 
 - **Gestão de Leads (CRM de Vendas)**: Pipeline completo com kanban, temperatura de leads, propostas e conversão
 - **Gestão de Clientes (Delivery)**: Kanban de execução com checklist de 58 itens em 5 etapas

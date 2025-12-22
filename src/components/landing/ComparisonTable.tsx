@@ -2,12 +2,12 @@ import { motion } from "framer-motion";
 import { Check, X } from "lucide-react";
 
 const comparisons = [
-  { feature: "Configuração inicial", others: "Você precisa configurar tudo", grank: "Já vem pronto para GMB" },
-  { feature: "Propostas", others: "PDF manual", grank: "Geração automática + rastreamento" },
-  { feature: "Contratos", others: "Sem contratos integrados", grank: "Contratos com IA inclusos" },
-  { feature: "Dashboard", others: "Genérico", grank: "Alertas específicos para sua operação" },
-  { feature: "Comissões", others: "Planilhas", grank: "Cálculo automático" },
-  { feature: "Suporte", others: "Genérico", grank: "Especializado em GMB" },
+  { feature: "Configuração inicial", others: "Você precisa configurar tudo", gbrank: "Já vem pronto para GMB" },
+  { feature: "Propostas", others: "PDF manual", gbrank: "Geração automática + rastreamento" },
+  { feature: "Contratos", others: "Sem contratos integrados", gbrank: "Contratos com IA inclusos" },
+  { feature: "Dashboard", others: "Genérico", gbrank: "Alertas específicos para sua operação" },
+  { feature: "Comissões", others: "Planilhas", gbrank: "Cálculo automático" },
+  { feature: "Suporte", others: "Genérico", gbrank: "Especializado em GMB" },
 ];
 
 export const ComparisonTable = () => {
@@ -29,7 +29,7 @@ export const ComparisonTable = () => {
             <span className="text-sm font-medium text-status-danger">Outros CRMs</span>
           </div>
           <div className="text-center">
-            <span className="text-sm font-bold text-primary">G-Rank</span>
+            <span className="text-sm font-bold text-primary">GBRank</span>
           </div>
         </div>
 
@@ -50,7 +50,7 @@ export const ComparisonTable = () => {
             </div>
             <div className="flex items-center justify-center gap-2">
               <Check className="h-4 w-4 text-status-success" />
-              <span className="text-xs text-foreground hidden md:block">{row.grank}</span>
+              <span className="text-xs text-foreground hidden md:block">{row.gbrank}</span>
             </div>
           </motion.div>
         ))}

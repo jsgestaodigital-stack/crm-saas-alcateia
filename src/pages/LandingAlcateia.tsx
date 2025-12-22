@@ -40,7 +40,7 @@ const LandingAlcateia = () => {
     {
       icon: Crown,
       title: "Status Fundador",
-      description: "Você faz parte do grupo que ajudou a construir o GRank CRM. Seu feedback molda o produto."
+      description: "Você faz parte do grupo que ajudou a construir o GBRank CRM. Seu feedback molda o produto."
     },
     {
       icon: Rocket,
@@ -94,7 +94,7 @@ const LandingAlcateia = () => {
           <Link to="/alcateia" className="flex items-center gap-2">
             <img src={alcateiaLogo} alt="Alcateia" className="h-7 sm:h-8 w-auto" />
             <span className="font-bold text-lg sm:text-xl text-amber-600">×</span>
-            <img src={grankLogoDark} alt="GRank CRM" className="h-6 sm:h-7 w-auto" />
+            <img src={grankLogoDark} alt="GBRank CRM" className="h-6 sm:h-7 w-auto" />
           </Link>
           
           {/* Desktop nav */}
@@ -199,7 +199,7 @@ const LandingAlcateia = () => {
             <h1 className="text-[26px] sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-5 leading-[1.15] font-display px-1">
               <span className="text-slate-900 drop-shadow-sm">Você Faz Parte da</span>
               <br />
-              <span className="text-amber-600 drop-shadow-sm">Construção do GRank CRM</span>
+              <span className="text-amber-600 drop-shadow-sm">Construção do GBRank CRM</span>
             </h1>
 
             {/* Subheadline */}
@@ -319,7 +319,7 @@ const LandingAlcateia = () => {
           >
             <div className="space-y-4 text-muted-foreground">
               <p className="text-sm sm:text-base leading-relaxed">
-                O GRank CRM nasceu da minha própria necessidade atendendo <strong className="text-foreground">mais de 500 empresas</strong> na minha agência.
+                O GBRank CRM nasceu da minha própria necessidade atendendo <strong className="text-foreground">mais de 500 empresas</strong> na minha agência.
               </p>
               <p className="text-sm sm:text-base leading-relaxed">
                 Agora, estou abrindo para vocês da <strong className="text-amber-600">Alcateia</strong> participarem desse período de construção. 
@@ -330,7 +330,7 @@ const LandingAlcateia = () => {
               </p>
               <div className="pt-4 border-t border-amber-100">
                 <p className="text-amber-700 font-semibold italic">
-                  "Quando o GRank CRM for lançado oficialmente, vocês já vão estar dentro — de graça, para sempre."
+                  "Quando o GBRank CRM for lançado oficialmente, vocês já vão estar dentro — de graça, para sempre."
                 </p>
                 <p className="text-sm text-muted-foreground mt-2">— João Lobo</p>
               </div>
@@ -426,10 +426,10 @@ const LandingAlcateia = () => {
             <div className="grid md:grid-cols-3 gap-6 items-center">
               <div className="md:col-span-2 order-2 md:order-1 text-center md:text-left">
                 <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-1">João Lobo</h3>
-                <p className="text-amber-600 font-semibold text-sm mb-4">Fundador Alcateia & GRank CRM</p>
+                <p className="text-amber-600 font-semibold text-sm mb-4">Fundador Alcateia & GBRank CRM</p>
                 <p className="text-sm sm:text-base text-muted-foreground italic leading-relaxed">
                   "Parabéns por ter dedicado sua quinta-feira à tarde para estar na nossa live! 
-                  Por isso, você está sendo presenteado com acesso vitalício ao GRank CRM. É a minha forma de agradecer quem está junto comigo desde o início."
+                  Por isso, você está sendo presenteado com acesso vitalício ao GBRank CRM. É a minha forma de agradecer quem está junto comigo desde o início."
                 </p>
               </div>
               <div className="flex justify-center order-1 md:order-2">
@@ -518,13 +518,13 @@ const LandingAlcateia = () => {
           <div className="flex items-center justify-center gap-3 mb-4">
             <img src={alcateiaLogo} alt="Alcateia" className="h-8 w-auto" />
             <span className="text-amber-400 font-bold">×</span>
-            <img src={grankLogoLight} alt="GRank CRM" className="h-7 w-auto" />
+            <img src={grankLogoLight} alt="GBRank CRM" className="h-7 w-auto" />
           </div>
           <p className="text-gray-400 text-sm mb-4">
             Programa exclusivo para alunos da comunidade Alcateia
           </p>
           <div className="border-t border-gray-700 pt-4 text-xs text-gray-500">
-            © {new Date().getFullYear()} GRank CRM × Alcateia. Todos os direitos reservados.
+            © {new Date().getFullYear()} GBRank CRM × Alcateia. Todos os direitos reservados.
           </div>
         </div>
       </footer>

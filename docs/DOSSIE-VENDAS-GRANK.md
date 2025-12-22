@@ -1,5 +1,7 @@
-# DOSSIÊ DE VENDAS — GRANK CRM
+# DOSSIÊ DE VENDAS — GBRANK CRM
 ## O Sistema de Gestão que Transforma Agências de Google Meu Negócio em Máquinas de Resultado
+
+📸 Instagram: [@gbrankcrm](https://instagram.com/gbrankcrm)
 
 ---
 
@@ -9,9 +11,9 @@
 
 Então responda com sinceridade: quantas propostas você perdeu essa semana porque não deu follow-up a tempo? Quantos contratos estão pendentes há meses porque você não consegue padronizar o processo? E pior — quantas vezes você sentiu que sua agência está crescendo, mas a bagunça está crescendo junto?
 
-O GRank CRM nasceu de uma dor real: **agências que faturam, mas não escalam.** Profissionais que dominam o Google Meu Negócio, mas perdem horas em tarefas manuais. Consultores que sabem entregar resultado, mas não conseguem mostrar valor de forma organizada.
+O GBRank CRM nasceu de uma dor real: **agências que faturam, mas não escalam.** Profissionais que dominam o Google Meu Negócio, mas perdem horas em tarefas manuais. Consultores que sabem entregar resultado, mas não conseguem mostrar valor de forma organizada.
 
-Se você sente que está sempre apagando incêndio ao invés de construir algo sólido, o GRank é o parceiro invisível que sua operação precisa.
+Se você sente que está sempre apagando incêndio ao invés de construir algo sólido, o GBRank é o parceiro invisível que sua operação precisa.
 
 ---
 
@@ -37,11 +39,11 @@ Você entrega resultado, mas o cliente não enxerga. Sem relatórios visuais e m
 
 ---
 
-## 💡 A SOLUÇÃO — O GRank CRM
+## 💡 A SOLUÇÃO — O GBRank CRM
 
-O GRank não é mais um CRM genérico tentando servir a todos. **É a única plataforma construída especificamente para quem vive o jogo do Google Meu Negócio no campo.**
+O GBRank não é mais um CRM genérico tentando servir a todos. **É a única plataforma construída especificamente para quem vive o jogo do Google Meu Negócio no campo.**
 
-### O que o GRank faz por você:
+### O que o GBRank faz por você:
 
 **FUNIL DE LEADS INTELIGENTE**
 Visualize cada oportunidade em estágios claros. Do primeiro contato até o fechamento, nada escapa. Arrastar e soltar. Filtros por responsável, cidade, valor estimado.
@@ -68,7 +70,7 @@ Owner, Admin, Gestor, Vendedor, Operador, Suporte, Visualizador. Cada um vê só
 
 ## 🏆 DIFERENCIAIS TÉCNICOS E ESTRATÉGICOS
 
-| **CRMs Genéricos** | **GRank CRM** |
+| **CRMs Genéricos** | **GBRank CRM** |
 |-------------------|----------------|
 | Precisa configurar tudo do zero | Já vem pronto para agências GMB |
 | Propostas via PDF manual | Geração automática com link rastreável |
@@ -77,13 +79,13 @@ Owner, Admin, Gestor, Vendedor, Operador, Suporte, Visualizador. Cada um vê só
 | Integrações complexas | Tudo integrado nativamente |
 | Suporte genérico | Feito por quem entende seu mercado |
 
-**O GRank não tenta ser tudo para todos.** Ele é cirurgicamente focado em resolver os problemas de quem trabalha com otimização de perfis locais. Cada funcionalidade foi pensada a partir de dores reais de agências reais.
+**O GBRank não tenta ser tudo para todos.** Ele é cirurgicamente focado em resolver os problemas de quem trabalha com otimização de perfis locais. Cada funcionalidade foi pensada a partir de dores reais de agências reais.
 
 ---
 
 ## ✨ TRANSFORMAÇÃO NA ROTINA — Antes vs Depois
 
-### ANTES do GRank:
+### ANTES do GBRank:
 - Manhã perdida procurando informações de clientes em 5 lugares diferentes
 - Propostas que demoram 2 dias para ficar prontas
 - Contratos esquecidos, renovações perdidas
@@ -91,7 +93,7 @@ Owner, Admin, Gestor, Vendedor, Operador, Suporte, Visualizador. Cada um vê só
 - Noites de insônia pensando se esqueceu algum cliente
 - Dificuldade para precificar e mostrar valor
 
-### DEPOIS do GRank:
+### DEPOIS do GBRank:
 - **8h00** — Abre o dashboard, vê exatamente o que precisa de atenção
 - **8h15** — Gera proposta para lead quente em 3 minutos
 - **8h30** — Sistema alerta: "Contrato X vence em 7 dias" — agenda renovação
@@ -111,13 +113,13 @@ O problema é: **você não é genérico.**
 
 Você trabalha com um nicho específico. Tem necessidades específicas. Precisa de propostas específicas, contratos específicos, métricas específicas.
 
-Quando você usa uma ferramenta genérica, você gasta 80% do tempo **adaptando** a ferramenta ao seu negócio. Com o GRank, você gasta 100% do tempo **operando** seu negócio.
+Quando você usa uma ferramenta genérica, você gasta 80% do tempo **adaptando** a ferramenta ao seu negócio. Com o GBRank, você gasta 100% do tempo **operando** seu negócio.
 
 **Planilhas** funcionam — até você ter 20 clientes. Depois, viram uma bomba-relógio.
 
 **Trello** organiza — mas não gera propostas, não faz contratos, não calcula comissões.
 
-**ClickUp** é poderoso — mas precisa de 40 horas de configuração para chegar perto do que o GRank entrega pronto.
+**ClickUp** é poderoso — mas precisa de 40 horas de configuração para chegar perto do que o GBRank entrega pronto.
 
 A pergunta não é "funciona?". A pergunta é: **"Quanto tempo e dinheiro você está perdendo tentando fazer funcionar?"**
 
@@ -127,7 +129,7 @@ A pergunta não é "funciona?". A pergunta é: **"Quanto tempo e dinheiro você 
 
 > *"Construído por quem vive o jogo do GMB no campo."*
 
-O GRank não nasceu em um laboratório de software. Nasceu da operação real de agências que precisavam escalar sem perder a sanidade.
+O GBRank não nasceu em um laboratório de software. Nasceu da operação real de agências que precisavam escalar sem perder a sanidade.
 
 **+150 agências já utilizam** o sistema para gerenciar mais de 3.000 clientes ativos.
 
@@ -161,7 +163,7 @@ O GRank não nasceu em um laboratório de software. Nasceu da operação real de
 
 **Você vai continuar improvisando enquanto seus concorrentes se organizam?**
 
-O GRank não é uma despesa. É uma **infraestrutura de crescimento.** Cada minuto que você economiza, cada proposta que fecha mais rápido, cada cliente que renova sem atrito — é retorno sobre investimento.
+O GBRank não é uma despesa. É uma **infraestrutura de crescimento.** Cada minuto que você economiza, cada proposta que fecha mais rápido, cada cliente que renova sem atrito — é retorno sobre investimento.
 
 ---
 
@@ -188,13 +190,15 @@ Se você ainda está:
 
 O mercado de GMB está amadurecendo. Os clientes estão ficando mais exigentes. E quem não se profissionalizar, vai ser substituído por quem se profissionalizou.
 
-**O GRank é a sua vantagem competitiva.**
+**O GBRank é a sua vantagem competitiva.**
 
 [**COMEÇAR TESTE GRÁTIS →**]
 
 ---
 
-*GRank CRM — Gestão Inteligente para Agências de Google Meu Negócio*
+*GBRank CRM — Gestão Inteligente para Agências de Google Meu Negócio*
+
+📸 Siga no Instagram: [@gbrankcrm](https://instagram.com/gbrankcrm)
 
 *Menos caos. Mais controle. Resultados reais.*
 
@@ -202,7 +206,7 @@ O mercado de GMB está amadurecendo. Os clientes estão ficando mais exigentes. 
 
 ## 📊 RESUMO EXECUTIVO (Para Apresentações Rápidas)
 
-| Aspecto | GRank CRM |
+| Aspecto | GBRank CRM |
 |---------|-----------|
 | **Foco** | Agências de Google Meu Negócio |
 | **Problema que resolve** | Desorganização, perda de leads, falta de padrão |
@@ -211,7 +215,8 @@ O mercado de GMB está amadurecendo. Os clientes estão ficando mais exigentes. 
 | **Teste** | 14 dias grátis, sem cartão |
 | **Investimento** | Planos a partir de R$ XX/mês |
 | **Resultados médios** | 60% menos tempo em tarefas manuais, 40% mais fechamentos |
+| **Instagram** | [@gbrankcrm](https://instagram.com/gbrankcrm) |
 
 ---
 
-**Caracteres totais: ~9.800** *(dentro do limite de 10.000)*
+**Caracteres totais: ~10.000** *(dentro do limite)*
