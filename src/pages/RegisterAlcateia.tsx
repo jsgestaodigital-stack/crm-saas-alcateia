@@ -118,15 +118,30 @@ export default function RegisterAlcateia() {
         },
       });
 
-      // Handle edge function errors
+      // Handle edge function errors - check response body for actual error message
       if (error) {
         console.error("Registration error:", error);
+        // Try to extract error from response context (edge function may return error in body)
         let errorMessage = "Erro ao criar conta. Tente novamente.";
-        if (error.message?.includes("non-2xx")) {
-          errorMessage = "Erro de conexão. Verifique sua internet e tente novamente.";
-        } else if (error.message) {
-          errorMessage = error.message;
+        
+        // The error.context?.body or data may contain the actual error message from the function
+        const errorBody = (error as any)?.context?.body;
+        if (errorBody) {
+          try {
+            const parsed = typeof errorBody === 'string' ? JSON.parse(errorBody) : errorBody;
+            if (parsed?.error) {
+              errorMessage = parsed.error;
+            }
+          } catch {
+            // Ignore parsing errors
+          }
+        } else if (data?.error) {
+          // Sometimes error is in data even when error object exists
+          errorMessage = data.error;
+        } else if (!navigator.onLine) {
+          errorMessage = "Sem conexão com a internet. Verifique e tente novamente.";
         }
+        
         toast.error(errorMessage);
         setIsLoading(false);
         return;
