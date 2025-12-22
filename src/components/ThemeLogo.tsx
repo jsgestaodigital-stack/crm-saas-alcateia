@@ -13,7 +13,7 @@ interface ThemeLogoProps {
  * - Dark theme (fundo escuro) → Logo com texto branco (grank-logo-light.png)
  * - Light theme (fundo claro) → Logo com texto preto (grank-logo-dark.png)
  */
-export function ThemeLogo({ className, alt = "GRank CRM" }: ThemeLogoProps) {
+export function ThemeLogo({ className, alt = "GBRank CRM" }: ThemeLogoProps) {
   const { resolvedTheme } = useTheme();
   
   // For dark backgrounds, use the light logo (white text)

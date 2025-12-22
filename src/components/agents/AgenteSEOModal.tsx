@@ -132,7 +132,7 @@ export function AgenteSEOModal({ trigger }: AgenteSEOModalProps) {
             </div>
             Agente SEO Local
             <Badge variant="outline" className="ml-2 text-[10px] border-orange-500/30 text-orange-400">
-              GRank CRM AI
+              GBRank CRM AI
             </Badge>
           </DialogTitle>
         </DialogHeader>

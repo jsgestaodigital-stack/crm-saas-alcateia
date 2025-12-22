@@ -153,11 +153,11 @@ const Landing = () => {
   const faqs = [
     {
       question: "Preciso ser expert em tecnologia para usar?",
-      answer: "Não. O GRank CRM foi feito para ser simples. Se você usa WhatsApp, vai usar o GRank CRM tranquilamente."
+      answer: "Não. O GBRank CRM foi feito para ser simples. Se você usa WhatsApp, vai usar o GBRank CRM tranquilamente."
     },
     {
       question: "Funciona especificamente para Google Meu Negócio?",
-      answer: "Sim! O GRank foi construído especificamente para agências que trabalham com Google Meu Negócio, SEO local e otimização de perfis Google."
+      answer: "Sim! O GBRank foi construído especificamente para agências que trabalham com Google Meu Negócio, SEO local e otimização de perfis Google."
     },
     {
       question: "E se eu não gostar?",
@@ -191,8 +191,8 @@ const Landing = () => {
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-border/50 safe-area-inset-top">
         <div className="container mx-auto px-3 sm:px-4 h-14 sm:h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <img src={grankLogoDark} alt="GRank CRM" className="h-7 sm:h-8 w-auto" />
-            <span className="font-bold text-lg sm:text-xl text-google-green">GRank CRM</span>
+            <img src={grankLogoDark} alt="GBRank CRM" className="h-7 sm:h-8 w-auto" />
+            <span className="font-bold text-lg sm:text-xl text-google-green">GBRank CRM</span>
           </Link>
           
           {/* Desktop nav */}
@@ -446,7 +446,7 @@ const Landing = () => {
               A Solução
             </GMBBadge>
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3 font-display mt-4">
-              O GRank CRM Gerencia{" "}
+              O GBRank CRM Gerencia{" "}
               <span className="gradient-google-text">Todo o Ciclo Operacional</span>
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto text-sm sm:text-base mb-3">
@@ -570,7 +570,7 @@ const Landing = () => {
               Comparação
             </GMBBadge>
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 font-display mt-3">
-              Por Que o GRank é{" "}
+              Por Que o GBRank é{" "}
               <span className="gradient-google-text">Diferente?</span>
             </h2>
             <p className="text-muted-foreground max-w-xl mx-auto text-sm sm:text-base">
@@ -593,7 +593,7 @@ const Landing = () => {
               </div>
               <div className="text-center mb-4 md:mb-6 pt-2">
                 <div className="text-3xl md:text-4xl mb-2 md:mb-3">✅</div>
-                <h3 className="text-base md:text-xl font-bold text-slate-800">GRank CRM</h3>
+                <h3 className="text-base md:text-xl font-bold text-slate-800">GBRank CRM</h3>
               </div>
               <ul className="space-y-2 md:space-y-3">
                 {[
