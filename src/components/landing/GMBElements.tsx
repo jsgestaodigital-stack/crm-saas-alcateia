@@ -150,13 +150,13 @@ export const GMBStatsCard = ({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay, duration: 0.5 }}
-      className={`p-5 md:p-6 rounded-2xl border-2 ${colorClasses[color]} bg-white shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 text-center`}
+      className={`p-3 sm:p-5 md:p-6 rounded-xl sm:rounded-2xl border ${colorClasses[color]} bg-white shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 text-center`}
     >
-      <div className={`w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center mx-auto mb-3 ${iconBgClasses[color]}`}>
-        <Icon className="h-6 w-6 md:h-7 md:w-7" />
+      <div className={`w-8 h-8 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-1.5 sm:mb-3 ${iconBgClasses[color]}`}>
+        <Icon className="h-4 w-4 sm:h-6 sm:w-6 md:h-7 md:w-7" />
       </div>
-      <div className="text-2xl md:text-3xl font-bold text-foreground mb-1">{value}</div>
-      <div className="text-xs md:text-sm text-muted-foreground">{label}</div>
+      <div className="text-sm sm:text-2xl md:text-3xl font-bold text-foreground mb-0.5 sm:mb-1">{value}</div>
+      <div className="text-[10px] sm:text-xs md:text-sm text-muted-foreground leading-tight">{label}</div>
     </motion.div>
   );
 };

@@ -352,8 +352,8 @@ const Landing = () => {
             />
             <GMBStatsCard 
               icon={UserCheck} 
-              value="Gestor + Op" 
-              label="Controle claro entre quem vende e quem executa" 
+              value="Controle" 
+              label="Veja em tempo real o que sua equipe está fazendo" 
               color="yellow" 
               delay={0.3}
             />
