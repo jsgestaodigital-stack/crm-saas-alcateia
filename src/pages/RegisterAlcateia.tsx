@@ -260,6 +260,31 @@ export default function RegisterAlcateia() {
                 </div>
               </div>
 
+              {/* WhatsApp Group CTA */}
+              <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-5 text-white shadow-lg">
+                <div className="text-center space-y-3">
+                  <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mx-auto">
+                    <Phone className="w-7 h-7" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-lg">Entre no Grupo de Lançamento</p>
+                    <p className="text-sm text-white/90 mt-1">
+                      Grupo exclusivo de membros fundadores. Novidades, troca de ideias e melhorias no sistema em primeira mão.
+                    </p>
+                  </div>
+                  <a 
+                    href="https://chat.whatsapp.com/JKe4iNy4sfoLSY4wmD9A1w" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    <Button className="w-full bg-white text-green-600 hover:bg-green-50 font-semibold h-12 mt-2">
+                      <Phone className="w-5 h-5 mr-2" />
+                      Entrar no Grupo VIP
+                    </Button>
+                  </a>
+                </div>
+              </div>
+
               {/* What happens next */}
               <div className="bg-white border border-amber-200 rounded-lg p-4 space-y-3">
                 <p className="font-medium text-sm text-foreground">O que acontece agora?</p>
