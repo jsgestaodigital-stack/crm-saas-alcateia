@@ -50,6 +50,8 @@ const AgenteSuspensoes = lazy(() => import("./pages/AgenteSuspensoes"));
 const Historico = lazy(() => import("./pages/Historico"));
 const Suggestions = lazy(() => import("./pages/Suggestions"));
 const Register = lazy(() => import("./pages/Register"));
+const RegisterAlcateia = lazy(() => import("./pages/RegisterAlcateia"));
+const LandingAlcateia = lazy(() => import("./pages/LandingAlcateia"));
 const Upgrade = lazy(() => import("./pages/Upgrade"));
 const Notifications = lazy(() => import("./pages/Notifications"));
 const Equipe = lazy(() => import("./pages/Equipe"));
@@ -188,6 +190,8 @@ const App = () => (
                         {/* ============ AUTENTICAÇÃO ============ */}
                         <Route path="/auth" element={<Auth />} />
                         <Route path="/register" element={<Register />} />
+                        <Route path="/alcateia" element={<LandingAlcateia />} />
+                        <Route path="/register-alcateia" element={<RegisterAlcateia />} />
                         <Route path="/convite/:token" element={<Convite />} />
                         <Route path="/locked" element={<SubscriptionLocked />} />
 

@@ -12,6 +12,7 @@ interface AutoRegisterRequest {
   ownerEmail: string;
   ownerPhone?: string;
   password: string;
+  isAlcateia?: boolean; // Flag for lifetime access (Alcateia members)
 }
 
 Deno.serve(async (req) => {
@@ -30,7 +31,7 @@ Deno.serve(async (req) => {
     const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
 
     const body: AutoRegisterRequest = await req.json();
-    const { agencyName, agencySlug, ownerName, ownerEmail, ownerPhone, password } = body;
+    const { agencyName, agencySlug, ownerName, ownerEmail, ownerPhone, password, isAlcateia } = body;
 
     // Validate required fields
     if (!agencyName || !agencySlug || !ownerName || !ownerEmail || !password) {
@@ -95,22 +96,36 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Create agency with trial status
+    // Create agency with trial status OR alcateia (lifetime)
     const trialDays = Number(starterPlan.trial_days ?? 14);
     const normalizedTrialDays = Number.isFinite(trialDays) && trialDays > 0 ? trialDays : 14;
 
-    const trialEndDate = new Date();
-    trialEndDate.setDate(trialEndDate.getDate() + normalizedTrialDays);
+    // Alcateia members get lifetime access (100 years in the future)
+    const isLifetime = isAlcateia === true;
+    const endDate = new Date();
+    if (isLifetime) {
+      endDate.setFullYear(endDate.getFullYear() + 100); // Lifetime = 100 years
+    } else {
+      endDate.setDate(endDate.getDate() + normalizedTrialDays);
+    }
+
+    const agencyStatus = isLifetime ? "active" : "trial";
 
     const { data: newAgency, error: agencyError } = await supabaseClient
       .from("agencies")
       .insert({
         name: agencyName,
         slug: agencySlug,
-        status: "trial",
+        status: agencyStatus,
         settings: {
-          trial_started_at: new Date().toISOString(),
-          trial_ends_at: trialEndDate.toISOString(),
+          ...(isLifetime ? {
+            is_alcateia: true,
+            lifetime_access: true,
+            alcateia_enrolled_at: new Date().toISOString(),
+          } : {
+            trial_started_at: new Date().toISOString(),
+            trial_ends_at: endDate.toISOString(),
+          }),
         },
       })
       .select()
@@ -122,16 +137,17 @@ Deno.serve(async (req) => {
     }
 
     // Create subscription row (required for access checks)
+    const subscriptionStatus = isLifetime ? "active" : "trial";
     const { error: subscriptionError } = await supabaseClient
       .from("subscriptions")
       .insert({
         agency_id: newAgency.id,
         plan_id: starterPlan.id,
-        status: "trial",
-        trial_ends_at: trialEndDate.toISOString(),
+        status: subscriptionStatus,
+        trial_ends_at: isLifetime ? null : endDate.toISOString(),
         current_period_start: new Date().toISOString(),
-        current_period_end: trialEndDate.toISOString(),
-        metadata: { source: "auto-register-agency" },
+        current_period_end: endDate.toISOString(),
+        metadata: { source: isLifetime ? "alcateia-lifetime" : "auto-register-agency" },
       });
 
     if (subscriptionError) {
@@ -346,8 +362,11 @@ Deno.serve(async (req) => {
       userId,
       agencyId: newAgency.id,
       email: ownerEmail.toLowerCase(),
-      trialEndsAt: trialEndDate.toISOString(),
-      message: "Conta criada com sucesso! Você tem 14 dias de teste grátis.",
+      isLifetime,
+      trialEndsAt: isLifetime ? null : endDate.toISOString(),
+      message: isLifetime 
+        ? "Conta criada com sucesso! Você tem acesso vitalício." 
+        : "Conta criada com sucesso! Você tem 14 dias de teste grátis.",
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
