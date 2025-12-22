@@ -311,10 +311,10 @@ const Landing = () => {
               </Button>
             </div>
             
-            <p className="text-[10px] sm:text-sm text-muted-foreground flex items-center justify-center gap-3 sm:gap-4 flex-wrap px-2 mb-3">
+            <p className="text-[10px] sm:text-sm text-muted-foreground flex items-center justify-center gap-3 sm:gap-4 flex-wrap px-2">
               <span className="flex items-center gap-1">
                 <Check className="h-3 sm:h-4 w-3 sm:w-4 text-google-green" />
-                500+ perfis gerenciados
+                14 dias grátis
               </span>
               <span className="flex items-center gap-1">
                 <Check className="h-3 sm:h-4 w-3 sm:w-4 text-google-green" />
@@ -322,48 +322,38 @@ const Landing = () => {
               </span>
             </p>
           </motion.div>
-
-          {/* Hero Video/Demo */}
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
-            className="mt-4 sm:mt-8"
-          >
-            <HeroVideo />
-          </motion.div>
         </div>
       </section>
 
-      {/* ===== SEÇÃO ESTATÍSTICAS ===== */}
+      {/* ===== SEÇÃO BENEFÍCIOS ===== */}
       <section className="py-4 sm:py-6 px-3 sm:px-4 relative section-gmb-light">
         <div className="container mx-auto">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 max-w-5xl mx-auto">
             <GMBStatsCard 
-              icon={MapPin} 
-              value="500+" 
-              label="Perfis gerenciados"
+              icon={ListChecks} 
+              value="Checklist" 
+              label="47 pontos de otimização prontos"
               color="green" 
               delay={0}
             />
             <GMBStatsCard 
-              icon={Calendar} 
-              value="4 anos" 
-              label="Experiência em SEO local" 
+              icon={Users} 
+              value="Funil" 
+              label="Leads até conversão em cliente" 
               color="blue" 
               delay={0.1}
             />
             <GMBStatsCard 
-              icon={Target} 
-              value="1.500+" 
-              label="Reuniões de vendas" 
+              icon={Calendar} 
+              value="Recorrência" 
+              label="Tarefas e posts automatizados" 
               color="red" 
               delay={0.2}
             />
             <GMBStatsCard 
-              icon={CheckCircle2} 
-              value="47" 
-              label="Pontos de otimização" 
+              icon={FileText} 
+              value="Contratos" 
+              label="Propostas e assinatura digital" 
               color="yellow" 
               delay={0.3}
             />
