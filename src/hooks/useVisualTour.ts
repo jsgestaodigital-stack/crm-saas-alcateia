@@ -10,75 +10,61 @@ export interface TourStep extends Step {
   id: string;
 }
 
-// Tour steps configuration
+// Tour steps configuration - focused on always-visible elements
 export const TOUR_STEPS: TourStep[] = [
   {
     id: 'dashboard-welcome',
     target: 'body',
-    content: 'Bem-vindo ao Rankeia! Vamos fazer um tour rápido para você conhecer as principais funcionalidades do sistema.',
+    content: '🎉 Bem-vindo ao GRank CRM! Vamos fazer um tour rápido para você conhecer as principais funcionalidades do sistema.',
     placement: 'center',
     disableBeacon: true,
   },
   {
     id: 'sidebar-navigation',
     target: '[data-tour="sidebar"]',
-    content: 'Aqui está sua navegação principal. Alterne entre os funis de Otimização, Vendas e Recorrência.',
+    content: '📋 Este é o menu principal do sistema. Aqui você pode alternar entre Vendas, Otimização e Recorrência, além de acessar propostas, contratos e ferramentas.',
+    placement: 'right',
+    disableBeacon: true,
+  },
+  {
+    id: 'new-client-button',
+    target: '[data-tour="new-client"]',
+    content: '➕ Clique aqui para adicionar novos clientes ou leads ao sistema. O botão muda conforme o funil ativo.',
     placement: 'right',
     disableBeacon: true,
   },
   {
     id: 'funnel-toggle',
     target: '[data-tour="funnel-toggle"]',
-    content: 'Use este seletor para alternar entre os diferentes modos de trabalho: Operacional, Vendas e Recorrência.',
+    content: '🔄 Use este seletor para alternar entre os diferentes modos: Vendas (prospecção), Otimização (execução) e Recorrência (tarefas periódicas).',
     placement: 'bottom',
     disableBeacon: true,
   },
   {
     id: 'main-stats',
     target: '[data-tour="main-stats"]',
-    content: 'Acompanhe os KPIs mais importantes da sua operação em tempo real nesta área.',
+    content: '📊 Aqui você vê os indicadores do funil atual: clientes ativos, leads em aberto, tarefas do dia e mais.',
     placement: 'bottom',
     disableBeacon: true,
   },
   {
     id: 'kanban-board',
     target: '[data-tour="kanban-board"]',
-    content: 'O Kanban permite visualizar e gerenciar o fluxo de clientes ou leads. Arraste os cards entre as colunas.',
-    placement: 'top',
-    disableBeacon: true,
-  },
-  {
-    id: 'new-client-button',
-    target: '[data-tour="new-client"]',
-    content: 'Clique aqui para adicionar novos clientes ou leads ao sistema.',
-    placement: 'top',
-    disableBeacon: true,
-  },
-  {
-    id: 'team-button',
-    target: '[data-tour="team-button"]',
-    content: 'Gerencie sua equipe: convide membros, atribua funções e configure permissões.',
-    placement: 'top',
-    disableBeacon: true,
-  },
-  {
-    id: 'admin-button',
-    target: '[data-tour="admin-button"]',
-    content: 'Acesse configurações avançadas, planos, integrações e auditoria do sistema.',
+    content: '📌 O Kanban mostra seus clientes/leads organizados por etapa. Arraste os cards para movê-los no funil.',
     placement: 'top',
     disableBeacon: true,
   },
   {
     id: 'notifications',
     target: '[data-tour="notifications"]',
-    content: 'Receba alertas importantes, atualizações e notificações do sistema aqui.',
-    placement: 'top',
+    content: '🔔 Aqui você recebe alertas, avisos de prazos e atualizações importantes do sistema.',
+    placement: 'bottom',
     disableBeacon: true,
   },
   {
     id: 'tour-complete',
     target: 'body',
-    content: 'Parabéns! Agora você conhece o básico do Rankeia. Explore à vontade e bom trabalho!',
+    content: '🚀 Pronto! Agora você conhece o básico do GRank CRM. Explore o menu lateral para acessar Propostas, Contratos, Agentes IA, Equipe e muito mais. Bom trabalho!',
     placement: 'center',
     disableBeacon: true,
   },

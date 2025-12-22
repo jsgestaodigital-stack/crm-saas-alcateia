@@ -348,14 +348,17 @@ const Dashboard = () => {
           "safe-area-inset-bottom"
         )}>
           {/* Mode-specific header bar - improved for mobile */}
-          <div className={cn(
-            "px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mode-header mode-transition",
-            isSalesMode 
-              ? "border-b border-amber-500/20 bg-gradient-to-r from-amber-500/5 to-transparent" 
-              : isRecurringMode
-              ? "border-b border-violet-500/20 bg-gradient-to-r from-violet-500/5 to-transparent"
-              : "border-b border-primary/20 bg-gradient-to-r from-primary/5 to-transparent"
-          )}>
+          <div 
+            data-tour="main-stats"
+            className={cn(
+              "px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mode-header mode-transition",
+              isSalesMode 
+                ? "border-b border-amber-500/20 bg-gradient-to-r from-amber-500/5 to-transparent" 
+                : isRecurringMode
+                ? "border-b border-violet-500/20 bg-gradient-to-r from-violet-500/5 to-transparent"
+                : "border-b border-primary/20 bg-gradient-to-r from-primary/5 to-transparent"
+            )}
+          >
             <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
               <h1 className={cn(
                 "text-lg sm:text-xl font-bold mode-transition",
