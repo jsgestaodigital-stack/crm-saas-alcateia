@@ -116,15 +116,25 @@ export default function Register() {
         },
       });
 
+      // Handle edge function errors
       if (error) {
         console.error("Registration error:", error);
-        toast.error("Erro ao criar conta: " + error.message);
+        // Parse error message for better UX
+        let errorMessage = "Erro ao criar conta. Tente novamente.";
+        if (error.message?.includes("non-2xx")) {
+          errorMessage = "Erro de conexão. Verifique sua internet e tente novamente.";
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        toast.error(errorMessage);
         setIsLoading(false);
         return;
       }
 
-      if (!data.success) {
-        toast.error(data.error || "Erro ao criar conta");
+      // Handle function response errors
+      if (!data?.success) {
+        const errorMessage = data?.error || "Erro ao criar conta. Tente novamente.";
+        toast.error(errorMessage);
         setIsLoading(false);
         return;
       }
@@ -132,24 +142,40 @@ export default function Register() {
       setIsSuccess(true);
       toast.success("Conta criada com sucesso! Redirecionando...");
       
-      // Auto-login the user
-      setTimeout(async () => {
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email: formData.ownerEmail.trim().toLowerCase(),
-          password: formData.password,
-        });
-
-        if (signInError) {
-          console.error("Auto-login error:", signInError);
-          navigate("/auth");
-        } else {
-          navigate("/dashboard");
+      // Auto-login the user with retry
+      const attemptLogin = async (retries = 3): Promise<boolean> => {
+        for (let i = 0; i < retries; i++) {
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: formData.ownerEmail.trim().toLowerCase(),
+            password: formData.password,
+          });
+          
+          if (!signInError) {
+            return true;
+          }
+          
+          console.warn(`Login attempt ${i + 1} failed:`, signInError);
+          if (i < retries - 1) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
         }
-      }, 2000);
+        return false;
+      };
+
+      setTimeout(async () => {
+        const loginSuccess = await attemptLogin();
+        if (loginSuccess) {
+          navigate("/dashboard");
+        } else {
+          console.error("All login attempts failed");
+          toast.error("Login automático falhou. Por favor, faça login manualmente.");
+          navigate("/auth");
+        }
+      }, 1500);
       
     } catch (err) {
       console.error("Unexpected error:", err);
-      toast.error("Erro inesperado. Tente novamente.");
+      toast.error("Erro inesperado. Verifique sua conexão e tente novamente.");
     } finally {
       setIsLoading(false);
     }
