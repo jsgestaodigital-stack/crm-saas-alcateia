@@ -14,6 +14,7 @@ import { ConsentGuard } from "@/components/ConsentGuard";
 import { SubscriptionGuard } from "@/components/subscription/SubscriptionGuard";
 import { ImpersonateBanner } from "@/components/ImpersonateBanner";
 import { PendingRegistrationsBanner } from "@/components/admin/PendingRegistrationsBanner";
+import { ErrorBoundaryLogger } from "@/components/ErrorBoundaryLogger";
 import { NPSModal } from "@/components/nps";
 import { Loader2 } from "lucide-react";
 
@@ -96,6 +97,7 @@ const App = () => (
                   <ConsentGuard>
                     <PendingRegistrationsBanner />
                     <ImpersonateBanner />
+                    <ErrorBoundaryLogger />
                     <Suspense fallback={<PageLoader />}>
                       <Routes>
                         {/* ============ LANDING PAGE PÚBLICA ============ */}

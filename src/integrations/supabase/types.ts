@@ -3666,6 +3666,74 @@ export type Database = {
           },
         ]
       }
+      system_health_logs: {
+        Row: {
+          agency_id: string | null
+          browser: string | null
+          component: string | null
+          created_at: string
+          device: string | null
+          error_message: string
+          error_stack: string | null
+          error_type: string
+          id: string
+          metadata: Json | null
+          resolved: boolean | null
+          resolved_at: string | null
+          resolved_by: string | null
+          route: string | null
+          severity: string | null
+          user_email: string | null
+          user_id: string | null
+        }
+        Insert: {
+          agency_id?: string | null
+          browser?: string | null
+          component?: string | null
+          created_at?: string
+          device?: string | null
+          error_message: string
+          error_stack?: string | null
+          error_type: string
+          id?: string
+          metadata?: Json | null
+          resolved?: boolean | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          route?: string | null
+          severity?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          agency_id?: string | null
+          browser?: string | null
+          component?: string | null
+          created_at?: string
+          device?: string | null
+          error_message?: string
+          error_stack?: string | null
+          error_type?: string
+          id?: string
+          metadata?: Json | null
+          resolved?: boolean | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          route?: string | null
+          severity?: string | null
+          user_email?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "system_health_logs_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       task_time_entries: {
         Row: {
           agency_id: string
@@ -4716,6 +4784,17 @@ export type Database = {
           slug: string
           status: string
           updated_at: string
+        }[]
+      }
+      get_health_summary: {
+        Args: never
+        Returns: {
+          critical_count: number
+          error_count: number
+          last_24h_count: number
+          last_error_at: string
+          last_hour_count: number
+          unresolved_count: number
         }[]
       }
       get_invite_by_token: {
