@@ -187,7 +187,8 @@ Deno.serve(async (req) => {
         full_name: ownerName,
         current_agency_id: newAgency.id,
         status: "active",
-        phone: ownerPhone || null,
+        // Nota: a tabela public.profiles não possui a coluna 'phone'.
+        // O telefone permanece salvo em auth.user_metadata.
       },
       { onConflict: "id" }
     );
