@@ -20,12 +20,22 @@ import {
   GMBStatsCard, GMBBadge, GMBFeatureCard
 } from "@/components/landing";
 import { AlcateiaQuiz } from "@/components/alcateia/AlcateiaQuiz";
+import { usePageMeta } from "@/hooks/usePageMeta";
 
 const QUIZ_COMPLETED_KEY = "alcateia_quiz_completed";
 
 const LandingAlcateia = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showQuiz, setShowQuiz] = useState(true);
+
+  // Set custom meta tags for Alcateia page (WhatsApp/Instagram preview)
+  usePageMeta({
+    title: "🐺 Oportunidade Exclusiva Alcateia — Membros Fundadores GRank CRM",
+    description: "Acesso vitalício exclusivo para alunos da Alcateia. Faça parte da construção do melhor CRM de Google Meu Negócio. Sem mensalidade, para sempre.",
+    ogTitle: "🐺 Exclusivo Alcateia — Membros Fundadores GRank CRM",
+    ogDescription: "Você foi convidado para fazer parte da construção do GRank CRM. Acesso vitalício, sem mensalidade. Oferta exclusiva para alunos Alcateia.",
+    ogType: "website",
+  });
 
   // Check if quiz was already completed (persist for session)
   useEffect(() => {
