@@ -66,8 +66,18 @@ const tourStyles: Partial<Styles> = {
   },
 };
 
-// Routes where tour should never run
-const EXCLUDED_ROUTES = ['/auth', '/register', '/convite'];
+// Routes where tour should never run (pages without dashboard elements)
+const EXCLUDED_ROUTES = [
+  '/auth', 
+  '/register', 
+  '/convite',
+  '/super-admin',
+  '/admin',
+  '/alcateia',
+  '/landing',
+  '/contrato',
+  '/proposta',
+];
 
 interface VisualTourProps {
   autoStart?: boolean;
@@ -89,7 +99,10 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
 
   // Check if on excluded route
   const isExcludedRoute = EXCLUDED_ROUTES.some(route => 
-    location.pathname === route || location.pathname.startsWith('/convite/')
+    location.pathname === route || 
+    location.pathname.startsWith('/convite/') ||
+    location.pathname.startsWith('/contrato/') ||
+    location.pathname.startsWith('/proposta/')
   );
 
   // Never run tour on excluded routes
