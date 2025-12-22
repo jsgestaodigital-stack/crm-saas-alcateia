@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; import { useSafeBack } from "@/hooks/useSafeBack";
 import { motion } from "framer-motion";
 import { 
   Crown, 
@@ -46,7 +46,7 @@ export default function Upgrade() {
   const { subscription, plans, isLoading } = useSubscription();
   const { limits, usage, getUsagePercentage } = useAgencyLimits();
   const { planSlug, isStarter, isPro } = usePlanFeatures();
-  const navigate = useNavigate();
+  const navigate = useNavigate(); const goBack = useSafeBack();
 
   if (authLoading || isLoading) {
     return (
@@ -80,7 +80,7 @@ export default function Upgrade() {
       <div className="max-w-4xl mx-auto p-6 space-y-8">
         {/* Header */}
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
+          <Button variant="ghost" size="icon" onClick={goBack} aria-label="Voltar">
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
