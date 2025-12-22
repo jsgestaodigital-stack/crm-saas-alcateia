@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import grankLogoDark from "@/assets/grank-logo-dark.png";
+import grankLogoLight from "@/assets/grank-logo-light.png";
 import alcateiaLogo from "@/assets/alcateia-logo.png";
 import joaoLoboPhoto from "@/assets/joao-lobo.jpg";
 import { 
@@ -486,7 +487,7 @@ const LandingAlcateia = () => {
           <div className="flex items-center justify-center gap-3 mb-4">
             <img src={alcateiaLogo} alt="Alcateia" className="h-8 w-auto" />
             <span className="text-amber-400 font-bold">×</span>
-            <img src={grankLogoDark} alt="GRank CRM" className="h-7 w-auto brightness-0 invert" />
+            <img src={grankLogoLight} alt="GRank CRM" className="h-7 w-auto" />
           </div>
           <p className="text-gray-400 text-sm mb-4">
             Programa exclusivo para alunos da comunidade Alcateia
