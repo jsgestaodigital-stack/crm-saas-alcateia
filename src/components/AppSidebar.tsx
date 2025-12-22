@@ -342,6 +342,7 @@ export function AppSidebar({
           <Tooltip>
             <TooltipTrigger asChild>
               <Button 
+                data-tour="new-client"
                 className={cn(
                   "w-full gap-2.5 h-11 font-semibold transition-all duration-300 shadow-lg",
                   collapsed ? "px-0" : "px-4",
@@ -570,20 +571,24 @@ export function AppSidebar({
                 </div>
               </CollapsibleTrigger>
               <CollapsibleContent className="space-y-0.5 pt-1 animate-accordion-down">
-                <NavItem
-                  icon={Shield}
-                  label="Admin"
-                  isActive={location.pathname === "/admin"}
-                  onClick={() => { navigate("/admin"); onMobileOpenChange(false); }}
-                  color="primary"
-                />
-                <NavItem
-                  icon={Users}
-                  label="Equipe"
-                  isActive={location.pathname === "/equipe"}
-                  onClick={() => { navigate("/equipe"); onMobileOpenChange(false); }}
-                  color="violet"
-                />
+                <div data-tour="admin-button">
+                  <NavItem
+                    icon={Shield}
+                    label="Admin"
+                    isActive={location.pathname === "/admin"}
+                    onClick={() => { navigate("/admin"); onMobileOpenChange(false); }}
+                    color="primary"
+                  />
+                </div>
+                <div data-tour="team-button">
+                  <NavItem
+                    icon={Users}
+                    label="Equipe"
+                    isActive={location.pathname === "/equipe"}
+                    onClick={() => { navigate("/equipe"); onMobileOpenChange(false); }}
+                    color="violet"
+                  />
+                </div>
                 <NavItem
                   icon={FileText}
                   label="Relatório Gestor"

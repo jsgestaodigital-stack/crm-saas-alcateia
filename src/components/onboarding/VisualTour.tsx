@@ -66,18 +66,8 @@ const tourStyles: Partial<Styles> = {
   },
 };
 
-// Routes where tour should never run (pages without dashboard elements)
-const EXCLUDED_ROUTES = [
-  '/auth', 
-  '/register', 
-  '/convite',
-  '/super-admin',
-  '/admin',
-  '/alcateia',
-  '/landing',
-  '/contrato',
-  '/proposta',
-];
+// Routes where tour SHOULD run (only dashboard has all required elements)
+const ALLOWED_ROUTES = ['/', '/dashboard'];
 
 interface VisualTourProps {
   autoStart?: boolean;
@@ -97,16 +87,11 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
     handleJoyrideCallback,
   } = useVisualTour();
 
-  // Check if on excluded route
-  const isExcludedRoute = EXCLUDED_ROUTES.some(route => 
-    location.pathname === route || 
-    location.pathname.startsWith('/convite/') ||
-    location.pathname.startsWith('/contrato/') ||
-    location.pathname.startsWith('/proposta/')
-  );
+  // Only run tour on dashboard where all elements exist
+  const isAllowedRoute = ALLOWED_ROUTES.includes(location.pathname);
 
-  // Never run tour on excluded routes
-  if (isExcludedRoute) return null;
+  // Don't render if not on allowed route
+  if (!isAllowedRoute) return null;
 
   // Don't render if no user
   if (!user) return null;
@@ -121,7 +106,7 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
       shouldAutoStart, 
       user: !!user, 
       hasAutoStarted: hasAutoStarted.current,
-      isExcludedRoute,
+      isAllowedRoute,
       tourCompleted 
     });
     
@@ -130,7 +115,7 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
       shouldAutoStart && 
       user && 
       !hasAutoStarted.current &&
-      !isExcludedRoute &&
+      isAllowedRoute &&
       !tourCompleted
     ) {
       console.log('[VisualTour] Auto-starting tour...');
@@ -141,14 +126,14 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [autoStart, shouldAutoStart, user, startTour, isExcludedRoute, tourCompleted]);
+  }, [autoStart, shouldAutoStart, user, startTour, isAllowedRoute, tourCompleted]);
 
   console.log('[VisualTour] Render state:', { isRunning, stepIndex, stepsLength: steps.length });
 
   return (
     <Joyride
       steps={steps}
-      run={isRunning && !isExcludedRoute}
+      run={isRunning && isAllowedRoute}
       stepIndex={stepIndex}
       continuous
       showProgress
@@ -156,7 +141,7 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
       hideCloseButton={false}
       scrollToFirstStep
       spotlightClicks={false}
-      disableOverlayClose
+      disableOverlayClose={false}
       disableCloseOnEsc={false}
       disableScrolling={false}
       callback={handleJoyrideCallback}
