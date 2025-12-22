@@ -162,20 +162,18 @@ const LandingAlcateia = () => {
       </header>
 
       {/* ===== HERO SECTION ===== */}
-      <section className="relative flex items-center justify-center pt-20 sm:pt-24 pb-12 px-3 sm:px-4 overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-amber-900">
-        {/* Wolf Hero Background Image - Full bleed */}
+      <section className="relative flex items-center justify-center pt-20 sm:pt-24 pb-12 px-3 sm:px-4 overflow-hidden bg-gradient-to-b from-amber-50 to-white">
+        {/* Wolf Hero Background Image */}
         <div className="absolute inset-0 pointer-events-none">
           <img 
             src={wolfHero} 
             alt="" 
-            className="w-full h-full object-cover opacity-40 sm:opacity-50"
+            className="w-full h-full object-cover opacity-15 sm:opacity-20"
             style={{ 
-              maskImage: 'linear-gradient(to bottom, black 0%, black 60%, transparent 100%)',
-              WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 60%, transparent 100%)'
+              maskImage: 'linear-gradient(to bottom, black 0%, black 50%, transparent 100%)',
+              WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 50%, transparent 100%)'
             }}
           />
-          {/* Overlay gradient for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/70 to-transparent" />
         </div>
 
         <div className="container mx-auto text-center relative z-10 px-2 sm:px-4">
@@ -189,25 +187,25 @@ const LandingAlcateia = () => {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-1.5 px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-amber-500/20 border-2 border-amber-400/60 mb-4 sm:mb-6 backdrop-blur-sm"
+              className="inline-flex items-center gap-1.5 px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-amber-600/10 border-2 border-amber-600/50 mb-4 sm:mb-6 backdrop-blur-sm"
             >
-              <Lock className="h-4 w-4 text-amber-400" />
-              <span className="text-sm sm:text-base text-amber-300 font-bold">
+              <Lock className="h-4 w-4 text-amber-600" />
+              <span className="text-sm sm:text-base text-amber-700 font-bold">
                 🐺 EXCLUSIVO PARA ALUNOS ALCATEIA
               </span>
             </motion.div>
             
             {/* Headline Principal */}
-            <h1 className="text-[26px] sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-5 leading-[1.15] font-display px-1 drop-shadow-lg">
-              <span className="text-white">Você Faz Parte da</span>
+            <h1 className="text-[26px] sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-5 leading-[1.15] font-display px-1">
+              <span className="text-slate-900 drop-shadow-sm">Você Faz Parte da</span>
               <br />
-              <span className="text-amber-400">Construção do GRank CRM</span>
+              <span className="text-amber-600 drop-shadow-sm">Construção do GRank CRM</span>
             </h1>
 
             {/* Subheadline */}
-            <p className="text-sm sm:text-base md:text-lg text-gray-300 max-w-2xl mx-auto mb-5 sm:mb-6 leading-relaxed px-2">
-              Juntos, estamos criando o <strong className="text-white">melhor CRM de Google Meu Negócio</strong> do mercado. 
-              Quem entrar agora, ganha <strong className="text-amber-400">acesso vitalício</strong>.
+            <p className="text-sm sm:text-base md:text-lg text-slate-700 max-w-2xl mx-auto mb-5 sm:mb-6 leading-relaxed px-2">
+              Juntos, estamos criando o <strong className="text-slate-900">melhor CRM de Google Meu Negócio</strong> do mercado. 
+              Quem entrar agora, ganha <strong className="text-amber-600">acesso vitalício</strong>.
             </p>
 
             {/* CTA Principal */}
@@ -215,7 +213,7 @@ const LandingAlcateia = () => {
               <Button 
                 size="lg" 
                 asChild 
-                className="bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold border-0 shadow-xl shadow-amber-500/40 text-sm sm:text-lg px-6 sm:px-10 py-3 sm:py-5 h-auto min-h-[44px] sm:min-h-[52px] w-full sm:w-auto max-w-xs sm:max-w-none"
+                className="bg-amber-600 hover:bg-amber-700 text-white border-0 shadow-xl shadow-amber-600/30 text-sm sm:text-lg px-6 sm:px-10 py-3 sm:py-5 h-auto min-h-[44px] sm:min-h-[52px] w-full sm:w-auto max-w-xs sm:max-w-none"
               >
                 <Link to="/register-alcateia">
                   <Crown className="mr-2 h-4 sm:h-5 w-4 sm:w-5" />
@@ -224,17 +222,17 @@ const LandingAlcateia = () => {
               </Button>
             </div>
             
-            <p className="text-[10px] sm:text-sm text-gray-400 flex items-center justify-center gap-3 sm:gap-4 flex-wrap px-2">
+            <p className="text-[10px] sm:text-sm text-slate-600 flex items-center justify-center gap-3 sm:gap-4 flex-wrap px-2">
               <span className="flex items-center gap-1">
-                <Check className="h-3 sm:h-4 w-3 sm:w-4 text-amber-400" />
+                <Check className="h-3 sm:h-4 w-3 sm:w-4 text-amber-600" />
                 Acesso imediato
               </span>
               <span className="flex items-center gap-1">
-                <Check className="h-3 sm:h-4 w-3 sm:w-4 text-amber-400" />
+                <Check className="h-3 sm:h-4 w-3 sm:w-4 text-amber-600" />
                 Sem mensalidade
               </span>
               <span className="flex items-center gap-1">
-                <Check className="h-3 sm:h-4 w-3 sm:w-4 text-amber-400" />
+                <Check className="h-3 sm:h-4 w-3 sm:w-4 text-amber-600" />
                 Vitalício
               </span>
             </p>
