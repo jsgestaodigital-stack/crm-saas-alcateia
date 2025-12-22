@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { useState, useEffect } from "react";
 
 interface AgencyWithStats {
   id: string;
@@ -40,8 +42,38 @@ interface AgencySubscription {
 export function useSuperAdmin() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [isCheckingSuperAdmin, setIsCheckingSuperAdmin] = useState(true);
 
-  // Fetch all agencies with stats
+  // Check if user is super admin before enabling queries
+  useEffect(() => {
+    const checkSuperAdmin = async () => {
+      if (!user) {
+        setIsSuperAdmin(false);
+        setIsCheckingSuperAdmin(false);
+        return;
+      }
+
+      try {
+        const { data } = await supabase
+          .from("user_permissions")
+          .select("is_super_admin")
+          .eq("user_id", user.id)
+          .single();
+
+        setIsSuperAdmin(data?.is_super_admin === true);
+      } catch {
+        setIsSuperAdmin(false);
+      } finally {
+        setIsCheckingSuperAdmin(false);
+      }
+    };
+
+    checkSuperAdmin();
+  }, [user]);
+
+  // Fetch all agencies with stats - only when super admin
   const {
     data: agencies,
     isLoading: isLoadingAgencies,
@@ -53,9 +85,10 @@ export function useSuperAdmin() {
       if (error) throw error;
       return data as AgencyWithStats[];
     },
+    enabled: isSuperAdmin && !isCheckingSuperAdmin,
   });
 
-  // Fetch audit logs
+  // Fetch audit logs - only when super admin
   const {
     data: auditLogs,
     isLoading: isLoadingLogs,
@@ -67,9 +100,10 @@ export function useSuperAdmin() {
       if (error) throw error;
       return data as AuditLog[];
     },
+    enabled: isSuperAdmin && !isCheckingSuperAdmin,
   });
 
-  // Fetch subscriptions with agency info
+  // Fetch subscriptions with agency info - only when super admin
   const {
     data: subscriptions,
     isLoading: isLoadingSubscriptions,
@@ -92,7 +126,7 @@ export function useSuperAdmin() {
       
       if (error) throw error;
       
-      // Get agency stats
+      // Get agency stats - already checked super admin
       const { data: agenciesData } = await supabase.rpc("get_all_agencies_with_stats");
       const statsMap = new Map(agenciesData?.map((a: AgencyWithStats) => [a.id, a]) || []);
       
@@ -108,6 +142,7 @@ export function useSuperAdmin() {
         clients_count: (statsMap.get(sub.agency_id) as AgencyWithStats)?.clients_count || 0,
       })) as AgencySubscription[];
     },
+    enabled: isSuperAdmin && !isCheckingSuperAdmin,
   });
 
   // Approve agency mutation
@@ -227,9 +262,9 @@ export function useSuperAdmin() {
     subscriptions,
     stats,
     financialStats,
-    isLoadingAgencies,
-    isLoadingLogs,
-    isLoadingSubscriptions,
+    isLoadingAgencies: isCheckingSuperAdmin || isLoadingAgencies,
+    isLoadingLogs: isCheckingSuperAdmin || isLoadingLogs,
+    isLoadingSubscriptions: isCheckingSuperAdmin || isLoadingSubscriptions,
     refetchAgencies,
     refetchLogs,
     refetchSubscriptions,
@@ -238,5 +273,6 @@ export function useSuperAdmin() {
     reactivateAgency,
     impersonateAgency,
     exitImpersonate,
+    isSuperAdmin,
   };
 }
