@@ -6,13 +6,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { format, parseISO, isBefore, isToday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Calendar, User, AlertTriangle, Plus, Settings, GripVertical, Upload, Lock, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, User, AlertTriangle, Settings, Upload } from 'lucide-react';
 import { usePipelineColumns } from '@/hooks/usePipelineColumns';
 import { ColumnSettingsDialog } from './ColumnSettingsDialog';
 import { ImportLeadsDialog } from './ImportLeadsDialog';
 import { useAuth } from '@/contexts/AuthContext';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 // Aceita tanto KanbanLead (otimizado) quanto Lead (completo)
 type KanbanLeadItem = KanbanLead | Lead;
@@ -34,12 +33,10 @@ export function LeadsKanban({ leads, onLeadClick, onMoveLead, onRefresh }: Leads
   const [scrollLeft, setScrollLeft] = useState(0);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
-  const [mobileColumnIndex, setMobileColumnIndex] = useState(0);
   
   const { columns, loading: columnsLoading } = usePipelineColumns();
   const { derived } = useAuth();
   const canEditLeads = derived?.canSalesOrAdmin ?? false;
-  const isMobile = useIsMobile();
 
   // Group leads by column
   const leadsByColumn = useMemo(() => {
@@ -224,141 +221,69 @@ export function LeadsKanban({ leads, onLeadClick, onMoveLead, onRefresh }: Leads
         </TooltipProvider>
       </div>
 
-      {/* Mobile View - Single Column with Navigation */}
-      {isMobile ? (
-        <div className="flex flex-col h-[calc(100vh-220px)]">
-          {/* Mobile Column Navigator */}
-          <div className="flex items-center justify-between px-4 py-2 border-b border-border/30 bg-surface-1/50">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setMobileColumnIndex(Math.max(0, mobileColumnIndex - 1))}
-              disabled={mobileColumnIndex === 0}
-              className="p-1"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </Button>
-            
-            <div className="flex items-center gap-2 text-center">
-              <span className="text-lg">{columns[mobileColumnIndex]?.emoji}</span>
-              <span className="font-semibold text-sm">{columns[mobileColumnIndex]?.title}</span>
-              <Badge variant="outline" className="text-xs">
-                {leadsByColumn[columns[mobileColumnIndex]?.id]?.length || 0}
-              </Badge>
-            </div>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setMobileColumnIndex(Math.min(columns.length - 1, mobileColumnIndex + 1))}
-              disabled={mobileColumnIndex === columns.length - 1}
-              className="p-1"
-            >
-              <ChevronRight className="h-5 w-5" />
-            </Button>
-          </div>
-
-          {/* Mobile Column Dots */}
-          <div className="flex justify-center gap-1 py-2">
-            {columns.map((col, idx) => (
-              <button
-                key={col.id}
-                onClick={() => setMobileColumnIndex(idx)}
-                className={cn(
-                  "w-2 h-2 rounded-full transition-all",
-                  idx === mobileColumnIndex 
-                    ? "bg-primary scale-125" 
-                    : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
-                )}
-              />
-            ))}
-          </div>
-
-          {/* Mobile Cards List */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3">
-            {leadsByColumn[columns[mobileColumnIndex]?.id]?.map((lead) => (
-              <LeadCard 
-                key={lead.id} 
-                lead={lead} 
-                onClick={() => onLeadClick(lead)}
-                onDragStart={() => {}}
-                canDrag={false}
-              />
-            ))}
-            
-            {(!leadsByColumn[columns[mobileColumnIndex]?.id] || leadsByColumn[columns[mobileColumnIndex]?.id].length === 0) && (
-              <div className="text-center py-8 text-muted-foreground text-sm">
-                Nenhum lead nesta etapa
-              </div>
+      {/* Kanban Container - Responsive with horizontal scroll */}
+      <div 
+        ref={containerRef}
+        className="h-[calc(100vh-220px)] overflow-x-auto overflow-y-hidden p-4 select-none"
+        style={{ cursor: isDraggingContainer ? 'grabbing' : 'grab' }}
+        onDragOver={handleContainerDragOver}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      >
+        <div className="flex gap-3 md:gap-4 h-full min-w-max pb-4">
+          {columns.map((column) => (
+          <div
+            key={column.id}
+            className={cn(
+              "flex flex-col w-[260px] sm:w-[280px] md:w-[300px] min-w-[260px] sm:min-w-[280px] md:min-w-[300px] h-full rounded-xl border-2 transition-all shrink-0",
+              dragOverColumn === column.id 
+                ? "border-amber-500 bg-amber-500/10 scale-[1.01]" 
+                : "border-border/30 bg-surface-1/30"
             )}
-          </div>
-        </div>
-      ) : (
-        /* Desktop Kanban Container */
-        <div 
-          ref={containerRef}
-          className="h-[calc(100vh-220px)] overflow-x-auto overflow-y-hidden p-4 select-none"
-          style={{ cursor: isDraggingContainer ? 'grabbing' : 'grab' }}
-          onDragOver={handleContainerDragOver}
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-        >
-          <div className="flex gap-4 h-full min-w-max pb-4">
-            {columns.map((column) => (
-            <div
-              key={column.id}
-              className={cn(
-                "flex flex-col w-[300px] min-w-[300px] h-full rounded-xl border-2 transition-all",
-                dragOverColumn === column.id 
-                  ? "border-amber-500 bg-amber-500/10 scale-[1.01]" 
-                  : "border-border/30 bg-surface-1/30"
-              )}
-              onDragOver={(e) => handleDragOver(e, column.id)}
-              onDragLeave={handleDragLeave}
-              onDrop={(e) => handleDrop(e, column.id)}
-            >
-              {/* Column Header */}
-              <div className={cn(
-                "column-header px-4 py-3 border-b border-border/30 rounded-t-xl",
-                column.color.replace('bg-', 'bg-') + '/10'
-              )}>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg">{column.emoji}</span>
-                    <span className="font-semibold text-sm">{column.title}</span>
-                  </div>
-                  <Badge variant="outline" className="text-xs">
-                    {leadsByColumn[column.id]?.length || 0}
-                  </Badge>
+            onDragOver={(e) => handleDragOver(e, column.id)}
+            onDragLeave={handleDragLeave}
+            onDrop={(e) => handleDrop(e, column.id)}
+          >
+            {/* Column Header */}
+            <div className={cn(
+              "column-header px-3 md:px-4 py-2 md:py-3 border-b border-border/30 rounded-t-xl",
+              column.color.replace('bg-', 'bg-') + '/10'
+            )}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-base md:text-lg">{column.emoji}</span>
+                  <span className="font-semibold text-xs md:text-sm truncate max-w-[120px] md:max-w-none">{column.title}</span>
                 </div>
-              </div>
-
-              {/* Column Content */}
-              <div className="flex-1 overflow-y-auto p-3 space-y-3">
-                {leadsByColumn[column.id]?.map((lead) => (
-                  <LeadCard 
-                    key={lead.id} 
-                    lead={lead} 
-                    onClick={() => onLeadClick(lead)}
-                    onDragStart={(e) => handleCardDragStart(e, lead.id)}
-                    canDrag={canEditLeads}
-                  />
-                ))}
-                
-                {leadsByColumn[column.id]?.length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground text-sm">
-                    Nenhum lead
-                  </div>
-                )}
+                <Badge variant="outline" className="text-[10px] md:text-xs shrink-0">
+                  {leadsByColumn[column.id]?.length || 0}
+                </Badge>
               </div>
             </div>
-          ))}
-        </div>
-      </div>
-      )}
 
+            {/* Column Content */}
+            <div className="flex-1 overflow-y-auto p-2 md:p-3 space-y-2 md:space-y-3">
+              {leadsByColumn[column.id]?.map((lead) => (
+                <LeadCard 
+                  key={lead.id} 
+                  lead={lead} 
+                  onClick={() => onLeadClick(lead)}
+                  onDragStart={(e) => handleCardDragStart(e, lead.id)}
+                  canDrag={canEditLeads}
+                />
+              ))}
+              
+              {leadsByColumn[column.id]?.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground text-xs md:text-sm">
+                  Nenhum lead
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
       {/* Column Settings Dialog */}
       <ColumnSettingsDialog 
         open={settingsOpen} 
