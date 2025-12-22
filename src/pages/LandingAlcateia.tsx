@@ -19,9 +19,21 @@ import {
   AnimatedCounter, ScrollProgress, InteractiveDemo,
   GMBStatsCard, GMBBadge, GMBFeatureCard
 } from "@/components/landing";
+import { AlcateiaQuiz } from "@/components/alcateia/AlcateiaQuiz";
+
+const QUIZ_COMPLETED_KEY = "alcateia_quiz_completed";
 
 const LandingAlcateia = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showQuiz, setShowQuiz] = useState(true);
+
+  // Check if quiz was already completed (persist for session)
+  useEffect(() => {
+    const quizCompleted = sessionStorage.getItem(QUIZ_COMPLETED_KEY);
+    if (quizCompleted === "true") {
+      setShowQuiz(false);
+    }
+  }, []);
 
   // Force light mode on landing page
   useEffect(() => {
@@ -30,6 +42,11 @@ const LandingAlcateia = () => {
       document.documentElement.classList.remove('light');
     };
   }, []);
+
+  const handleQuizComplete = () => {
+    sessionStorage.setItem(QUIZ_COMPLETED_KEY, "true");
+    setShowQuiz(false);
+  };
 
   const exclusiveFeatures = [
     {
@@ -85,7 +102,11 @@ const LandingAlcateia = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+    <>
+      {/* Quiz Gate */}
+      {showQuiz && <AlcateiaQuiz onComplete={handleQuizComplete} />}
+      
+      <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <ScrollProgress />
       
       {/* Fixed Header */}
@@ -529,6 +550,7 @@ const LandingAlcateia = () => {
         </div>
       </footer>
     </div>
+    </>
   );
 };
 
