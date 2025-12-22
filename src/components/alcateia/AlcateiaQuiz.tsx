@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Crown, Check, X, ArrowRight, Lock, Sparkles } from "lucide-react";
+import { Crown, Check, X, ArrowRight, Lock, Sparkles, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import alcateiaLogo from "@/assets/alcateia-logo.png";
 
@@ -166,7 +166,7 @@ export const AlcateiaQuiz = ({ onComplete }: AlcateiaQuizProps) => {
                     <Crown className="h-10 w-10 text-white" />
                   </motion.div>
                   <h2 className="text-2xl font-bold text-slate-800 mb-2">
-                    Bem-vindo, membro da Alcateia! 🐺
+                    Bem-vindo, Alfa! 🐺
                   </h2>
                   <p className="text-slate-600 mb-6">
                     Você está qualificado para o acesso vitalício exclusivo.
@@ -175,8 +175,8 @@ export const AlcateiaQuiz = ({ onComplete }: AlcateiaQuizProps) => {
                     onClick={handleContinue}
                     className="w-full h-14 text-lg bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white border-0 shadow-lg"
                   >
-                    <Sparkles className="mr-2 h-5 w-5" />
-                    Ver Oferta Exclusiva
+                    <Gift className="mr-2 h-5 w-5" />
+                    Receber Meu Presente
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </>
