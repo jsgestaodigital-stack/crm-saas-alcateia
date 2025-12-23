@@ -585,6 +585,83 @@ export type Database = {
           },
         ]
       }
+      appointments: {
+        Row: {
+          agency_id: string
+          client_id: string | null
+          completed: boolean
+          created_at: string
+          date: string
+          funnel_type: string
+          id: string
+          lead_id: string | null
+          notes: string | null
+          time: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          agency_id: string
+          client_id?: string | null
+          completed?: boolean
+          created_at?: string
+          date: string
+          funnel_type?: string
+          id?: string
+          lead_id?: string | null
+          notes?: string | null
+          time?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          agency_id?: string
+          client_id?: string | null
+          completed?: boolean
+          created_at?: string
+          date?: string
+          funnel_type?: string
+          id?: string
+          lead_id?: string | null
+          notes?: string | null
+          time?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_expanded"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_log: {
         Row: {
           action_type: string

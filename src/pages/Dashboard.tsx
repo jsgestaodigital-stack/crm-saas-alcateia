@@ -386,28 +386,25 @@ const Dashboard = () => {
             </div>
             
             <div className="flex items-center gap-2">
-              {/* Agenda (delivery mode) - tucked away in a drawer to avoid clutter */}
-              {!isSalesMode && !isRecurringMode && canAccessDelivery && (
-                <Sheet>
-                  <SheetTrigger asChild>
-                    <Button variant="outline" size="sm" className="gap-2">
-                      <CalendarIcon className="h-4 w-4" />
-                      <span className="hidden sm:inline">Agenda do dia</span>
-                      <span className="sm:hidden">Agenda</span>
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent
-                    side="right"
-                    className="w-[95vw] sm:w-[860px] sm:max-w-[860px] p-0 overflow-y-auto"
-                  >
-                    <SheetHeader className="p-4 border-b border-border/30">
-                      <SheetTitle>Agenda do dia</SheetTitle>
-                      <SheetDescription>Ações urgentes + compromissos</SheetDescription>
-                    </SheetHeader>
-                    <DayAgenda />
-                  </SheetContent>
-                </Sheet>
-              )}
+              {/* Agenda unificada - disponível em todos os funis */}
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <CalendarIcon className="h-4 w-4" />
+                    <span className="hidden sm:inline">Agenda</span>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent
+                  side="right"
+                  className="w-[95vw] sm:w-[860px] sm:max-w-[860px] p-0 overflow-y-auto"
+                >
+                  <SheetHeader className="p-4 border-b border-border/30">
+                    <SheetTitle>Agenda</SheetTitle>
+                    <SheetDescription>Compromissos + ações urgentes</SheetDescription>
+                  </SheetHeader>
+                  <DayAgenda />
+                </SheetContent>
+              </Sheet>
 
               {/* Funnel Toggle - hidden on mobile (moved to header) */}
               <div className="hidden sm:block">
