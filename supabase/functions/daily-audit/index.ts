@@ -11,6 +11,9 @@ interface AuditResult {
   issues_found: number
   issues_repaired: number
   policy_changes: number
+  anomalies_detected: number
+  sessions_cleaned: number
+  rate_limits_cleaned: number
   duration_ms: number
 }
 
@@ -47,19 +50,46 @@ Deno.serve(async (req) => {
     
     if (policyError) {
       console.error('Error detecting policy changes:', policyError)
-      // Don't throw, continue with other checks
     }
 
     console.log('📋 Policy changes detected:', policyChanges || 0)
 
-    // 3. Get audit run details
+    // 3. Run anomaly detection
+    const { data: anomaliesDetected, error: anomalyError } = await supabase
+      .rpc('run_anomaly_detection')
+    
+    if (anomalyError) {
+      console.error('Error running anomaly detection:', anomalyError)
+    }
+
+    console.log('🔍 Anomalies detected:', anomaliesDetected || 0)
+
+    // 4. Cleanup expired sessions
+    const { data: sessionsCleaned, error: sessionError } = await supabase
+      .rpc('cleanup_expired_sessions')
+    
+    if (sessionError) {
+      console.error('Error cleaning sessions:', sessionError)
+    }
+
+    console.log('🧹 Expired sessions cleaned:', sessionsCleaned || 0)
+
+    // 5. Cleanup rate limit events
+    const { error: rateLimitError } = await supabase
+      .rpc('cleanup_rate_limit_events')
+    
+    if (rateLimitError) {
+      console.error('Error cleaning rate limit events:', rateLimitError)
+    }
+
+    // 6. Get audit run details
     const { data: auditRun } = await supabase
       .from('system_audit_runs')
       .select('*')
       .eq('id', auditRunId)
       .single()
 
-    // 4. Check for agencies without owners
+    // 7. Check for agencies without owners
     const { data: agenciesWithoutOwner } = await supabase
       .from('agencies')
       .select(`
@@ -91,7 +121,7 @@ Deno.serve(async (req) => {
         })
     }
 
-    // 5. Check for users with invalid current_agency_id
+    // 8. Check for users with invalid current_agency_id
     const { data: invalidSessions } = await supabase
       .from('user_roles')
       .select(`
@@ -138,6 +168,9 @@ Deno.serve(async (req) => {
       issues_found: (auditRun?.issues_found || 0) + noOwnerAgencies.length + usersWithInvalidAgency.length,
       issues_repaired: (auditRun?.issues_repaired || 0) + usersWithInvalidAgency.length,
       policy_changes: policyChanges || 0,
+      anomalies_detected: anomaliesDetected || 0,
+      sessions_cleaned: sessionsCleaned || 0,
+      rate_limits_cleaned: 0,
       duration_ms: duration
     }
 
