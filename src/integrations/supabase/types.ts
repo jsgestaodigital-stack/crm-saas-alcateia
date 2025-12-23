@@ -4634,6 +4634,10 @@ export type Database = {
       can_access_ops: { Args: { _user_id: string }; Returns: boolean }
       can_access_recurring: { Args: { _user_id: string }; Returns: boolean }
       can_access_sales: { Args: { _user_id: string }; Returns: boolean }
+      can_add_resource: {
+        Args: { _agency_id: string; _resource_type: string }
+        Returns: boolean
+      }
       cancel_client_recurring: {
         Args: { _client_id: string; _reason?: string }
         Returns: undefined
@@ -4972,10 +4976,15 @@ export type Database = {
         Returns: undefined
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_admin_for_agency: {
+        Args: { _agency_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_admin_or_owner: {
         Args: { _agency_id?: string; _user_id: string }
         Returns: boolean
       }
+      is_agency_admin: { Args: { _user_id: string }; Returns: boolean }
       is_allowed: {
         Args: { _agency_id: string; _permission: string; _user_id: string }
         Returns: boolean
