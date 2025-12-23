@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { AlertTriangle, Clock, Calendar, ChevronRight, Zap, ChevronLeft, Plus, Trash2, CheckCircle2, ChevronDown } from "lucide-react";
+import { AlertTriangle, Clock, Calendar, ChevronRight, Zap, ChevronLeft, Plus, Trash2, CheckCircle2, ChevronDown, Filter, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -10,9 +10,12 @@ import { useClientStore } from "@/stores/clientStore";
 import { getDaysSinceUpdate } from "@/lib/clientUtils";
 import { getResponsibleLabel, toResponsibleRole } from "@/lib/responsibleTemplate";
 import { cn } from "@/lib/utils";
-import type { Appointment } from "@/types/client";
-import { format, addDays, addWeeks, addMonths, addYears, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, isSameDay, isWithinInterval } from "date-fns";
+import { useAppointments } from "@/hooks/useAppointments";
+import { useFunnelMode, FunnelMode } from "@/contexts/FunnelModeContext";
+import { useLeads } from "@/hooks/useLeads";
+import { format, addDays, addWeeks, addMonths, addYears, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, isSameDay, isWithinInterval, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { toast } from "sonner";
 
 interface UrgentAction {
   id: string;
@@ -24,6 +27,7 @@ interface UrgentAction {
   urgencyLevel: "critical" | "high" | "medium";
   daysStalled: number;
   daysToDeadline: number;
+  funnelType: FunnelMode;
 }
 
 type ViewMode = "day" | "week" | "month" | "year";
@@ -34,70 +38,107 @@ function getDaysToDeadline(startDate: string): number {
   return Math.ceil((deadline.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
 }
 
+// Funnel colors
+const FUNNEL_COLORS: Record<FunnelMode, { bg: string; text: string; border: string; label: string }> = {
+  delivery: { bg: "bg-status-info/20", text: "text-status-info", border: "border-status-info/40", label: "Otimização" },
+  sales: { bg: "bg-status-success/20", text: "text-status-success", border: "border-status-success/40", label: "Vendas" },
+  recurring: { bg: "bg-status-purple/20", text: "text-status-purple", border: "border-status-purple/40", label: "Recorrência" },
+};
+
 export function DayAgenda() {
   const { clients, setSelectedClient, setDetailOpen } = useClientStore();
+  const { mode, canAccessSales, canAccessDelivery, canAccessRecurring } = useFunnelMode();
+  const { leads } = useLeads();
   
-  // Local state for appointments (starts empty - no fake data)
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  // Filters
+  const [funnelFilter, setFunnelFilter] = useState<FunnelMode | "all">("all");
+  const [userFilter, setUserFilter] = useState<string>("all");
+  
+  // Use appointments hook with filters
+  const {
+    appointments,
+    isLoading,
+    teamMembers,
+    isManager,
+    currentUserId,
+    createAppointment,
+    deleteAppointment,
+    toggleCompleted,
+    isCreating,
+  } = useAppointments({ funnelFilter, userFilter });
+  
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>("day");
-  const [newAppointment, setNewAppointment] = useState({ title: "", date: "", time: "09:00", clientId: "none" });
+  const [newAppointment, setNewAppointment] = useState({ 
+    title: "", 
+    date: "", 
+    time: "09:00", 
+    clientId: "none",
+    leadId: "none",
+    funnelType: mode as FunnelMode,
+  });
   const [dialogOpen, setDialogOpen] = useState(false);
   
-  // Collapsible states - default open
+  // Collapsible states
   const [urgentOpen, setUrgentOpen] = useState(true);
   const [agendaOpen, setAgendaOpen] = useState(true);
 
-  // Calculate urgent actions
+  // Calculate urgent actions from all funnels user has access to
   const urgentActions = useMemo(() => {
     const actions: UrgentAction[] = [];
 
-    clients.forEach(client => {
-      if (["finalized", "delivered", "suspended"].includes(client.columnId)) return;
+    // Delivery funnel - from clients
+    if (canAccessDelivery && (funnelFilter === "all" || funnelFilter === "delivery")) {
+      clients.forEach(client => {
+        if (["finalized", "delivered", "suspended"].includes(client.columnId)) return;
 
-      const daysStalled = getDaysSinceUpdate(client.lastUpdate);
-      const daysToDeadline = getDaysToDeadline(client.startDate);
+        const daysStalled = getDaysSinceUpdate(client.lastUpdate);
+        const daysToDeadline = getDaysToDeadline(client.startDate);
 
-      for (const section of client.checklist) {
-        for (const item of section.items) {
-          if (!item.completed) {
-            let urgencyLevel: "critical" | "high" | "medium" = "medium";
-            let urgencyReason = "";
+        for (const section of client.checklist) {
+          for (const item of section.items) {
+            if (!item.completed) {
+              let urgencyLevel: "critical" | "high" | "medium" = "medium";
+              let urgencyReason = "";
 
-            if (daysToDeadline <= 3) {
-              urgencyLevel = "critical";
-              urgencyReason = `⚠️ Prazo em ${daysToDeadline} dias!`;
-            } else if (daysStalled >= 5) {
-              urgencyLevel = "critical";
-              urgencyReason = `🔴 Parado há ${daysStalled} dias`;
-            } else if (daysToDeadline <= 7) {
-              urgencyLevel = "high";
-              urgencyReason = `⏰ ${daysToDeadline} dias restantes`;
-            } else if (daysStalled >= 3) {
-              urgencyLevel = "high";
-              urgencyReason = `⚡ Sem ação há ${daysStalled} dias`;
-            } else {
-              urgencyReason = "Próxima tarefa";
+              if (daysToDeadline <= 3) {
+                urgencyLevel = "critical";
+                urgencyReason = `⚠️ Prazo em ${daysToDeadline} dias!`;
+              } else if (daysStalled >= 5) {
+                urgencyLevel = "critical";
+                urgencyReason = `🔴 Parado há ${daysStalled} dias`;
+              } else if (daysToDeadline <= 7) {
+                urgencyLevel = "high";
+                urgencyReason = `⏰ ${daysToDeadline} dias restantes`;
+              } else if (daysStalled >= 3) {
+                urgencyLevel = "high";
+                urgencyReason = `⚡ Sem ação há ${daysStalled} dias`;
+              } else {
+                urgencyReason = "Próxima tarefa";
+              }
+
+              actions.push({
+                id: `${client.id}-${item.id}`,
+                clientId: client.id,
+                clientName: client.companyName,
+                taskTitle: item.title,
+                responsible: item.responsible,
+                urgencyReason,
+                urgencyLevel,
+                daysStalled,
+                daysToDeadline,
+                funnelType: "delivery",
+              });
+
+              break;
             }
-
-            actions.push({
-              id: `${client.id}-${item.id}`,
-              clientId: client.id,
-              clientName: client.companyName,
-              taskTitle: item.title,
-              responsible: item.responsible,
-              urgencyReason,
-              urgencyLevel,
-              daysStalled,
-              daysToDeadline,
-            });
-
-            break;
           }
+          if (actions.find(a => a.clientId === client.id)) break;
         }
-        if (actions.find(a => a.clientId === client.id)) break;
-      }
-    });
+      });
+    }
+
+    // TODO: Add sales and recurring urgent actions when those stores are available
 
     return actions
       .sort((a, b) => {
@@ -108,7 +149,7 @@ export function DayAgenda() {
         return a.daysToDeadline - b.daysToDeadline;
       })
       .slice(0, 5);
-  }, [clients]);
+  }, [clients, canAccessDelivery, funnelFilter]);
 
   // Filter appointments based on view mode and selected date
   const filteredAppointments = useMemo(() => {
@@ -117,19 +158,19 @@ export function DayAgenda() {
 
     switch (viewMode) {
       case "day":
-        return appointments.filter(apt => isSameDay(new Date(apt.date), selectedDate));
+        return appointments.filter(apt => isSameDay(parseISO(apt.date), selectedDate));
       case "week":
         start = startOfWeek(selectedDate, { locale: ptBR });
         end = endOfWeek(selectedDate, { locale: ptBR });
-        return appointments.filter(apt => isWithinInterval(new Date(apt.date), { start, end }));
+        return appointments.filter(apt => isWithinInterval(parseISO(apt.date), { start, end }));
       case "month":
         start = startOfMonth(selectedDate);
         end = endOfMonth(selectedDate);
-        return appointments.filter(apt => isWithinInterval(new Date(apt.date), { start, end }));
+        return appointments.filter(apt => isWithinInterval(parseISO(apt.date), { start, end }));
       case "year":
         start = startOfYear(selectedDate);
         end = endOfYear(selectedDate);
-        return appointments.filter(apt => isWithinInterval(new Date(apt.date), { start, end }));
+        return appointments.filter(apt => isWithinInterval(parseISO(apt.date), { start, end }));
       default:
         return appointments;
     }
@@ -189,36 +230,68 @@ export function DayAgenda() {
     }
   };
 
-  const handleAddAppointment = () => {
-    if (!newAppointment.title.trim()) return;
+  const handleAddAppointment = async () => {
+    if (!newAppointment.title.trim()) {
+      toast.error("Digite um título para o compromisso");
+      return;
+    }
     
-    const appointment: Appointment = {
-      id: `apt-${Date.now()}`,
-      title: newAppointment.title,
-      date: newAppointment.date || format(selectedDate, "yyyy-MM-dd"),
-      time: newAppointment.time,
-      clientId: newAppointment.clientId && newAppointment.clientId !== "none" ? newAppointment.clientId : undefined,
-      completed: false,
-    };
-    
-    setAppointments(prev => [...prev, appointment]);
-    setNewAppointment({ title: "", date: "", time: "09:00", clientId: "none" });
-    setDialogOpen(false);
+    try {
+      await createAppointment({
+        title: newAppointment.title,
+        date: newAppointment.date || format(selectedDate, "yyyy-MM-dd"),
+        time: newAppointment.time,
+        funnel_type: newAppointment.funnelType,
+        client_id: newAppointment.clientId && newAppointment.clientId !== "none" ? newAppointment.clientId : null,
+        lead_id: newAppointment.leadId && newAppointment.leadId !== "none" ? newAppointment.leadId : null,
+      });
+      
+      setNewAppointment({ title: "", date: "", time: "09:00", clientId: "none", leadId: "none", funnelType: mode });
+      setDialogOpen(false);
+      toast.success("Compromisso adicionado!");
+    } catch (error) {
+      console.error("Error creating appointment:", error);
+      toast.error("Erro ao criar compromisso");
+    }
   };
 
-  const handleToggleAppointment = (id: string) => {
-    setAppointments(prev => 
-      prev.map(apt => apt.id === id ? { ...apt, completed: !apt.completed } : apt)
-    );
+  const handleToggleAppointment = async (id: string, completed: boolean) => {
+    try {
+      await toggleCompleted(id, completed);
+    } catch (error) {
+      console.error("Error toggling appointment:", error);
+      toast.error("Erro ao atualizar compromisso");
+    }
   };
 
-  const handleDeleteAppointment = (id: string) => {
-    setAppointments(prev => prev.filter(apt => apt.id !== id));
+  const handleDeleteAppointment = async (id: string) => {
+    try {
+      await deleteAppointment(id);
+      toast.success("Compromisso removido");
+    } catch (error) {
+      console.error("Error deleting appointment:", error);
+      toast.error("Erro ao remover compromisso");
+    }
   };
 
   const activeClients = clients.filter(c => 
     !["finalized", "delivered", "suspended"].includes(c.columnId)
   );
+
+  // Available funnels for filter
+  const availableFunnels: { value: FunnelMode | "all"; label: string }[] = [
+    { value: "all", label: "Todos" },
+  ];
+  if (canAccessDelivery) availableFunnels.push({ value: "delivery", label: "Otimização" });
+  if (canAccessSales) availableFunnels.push({ value: "sales", label: "Vendas" });
+  if (canAccessRecurring) availableFunnels.push({ value: "recurring", label: "Recorrência" });
+
+  // Get user name for appointment display
+  const getUserName = (userId: string) => {
+    if (userId === currentUserId) return null;
+    const member = teamMembers.find(m => m.id === userId);
+    return member?.name || "Usuário";
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 px-3 sm:px-6 py-4">
@@ -257,12 +330,30 @@ export function DayAgenda() {
                       <div>
                         <label className="text-sm text-muted-foreground mb-1 block">Título</label>
                         <Input
-                          placeholder="Ex: Briefing com cliente..."
+                          placeholder="Ex: Retorno para cliente..."
                           value={newAppointment.title}
                           onChange={(e) => setNewAppointment(prev => ({ ...prev, title: e.target.value }))}
                           className="bg-surface-2 border-border"
                         />
                       </div>
+                      
+                      <div>
+                        <label className="text-sm text-muted-foreground mb-1 block">Funil</label>
+                        <Select 
+                          value={newAppointment.funnelType} 
+                          onValueChange={(v) => setNewAppointment(prev => ({ ...prev, funnelType: v as FunnelMode, clientId: "none", leadId: "none" }))}
+                        >
+                          <SelectTrigger className="bg-surface-2 border-border">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {canAccessDelivery && <SelectItem value="delivery">Otimização</SelectItem>}
+                            {canAccessSales && <SelectItem value="sales">Vendas</SelectItem>}
+                            {canAccessRecurring && <SelectItem value="recurring">Recorrência</SelectItem>}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <label className="text-sm text-muted-foreground mb-1 block">Data</label>
@@ -283,25 +374,50 @@ export function DayAgenda() {
                           />
                         </div>
                       </div>
-                      <div>
-                        <label className="text-sm text-muted-foreground mb-1 block">Cliente (opcional)</label>
-                        <Select 
-                          value={newAppointment.clientId} 
-                          onValueChange={(v) => setNewAppointment(prev => ({ ...prev, clientId: v }))}
-                        >
-                          <SelectTrigger className="bg-surface-2 border-border">
-                            <SelectValue placeholder="Selecionar..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="none">Nenhum</SelectItem>
-                            {activeClients.map(c => (
-                              <SelectItem key={c.id} value={c.id}>{c.companyName}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <Button onClick={handleAddAppointment} className="w-full">
-                        Adicionar Compromisso
+                      
+                      {/* Client/Lead selection based on funnel */}
+                      {newAppointment.funnelType === "delivery" && (
+                        <div>
+                          <label className="text-sm text-muted-foreground mb-1 block">Cliente (opcional)</label>
+                          <Select 
+                            value={newAppointment.clientId} 
+                            onValueChange={(v) => setNewAppointment(prev => ({ ...prev, clientId: v }))}
+                          >
+                            <SelectTrigger className="bg-surface-2 border-border">
+                              <SelectValue placeholder="Selecionar..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="none">Nenhum</SelectItem>
+                              {activeClients.map(c => (
+                                <SelectItem key={c.id} value={c.id}>{c.companyName}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                      
+                      {newAppointment.funnelType === "sales" && (
+                        <div>
+                          <label className="text-sm text-muted-foreground mb-1 block">Lead (opcional)</label>
+                          <Select 
+                            value={newAppointment.leadId} 
+                            onValueChange={(v) => setNewAppointment(prev => ({ ...prev, leadId: v }))}
+                          >
+                            <SelectTrigger className="bg-surface-2 border-border">
+                              <SelectValue placeholder="Selecionar..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="none">Nenhum</SelectItem>
+                              {leads.filter(l => l.status !== "gained" && l.status !== "lost").map(l => (
+                                <SelectItem key={l.id} value={l.id}>{l.company_name || l.contact_name}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                      
+                      <Button onClick={handleAddAppointment} className="w-full" disabled={isCreating}>
+                        {isCreating ? "Adicionando..." : "Adicionar Compromisso"}
                       </Button>
                     </div>
                   </DialogContent>
@@ -312,20 +428,54 @@ export function DayAgenda() {
           </CollapsibleTrigger>
 
           <CollapsibleContent>
+            {/* Filters Row */}
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              {/* Funnel Filter */}
+              <Select value={funnelFilter} onValueChange={(v) => setFunnelFilter(v as FunnelMode | "all")}>
+                <SelectTrigger className="w-auto min-w-[120px] h-8 text-xs bg-surface-2/50 border-border/30">
+                  <Filter className="w-3 h-3 mr-1" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableFunnels.map(f => (
+                    <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
+              {/* User Filter (managers only) */}
+              {isManager && teamMembers.length > 0 && (
+                <Select value={userFilter} onValueChange={setUserFilter}>
+                  <SelectTrigger className="w-auto min-w-[140px] h-8 text-xs bg-surface-2/50 border-border/30">
+                    <Users className="w-3 h-3 mr-1" />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todo o time</SelectItem>
+                    {teamMembers.map(m => (
+                      <SelectItem key={m.id} value={m.id}>
+                        {m.id === currentUserId ? "Minha agenda" : m.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+            
             {/* View Mode Tabs */}
             <div className="flex items-center gap-1 mb-3 bg-surface-2/50 rounded-lg p-1">
-              {(["day", "week", "month", "year"] as ViewMode[]).map((mode) => (
+              {(["day", "week", "month", "year"] as ViewMode[]).map((vMode) => (
                 <button
-                  key={mode}
-                  onClick={() => setViewMode(mode)}
+                  key={vMode}
+                  onClick={() => setViewMode(vMode)}
                   className={cn(
                     "flex-1 px-3 py-1.5 rounded-md text-xs font-medium transition-all",
-                    viewMode === mode 
+                    viewMode === vMode 
                       ? "bg-primary text-primary-foreground" 
                       : "text-muted-foreground hover:text-foreground hover:bg-surface-2"
                   )}
                 >
-                  {mode === "day" ? "Hoje" : mode === "week" ? "Semana" : mode === "month" ? "Mês" : "Ano"}
+                  {vMode === "day" ? "Hoje" : vMode === "week" ? "Semana" : vMode === "month" ? "Mês" : "Ano"}
                 </button>
               ))}
             </div>
@@ -360,7 +510,12 @@ export function DayAgenda() {
 
             {/* Appointments List */}
             <div className="space-y-2 min-h-[200px]">
-              {sortedAppointments.length === 0 ? (
+              {isLoading ? (
+                <div className="text-center py-6 text-muted-foreground">
+                  <Clock className="w-6 h-6 mx-auto mb-2 animate-spin opacity-50" />
+                  <p className="text-sm">Carregando...</p>
+                </div>
+              ) : sortedAppointments.length === 0 ? (
                 <div className="text-center py-6 text-muted-foreground">
                   <Calendar className="w-8 h-8 mx-auto mb-2 opacity-30" />
                   <p className="text-sm">Nenhum compromisso</p>
@@ -368,9 +523,12 @@ export function DayAgenda() {
                 </div>
               ) : (
                 sortedAppointments.map((apt) => {
-                  const linkedClient = apt.clientId ? clients.find(c => c.id === apt.clientId) : null;
-                  const aptDate = new Date(apt.date);
+                  const linkedClient = apt.client_id ? clients.find(c => c.id === apt.client_id) : null;
+                  const linkedLead = apt.lead_id ? leads.find(l => l.id === apt.lead_id) : null;
+                  const aptDate = parseISO(apt.date);
                   const showDate = viewMode !== "day";
+                  const funnelStyle = FUNNEL_COLORS[apt.funnel_type];
+                  const ownerName = getUserName(apt.user_id);
                   
                   return (
                     <div 
@@ -383,7 +541,7 @@ export function DayAgenda() {
                       )}
                     >
                       <button
-                        onClick={() => handleToggleAppointment(apt.id)}
+                        onClick={() => handleToggleAppointment(apt.id, apt.completed)}
                         className={cn(
                           "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
                           apt.completed 
@@ -400,32 +558,54 @@ export function DayAgenda() {
                             {format(aptDate, "dd/MM")}
                           </span>
                         )}
-                        {apt.time}
+                        {apt.time.slice(0, 5)}
                       </div>
                       
                       <div className="flex-1 min-w-0">
-                        <p className={cn(
-                          "text-sm",
-                          apt.completed && "line-through text-muted-foreground"
-                        )}>{apt.title}</p>
-                        {linkedClient && (
-                          <button 
-                            onClick={() => handleOpenClient(linkedClient.id)}
-                            className="text-[10px] text-primary hover:underline"
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <p className={cn(
+                            "text-sm truncate",
+                            apt.completed && "line-through text-muted-foreground"
+                          )}>{apt.title}</p>
+                          <Badge 
+                            variant="outline" 
+                            className={cn("text-[9px] px-1.5 py-0 shrink-0", funnelStyle.border, funnelStyle.text)}
                           >
-                            → {linkedClient.companyName}
-                          </button>
-                        )}
+                            {funnelStyle.label}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {linkedClient && (
+                            <button 
+                              onClick={() => handleOpenClient(linkedClient.id)}
+                              className="text-[10px] text-primary hover:underline"
+                            >
+                              → {linkedClient.companyName}
+                            </button>
+                          )}
+                          {linkedLead && (
+                            <span className="text-[10px] text-status-success">
+                              → {linkedLead.company_name || linkedLead.contact_name}
+                            </span>
+                          )}
+                          {ownerName && (
+                            <span className="text-[10px] text-muted-foreground">
+                              • {ownerName}
+                            </span>
+                          )}
+                        </div>
                       </div>
                       
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="w-7 h-7 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-status-danger"
-                        onClick={() => handleDeleteAppointment(apt.id)}
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </Button>
+                      {apt.user_id === currentUserId && (
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="w-7 h-7 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-status-danger"
+                          onClick={() => handleDeleteAppointment(apt.id)}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      )}
                     </div>
                   );
                 })
@@ -467,65 +647,74 @@ export function DayAgenda() {
                   <p className="text-xs">Tudo sob controle 🎉</p>
                 </div>
               ) : (
-                urgentActions.map((action, index) => (
-                  <button
-                    key={action.id}
-                    onClick={() => handleOpenClient(action.clientId)}
-                    className={cn(
-                      "w-full flex items-start gap-3 p-3 rounded-xl border transition-all hover:scale-[1.01] text-left",
-                      action.urgencyLevel === "critical" 
-                        ? "bg-status-danger/10 border-status-danger/30 hover:border-status-danger/50" 
-                        : action.urgencyLevel === "high"
-                        ? "bg-status-warning/10 border-status-warning/30 hover:border-status-warning/50"
-                        : "bg-surface-2/50 border-border/30 hover:border-primary/30"
-                    )}
-                  >
-                    <div className={cn(
-                      "w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0",
-                      action.urgencyLevel === "critical" 
-                        ? "bg-status-danger text-white" 
-                        : action.urgencyLevel === "high"
-                        ? "bg-status-warning text-white"
-                        : "bg-primary/20 text-primary"
-                    )}>
-                      {index + 1}
-                    </div>
-                    
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-semibold text-sm truncate">{action.clientName}</span>
-                        <Badge 
-                          variant="outline" 
-                          className={(() => {
-                            const role = toResponsibleRole(action.responsible);
-                            return cn(
-                              "text-[9px] px-1.5 py-0",
-                              role === "manager"
-                                ? "border-status-info/40 text-status-info"
-                                : role === "ops"
-                                  ? "border-status-purple/40 text-status-purple"
-                                  : "border-border/40 text-muted-foreground"
-                            );
-                          })()}
-                        >
-                          {getResponsibleLabel(action.responsible)}
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-muted-foreground line-clamp-1 mb-1">
-                        {action.taskTitle}
-                      </p>
-                      <span className={cn(
-                        "text-[10px] font-medium",
-                        action.urgencyLevel === "critical" ? "text-status-danger" :
-                        action.urgencyLevel === "high" ? "text-status-warning" : "text-muted-foreground"
+                urgentActions.map((action, index) => {
+                  const funnelStyle = FUNNEL_COLORS[action.funnelType];
+                  return (
+                    <button
+                      key={action.id}
+                      onClick={() => handleOpenClient(action.clientId)}
+                      className={cn(
+                        "w-full flex items-start gap-3 p-3 rounded-xl border transition-all hover:scale-[1.01] text-left",
+                        action.urgencyLevel === "critical" 
+                          ? "bg-status-danger/10 border-status-danger/30 hover:border-status-danger/50" 
+                          : action.urgencyLevel === "high"
+                          ? "bg-status-warning/10 border-status-warning/30 hover:border-status-warning/50"
+                          : "bg-surface-2/50 border-border/30 hover:border-primary/30"
+                      )}
+                    >
+                      <div className={cn(
+                        "w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0",
+                        action.urgencyLevel === "critical" 
+                          ? "bg-status-danger text-white" 
+                          : action.urgencyLevel === "high"
+                          ? "bg-status-warning text-white"
+                          : "bg-primary/20 text-primary"
                       )}>
-                        {action.urgencyReason}
-                      </span>
-                    </div>
+                        {index + 1}
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <span className="font-semibold text-sm truncate">{action.clientName}</span>
+                          <Badge 
+                            variant="outline" 
+                            className={cn("text-[9px] px-1.5 py-0", funnelStyle.border, funnelStyle.text)}
+                          >
+                            {funnelStyle.label}
+                          </Badge>
+                          <Badge 
+                            variant="outline" 
+                            className={(() => {
+                              const role = toResponsibleRole(action.responsible);
+                              return cn(
+                                "text-[9px] px-1.5 py-0",
+                                role === "manager"
+                                  ? "border-status-info/40 text-status-info"
+                                  : role === "ops"
+                                    ? "border-status-purple/40 text-status-purple"
+                                    : "border-border/40 text-muted-foreground"
+                              );
+                            })()}
+                          >
+                            {getResponsibleLabel(action.responsible)}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground line-clamp-1 mb-1">
+                          {action.taskTitle}
+                        </p>
+                        <span className={cn(
+                          "text-[10px] font-medium",
+                          action.urgencyLevel === "critical" ? "text-status-danger" :
+                          action.urgencyLevel === "high" ? "text-status-warning" : "text-muted-foreground"
+                        )}>
+                          {action.urgencyReason}
+                        </span>
+                      </div>
 
-                    <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-                  </button>
-                ))
+                      <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+                    </button>
+                  );
+                })
               )}
             </div>
           </CollapsibleContent>
