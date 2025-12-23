@@ -84,15 +84,6 @@ export const TOUR_STEPS: TourStep[] = [
     disableBeacon: true,
   },
 
-  // === KANBAN ===
-  {
-    id: 'kanban',
-    target: '[data-tour="kanban-board"]',
-    content: '📌 Kanban Visual: Arraste cards entre colunas para atualizar status. Cada coluna representa uma etapa do processo. Clique no card para ver detalhes.',
-    placement: 'top',
-    disableBeacon: true,
-  },
-
   // === SEÇÃO COMERCIAL ===
   {
     id: 'section-commercial',
