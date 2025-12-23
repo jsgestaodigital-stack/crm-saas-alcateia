@@ -49,6 +49,53 @@ export type Database = {
           },
         ]
       }
+      active_sessions: {
+        Row: {
+          agency_id: string | null
+          expires_at: string | null
+          id: string
+          ip_address: unknown
+          is_active: boolean | null
+          last_activity_at: string | null
+          session_token: string
+          started_at: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          agency_id?: string | null
+          expires_at?: string | null
+          id?: string
+          ip_address?: unknown
+          is_active?: boolean | null
+          last_activity_at?: string | null
+          session_token: string
+          started_at?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          agency_id?: string | null
+          expires_at?: string | null
+          id?: string
+          ip_address?: unknown
+          is_active?: boolean | null
+          last_activity_at?: string | null
+          session_token?: string
+          started_at?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "active_sessions_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agencies: {
         Row: {
           created_at: string
@@ -486,6 +533,53 @@ export type Database = {
             foreignKeyName: "agency_usage_agency_id_fkey"
             columns: ["agency_id"]
             isOneToOne: true
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      anomaly_detections: {
+        Row: {
+          agency_id: string | null
+          anomaly_type: string
+          details: Json | null
+          detected_at: string | null
+          id: string
+          resolution_notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string | null
+          user_id: string | null
+        }
+        Insert: {
+          agency_id?: string | null
+          anomaly_type: string
+          details?: Json | null
+          detected_at?: string | null
+          id?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          agency_id?: string | null
+          anomaly_type?: string
+          details?: Json | null
+          detected_at?: string | null
+          id?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "anomaly_detections_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
             referencedRelation: "agencies"
             referencedColumns: ["id"]
           },
@@ -3095,6 +3189,33 @@ export type Database = {
           },
         ]
       }
+      rate_limit_events: {
+        Row: {
+          attempted_at: string | null
+          blocked: boolean | null
+          endpoint: string
+          id: string
+          ip_address: unknown
+          user_id: string | null
+        }
+        Insert: {
+          attempted_at?: string | null
+          blocked?: boolean | null
+          endpoint: string
+          id?: string
+          ip_address: unknown
+          user_id?: string | null
+        }
+        Update: {
+          attempted_at?: string | null
+          blocked?: boolean | null
+          endpoint?: string
+          id?: string
+          ip_address?: unknown
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       recurring_clients: {
         Row: {
           agency_id: string
@@ -3879,6 +4000,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      super_admin_ip_whitelist: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          expires_at: string | null
+          id: string
+          ip_address: unknown
+          is_active: boolean | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          ip_address: unknown
+          is_active?: boolean | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          ip_address?: unknown
+          is_active?: boolean | null
+          user_id?: string
+        }
+        Relationships: []
       }
       system_audit_runs: {
         Row: {
@@ -4922,7 +5073,18 @@ export type Database = {
         Returns: Json
       }
       check_notifications: { Args: never; Returns: Json }
+      check_rate_limit: {
+        Args: {
+          _endpoint: string
+          _ip_address: unknown
+          _max_requests?: number
+          _window_seconds?: number
+        }
+        Returns: boolean
+      }
+      cleanup_expired_sessions: { Args: never; Returns: number }
       cleanup_old_login_attempts: { Args: never; Returns: undefined }
+      cleanup_rate_limit_events: { Args: never; Returns: undefined }
       complete_task: { Args: { p_task_id: string }; Returns: boolean }
       complete_visual_tour: { Args: never; Returns: Json }
       count_clients_v2: {
@@ -4996,6 +5158,14 @@ export type Database = {
           recent_ips: string[]
         }[]
       }
+      detect_usage_anomalies: {
+        Args: never
+        Returns: {
+          agency_id: string
+          anomaly_type: string
+          details: Json
+        }[]
+      }
       dismiss_onboarding: { Args: never; Returns: Json }
       encrypt_sensitive_data: {
         Args: { _data: string; _key?: string }
@@ -5052,6 +5222,10 @@ export type Database = {
           updated_at: string
           whatsapp: string
         }[]
+      }
+      force_user_logout: {
+        Args: { _reason?: string; _user_id: string }
+        Returns: number
       }
       generate_invoice_number: { Args: { _agency_id: string }; Returns: string }
       generate_lead_summary: { Args: { _lead_id: string }; Returns: string }
@@ -5253,6 +5427,10 @@ export type Database = {
         Returns: boolean
       }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_super_admin_ip_allowed: {
+        Args: { _ip_address: unknown; _user_id: string }
+        Returns: boolean
+      }
       is_user_blocked: { Args: { _user_id: string }; Returns: Json }
       log_action: {
         Args: {
@@ -5403,6 +5581,7 @@ export type Database = {
         Returns: string
       }
       reset_visual_tour: { Args: never; Returns: Json }
+      run_anomaly_detection: { Args: never; Returns: number }
       run_full_agency_audit: { Args: never; Returns: string }
       save_ai_interaction: {
         Args: {
