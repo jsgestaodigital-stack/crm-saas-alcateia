@@ -5,21 +5,74 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface CreateUserRequest {
+// Input validation
+interface CreateUserInput {
   email: string;
   password: string;
   full_name: string;
   role: "admin" | "operador" | "visualizador";
 }
 
-// Password validation: min 8 chars
-function isStrongPassword(password: string): boolean {
-  return password.length >= 8;
-}
+const VALID_ROLES = ["admin", "operador", "visualizador"];
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-function validateEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
+function validateInput(data: unknown): { valid: true; data: CreateUserInput } | { valid: false; error: string } {
+  if (typeof data !== 'object' || data === null) {
+    return { valid: false, error: 'Invalid request body' };
+  }
+
+  const input = data as Record<string, unknown>;
+
+  // Validate email
+  if (!input.email || typeof input.email !== 'string') {
+    return { valid: false, error: 'E-mail é obrigatório' };
+  }
+  if (!EMAIL_REGEX.test(input.email)) {
+    return { valid: false, error: 'E-mail inválido' };
+  }
+  if (input.email.length > 255) {
+    return { valid: false, error: 'E-mail muito longo' };
+  }
+
+  // Validate full_name
+  if (!input.full_name || typeof input.full_name !== 'string') {
+    return { valid: false, error: 'Nome é obrigatório' };
+  }
+  if (input.full_name.trim().length < 2) {
+    return { valid: false, error: 'Nome deve ter pelo menos 2 caracteres' };
+  }
+  if (input.full_name.length > 200) {
+    return { valid: false, error: 'Nome muito longo' };
+  }
+
+  // Validate password
+  if (!input.password || typeof input.password !== 'string') {
+    return { valid: false, error: 'Senha é obrigatória' };
+  }
+  if (input.password.length < 8) {
+    return { valid: false, error: 'Senha deve ter no mínimo 8 caracteres' };
+  }
+  if (input.password.length > 128) {
+    return { valid: false, error: 'Senha muito longa' };
+  }
+
+  // Validate role
+  if (!input.role || typeof input.role !== 'string') {
+    return { valid: false, error: 'Nível de acesso é obrigatório' };
+  }
+  if (!VALID_ROLES.includes(input.role)) {
+    return { valid: false, error: 'Nível de acesso inválido' };
+  }
+
+  return {
+    valid: true,
+    data: {
+      email: input.email.toLowerCase().trim(),
+      password: input.password,
+      full_name: input.full_name.trim(),
+      role: input.role as CreateUserInput['role'],
+    }
+  };
 }
 
 Deno.serve(async (req) => {
@@ -37,7 +90,7 @@ Deno.serve(async (req) => {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       return new Response(
-        JSON.stringify({ error: "Missing authorization header" }),
+        JSON.stringify({ error: "Autenticação necessária" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -50,9 +103,9 @@ Deno.serve(async (req) => {
 
     const { data: { user: callerUser }, error: userError } = await supabaseClient.auth.getUser();
     if (userError || !callerUser) {
-      console.log("Auth error:", userError);
+      console.log("[create-user] Auth error");
       return new Response(
-        JSON.stringify({ error: "Not authenticated" }),
+        JSON.stringify({ error: "Não autenticado" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -67,74 +120,56 @@ Deno.serve(async (req) => {
     });
 
     if (isAdminError || !isAdminData) {
-      console.log("Admin check failed:", isAdminError);
+      console.log("[create-user] Admin check failed");
       return new Response(
-        JSON.stringify({ error: "Only admins can create users" }),
+        JSON.stringify({ error: "Apenas administradores podem criar usuários" }),
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Parse and validate request
-    const { email, password, full_name, role } = (await req.json()) as CreateUserRequest;
-
-    if (!email || !validateEmail(email)) {
+    // Parse and validate input
+    let rawInput: unknown;
+    try {
+      rawInput = await req.json();
+    } catch {
       return new Response(
-        JSON.stringify({ error: "E-mail inválido" }),
+        JSON.stringify({ error: "Corpo da requisição inválido" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    if (!full_name || full_name.trim().length < 2) {
+    const validation = validateInput(rawInput);
+    if (!validation.valid) {
       return new Response(
-        JSON.stringify({ error: "Nome deve ter pelo menos 2 caracteres" }),
+        JSON.stringify({ error: validation.error }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    if (!password) {
-      return new Response(
-        JSON.stringify({ error: "Senha é obrigatória" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    const { email, password, full_name, role } = validation.data;
 
-    if (!isStrongPassword(password)) {
-      return new Response(
-        JSON.stringify({ 
-          error: "Senha fraca. Deve ter no mínimo 8 caracteres, incluir pelo menos 1 número e 1 símbolo (!@#$%^&*)" 
-        }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Roles válidos para criação de usuários via admin
-    const assignableRoles = ["admin", "operador", "visualizador"];
-    if (!role || !assignableRoles.includes(role)) {
-      return new Response(
-        JSON.stringify({ error: "Nível de acesso inválido" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    console.log(`Creating user: ${email} with role: ${role} by admin: ${callerUser.email}`);
+    console.log(`[create-user] Creating user: ${email} with role: ${role} by admin: ${callerUser.email}`);
 
     // Create user using admin client
     const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
-      email: email.toLowerCase().trim(),
+      email,
       password,
       email_confirm: true, // Auto-confirm email
-      user_metadata: { full_name: full_name.trim() },
+      user_metadata: { full_name },
     });
 
     if (createError) {
-      console.log("Create user error:", createError);
+      console.log("[create-user] Create user error");
       if (createError.message.includes("already been registered")) {
         return new Response(
           JSON.stringify({ error: "Este e-mail já está cadastrado" }),
           { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      throw createError;
+      return new Response(
+        JSON.stringify({ error: "Erro ao criar usuário. Tente novamente." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const userId = newUser.user!.id;
@@ -145,14 +180,14 @@ Deno.serve(async (req) => {
       .upsert(
         {
           id: userId,
-          full_name: full_name.trim(),
+          full_name,
           status: "ativo",
         },
         { onConflict: "id" }
       );
 
     if (profileError) {
-      console.log("Profile error:", profileError);
+      console.log("[create-user] Profile error (non-fatal)");
       // Non-fatal, trigger might have created it
     }
 
@@ -162,10 +197,13 @@ Deno.serve(async (req) => {
       .insert({ user_id: userId, role });
 
     if (roleError) {
-      console.log("Role error:", roleError);
+      console.log("[create-user] Role error");
       // Try to clean up if role creation failed
       await supabaseAdmin.auth.admin.deleteUser(userId);
-      throw new Error("Erro ao atribuir nível de acesso");
+      return new Response(
+        JSON.stringify({ error: "Erro ao atribuir nível de acesso. Tente novamente." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     // Create user permissions with defaults based on role
@@ -182,10 +220,10 @@ Deno.serve(async (req) => {
       .upsert(permissions, { onConflict: "user_id" });
 
     if (permError) {
-      console.log("Permissions error (non-fatal):", permError);
+      console.log("[create-user] Permissions error (non-fatal)");
     }
 
-    console.log(`User created successfully: ${email} (${userId})`);
+    console.log(`[create-user] User created successfully: ${email} (${userId})`);
 
     return new Response(
       JSON.stringify({ 
@@ -193,16 +231,16 @@ Deno.serve(async (req) => {
         user: {
           id: userId,
           email: newUser.user!.email,
-          full_name: full_name.trim(),
+          full_name,
           role,
         }
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
-  } catch (err) {
-    console.error("Create user error:", err);
+  } catch (error) {
+    console.error("[create-user] Unexpected error:", error);
     return new Response(
-      JSON.stringify({ error: String(err) }),
+      JSON.stringify({ error: "Erro inesperado. Tente novamente." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

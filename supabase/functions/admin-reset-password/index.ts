@@ -89,7 +89,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    console.log(`Super admin ${callerUser.email} resetting password for user: ${targetUser.user.email}`);
+    console.log(`[admin-reset-password] Super admin ${callerUser.email} resetting password for user: ${targetUser.user.email}`);
 
     // Update user password
     const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(user_id, {
@@ -97,23 +97,23 @@ Deno.serve(async (req) => {
     });
 
     if (updateError) {
-      console.error("Update password error:", updateError);
+      console.error("[admin-reset-password] Update password error:", updateError);
       return new Response(
-        JSON.stringify({ error: updateError.message }),
+        JSON.stringify({ error: "Erro ao atualizar senha. Tente novamente." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    console.log(`Password reset successfully for user: ${user_id}`);
+    console.log(`[admin-reset-password] Password reset successfully for user: ${user_id}`);
 
     return new Response(
-      JSON.stringify({ success: true, message: "Password updated successfully" }),
+      JSON.stringify({ success: true, message: "Senha atualizada com sucesso" }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err) {
-    console.error("Admin reset password error:", err);
+    console.error("[admin-reset-password] Unexpected error:", err);
     return new Response(
-      JSON.stringify({ error: String(err) }),
+      JSON.stringify({ error: "Erro inesperado. Tente novamente." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

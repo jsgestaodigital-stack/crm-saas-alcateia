@@ -6,6 +6,49 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Input validation
+const MAX_TRANSCRIPTION_LENGTH = 100000; // ~100KB of text
+const MAX_LEAD_NAME_LENGTH = 200;
+
+interface RaioXInput {
+  transcription: string;
+  leadName?: string;
+}
+
+function validateInput(data: unknown): { valid: true; data: RaioXInput } | { valid: false; error: string } {
+  if (typeof data !== 'object' || data === null) {
+    return { valid: false, error: 'Invalid request body' };
+  }
+
+  const input = data as Record<string, unknown>;
+
+  // Validate transcription (required)
+  if (!input.transcription || typeof input.transcription !== 'string') {
+    return { valid: false, error: 'Transcrição é obrigatória' };
+  }
+  if (input.transcription.trim().length === 0) {
+    return { valid: false, error: 'Transcrição não pode estar vazia' };
+  }
+  if (input.transcription.length > MAX_TRANSCRIPTION_LENGTH) {
+    return { valid: false, error: `Transcrição muito longa. Máximo: ${MAX_TRANSCRIPTION_LENGTH} caracteres` };
+  }
+
+  // Validate leadName (optional)
+  if (input.leadName !== undefined) {
+    if (typeof input.leadName !== 'string' || input.leadName.length > MAX_LEAD_NAME_LENGTH) {
+      return { valid: false, error: 'Nome do lead deve ter no máximo 200 caracteres' };
+    }
+  }
+
+  return {
+    valid: true,
+    data: {
+      transcription: input.transcription.trim(),
+      leadName: input.leadName as string | undefined,
+    }
+  };
+}
+
 const SYSTEM_PROMPT = `Atue como um consultor especialista em vendas consultivas, psicologia do consumidor e marketing digital com foco em tráfego orgânico e SEO local para negócios físicos.
 
 Você tem 20 anos de campo ajudando agências e consultores a venderem serviços de Google Meu Negócio, SEO local e presença digital para negócios locais como restaurantes, salões, clínicas, pet shops e comércios de bairro.
@@ -137,22 +180,34 @@ serve(async (req) => {
       );
     }
     
-    console.log(`AI request from user: ${user.id}`);
+    console.log(`[analyze-raiox] Request from user: ${user.id}`);
 
-    const { transcription, leadName } = await req.json();
-
-    if (!transcription || transcription.trim().length === 0) {
+    // Parse and validate input
+    let rawInput: unknown;
+    try {
+      rawInput = await req.json();
+    } catch {
       return new Response(
-        JSON.stringify({ error: "Transcrição é obrigatória" }),
+        JSON.stringify({ error: "Corpo da requisição inválido" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
+    const validation = validateInput(rawInput);
+    if (!validation.valid) {
+      return new Response(
+        JSON.stringify({ error: validation.error }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const { transcription, leadName } = validation.data;
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
-      console.error("LOVABLE_API_KEY is not configured");
+      console.error("[analyze-raiox] LOVABLE_API_KEY is not configured");
       return new Response(
-        JSON.stringify({ error: "API key not configured" }),
+        JSON.stringify({ error: "Serviço de IA não configurado" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -161,8 +216,8 @@ serve(async (req) => {
       ? `Analise a seguinte transcrição de reunião de vendas com o lead "${leadName}":\n\n${transcription}`
       : `Analise a seguinte transcrição de reunião de vendas:\n\n${transcription}`;
 
-    console.log("Calling Lovable AI for RaioX analysis...");
-    console.log("Transcription length:", transcription.length);
+    console.log("[analyze-raiox] Calling Lovable AI for analysis...");
+    console.log("[analyze-raiox] Transcription length:", transcription.length);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -180,22 +235,21 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
+      console.error("[analyze-raiox] AI Gateway error:", response.status);
+      
       if (response.status === 429) {
-        console.error("Rate limit exceeded");
         return new Response(
           JSON.stringify({ error: "Limite de requisições excedido. Tente novamente em alguns minutos." }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
       if (response.status === 402) {
-        console.error("Payment required");
         return new Response(
           JSON.stringify({ error: "Créditos insuficientes. Adicione créditos em Configurações." }),
           { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
+      
       return new Response(
         JSON.stringify({ error: "Erro ao processar análise. Tente novamente." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -206,14 +260,14 @@ serve(async (req) => {
     const analysisContent = data.choices?.[0]?.message?.content;
 
     if (!analysisContent) {
-      console.error("No content in AI response");
+      console.error("[analyze-raiox] No content in AI response");
       return new Response(
-        JSON.stringify({ error: "Resposta vazia da IA" }),
+        JSON.stringify({ error: "Resposta vazia da IA. Tente novamente." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    console.log("Analysis completed successfully");
+    console.log("[analyze-raiox] Analysis completed successfully");
 
     return new Response(
       JSON.stringify({ analysis: analysisContent }),
@@ -221,9 +275,9 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error("Error in analyze-raiox function:", error);
+    console.error("[analyze-raiox] Unexpected error:", error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Erro desconhecido" }),
+      JSON.stringify({ error: "Erro inesperado. Tente novamente." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

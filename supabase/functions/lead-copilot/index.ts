@@ -6,10 +6,65 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface CopilotRequest {
+// Input validation
+const VALID_TYPES = ['summary', 'suggestion', 'chat', 'analysis'];
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const MAX_MESSAGE_LENGTH = 2000;
+
+interface CopilotInput {
   leadId: string;
   type: "summary" | "suggestion" | "chat" | "analysis";
   userMessage?: string;
+}
+
+function validateInput(data: unknown): { valid: true; data: CopilotInput } | { valid: false; error: string } {
+  if (typeof data !== 'object' || data === null) {
+    return { valid: false, error: 'Invalid request body' };
+  }
+
+  const input = data as Record<string, unknown>;
+
+  // Validate leadId (required, must be UUID)
+  if (!input.leadId || typeof input.leadId !== 'string') {
+    return { valid: false, error: 'leadId is required' };
+  }
+  if (!UUID_REGEX.test(input.leadId)) {
+    return { valid: false, error: 'leadId must be a valid UUID' };
+  }
+
+  // Validate type (required, must be valid enum)
+  if (!input.type || typeof input.type !== 'string') {
+    return { valid: false, error: 'type is required' };
+  }
+  if (!VALID_TYPES.includes(input.type)) {
+    return { valid: false, error: 'Invalid type. Must be: summary, suggestion, chat, or analysis' };
+  }
+
+  // Validate userMessage for chat type
+  if (input.type === 'chat') {
+    if (!input.userMessage || typeof input.userMessage !== 'string') {
+      return { valid: false, error: 'userMessage is required for chat type' };
+    }
+    if (input.userMessage.trim().length === 0) {
+      return { valid: false, error: 'userMessage cannot be empty' };
+    }
+  }
+
+  // Validate userMessage length if provided
+  if (input.userMessage !== undefined) {
+    if (typeof input.userMessage !== 'string' || input.userMessage.length > MAX_MESSAGE_LENGTH) {
+      return { valid: false, error: `userMessage must be under ${MAX_MESSAGE_LENGTH} characters` };
+    }
+  }
+
+  return {
+    valid: true,
+    data: {
+      leadId: input.leadId,
+      type: input.type as CopilotInput['type'],
+      userMessage: input.userMessage as string | undefined,
+    }
+  };
 }
 
 serve(async (req) => {
@@ -19,16 +74,28 @@ serve(async (req) => {
   }
 
   try {
-    const { leadId, type, userMessage } = await req.json() as CopilotRequest;
-    
-    console.log(`[lead-copilot] Processing ${type} for lead ${leadId}`);
-
-    if (!leadId) {
+    // Parse and validate input
+    let rawInput: unknown;
+    try {
+      rawInput = await req.json();
+    } catch {
       return new Response(
-        JSON.stringify({ error: "leadId is required" }),
+        JSON.stringify({ error: "Corpo da requisição inválido" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    const validation = validateInput(rawInput);
+    if (!validation.valid) {
+      return new Response(
+        JSON.stringify({ error: validation.error }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const { leadId, type, userMessage } = validation.data;
+    
+    console.log(`[lead-copilot] Processing ${type} for lead ${leadId}`);
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -53,9 +120,9 @@ serve(async (req) => {
       .single();
 
     if (leadError || !lead) {
-      console.error("[lead-copilot] Lead not found:", leadError);
+      console.error("[lead-copilot] Lead not found");
       return new Response(
-        JSON.stringify({ error: "Lead not found" }),
+        JSON.stringify({ error: "Lead não encontrado" }),
         { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -112,13 +179,13 @@ Use no máximo 100 palavras.`;
       let historyText = "";
       if (activities && activities.length > 0) {
         historyText += "\n\nÚltimas Atividades:\n";
-        activities.forEach((a: any) => {
+        activities.forEach((a: Record<string, unknown>) => {
           historyText += `- [${a.type}] ${a.content}\n`;
         });
       }
       if (messages && messages.length > 0) {
         historyText += "\n\nÚltimas Mensagens:\n";
-        messages.forEach((m: any) => {
+        messages.forEach((m: Record<string, unknown>) => {
           historyText += `- ${m.user_name}: ${m.message}\n`;
         });
       }
@@ -168,12 +235,6 @@ Temperatura: ${lead.temperature || "cold"}
 Estágio: ${lead.pipeline_stage || "cold"}
 
 Pergunta do usuário: ${userMessage}`;
-
-    } else {
-      return new Response(
-        JSON.stringify({ error: "Invalid type or missing userMessage for chat" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
     }
 
     // Call Lovable AI Gateway
@@ -181,7 +242,7 @@ Pergunta do usuário: ${userMessage}`;
     if (!LOVABLE_API_KEY) {
       console.error("[lead-copilot] LOVABLE_API_KEY not configured");
       return new Response(
-        JSON.stringify({ error: "AI service not configured" }),
+        JSON.stringify({ error: "Serviço de IA não configurado" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -206,24 +267,23 @@ Pergunta do usuário: ${userMessage}`;
     });
 
     if (!aiResponse.ok) {
-      const errorText = await aiResponse.text();
-      console.error("[lead-copilot] AI Gateway error:", aiResponse.status, errorText);
+      console.error("[lead-copilot] AI Gateway error:", aiResponse.status);
       
       if (aiResponse.status === 429) {
         return new Response(
-          JSON.stringify({ error: "Rate limit exceeded. Please try again later." }),
+          JSON.stringify({ error: "Limite de requisições excedido. Tente novamente mais tarde." }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
       if (aiResponse.status === 402) {
         return new Response(
-          JSON.stringify({ error: "AI credits exhausted. Please add funds." }),
+          JSON.stringify({ error: "Créditos de IA esgotados. Adicione créditos." }),
           { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
       
       return new Response(
-        JSON.stringify({ error: "AI service error" }),
+        JSON.stringify({ error: "Erro no serviço de IA. Tente novamente." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -250,7 +310,7 @@ Pergunta do usuário: ${userMessage}`;
       });
 
     if (saveError) {
-      console.error("[lead-copilot] Error saving interaction:", saveError);
+      console.error("[lead-copilot] Error saving interaction (non-fatal)");
     }
 
     return new Response(
@@ -264,9 +324,9 @@ Pergunta do usuário: ${userMessage}`;
     );
 
   } catch (error) {
-    console.error("[lead-copilot] Error:", error);
+    console.error("[lead-copilot] Unexpected error:", error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
+      JSON.stringify({ error: "Erro inesperado. Tente novamente." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
