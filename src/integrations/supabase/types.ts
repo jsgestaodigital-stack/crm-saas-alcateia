@@ -82,6 +82,47 @@ export type Database = {
         }
         Relationships: []
       }
+      agency_health_checks: {
+        Row: {
+          agency_id: string
+          auto_repaired: boolean | null
+          check_type: string
+          checked_at: string
+          details: Json | null
+          id: string
+          repair_details: string | null
+          status: string
+        }
+        Insert: {
+          agency_id: string
+          auto_repaired?: boolean | null
+          check_type: string
+          checked_at?: string
+          details?: Json | null
+          id?: string
+          repair_details?: string | null
+          status: string
+        }
+        Update: {
+          agency_id?: string
+          auto_repaired?: boolean | null
+          check_type?: string
+          checked_at?: string
+          details?: Json | null
+          id?: string
+          repair_details?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agency_health_checks_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agency_invites: {
         Row: {
           accepted_at: string | null
@@ -2279,6 +2320,51 @@ export type Database = {
           },
         ]
       }
+      mt_security_violations: {
+        Row: {
+          attempted_agency_id: string | null
+          created_at: string
+          details: Json | null
+          function_name: string | null
+          id: string
+          ip_address: unknown
+          severity: string | null
+          table_name: string | null
+          user_agent: string | null
+          user_current_agency_id: string | null
+          user_id: string | null
+          violation_type: string
+        }
+        Insert: {
+          attempted_agency_id?: string | null
+          created_at?: string
+          details?: Json | null
+          function_name?: string | null
+          id?: string
+          ip_address?: unknown
+          severity?: string | null
+          table_name?: string | null
+          user_agent?: string | null
+          user_current_agency_id?: string | null
+          user_id?: string | null
+          violation_type: string
+        }
+        Update: {
+          attempted_agency_id?: string | null
+          created_at?: string
+          details?: Json | null
+          function_name?: string | null
+          id?: string
+          ip_address?: unknown
+          severity?: string | null
+          table_name?: string | null
+          user_agent?: string | null
+          user_current_agency_id?: string | null
+          user_id?: string | null
+          violation_type?: string
+        }
+        Relationships: []
+      }
       notification_preferences: {
         Row: {
           agency_id: string
@@ -3192,6 +3278,72 @@ export type Database = {
           },
         ]
       }
+      rls_policy_changes: {
+        Row: {
+          change_type: string
+          detected_at: string
+          id: string
+          is_reviewed: boolean | null
+          new_definition: string | null
+          notes: string | null
+          old_definition: string | null
+          policy_name: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          table_name: string
+        }
+        Insert: {
+          change_type: string
+          detected_at?: string
+          id?: string
+          is_reviewed?: boolean | null
+          new_definition?: string | null
+          notes?: string | null
+          old_definition?: string | null
+          policy_name: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          table_name: string
+        }
+        Update: {
+          change_type?: string
+          detected_at?: string
+          id?: string
+          is_reviewed?: boolean | null
+          new_definition?: string | null
+          notes?: string | null
+          old_definition?: string | null
+          policy_name?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          table_name?: string
+        }
+        Relationships: []
+      }
+      rls_policy_snapshots: {
+        Row: {
+          id: string
+          policy_definition: string | null
+          policy_name: string
+          snapshot_at: string
+          table_name: string
+        }
+        Insert: {
+          id?: string
+          policy_definition?: string | null
+          policy_name: string
+          snapshot_at?: string
+          table_name: string
+        }
+        Update: {
+          id?: string
+          policy_definition?: string | null
+          policy_name?: string
+          snapshot_at?: string
+          table_name?: string
+        }
+        Relationships: []
+      }
       role_permission_templates: {
         Row: {
           can_admin: boolean
@@ -3665,6 +3817,107 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      super_admin_alerts: {
+        Row: {
+          agency_id: string | null
+          alert_type: string
+          created_at: string
+          details: Json | null
+          id: string
+          is_read: boolean | null
+          is_resolved: boolean | null
+          message: string
+          read_at: string | null
+          read_by: string | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          title: string
+        }
+        Insert: {
+          agency_id?: string | null
+          alert_type: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          is_read?: boolean | null
+          is_resolved?: boolean | null
+          message: string
+          read_at?: string | null
+          read_by?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          title: string
+        }
+        Update: {
+          agency_id?: string | null
+          alert_type?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          is_read?: boolean | null
+          is_resolved?: boolean | null
+          message?: string
+          read_at?: string | null
+          read_by?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "super_admin_alerts_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      system_audit_runs: {
+        Row: {
+          agencies_checked: number | null
+          completed_at: string | null
+          error_message: string | null
+          id: string
+          issues_found: number | null
+          issues_repaired: number | null
+          run_type: string
+          started_at: string
+          status: string
+          summary: Json | null
+        }
+        Insert: {
+          agencies_checked?: number | null
+          completed_at?: string | null
+          error_message?: string | null
+          id?: string
+          issues_found?: number | null
+          issues_repaired?: number | null
+          run_type: string
+          started_at?: string
+          status?: string
+          summary?: Json | null
+        }
+        Update: {
+          agencies_checked?: number | null
+          completed_at?: string | null
+          error_message?: string | null
+          id?: string
+          issues_found?: number | null
+          issues_repaired?: number | null
+          run_type?: string
+          started_at?: string
+          status?: string
+          summary?: Json | null
+        }
+        Relationships: []
       }
       system_health_logs: {
         Row: {
@@ -4651,6 +4904,15 @@ export type Database = {
         }
         Returns: undefined
       }
+      check_agency_integrity: {
+        Args: { _agency_id: string }
+        Returns: {
+          check_type: string
+          details: Json
+          needs_repair: boolean
+          status: string
+        }[]
+      }
       check_limit: {
         Args: { _agency_id: string; _increment?: number; _resource: string }
         Returns: Json
@@ -4725,6 +4987,7 @@ export type Database = {
         Returns: string
       }
       delete_lead: { Args: { _lead_id: string }; Returns: undefined }
+      detect_rls_policy_changes: { Args: never; Returns: number }
       detect_suspicious_logins: {
         Args: { _user_id: string; _window_minutes?: number }
         Returns: {
@@ -5055,6 +5318,18 @@ export type Database = {
         Returns: string
       }
       log_password_change: { Args: never; Returns: undefined }
+      log_security_violation: {
+        Args: {
+          _attempted_agency_id?: string
+          _details?: Json
+          _function_name?: string
+          _severity?: string
+          _table_name?: string
+          _user_id?: string
+          _violation_type: string
+        }
+        Returns: string
+      }
       log_successful_login: {
         Args: {
           _ip_address?: unknown
@@ -5115,11 +5390,20 @@ export type Database = {
         Args: { _reason?: string; _registration_id: string }
         Returns: undefined
       }
+      repair_agency_integrity: {
+        Args: { _agency_id: string }
+        Returns: {
+          details: string
+          repair_type: string
+          was_repaired: boolean
+        }[]
+      }
       request_user_deletion: {
         Args: { _deletion_type?: string; _notes?: string; _user_id: string }
         Returns: string
       }
       reset_visual_tour: { Args: never; Returns: Json }
+      run_full_agency_audit: { Args: never; Returns: string }
       save_ai_interaction: {
         Args: {
           _ai_response: string
@@ -5207,6 +5491,7 @@ export type Database = {
         }
         Returns: Json
       }
+      snapshot_rls_policies: { Args: never; Returns: number }
       start_visual_tour: { Args: never; Returns: Json }
       submit_nps: {
         Args: { _feedback?: string; _score: number }
