@@ -6,25 +6,31 @@ import { TOOLTIP_CONTENT } from "@/lib/tooltipContent";
 import { cn } from "@/lib/utils";
 
 export function ThemeToggle() {
-  const [isDark, setIsDark] = useState(true);
-
-  useEffect(() => {
+  const [isDark, setIsDark] = useState(() => {
+    // Check initial state from localStorage or system preference
     const stored = localStorage.getItem("rankeia-theme");
-    if (stored === "light") {
-      setIsDark(false);
+    if (stored) {
+      return stored === "dark";
+    }
+    // Default to dark theme
+    return true;
+  });
+
+  // Sync DOM with state on mount and when isDark changes
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.remove("light");
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
       document.documentElement.classList.add("light");
     }
-  }, []);
+  }, [isDark]);
 
   const toggleTheme = () => {
-    if (isDark) {
-      document.documentElement.classList.add("light");
-      localStorage.setItem("rankeia-theme", "light");
-    } else {
-      document.documentElement.classList.remove("light");
-      localStorage.setItem("rankeia-theme", "dark");
-    }
-    setIsDark(!isDark);
+    const newIsDark = !isDark;
+    setIsDark(newIsDark);
+    localStorage.setItem("rankeia-theme", newIsDark ? "dark" : "light");
   };
 
   return (
