@@ -10,61 +10,202 @@ export interface TourStep extends Step {
   id: string;
 }
 
-// Tour steps configuration - focused on always-visible elements
+// Tour steps configuration - COMPLETE system walkthrough
 export const TOUR_STEPS: TourStep[] = [
+  // === BOAS-VINDAS ===
   {
-    id: 'dashboard-welcome',
+    id: 'welcome',
     target: 'body',
-    content: '🎉 Bem-vindo ao GRank CRM! Vamos fazer um tour rápido para você conhecer as principais funcionalidades do sistema.',
+    content: '🎉 Bem-vindo ao GRank CRM! Este é o sistema completo para gestão de agências de Google Meu Negócio. Vamos conhecer TUDO que você pode fazer aqui!',
     placement: 'center',
     disableBeacon: true,
   },
+  
+  // === MENU PRINCIPAL ===
   {
-    id: 'sidebar-navigation',
+    id: 'sidebar',
     target: '[data-tour="sidebar"]',
-    content: '📋 Este é o menu principal do sistema. Aqui você pode alternar entre Vendas, Otimização e Recorrência, além de acessar propostas, contratos e ferramentas.',
+    content: '📋 Este é o Menu Principal. Aqui você acessa todas as áreas do sistema: funis de trabalho, ferramentas de IA, documentos e gestão.',
     placement: 'right',
     disableBeacon: true,
   },
+  
+  // === BOTÃO DE AÇÃO ===
   {
-    id: 'new-client-button',
+    id: 'new-button',
     target: '[data-tour="new-client"]',
-    content: '➕ Clique aqui para adicionar novos clientes ou leads ao sistema. O botão muda conforme o funil ativo.',
+    content: '➕ Botão de Ação Rápida: Adicione leads, clientes ou tarefas recorrentes. O botão muda de cor e função conforme o funil ativo.',
     placement: 'right',
     disableBeacon: true,
   },
+
+  // === FUNIL DE VENDAS ===
+  {
+    id: 'funnel-sales',
+    target: '[data-tour="funnel-sales"]',
+    content: '🔥 FUNIL DE VENDAS: Gerencie sua prospecção! Cadastre leads, acompanhe temperatura (frio/morno/quente), registre atividades e acompanhe até o fechamento.',
+    placement: 'right',
+    disableBeacon: true,
+  },
+
+  // === FUNIL DE OTIMIZAÇÃO ===
+  {
+    id: 'funnel-optimization',
+    target: '[data-tour="funnel-optimization"]',
+    content: '✨ FUNIL DE OTIMIZAÇÃO: Execute o trabalho! Acompanhe seus clientes pelo checklist de 47 pontos do Google Meu Negócio, desde onboarding até entrega.',
+    placement: 'right',
+    disableBeacon: true,
+  },
+
+  // === FUNIL DE RECORRÊNCIA ===
+  {
+    id: 'funnel-recurrence',
+    target: '[data-tour="funnel-recurrence"]',
+    content: '🔄 FUNIL DE RECORRÊNCIA: Gerencie tarefas periódicas! Posts semanais, atualizações mensais, fotos de capa - tudo com calendário e controle de conclusão.',
+    placement: 'right',
+    disableBeacon: true,
+  },
+
+  // === SELETOR DE FUNIL ===
   {
     id: 'funnel-toggle',
     target: '[data-tour="funnel-toggle"]',
-    content: '🔄 Use este seletor para alternar entre os diferentes modos: Vendas (prospecção), Otimização (execução) e Recorrência (tarefas periódicas).',
+    content: '🔄 Seletor de Modo: Alterne rapidamente entre Vendas (laranja), Otimização (verde) e Recorrência (roxo). Cada modo tem seu próprio Kanban e estatísticas.',
     placement: 'bottom',
     disableBeacon: true,
   },
+
+  // === ESTATÍSTICAS ===
   {
-    id: 'main-stats',
+    id: 'stats',
     target: '[data-tour="main-stats"]',
-    content: '📊 Aqui você vê os indicadores do funil atual: clientes ativos, leads em aberto, tarefas do dia e mais.',
+    content: '📊 Indicadores em Tempo Real: Veja clientes ativos, leads quentes, tarefas do dia e alertas. Os números atualizam automaticamente.',
     placement: 'bottom',
     disableBeacon: true,
   },
+
+  // === KANBAN ===
   {
-    id: 'kanban-board',
+    id: 'kanban',
     target: '[data-tour="kanban-board"]',
-    content: '📌 O Kanban mostra seus clientes/leads organizados por etapa. Arraste os cards para movê-los no funil.',
+    content: '📌 Kanban Visual: Arraste cards entre colunas para atualizar status. Cada coluna representa uma etapa do processo. Clique no card para ver detalhes.',
     placement: 'top',
     disableBeacon: true,
   },
+
+  // === SEÇÃO COMERCIAL ===
+  {
+    id: 'section-commercial',
+    target: '[data-tour="section-comercial"]',
+    content: '💼 SEÇÃO COMERCIAL: Aqui ficam as ferramentas de vendas - Propostas, Contratos e o Agente Raio-X para análise de fechamento.',
+    placement: 'right',
+    disableBeacon: true,
+  },
+
+  // === PROPOSTAS ===
+  {
+    id: 'proposals',
+    target: '[data-tour="nav-propostas"]',
+    content: '📄 GERADOR DE PROPOSTAS: Crie propostas profissionais com IA! Basta preencher os dados do cliente e o sistema gera uma proposta completa e personalizada.',
+    placement: 'right',
+    disableBeacon: true,
+  },
+
+  // === CONTRATOS ===
+  {
+    id: 'contracts',
+    target: '[data-tour="nav-contratos"]',
+    content: '📝 GERADOR DE CONTRATOS: Contratos digitais com assinatura eletrônica! Gere, envie e acompanhe assinaturas. Integração com Autentique para validade jurídica.',
+    placement: 'right',
+    disableBeacon: true,
+  },
+
+  // === RAIO-X ===
+  {
+    id: 'raiox',
+    target: '[data-tour="nav-raiox"]',
+    content: '⚡ AGENTE RAIO-X: Cole a transcrição da sua reunião de vendas e a IA analisa pontos fortes, objeções e dá sugestões de fechamento. Seu closer virtual!',
+    placement: 'right',
+    disableBeacon: true,
+  },
+
+  // === SEÇÃO FERRAMENTAS ===
+  {
+    id: 'section-tools',
+    target: '[data-tour="section-ferramentas"]',
+    content: '🛠️ FERRAMENTAS DE IA: Agentes especializados que automatizam tarefas complexas. SEO, Suspensões, Relatórios e mais.',
+    placement: 'right',
+    disableBeacon: true,
+  },
+
+  // === AGENTE SEO ===
+  {
+    id: 'agent-seo',
+    target: '[data-tour="nav-agente-seo"]',
+    content: '🔍 AGENTE SEO: ChatGPT especializado em Google Meu Negócio! Cole dados do perfil e receba sugestões de categoria, descrição, atributos e mais. Copie e cole direto no GMB.',
+    placement: 'right',
+    disableBeacon: true,
+  },
+
+  // === AGENTE SUSPENSÕES ===
+  {
+    id: 'agent-suspensions',
+    target: '[data-tour="nav-agente-suspensoes"]',
+    content: '⚠️ AGENTE SUSPENSÕES: Perfil do cliente foi suspenso? Cole os dados e a IA identifica possíveis causas e dá o passo-a-passo para recuperação.',
+    placement: 'right',
+    disableBeacon: true,
+  },
+
+  // === AGENTE RELATÓRIOS ===
+  {
+    id: 'agent-reports',
+    target: '[data-tour="nav-agente-relatorios"]',
+    content: '📈 AGENTE RELATÓRIOS: Gere relatórios profissionais para seus clientes! Cole as métricas do GMB e receba um relatório completo pronto para enviar.',
+    placement: 'right',
+    disableBeacon: true,
+  },
+
+  // === CENTRAL OPERACIONAL ===
+  {
+    id: 'questions',
+    target: '[data-tour="nav-central-operacional"]',
+    content: '💬 CENTRAL OPERACIONAL: Canal de comunicação entre equipe. Operadores fazem perguntas, gestores respondem. Tudo registrado e organizado.',
+    placement: 'right',
+    disableBeacon: true,
+  },
+
+  // === NOTIFICAÇÕES ===
   {
     id: 'notifications',
     target: '[data-tour="notifications"]',
-    content: '🔔 Aqui você recebe alertas, avisos de prazos e atualizações importantes do sistema.',
+    content: '🔔 Central de Alertas: Receba notificações de prazos, tarefas pendentes, leads quentes e atualizações importantes.',
     placement: 'bottom',
     disableBeacon: true,
   },
+
+  // === TEMA ===
   {
-    id: 'tour-complete',
+    id: 'theme',
+    target: '[data-tour="theme-toggle"]',
+    content: '🌙 Tema Claro/Escuro: Alterne entre modo claro e escuro conforme sua preferência. Sua escolha é salva automaticamente.',
+    placement: 'bottom',
+    disableBeacon: true,
+  },
+
+  // === TOUR GUIADO ===
+  {
+    id: 'tour-button',
+    target: '[data-tour="tour-button"]',
+    content: '🎯 Refazer Tour: Clique aqui sempre que quiser rever este tour ou mostrar para um membro da equipe.',
+    placement: 'bottom',
+    disableBeacon: true,
+  },
+
+  // === CONCLUSÃO ===
+  {
+    id: 'complete',
     target: 'body',
-    content: '🚀 Pronto! Agora você conhece o básico do GRank CRM. Explore o menu lateral para acessar Propostas, Contratos, Agentes IA, Equipe e muito mais. Bom trabalho!',
+    content: '🚀 PRONTO! Você conheceu todas as funcionalidades do GRank CRM. Agora é só começar a usar! Dica: Inicie cadastrando seu primeiro lead no Funil de Vendas. Bom trabalho!',
     placement: 'center',
     disableBeacon: true,
   },

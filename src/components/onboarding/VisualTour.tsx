@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
-import Joyride, { Styles } from 'react-joyride';
-import { useVisualTour } from '@/hooks/useVisualTour';
+import Joyride, { Styles, CallBackProps } from 'react-joyride';
+import { useVisualTour, TOUR_STEPS } from '@/hooks/useVisualTour';
 import { useAuth } from '@/contexts/AuthContext';
 
 // Custom styles for the tour
@@ -9,15 +9,16 @@ const tourStyles: Partial<Styles> = {
   options: {
     arrowColor: 'hsl(var(--popover))',
     backgroundColor: 'hsl(var(--popover))',
-    overlayColor: 'rgba(0, 0, 0, 0.75)',
+    overlayColor: 'rgba(0, 0, 0, 0.8)',
     primaryColor: 'hsl(var(--primary))',
     textColor: 'hsl(var(--popover-foreground))',
     zIndex: 10000,
   },
   tooltip: {
-    borderRadius: 12,
-    padding: 20,
+    borderRadius: 16,
+    padding: 24,
     boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+    maxWidth: 420,
   },
   tooltipContainer: {
     textAlign: 'left',
@@ -28,16 +29,16 @@ const tourStyles: Partial<Styles> = {
     marginBottom: 8,
   },
   tooltipContent: {
-    fontSize: 14,
-    lineHeight: 1.6,
+    fontSize: 15,
+    lineHeight: 1.7,
   },
   buttonNext: {
     backgroundColor: 'hsl(var(--primary))',
     borderRadius: 8,
     color: 'hsl(var(--primary-foreground))',
     fontSize: 14,
-    fontWeight: 500,
-    padding: '10px 20px',
+    fontWeight: 600,
+    padding: '12px 24px',
   },
   buttonBack: {
     color: 'hsl(var(--muted-foreground))',
@@ -53,7 +54,7 @@ const tourStyles: Partial<Styles> = {
   },
   spotlight: {
     borderRadius: 12,
-    boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.75)',
+    boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.8)',
   },
   beacon: {
     display: 'none',
@@ -68,6 +69,10 @@ const tourStyles: Partial<Styles> = {
 
 // Routes where tour SHOULD run (only dashboard has all required elements)
 const ALLOWED_ROUTES = ['/', '/dashboard'];
+
+// Steps that require opening collapsible sections
+const STEPS_REQUIRING_COMERCIAL = ['section-commercial', 'proposals', 'contracts', 'raiox'];
+const STEPS_REQUIRING_FERRAMENTAS = ['section-tools', 'agent-seo', 'agent-suspensions', 'agent-reports', 'questions'];
 
 interface VisualTourProps {
   autoStart?: boolean;
@@ -90,10 +95,49 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
   // Only run tour on dashboard where all elements exist
   const isAllowedRoute = ALLOWED_ROUTES.includes(location.pathname);
 
+  // Open collapsible sections before showing their steps
+  const prepareStep = useCallback((stepId: string) => {
+    // Find and click the section header to open it
+    if (STEPS_REQUIRING_COMERCIAL.includes(stepId)) {
+      const comercialSection = document.querySelector('[data-tour="section-comercial"]');
+      if (comercialSection) {
+        const parent = comercialSection.closest('[data-state]');
+        if (parent?.getAttribute('data-state') === 'closed') {
+          (comercialSection as HTMLElement).click();
+        }
+      }
+    }
+    
+    if (STEPS_REQUIRING_FERRAMENTAS.includes(stepId)) {
+      const ferramentasSection = document.querySelector('[data-tour="section-ferramentas"]');
+      if (ferramentasSection) {
+        const parent = ferramentasSection.closest('[data-state]');
+        if (parent?.getAttribute('data-state') === 'closed') {
+          (ferramentasSection as HTMLElement).click();
+        }
+      }
+    }
+  }, []);
+
+  // Enhanced callback that prepares steps before showing them
+  const enhancedCallback = useCallback((data: CallBackProps) => {
+    const { type, index } = data;
+    
+    // When about to show a step, prepare it
+    if (type === 'step:before' && index < TOUR_STEPS.length) {
+      const stepId = TOUR_STEPS[index].id;
+      prepareStep(stepId);
+      
+      // Small delay to allow collapsible to open
+      setTimeout(() => {}, 100);
+    }
+    
+    // Call the original handler
+    handleJoyrideCallback(data);
+  }, [handleJoyrideCallback, prepareStep]);
+
   // Auto-start tour on first visit (only once per session)
-  // IMPORTANT: This useEffect must be called before any early returns
   useEffect(() => {
-    // Skip if not on allowed route or no user
     if (!isAllowedRoute || !user) return;
 
     console.log('[VisualTour] Mount state:', { 
@@ -105,7 +149,6 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
       tourCompleted 
     });
     
-    // Auto-start for new users who haven't seen the tour
     if (
       autoStart && 
       shouldAutoStart && 
@@ -114,10 +157,29 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
     ) {
       console.log('[VisualTour] Auto-starting tour...');
       hasAutoStarted.current = true;
-      // Delay to ensure DOM is fully rendered
+      
+      // Open both sections before starting
       const timer = setTimeout(() => {
-        startTour();
-      }, 2500);
+        // Open Comercial section
+        const comercialSection = document.querySelector('[data-tour="section-comercial"]');
+        if (comercialSection) {
+          (comercialSection as HTMLElement).click();
+        }
+        
+        // Open Ferramentas section
+        setTimeout(() => {
+          const ferramentasSection = document.querySelector('[data-tour="section-ferramentas"]');
+          if (ferramentasSection) {
+            (ferramentasSection as HTMLElement).click();
+          }
+          
+          // Start tour after sections are open
+          setTimeout(() => {
+            startTour();
+          }, 300);
+        }, 100);
+      }, 2000);
+      
       return () => clearTimeout(timer);
     }
   }, [autoStart, shouldAutoStart, user, startTour, isAllowedRoute, tourCompleted]);
@@ -141,7 +203,7 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
       disableOverlayClose={false}
       disableCloseOnEsc={false}
       disableScrolling={false}
-      callback={handleJoyrideCallback}
+      callback={enhancedCallback}
       styles={tourStyles}
       locale={{
         back: 'Voltar',
