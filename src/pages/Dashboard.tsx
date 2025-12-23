@@ -55,6 +55,7 @@ const Dashboard = () => {
   // Modals
   const [wizardOpen, setWizardOpen] = useState(false);
   const [newLeadOpen, setNewLeadOpen] = useState(false);
+  const [newLeadInitialStage, setNewLeadInitialStage] = useState<string | undefined>(undefined);
   const [newRecurringOpen, setNewRecurringOpen] = useState(false);
   
   // Sidebar
@@ -165,6 +166,12 @@ const Dashboard = () => {
     moveLead(leadId, newStage);
   };
 
+  // Add lead directly to a specific stage
+  const handleAddLeadToStage = (stage: LeadPipelineStage) => {
+    setNewLeadInitialStage(stage);
+    setNewLeadOpen(true);
+  };
+
   // Delivery (Clients) view
   const renderDeliveryView = () => {
     switch (viewMode) {
@@ -228,6 +235,7 @@ const Dashboard = () => {
           onLeadClick={handleLeadClick} 
           onMoveLead={handleMoveLead}
           onRefresh={refetchLeads}
+          onAddLeadToStage={handleAddLeadToStage}
         />
       </>
     );
@@ -426,8 +434,12 @@ const Dashboard = () => {
         open={newLeadOpen} 
         onOpenChange={(open) => {
           setNewLeadOpen(open);
-          if (!open) refetchLeads();
+          if (!open) {
+            setNewLeadInitialStage(undefined);
+            refetchLeads();
+          }
         }}
+        initialStage={newLeadInitialStage}
       />
       
       {/* Recurring modal */}

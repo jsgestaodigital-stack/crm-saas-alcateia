@@ -54,6 +54,7 @@ import debounce from 'lodash.debounce';
 interface NewLeadDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialStage?: string;
 }
 
 interface ValidationState {
@@ -62,7 +63,7 @@ interface ValidationState {
   instagram: { valid: boolean; message?: string };
 }
 
-export function NewLeadDialog({ open, onOpenChange }: NewLeadDialogProps) {
+export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialogProps) {
   const { createLead } = useLeads();
   const { sources, addSource } = useLeadSources();
   const { duplicates, isChecking, checkDuplicates, clearDuplicates } = useLeadDuplicates();
@@ -241,6 +242,7 @@ export function NewLeadDialog({ open, onOpenChange }: NewLeadDialogProps) {
       const lead = await createLead({
         ...formData,
         instagram: formData.instagram ? formatInstagram(formData.instagram) : undefined,
+        pipeline_stage: initialStage as any || 'cold',
       });
 
       if (lead) {

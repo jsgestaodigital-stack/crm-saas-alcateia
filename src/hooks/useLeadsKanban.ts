@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { LeadPipelineStage } from '@/types/lead';
@@ -42,6 +42,7 @@ const KANBAN_FIELDS = `
 `;
 
 const PAGE_SIZE = 100;
+const REALTIME_DEBOUNCE_MS = 800; // Debounce realtime to avoid overriding optimistic updates
 
 /**
  * Hook otimizado para o Kanban - busca apenas campos necessários
@@ -53,6 +54,10 @@ export function useLeadsKanban() {
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
   const [totalCount, setTotalCount] = useState<number | null>(null);
+  
+  // Ref to track if we're in middle of optimistic update (skip realtime)
+  const skipRealtimeUntilRef = useRef<number>(0);
+  const realtimeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchLeads = useCallback(async (pageNum = 0, append = false) => {
     try {
@@ -100,8 +105,11 @@ export function useLeadsKanban() {
     }
   }, [hasMore, loading, page, fetchLeads]);
 
-  // Optimistic update for moving leads - instant UI update
+  // Optimistic update for moving leads - INSTANT UI update
   const optimisticMove = useCallback((leadId: string, newStage: LeadPipelineStage) => {
+    // Block realtime updates for a short period
+    skipRealtimeUntilRef.current = Date.now() + 2000; // 2 second grace period
+    
     let newStatus = 'open';
     if (newStage === 'gained') newStatus = 'gained';
     else if (newStage === 'lost') newStatus = 'lost';
@@ -114,23 +122,46 @@ export function useLeadsKanban() {
     ));
   }, []);
 
+  // Debounced realtime handler
+  const handleRealtimeChange = useCallback(() => {
+    // If we're in optimistic update grace period, skip
+    if (Date.now() < skipRealtimeUntilRef.current) {
+      return;
+    }
+    
+    // Debounce realtime updates
+    if (realtimeTimeoutRef.current) {
+      clearTimeout(realtimeTimeoutRef.current);
+    }
+    
+    realtimeTimeoutRef.current = setTimeout(() => {
+      // Double-check we're not in grace period
+      if (Date.now() >= skipRealtimeUntilRef.current) {
+        fetchLeads(0, false);
+      }
+    }, REALTIME_DEBOUNCE_MS);
+  }, [fetchLeads]);
+
   useEffect(() => {
     fetchLeads(0, false);
 
-    // Realtime updates - refetch only first page
+    // Realtime updates - debounced to avoid overriding optimistic updates
     const channel = supabase
       .channel('kanban-leads-changes')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'leads' },
-        () => fetchLeads(0, false)
+        handleRealtimeChange
       )
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
+      if (realtimeTimeoutRef.current) {
+        clearTimeout(realtimeTimeoutRef.current);
+      }
     };
-  }, [fetchLeads]);
+  }, [fetchLeads, handleRealtimeChange]);
 
   return {
     leads,
