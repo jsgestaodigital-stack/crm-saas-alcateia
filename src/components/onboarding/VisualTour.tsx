@@ -1,70 +1,94 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import Joyride, { Styles, CallBackProps } from 'react-joyride';
 import { useVisualTour, TOUR_STEPS } from '@/hooks/useVisualTour';
 import { useAuth } from '@/contexts/AuthContext';
 
-// Custom styles for the tour
-const tourStyles: Partial<Styles> = {
-  options: {
-    arrowColor: 'hsl(var(--popover))',
-    backgroundColor: 'hsl(var(--popover))',
-    overlayColor: 'rgba(0, 0, 0, 0.8)',
-    primaryColor: 'hsl(var(--primary))',
-    textColor: 'hsl(var(--popover-foreground))',
-    zIndex: 10000,
-  },
-  tooltip: {
-    borderRadius: 16,
-    padding: 24,
-    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-    maxWidth: 420,
-  },
-  tooltipContainer: {
-    textAlign: 'left',
-  },
-  tooltipTitle: {
-    fontSize: 18,
-    fontWeight: 600,
-    marginBottom: 8,
-  },
-  tooltipContent: {
-    fontSize: 15,
-    lineHeight: 1.7,
-  },
-  buttonNext: {
-    backgroundColor: 'hsl(var(--primary))',
-    borderRadius: 8,
-    color: 'hsl(var(--primary-foreground))',
-    fontSize: 14,
-    fontWeight: 600,
-    padding: '12px 24px',
-  },
-  buttonBack: {
-    color: 'hsl(var(--muted-foreground))',
-    fontSize: 14,
-    marginRight: 10,
-  },
-  buttonSkip: {
-    color: 'hsl(var(--muted-foreground))',
-    fontSize: 13,
-  },
-  buttonClose: {
-    color: 'hsl(var(--muted-foreground))',
-  },
-  spotlight: {
-    borderRadius: 12,
-    boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.8)',
-  },
-  beacon: {
-    display: 'none',
-  },
-  beaconInner: {
-    display: 'none',
-  },
-  beaconOuter: {
-    display: 'none',
-  },
+// Helper to get computed CSS variable value
+const getCSSVariable = (name: string): string => {
+  if (typeof window === 'undefined') return '';
+  const style = getComputedStyle(document.documentElement);
+  return style.getPropertyValue(name).trim();
+};
+
+// Helper to convert CSS variable to HSL color string
+const getHSLColor = (variableName: string): string => {
+  const value = getCSSVariable(variableName);
+  if (!value) return '#000';
+  return `hsl(${value})`;
+};
+
+// Create dynamic tour styles based on current theme
+const createTourStyles = (): Partial<Styles> => {
+  const popoverBg = getHSLColor('--popover');
+  const popoverFg = getHSLColor('--popover-foreground');
+  const primaryColor = getHSLColor('--primary');
+  const primaryFg = getHSLColor('--primary-foreground');
+  const mutedFg = getHSLColor('--muted-foreground');
+
+  return {
+    options: {
+      arrowColor: popoverBg,
+      backgroundColor: popoverBg,
+      overlayColor: 'rgba(0, 0, 0, 0.85)',
+      primaryColor: primaryColor,
+      textColor: popoverFg,
+      zIndex: 10000,
+    },
+    tooltip: {
+      borderRadius: 16,
+      padding: 24,
+      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+      maxWidth: 420,
+    },
+    tooltipContainer: {
+      textAlign: 'left',
+    },
+    tooltipTitle: {
+      fontSize: 18,
+      fontWeight: 600,
+      marginBottom: 8,
+      color: popoverFg,
+    },
+    tooltipContent: {
+      fontSize: 15,
+      lineHeight: 1.7,
+      color: popoverFg,
+    },
+    buttonNext: {
+      backgroundColor: primaryColor,
+      borderRadius: 8,
+      color: primaryFg,
+      fontSize: 14,
+      fontWeight: 600,
+      padding: '12px 24px',
+    },
+    buttonBack: {
+      color: mutedFg,
+      fontSize: 14,
+      marginRight: 10,
+    },
+    buttonSkip: {
+      color: mutedFg,
+      fontSize: 13,
+    },
+    buttonClose: {
+      color: mutedFg,
+    },
+    spotlight: {
+      borderRadius: 12,
+      boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.85)',
+    },
+    beacon: {
+      display: 'none',
+    },
+    beaconInner: {
+      display: 'none',
+    },
+    beaconOuter: {
+      display: 'none',
+    },
+  };
 };
 
 // Routes where tour SHOULD run (only dashboard has all required elements)
@@ -102,6 +126,14 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
     startTour,
     handleJoyrideCallback,
   } = useVisualTour();
+
+  // Detect theme changes and regenerate styles
+  const isDarkMode = document.documentElement.classList.contains('dark');
+  
+  // Generate styles dynamically based on current theme
+  const tourStyles = useMemo(() => {
+    return createTourStyles();
+  }, [isDarkMode]);
 
   // Only run tour on dashboard where all elements exist
   const isAllowedRoute = ALLOWED_ROUTES.includes(location.pathname);
