@@ -18,6 +18,7 @@ import { calculateProgress, getDaysSinceUpdate } from "@/lib/clientUtils";
 import { Client } from "@/types/client";
 import { cn } from "@/lib/utils";
 import { UsageOverview } from "@/components/UsageOverview";
+import { DayAgenda } from "@/components/DayAgenda";
 
 // Simple funnel row
 function FunnelRow({ 
@@ -121,6 +122,8 @@ export function ManagerOverview() {
 
   return (
     <div className="p-4 space-y-4">
+      {/* Day Agenda - Urgent Actions + Calendar */}
+      <DayAgenda />
       {/* Quick Stats - Simplified */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card className="glass-card border-primary/20">
