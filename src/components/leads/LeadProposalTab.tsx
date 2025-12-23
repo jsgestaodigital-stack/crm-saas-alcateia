@@ -32,7 +32,7 @@ export function LeadProposalTab({ lead, onUpdate }: LeadProposalTabProps) {
     onUpdate();
   };
 
-  const statusConfig = PROPOSAL_STATUS_CONFIG[lead.proposal_status];
+  const statusConfig = PROPOSAL_STATUS_CONFIG[lead.proposal_status] || PROPOSAL_STATUS_CONFIG.not_sent;
 
   const handleCreateProposal = () => {
     navigate(`/propostas?leadId=${lead.id}`);
