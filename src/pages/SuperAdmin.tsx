@@ -35,8 +35,10 @@ import {
   Plus,
   AlertTriangle,
   CreditCard,
-  DollarSign
+  DollarSign,
+  Trophy
 } from "lucide-react";
+import { EngagementRankingTab } from "@/components/super-admin/EngagementRankingTab";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CreateAgencyModal } from "@/components/agency/CreateAgencyModal";
@@ -369,6 +371,10 @@ export default function SuperAdmin() {
               )}
             </TabsTrigger>
             <TabsTrigger value="agencies">Agências</TabsTrigger>
+            <TabsTrigger value="engagement" className="flex items-center gap-1">
+              <Trophy className="h-4 w-4" />
+              Engajamento
+            </TabsTrigger>
             <TabsTrigger value="financial" className="relative">
               Financeiro
               {financialStats.overdue > 0 && (
@@ -744,6 +750,11 @@ export default function SuperAdmin() {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Engagement Ranking */}
+          <TabsContent value="engagement">
+            <EngagementRankingTab />
           </TabsContent>
 
           {/* Logs */}
