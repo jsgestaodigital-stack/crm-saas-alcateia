@@ -86,10 +86,10 @@ function nameMatches(inputName: string, storedName: string): { matches: boolean;
     }
   }
   
-  // Full string similarity
+  // Full string similarity - require 80% for security
   const fullSimilarity = similarity(input, stored);
   return { 
-    matches: fullSimilarity >= 40, // Lowered to 40% for maximum tolerance
+    matches: fullSimilarity >= 80, // 80% threshold for secure identity verification
     similarity: fullSimilarity
   };
 }
@@ -232,7 +232,7 @@ Deno.serve(async (req) => {
     const agencySimilarity = similarity(agency_name, storedAgencyName);
     console.log(`Agency similarity: ${agencySimilarity}%`);
 
-    const MIN_AGENCY_SIMILARITY = 40; // Lowered to 40% for maximum tolerance
+    const MIN_AGENCY_SIMILARITY = 80; // 80% threshold for secure identity verification
 
     if (!nameCheck.matches) {
       console.error(`Name mismatch: "${full_name}" vs "${storedName}" (${nameCheck.similarity}%)`);
