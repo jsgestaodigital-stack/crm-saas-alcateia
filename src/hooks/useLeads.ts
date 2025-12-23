@@ -350,6 +350,17 @@ export function useLeadActivities(leadId: string | null) {
     }
 
     try {
+      // Primeiro buscar o agency_id do lead para garantir consistência
+      const { data: leadData, error: leadError } = await supabase
+        .from('leads')
+        .select('agency_id')
+        .eq('id', leadId)
+        .single();
+
+      if (leadError || !leadData) {
+        throw new Error('Lead não encontrado');
+      }
+
       const { error } = await supabase
         .from('lead_activities')
         .insert({
@@ -359,6 +370,7 @@ export function useLeadActivities(leadId: string | null) {
           link: link || null,
           created_by: user.id,
           created_by_name: userName,
+          agency_id: leadData.agency_id, // Usar agency_id do lead explicitamente
         });
 
       if (error) throw error;
