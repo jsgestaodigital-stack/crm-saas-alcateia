@@ -362,7 +362,7 @@ export function VoiceCommandButton() {
       city: args.city || undefined,
       planType: "unique" as const,
       isOwner: false,
-      responsible: "Amanda" as const,
+      responsible: "Operacional" as const,
       startDate: new Date().toISOString().split("T")[0],
       lastUpdate: nowIso,
       status: "on_track" as const,

@@ -122,7 +122,7 @@ export function ExecutionExtras({
                 photoMode === "with_photos" ? "bg-status-info/10 border-status-info/40" : "bg-surface-2/50 border-border/20"
               )}>
                 <RadioGroupItem value="with_photos" />
-                Com fotos (João)
+                Com fotos (Equipe)
               </Label>
               <Label className={cn(
                 "flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer text-sm",

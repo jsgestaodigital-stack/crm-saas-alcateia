@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useClientStore } from "@/stores/clientStore";
 import { getDaysSinceUpdate } from "@/lib/clientUtils";
+import { getResponsibleLabel, toResponsibleRole } from "@/lib/responsibleTemplate";
 import { cn } from "@/lib/utils";
 import type { Appointment } from "@/types/client";
 import { format, addDays, addWeeks, addMonths, addYears, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, isSameDay, isWithinInterval } from "date-fns";
@@ -495,14 +496,19 @@ export function DayAgenda() {
                         <span className="font-semibold text-sm truncate">{action.clientName}</span>
                         <Badge 
                           variant="outline" 
-                          className={cn(
-                            "text-[9px] px-1.5 py-0",
-                            action.responsible === "João" 
-                              ? "border-status-info/40 text-status-info" 
-                              : "border-status-purple/40 text-status-purple"
-                          )}
+                          className={(() => {
+                            const role = toResponsibleRole(action.responsible);
+                            return cn(
+                              "text-[9px] px-1.5 py-0",
+                              role === "manager"
+                                ? "border-status-info/40 text-status-info"
+                                : role === "ops"
+                                  ? "border-status-purple/40 text-status-purple"
+                                  : "border-border/40 text-muted-foreground"
+                            );
+                          })()}
                         >
-                          {action.responsible}
+                          {getResponsibleLabel(action.responsible)}
                         </Badge>
                       </div>
                       <p className="text-xs text-muted-foreground line-clamp-1 mb-1">

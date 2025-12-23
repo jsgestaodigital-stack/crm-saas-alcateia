@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { CheckCircle2, ChevronRight, ListFilter, Search, ChevronDown, ChevronUp, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toResponsibleRole } from "@/lib/responsibleTemplate";
 import type { ChecklistSection } from "@/types/client";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { ChecklistItem } from "@/components/checklist/ChecklistItem";
 import { getDaysSinceUpdate } from "@/lib/clientUtils";
 
-type ResponsibleFilter = "all" | "João" | "Amanda";
+type ResponsibleFilter = "all" | "manager" | "ops";
 
 interface ExecutionChecklistProps {
   checklist: ChecklistSection[];
@@ -70,7 +71,7 @@ export function ExecutionChecklist({
     return base
       .filter((item) => {
         if (!showCompleted && item.completed) return false;
-        if (responsible !== "all" && item.responsible !== responsible) return false;
+        if (responsible !== "all" && toResponsibleRole(item.responsible) !== responsible) return false;
         if (query.trim()) {
           const q = query.trim().toLowerCase();
           return item.title.toLowerCase().includes(q);
@@ -171,16 +172,16 @@ export function ExecutionChecklist({
 
           <ToggleGroup
             type="single"
-            value={responsible === "all" ? "all" : responsible === "João" ? "joao" : "amanda"}
+            value={responsible}
             onValueChange={(val) => {
               if (!val) return;
-              setResponsible(val === "all" ? "all" : val === "joao" ? "João" : "Amanda");
+              setResponsible(val as ResponsibleFilter);
             }}
             className="justify-start sm:justify-end"
           >
             <ToggleGroupItem value="all" aria-label="Todos" className="text-xs h-8">Todos</ToggleGroupItem>
-            <ToggleGroupItem value="joao" aria-label="João" className="text-xs h-8">João</ToggleGroupItem>
-            <ToggleGroupItem value="amanda" aria-label="Amanda" className="text-xs h-8">Amanda</ToggleGroupItem>
+            <ToggleGroupItem value="manager" aria-label="Gestor (Comercial)" className="text-xs h-8">Gestor</ToggleGroupItem>
+            <ToggleGroupItem value="ops" aria-label="Operacional" className="text-xs h-8">Operacional</ToggleGroupItem>
           </ToggleGroup>
         </div>
 

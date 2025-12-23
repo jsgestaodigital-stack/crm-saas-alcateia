@@ -245,7 +245,7 @@ export function ContractWizard({ onComplete, onCancel, initialData }: ContractWi
                   <Input
                     value={data.clientName}
                     onChange={(e) => updateData({ clientName: e.target.value })}
-                    placeholder="Ex: João Silva"
+                    placeholder="Ex: Nome do responsável"
                   />
                 </div>
               </div>
