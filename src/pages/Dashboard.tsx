@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Menu } from "lucide-react";
+import { Menu, Calendar as CalendarIcon } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
 // Client (Delivery) views
@@ -37,6 +37,8 @@ import { Confetti, useConfetti } from "@/components/Confetti";
 import { NewClientWizard } from "@/components/NewClientWizard";
 import { TrashBin } from "@/components/TrashBin";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { DayAgenda } from "@/components/DayAgenda";
 import { FunnelToggle } from "@/components/FunnelToggle";
 import { OnboardingChecklist, VisualTour } from "@/components/onboarding";
 
@@ -383,9 +385,34 @@ const Dashboard = () => {
               </span>
             </div>
             
-            {/* Funnel Toggle - hidden on mobile (moved to header) */}
-            <div className="hidden sm:block">
-              <FunnelToggle />
+            <div className="flex items-center gap-2">
+              {/* Agenda (delivery mode) - tucked away in a drawer to avoid clutter */}
+              {!isSalesMode && !isRecurringMode && canAccessDelivery && (
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <CalendarIcon className="h-4 w-4" />
+                      <span className="hidden sm:inline">Agenda do dia</span>
+                      <span className="sm:hidden">Agenda</span>
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent
+                    side="right"
+                    className="w-[95vw] sm:w-[860px] sm:max-w-[860px] p-0 overflow-y-auto"
+                  >
+                    <SheetHeader className="p-4 border-b border-border/30">
+                      <SheetTitle>Agenda do dia</SheetTitle>
+                      <SheetDescription>Ações urgentes + compromissos</SheetDescription>
+                    </SheetHeader>
+                    <DayAgenda />
+                  </SheetContent>
+                </Sheet>
+              )}
+
+              {/* Funnel Toggle - hidden on mobile (moved to header) */}
+              <div className="hidden sm:block">
+                <FunnelToggle />
+              </div>
             </div>
           </div>
 
