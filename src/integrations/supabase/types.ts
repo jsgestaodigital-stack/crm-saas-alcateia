@@ -5084,6 +5084,10 @@ export type Database = {
         Returns: string
       }
       reactivate_agency: { Args: { _agency_id: string }; Returns: undefined }
+      recalculate_agency_usage: {
+        Args: { _agency_id: string }
+        Returns: undefined
+      }
       record_contract_view: { Args: { p_token: string }; Returns: Json }
       record_failed_login: {
         Args: { _email: string; _ip_address?: unknown; _user_agent?: string }
