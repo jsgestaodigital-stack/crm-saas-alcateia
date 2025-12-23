@@ -446,18 +446,10 @@ export function ClientCard({ client, onClick, onConvertToRecurring }: ClientCard
         {/* Responsible Badge */}
         <div className={cn(
           "flex items-center gap-1.5 mb-2 px-2 py-1.5 rounded-lg border",
-          client.responsible === "João" 
-            ? "bg-blue-500/10 border-blue-500/30" 
-            : "bg-purple-500/10 border-purple-500/30"
+          "bg-primary/10 border-primary/30"
         )}>
-          <User className={cn(
-            "w-3.5 h-3.5",
-            client.responsible === "João" ? "text-blue-400" : "text-purple-400"
-          )} />
-          <span className={cn(
-            "text-xs font-semibold",
-            client.responsible === "João" ? "text-blue-400" : "text-purple-400"
-          )}>
+          <User className="w-3.5 h-3.5 text-primary" />
+          <span className="text-xs font-semibold text-primary">
             {client.responsible}
           </span>
         </div>

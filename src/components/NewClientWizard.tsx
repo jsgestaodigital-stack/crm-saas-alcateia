@@ -23,7 +23,7 @@ export function NewClientWizard({ open, onOpenChange }: NewClientWizardProps) {
   const { clients, setSelectedClient, setDetailOpen } = useClientStore();
   const [companyName, setCompanyName] = useState("");
   const [mainCategory, setMainCategory] = useState("");
-  const [responsible, setResponsible] = useState<"João" | "Amanda">("Amanda");
+  const [responsible, setResponsible] = useState<string>("Operador");
   const [photoMode, setPhotoMode] = useState<PhotoMode>("pending");
   const [whatsappGroupUrl, setWhatsappGroupUrl] = useState("");
   const [driveUrl, setDriveUrl] = useState("");
@@ -44,7 +44,7 @@ export function NewClientWizard({ open, onOpenChange }: NewClientWizardProps) {
   const resetForm = () => {
     setCompanyName("");
     setMainCategory("");
-    setResponsible("Amanda");
+    setResponsible("Operador");
     setPhotoMode("pending");
     setWhatsappGroupUrl("");
     setDriveUrl("");
@@ -247,29 +247,42 @@ export function NewClientWizard({ open, onOpenChange }: NewClientWizardProps) {
             <div className="flex gap-2">
               <button
                 type="button"
-                onClick={() => setResponsible("João")}
+                onClick={() => setResponsible("Admin")}
                 className={cn(
                   "flex-1 flex items-center justify-center gap-2 p-2.5 rounded-lg border transition-all text-sm",
-                  responsible === "João" 
+                  responsible === "Admin" 
                     ? "bg-status-info/20 border-status-info/50 text-status-info" 
                     : "bg-surface-2 border-border hover:border-status-info/30"
                 )}
               >
                 <User className="w-4 h-4" />
-                João
+                Admin
               </button>
               <button
                 type="button"
-                onClick={() => setResponsible("Amanda")}
+                onClick={() => setResponsible("Operador")}
                 className={cn(
                   "flex-1 flex items-center justify-center gap-2 p-2.5 rounded-lg border transition-all text-sm",
-                  responsible === "Amanda" 
+                  responsible === "Operador" 
                     ? "bg-status-purple/20 border-status-purple/50 text-status-purple" 
                     : "bg-surface-2 border-border hover:border-status-purple/30"
                 )}
               >
                 <User className="w-4 h-4" />
-                Amanda
+                Operador
+              </button>
+              <button
+                type="button"
+                onClick={() => setResponsible("Designer")}
+                className={cn(
+                  "flex-1 flex items-center justify-center gap-2 p-2.5 rounded-lg border transition-all text-sm",
+                  responsible === "Designer" 
+                    ? "bg-status-success/20 border-status-success/50 text-status-success" 
+                    : "bg-surface-2 border-border hover:border-status-success/30"
+                )}
+              >
+                <User className="w-4 h-4" />
+                Designer
               </button>
             </div>
           </div>

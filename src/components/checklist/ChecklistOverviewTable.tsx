@@ -28,7 +28,7 @@ interface ChecklistOverviewTableProps {
   onClientClick: (client: Client) => void;
 }
 
-type FilterResponsible = "all" | "João" | "Amanda";
+type FilterResponsible = "all" | string;
 type FilterPending = "all" | "client" | "internal" | "stalled";
 
 function getCurrentStage(client: Client): string {
@@ -45,9 +45,9 @@ function getPendingTasks(client: Client): number {
 }
 
 function getClientPendingCount(client: Client): number {
-  // Tarefas do João que estão pendentes (geralmente são as que dependem do cliente)
+  // Tarefas do Admin que estão pendentes (geralmente são as que dependem do cliente)
   return client.checklist.reduce((acc, section) => 
-    acc + section.items.filter(item => !item.completed && item.responsible === "João").length, 0
+    acc + section.items.filter(item => !item.completed && item.responsible === "Admin").length, 0
   );
 }
 
@@ -184,8 +184,9 @@ export function ChecklistOverviewTable({ clients, onClientClick }: ChecklistOver
           </SelectTrigger>
           <SelectContent className="bg-surface-1 border-border/50">
             <SelectItem value="all">Todos</SelectItem>
-            <SelectItem value="João">João</SelectItem>
-            <SelectItem value="Amanda">Amanda</SelectItem>
+            <SelectItem value="Admin">Admin</SelectItem>
+            <SelectItem value="Operador">Operador</SelectItem>
+            <SelectItem value="Designer">Designer</SelectItem>
           </SelectContent>
         </Select>
 
