@@ -18,7 +18,7 @@ interface UrgentAction {
   clientId: string;
   clientName: string;
   taskTitle: string;
-  responsible: "João" | "Amanda";
+  responsible: string;
   urgencyReason: string;
   urgencyLevel: "critical" | "high" | "medium";
   daysStalled: number;

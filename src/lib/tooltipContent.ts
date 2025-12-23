@@ -67,15 +67,15 @@ export const TOOLTIP_CONTENT = {
     timer: "Cronômetro para medir o tempo de execução da tarefa. Clique para iniciar, clique novamente para parar e registrar. Os dados são salvos para análise posterior.",
     attachment: "Anexar link relacionado a esta tarefa (pasta do Drive, print, documento). Útil para manter referências organizadas.",
     tip: "Dica de como executar esta tarefa. Baseada nas melhores práticas definidas pela equipe.",
-    responsible: "J = João, A = Amanda. Indica quem deve executar esta tarefa específica.",
+    responsible: "Indica o membro da equipe responsável por esta tarefa específica.",
   },
 
   // === EXECUTION VIEW ===
   execution: {
     header: "Cabeçalho com informações do cliente. Clique no lápis para editar nome, categoria ou links importantes.",
     briefing: "Notas do briefing com o cliente. Informações importantes coletadas na reunião inicial sobre o negócio.",
-    photoMode: "Define como serão obtidas as fotos: João vai presencialmente ou o cliente envia. Impacta no fluxo de tarefas.",
-    attachments: "Arquivos e links anexados ao cliente. Prints, documentos, pastas do Drive organizados em um só lugar.",
+    photoMode: "Define como serão obtidas as fotos: equipe vai presencialmente ou o cliente envia. Impacta no fluxo de tarefas.",
+    attachments: "Arquivos e links anexados ao cliente. Prints, documentos, pastas organizados em um só lugar.",
     whatsapp: "Link direto para o grupo de WhatsApp do cliente. Clique para abrir a conversa rapidamente.",
     drive: "Pasta do Google Drive com todos os arquivos do cliente. Fotos, documentos, relatórios organizados.",
     google: "Perfil do Google Business do cliente. Link direto para acessar e fazer as otimizações.",

@@ -8,8 +8,6 @@ import { getDaysSinceUpdate, calculateProgress } from "@/lib/clientUtils";
 import { COLUMNS } from "@/types/client";
 import { cn } from "@/lib/utils";
 
-type ResponsibleFilter = "João" | "Amanda";
-
 interface TaskWithContext {
   clientId: string;
   clientName: string;
@@ -18,14 +16,14 @@ interface TaskWithContext {
   sectionTitle: string;
   itemId: string;
   itemTitle: string;
-  responsible: "João" | "Amanda";
+  responsible: string;
   daysSinceUpdate: number;
   progress: number;
 }
 
 export function MyTasksView() {
   const { clients, setSelectedClient, setDetailOpen, toggleChecklistItem } = useClientStore();
-  const [responsible, setResponsible] = useState<ResponsibleFilter>("Amanda");
+  const [responsible, setResponsible] = useState<string>("Operador");
 
   const allTasks = useMemo(() => {
     const tasks: TaskWithContext[] = [];
@@ -105,22 +103,30 @@ export function MyTasksView() {
           <div className="flex items-center gap-3">
             <ToggleGroup
               type="single"
-              value={responsible === "João" ? "joao" : "amanda"}
+              value={responsible === "Admin" ? "admin" : responsible === "Designer" ? "designer" : "operador"}
               onValueChange={(val) => {
-                if (val) setResponsible(val === "joao" ? "João" : "Amanda");
+                if (val === "admin") setResponsible("Admin");
+                else if (val === "designer") setResponsible("Designer");
+                else if (val === "operador") setResponsible("Operador");
               }}
             >
-              <ToggleGroupItem value="joao" aria-label="João" className="gap-2">
+              <ToggleGroupItem value="admin" aria-label="Admin" className="gap-2">
                 <div className="w-5 h-5 rounded-full bg-status-info/20 flex items-center justify-center">
                   <User className="w-3 h-3 text-status-info" />
                 </div>
-                João
+                Admin
               </ToggleGroupItem>
-              <ToggleGroupItem value="amanda" aria-label="Amanda" className="gap-2">
+              <ToggleGroupItem value="operador" aria-label="Operador" className="gap-2">
                 <div className="w-5 h-5 rounded-full bg-status-purple/20 flex items-center justify-center">
                   <User className="w-3 h-3 text-status-purple" />
                 </div>
-                Amanda
+                Operador
+              </ToggleGroupItem>
+              <ToggleGroupItem value="designer" aria-label="Designer" className="gap-2">
+                <div className="w-5 h-5 rounded-full bg-status-success/20 flex items-center justify-center">
+                  <User className="w-3 h-3 text-status-success" />
+                </div>
+                Designer
               </ToggleGroupItem>
             </ToggleGroup>
           </div>

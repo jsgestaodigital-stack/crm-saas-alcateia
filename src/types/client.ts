@@ -6,7 +6,7 @@ export interface ChecklistItem {
   id: string;
   title: string;
   completed: boolean;
-  responsible: "João" | "Amanda";
+  responsible: string; // Nome dinâmico do responsável - pode ser qualquer membro da equipe
   completedAt?: string;
   attachmentUrl?: string;
 }
@@ -107,96 +107,83 @@ export const COLUMNS: Column[] = [
 // Standard WhatsApp group photo URL (replace with actual uploaded image)
 export const WHATSAPP_GROUP_PHOTO = "/rankeia-whatsapp-group.png";
 
-// Checklist RANKEIA - Método de Execução Linear (5 etapas, 58 itens)
-// Prazo: 30 dias do início até entrega
+// Checklist Padrão - Template personalizável por agência
+// Cada agência pode definir seus próprios checklists e responsáveis
+// Os responsáveis são definidos dinamicamente pela equipe de cada agência
 export const DEFAULT_CHECKLIST: ChecklistSection[] = [
   {
     id: "etapa1",
     title: "1. Onboarding",
     items: [
-      { id: "1-1", title: "Fechar venda e criar grupo WhatsApp (Amanda + cliente)", completed: false, responsible: "João" },
-      { id: "1-2", title: "Alterar foto do grupo para foto padrão RANKEIA", completed: false, responsible: "João" },
-      { id: "1-3", title: "Dar boas vindas no grupo e se deixar à disposição", completed: false, responsible: "Amanda" },
-      { id: "1-4", title: "Agendar reunião de briefing no Meet (até 48h)", completed: false, responsible: "Amanda" },
+      { id: "1-1", title: "Fechar venda e criar grupo de comunicação com cliente", completed: false, responsible: "Admin" },
+      { id: "1-2", title: "Alterar foto do grupo para foto padrão da agência", completed: false, responsible: "Admin" },
+      { id: "1-3", title: "Dar boas vindas no grupo e se deixar à disposição", completed: false, responsible: "Operador" },
+      { id: "1-4", title: "Agendar reunião de briefing (até 48h)", completed: false, responsible: "Operador" },
     ],
   },
   {
     id: "etapa2",
     title: "2. Preparação",
     items: [
-      { id: "2-1", title: "Comprar conta Gmail na GG Max", completed: false, responsible: "Amanda" },
-      { id: "2-2", title: "Criar pasta do cliente no Google Drive (pasta 'Fazendo')", completed: false, responsible: "Amanda" },
-      { id: "2-3", title: "Criar conversa exclusiva no ChatGPT (Agente G Rank)", completed: false, responsible: "Amanda" },
-      { id: "2-4", title: "Print do GBP Score ANTES da execução", completed: false, responsible: "Amanda" },
-      { id: "2-5", title: "Print do Localo ANTES da execução", completed: false, responsible: "Amanda" },
-      { id: "2-6", title: "Print do Google Ads (volume de buscas)", completed: false, responsible: "Amanda" },
-      { id: "2-7", title: "Realizar briefing + pegar propriedade do Perfil (criar ficha se não existir) + logo", completed: false, responsible: "Amanda" },
-      { id: "2-8", title: "Criar documento de briefing/notas no card do cliente", completed: false, responsible: "Amanda" },
-      { id: "2-9", title: "Criar slogans para postagens e validar com cliente", completed: false, responsible: "Amanda" },
-      { id: "2-10", title: "Criar link WhatsApp longo e curto e adicionar no card", completed: false, responsible: "Amanda" },
-      { id: "2-11", title: "Inserir link WhatsApp no perfil e ativar chat no Google", completed: false, responsible: "Amanda" },
-      { id: "2-12", title: "Definir: tirar fotos ou solicitar ao cliente", completed: false, responsible: "João" },
-      { id: "2-13", title: "Tirar fotos da empresa (se João for tirar)", completed: false, responsible: "João" },
-      { id: "2-14", title: "Solicitar fotos ao cliente (se cliente vai enviar)", completed: false, responsible: "Amanda" },
+      { id: "2-1", title: "Criar ou obter conta de e-mail para o cliente", completed: false, responsible: "Operador" },
+      { id: "2-2", title: "Criar pasta do cliente no armazenamento em nuvem", completed: false, responsible: "Operador" },
+      { id: "2-3", title: "Configurar ferramentas de IA para o projeto", completed: false, responsible: "Operador" },
+      { id: "2-4", title: "Registrar métricas ANTES da execução", completed: false, responsible: "Operador" },
+      { id: "2-5", title: "Realizar briefing + pegar propriedade do Perfil", completed: false, responsible: "Operador" },
+      { id: "2-6", title: "Criar documento de briefing/notas no card do cliente", completed: false, responsible: "Operador" },
+      { id: "2-7", title: "Criar slogans para postagens e validar com cliente", completed: false, responsible: "Operador" },
+      { id: "2-8", title: "Criar link de contato direto e adicionar no card", completed: false, responsible: "Operador" },
+      { id: "2-9", title: "Inserir link de contato no perfil e ativar chat", completed: false, responsible: "Operador" },
+      { id: "2-10", title: "Definir: tirar fotos ou solicitar ao cliente", completed: false, responsible: "Admin" },
+      { id: "2-11", title: "Tirar fotos da empresa (se aplicável)", completed: false, responsible: "Admin" },
+      { id: "2-12", title: "Solicitar fotos ao cliente (se cliente vai enviar)", completed: false, responsible: "Operador" },
     ],
   },
   {
     id: "etapa3",
     title: "3. Produção",
     items: [
-      { id: "3-1", title: "Editar fotos da empresa no Lightroom", completed: false, responsible: "João" },
-      { id: "3-2", title: "Salvar fotos editadas na pasta do cliente no Drive", completed: false, responsible: "João" },
-      { id: "3-3", title: "Criar modelo de GeoSetter (com apoio do Agente G Rank)", completed: false, responsible: "Amanda" },
-      { id: "3-4", title: "Criar designs de produtos (1200x1200) com IA GLIBATREE", completed: false, responsible: "Amanda" },
-      { id: "3-5", title: "Criar designs de postagens (1200x900) com IA GLIBATREE", completed: false, responsible: "Amanda" },
-      { id: "3-6", title: "Criar arte de QR Codes e adicionar na pasta do Drive", completed: false, responsible: "Amanda" },
-      { id: "3-7", title: "Buscar vídeos no Instagram do cliente ou criar no Canva (mínimo 3)", completed: false, responsible: "Amanda" },
+      { id: "3-1", title: "Editar fotos da empresa", completed: false, responsible: "Designer" },
+      { id: "3-2", title: "Salvar fotos editadas na pasta do cliente", completed: false, responsible: "Designer" },
+      { id: "3-3", title: "Criar modelo de geolocalização para imagens", completed: false, responsible: "Operador" },
+      { id: "3-4", title: "Criar designs de produtos", completed: false, responsible: "Operador" },
+      { id: "3-5", title: "Criar designs de postagens", completed: false, responsible: "Operador" },
+      { id: "3-6", title: "Criar arte de QR Codes", completed: false, responsible: "Operador" },
+      { id: "3-7", title: "Buscar ou criar vídeos do cliente (mínimo 3)", completed: false, responsible: "Operador" },
     ],
   },
   {
     id: "etapa4",
     title: "4. Otimização",
     items: [
-      { id: "4-1", title: "Atualizar informações principais do cliente no Perfil", completed: false, responsible: "Amanda" },
-      { id: "4-2", title: "Responder todas as avaliações usando palavras-chave", completed: false, responsible: "Amanda" },
-      { id: "4-3", title: "Pesquisar, definir e ajustar categorias (principal e adicionais)", completed: false, responsible: "Amanda" },
-      { id: "4-4", title: "Subir fotos no GeoSetter com palavras-chave e geolocalização", completed: false, responsible: "Amanda" },
-      { id: "4-5", title: "Subir fotos editadas e vídeos no Perfil do Google", completed: false, responsible: "Amanda" },
-      { id: "4-6", title: "Criar e incluir serviços com palavras-chave (nome + descrição)", completed: false, responsible: "Amanda" },
-      { id: "4-7", title: "Criar copy dos serviços do Perfil (Agente G Rank)", completed: false, responsible: "Amanda" },
-      { id: "4-8", title: "Subir produtos no Perfil do Google", completed: false, responsible: "Amanda" },
-      { id: "4-9", title: "Criar copy dos produtos do Perfil (Agente G Rank)", completed: false, responsible: "Amanda" },
-      { id: "4-10", title: "Criar e subir postagens no Perfil do Google", completed: false, responsible: "Amanda" },
-      { id: "4-11", title: "Criar copy das postagens (Agente G Rank)", completed: false, responsible: "Amanda" },
-      { id: "4-12", title: "Alterar nome da empresa com palavras-chave (validar com João)", completed: false, responsible: "Amanda" },
-      { id: "4-13", title: "Responder perguntas e respostas do Google Maps", completed: false, responsible: "Amanda" },
-      { id: "4-14", title: "Criar de 10 a 20 FAQs no perfil do Google", completed: false, responsible: "Amanda" },
-      { id: "4-15", title: "Cadastrar empresa em diretórios com nome otimizado SEO local", completed: false, responsible: "Amanda" },
-      { id: "4-16", title: "Criar perfil no YouTube com o nome otimizado", completed: false, responsible: "Amanda" },
-      { id: "4-17", title: "Criar perfil no LinkedIn com o nome otimizado", completed: false, responsible: "Amanda" },
-      { id: "4-18", title: "Criar perfil no TikTok com o nome otimizado", completed: false, responsible: "Amanda" },
-      { id: "4-19", title: "Criar perfil no Pinterest com o nome otimizado", completed: false, responsible: "Amanda" },
-      { id: "4-20", title: "Criar perfil no X (Twitter) com o nome otimizado", completed: false, responsible: "Amanda" },
-      { id: "4-21", title: "Repetir nome + palavras-chave em todos os perfis", completed: false, responsible: "Amanda" },
+      { id: "4-1", title: "Atualizar informações principais do cliente no Perfil", completed: false, responsible: "Operador" },
+      { id: "4-2", title: "Responder todas as avaliações usando palavras-chave", completed: false, responsible: "Operador" },
+      { id: "4-3", title: "Pesquisar, definir e ajustar categorias", completed: false, responsible: "Operador" },
+      { id: "4-4", title: "Subir fotos com palavras-chave e geolocalização", completed: false, responsible: "Operador" },
+      { id: "4-5", title: "Subir fotos editadas e vídeos no Perfil", completed: false, responsible: "Operador" },
+      { id: "4-6", title: "Criar e incluir serviços com palavras-chave", completed: false, responsible: "Operador" },
+      { id: "4-7", title: "Subir produtos no Perfil", completed: false, responsible: "Operador" },
+      { id: "4-8", title: "Criar e subir postagens no Perfil", completed: false, responsible: "Operador" },
+      { id: "4-9", title: "Alterar nome com palavras-chave (validar com Admin)", completed: false, responsible: "Operador" },
+      { id: "4-10", title: "Responder perguntas e respostas", completed: false, responsible: "Operador" },
+      { id: "4-11", title: "Criar FAQs no perfil", completed: false, responsible: "Operador" },
+      { id: "4-12", title: "Cadastrar empresa em diretórios", completed: false, responsible: "Operador" },
+      { id: "4-13", title: "Criar perfis em redes sociais com nome otimizado", completed: false, responsible: "Operador" },
     ],
   },
   {
     id: "etapa5",
     title: "5. Entrega",
     items: [
-      { id: "5-1", title: "Conferir QR Codes, artes e produtos organizados no Drive", completed: false, responsible: "Amanda" },
-      { id: "5-2", title: "Print do GBP Score DEPOIS da execução", completed: false, responsible: "Amanda" },
-      { id: "5-3", title: "Print do Localo DEPOIS da execução", completed: false, responsible: "Amanda" },
-      { id: "5-4", title: "Print do perfil otimizado (Fireshot)", completed: false, responsible: "Amanda" },
-      { id: "5-5", title: "Criar relatório de entrega comparando ANTES x DEPOIS", completed: false, responsible: "Amanda" },
-      { id: "5-6", title: "Incluir score e posicionamento na palavra-chave principal", completed: false, responsible: "Amanda" },
-      { id: "5-7", title: "Verificar se cliente está como proprietário principal do perfil", completed: false, responsible: "João" },
-      { id: "5-8", title: "Manter acesso como administrador do Perfil do Google", completed: false, responsible: "João" },
-      { id: "5-9", title: "Entregar perfil com link do Drive e apresentação do resultado", completed: false, responsible: "Amanda" },
-      { id: "5-10", title: "Apresentar diferença visual e estratégica (antes x depois)", completed: false, responsible: "Amanda" },
-      { id: "5-11", title: "Solicitar indicação de 3 novos clientes ao final da reunião", completed: false, responsible: "João" },
-      { id: "5-12", title: "Oferecer plano de recorrência se cliente for estratégico", completed: false, responsible: "João" },
-      { id: "5-13", title: "💰 Pagar comissão da equipe (Amanda - R$400)", completed: false, responsible: "João" },
+      { id: "5-1", title: "Conferir materiais organizados na pasta do cliente", completed: false, responsible: "Operador" },
+      { id: "5-2", title: "Registrar métricas DEPOIS da execução", completed: false, responsible: "Operador" },
+      { id: "5-3", title: "Criar relatório de entrega comparando ANTES x DEPOIS", completed: false, responsible: "Operador" },
+      { id: "5-4", title: "Verificar se cliente está como proprietário principal", completed: false, responsible: "Admin" },
+      { id: "5-5", title: "Manter acesso como administrador do Perfil", completed: false, responsible: "Admin" },
+      { id: "5-6", title: "Entregar com apresentação do resultado", completed: false, responsible: "Operador" },
+      { id: "5-7", title: "Solicitar indicação de novos clientes", completed: false, responsible: "Admin" },
+      { id: "5-8", title: "Oferecer plano de recorrência se cliente for estratégico", completed: false, responsible: "Admin" },
+      { id: "5-9", title: "💰 Pagar comissão da equipe", completed: false, responsible: "Admin" },
     ],
   },
 ];

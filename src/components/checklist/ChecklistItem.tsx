@@ -157,13 +157,8 @@ export function ChecklistItem({
         )}
 
         {/* Badge responsável */}
-        <span className={cn(
-          "text-[10px] font-medium px-2 py-0.5 rounded-full flex-shrink-0",
-          item.responsible === "João" 
-            ? "bg-status-info/20 text-status-info" 
-            : "bg-status-purple/20 text-status-purple"
-        )}>
-          {item.responsible === "João" ? "J" : "A"}
+        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full flex-shrink-0 bg-primary/20 text-primary">
+          {item.responsible?.charAt(0) || "?"}
         </span>
 
         {/* Ações */}

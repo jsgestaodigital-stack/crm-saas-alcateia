@@ -29,7 +29,7 @@ import { calculateProgress, getDaysAgo, getDaysSinceUpdate } from "@/lib/clientU
 import { cn } from "@/lib/utils";
 
 type ViewMode = "clients" | "tasks";
-type FilterResponsible = "all" | "João" | "Amanda";
+type FilterResponsible = "all" | string;
 type FilterPending = "all" | "client" | "stalled";
 
 interface TaskWithContext {
@@ -40,7 +40,7 @@ interface TaskWithContext {
   sectionTitle: string;
   itemId: string;
   itemTitle: string;
-  responsible: "João" | "Amanda";
+  responsible: string;
   daysSinceUpdate: number;
   progress: number;
 }
@@ -244,8 +244,9 @@ export function UnifiedTasksView() {
             </SelectTrigger>
             <SelectContent className="bg-surface-1 border-border/50">
               <SelectItem value="all">Todos</SelectItem>
-              <SelectItem value="João">João</SelectItem>
-              <SelectItem value="Amanda">Amanda</SelectItem>
+              <SelectItem value="Admin">Admin</SelectItem>
+              <SelectItem value="Operador">Operador</SelectItem>
+              <SelectItem value="Designer">Designer</SelectItem>
             </SelectContent>
           </Select>
 
