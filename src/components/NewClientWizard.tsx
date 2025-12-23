@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,9 +17,10 @@ import { cn } from "@/lib/utils";
 interface NewClientWizardProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialColumnId?: ColumnId;
 }
 
-export function NewClientWizard({ open, onOpenChange }: NewClientWizardProps) {
+export function NewClientWizard({ open, onOpenChange, initialColumnId }: NewClientWizardProps) {
   const { clients, setSelectedClient, setDetailOpen } = useClientStore();
   const [companyName, setCompanyName] = useState("");
   const [mainCategory, setMainCategory] = useState("");
@@ -29,7 +30,7 @@ export function NewClientWizard({ open, onOpenChange }: NewClientWizardProps) {
   const [driveUrl, setDriveUrl] = useState("");
   const [googleProfileUrl, setGoogleProfileUrl] = useState("");
   const [briefing, setBriefing] = useState("");
-  const [columnId, setColumnId] = useState<ColumnId>("onboarding");
+  const [columnId, setColumnId] = useState<ColumnId>(initialColumnId || "onboarding");
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [ignoreDuplicates, setIgnoreDuplicates] = useState(false);
 
@@ -41,6 +42,13 @@ export function NewClientWizard({ open, onOpenChange }: NewClientWizardProps) {
 
   const hasDuplicateWarning = potentialDuplicates.length > 0;
 
+  // Update columnId when initialColumnId changes
+  useEffect(() => {
+    if (initialColumnId) {
+      setColumnId(initialColumnId);
+    }
+  }, [initialColumnId]);
+
   const resetForm = () => {
     setCompanyName("");
     setMainCategory("");
@@ -50,7 +58,7 @@ export function NewClientWizard({ open, onOpenChange }: NewClientWizardProps) {
     setDriveUrl("");
     setGoogleProfileUrl("");
     setBriefing("");
-    setColumnId("onboarding");
+    setColumnId(initialColumnId || "onboarding");
     setShowAdvanced(false);
     setIgnoreDuplicates(false);
   };
