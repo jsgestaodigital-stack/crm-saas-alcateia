@@ -78,12 +78,27 @@ interface TourStatus {
   tour_completed: boolean;
 }
 
+// Global state to persist across hook instances and re-renders
+let globalIsRunning = false;
+let globalStepIndex = 0;
+
 export function useVisualTour() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { logEvent } = useActivation();
-  const [isRunning, setIsRunning] = useState(false);
-  const [stepIndex, setStepIndex] = useState(0);
+  const [isRunning, setIsRunning] = useState(globalIsRunning);
+  const [stepIndex, setStepIndex] = useState(globalStepIndex);
+
+  // Sync local state with global
+  const setRunning = useCallback((value: boolean) => {
+    globalIsRunning = value;
+    setIsRunning(value);
+  }, []);
+
+  const setStep = useCallback((value: number) => {
+    globalStepIndex = value;
+    setStepIndex(value);
+  }, []);
 
   // Fetch tour status
   const { data: status, isLoading } = useQuery({
@@ -122,9 +137,8 @@ export function useVisualTour() {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['onboarding-status'] });
-    },
+    // Don't invalidate queries immediately - it causes re-render that resets isRunning
+    // The status will be updated when tour completes
   });
 
   // Complete tour mutation
@@ -161,24 +175,24 @@ export function useVisualTour() {
   // Start the tour
   const startTour = useCallback(() => {
     console.log('[VisualTour] Starting tour...');
-    setStepIndex(0);
-    setIsRunning(true);
+    setStep(0);
+    setRunning(true);
     startMutation.mutate();
-  }, [startMutation]);
+  }, [startMutation, setStep, setRunning]);
 
   // Complete the tour
   const completeTour = useCallback(() => {
-    setIsRunning(false);
-    setStepIndex(0);
+    setRunning(false);
+    setStep(0);
     completeMutation.mutate();
-  }, [completeMutation]);
+  }, [completeMutation, setStep, setRunning]);
 
   // Dismiss/skip the tour
   const dismissTour = useCallback(() => {
-    setIsRunning(false);
-    setStepIndex(0);
+    setRunning(false);
+    setStep(0);
     completeMutation.mutate();
-  }, [completeMutation]);
+  }, [completeMutation, setStep, setRunning]);
 
   // Reset the tour (admin)
   const resetTour = useCallback(() => {
@@ -193,9 +207,9 @@ export function useVisualTour() {
     if (finishedStatuses.includes(status)) {
       completeTour();
     } else if (type === 'step:after') {
-      setStepIndex(index + 1);
+      setStep(index + 1);
     }
-  }, [completeTour]);
+  }, [completeTour, setStep]);
 
   // Should auto-start tour on first visit
   const shouldAutoStart = !status?.tour_started && !status?.tour_completed && !isLoading;
