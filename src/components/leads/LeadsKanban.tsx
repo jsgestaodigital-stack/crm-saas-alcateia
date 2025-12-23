@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { format, parseISO, isBefore, isToday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Calendar, User, AlertTriangle, Settings, Upload } from 'lucide-react';
+import { Calendar, User, AlertTriangle, Settings, Upload, UserPlus } from 'lucide-react';
 import { usePipelineColumns } from '@/hooks/usePipelineColumns';
 import { ColumnSettingsDialog } from './ColumnSettingsDialog';
 import { ImportLeadsDialog } from './ImportLeadsDialog';
@@ -21,9 +21,10 @@ interface LeadsKanbanProps {
   onLeadClick: (lead: KanbanLeadItem) => void;
   onMoveLead: (leadId: string, newStage: LeadPipelineStage) => void;
   onRefresh?: () => void;
+  onAddLeadToStage?: (stage: LeadPipelineStage) => void;
 }
 
-export function LeadsKanban({ leads, onLeadClick, onMoveLead, onRefresh }: LeadsKanbanProps) {
+export function LeadsKanban({ leads, onLeadClick, onMoveLead, onRefresh, onAddLeadToStage }: LeadsKanbanProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dragOverColumn, setDragOverColumn] = useState<string | null>(null);
   const [isDraggingCard, setIsDraggingCard] = useState(false);
@@ -254,11 +255,36 @@ export function LeadsKanban({ leads, onLeadClick, onMoveLead, onRefresh }: Leads
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-base md:text-lg">{column.emoji}</span>
-                  <span className="font-semibold text-xs md:text-sm truncate max-w-[120px] md:max-w-none">{column.title}</span>
+                  <span className="font-semibold text-xs md:text-sm truncate max-w-[100px] md:max-w-none">{column.title}</span>
                 </div>
-                <Badge variant="outline" className="text-[10px] md:text-xs shrink-0">
-                  {leadsByColumn[column.id]?.length || 0}
-                </Badge>
+                <div className="flex items-center gap-1.5">
+                  {/* Add Lead to Stage Button */}
+                  {onAddLeadToStage && canEditLeads && (
+                    <TooltipProvider delayDuration={300}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 rounded-full hover:bg-amber-500/20 hover:text-amber-400 transition-all"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onAddLeadToStage(column.id as LeadPipelineStage);
+                            }}
+                          >
+                            <UserPlus className="h-3.5 w-3.5" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom">
+                          <p className="text-xs">Novo lead em "{column.title}"</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                  <Badge variant="outline" className="text-[10px] md:text-xs shrink-0">
+                    {leadsByColumn[column.id]?.length || 0}
+                  </Badge>
+                </div>
               </div>
             </div>
 
