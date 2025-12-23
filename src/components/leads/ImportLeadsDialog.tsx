@@ -357,7 +357,7 @@ export function ImportLeadsDialog({ open, onOpenChange, onSuccess }: ImportLeads
 
   const downloadTemplate = () => {
     const headers = LEAD_FIELDS.map(f => f.label).join(';');
-    const exampleRow = 'Empresa Exemplo;João Silva;11999999999;1133333333;joao@empresa.com;São Paulo;Restaurante;Google Maps;5000;Interessado em marketing';
+    const exampleRow = 'Empresa Exemplo;Responsável Exemplo;11999999999;1133333333;contato@empresa.com;São Paulo;Restaurante;Google Maps;5000;Interessado em marketing';
     const csvContent = `${headers}\n${exampleRow}`;
     
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });

@@ -14,7 +14,7 @@ export interface SharedVariable {
 export const SHARED_VARIABLES: SharedVariable[] = [
   // Dados do Cliente
   { key: 'nome_empresa', label: 'Nome da Empresa', placeholder: 'Ex: Clínica Exemplo', category: 'client' },
-  { key: 'nome_cliente', label: 'Nome do Cliente', placeholder: 'Ex: João Silva', category: 'client' },
+  { key: 'nome_cliente', label: 'Nome do Cliente', placeholder: 'Ex: Nome do responsável', category: 'client' },
   { key: 'cnpj', label: 'CNPJ', placeholder: 'Ex: 00.000.000/0001-00', category: 'client' },
   { key: 'cpf', label: 'CPF', placeholder: 'Ex: 000.000.000-00', category: 'client' },
   { key: 'email', label: 'Email', placeholder: 'Ex: cliente@email.com', category: 'client' },
@@ -24,7 +24,7 @@ export const SHARED_VARIABLES: SharedVariable[] = [
   { key: 'cidade', label: 'Cidade', placeholder: 'Ex: São Paulo', category: 'client' },
   { key: 'estado', label: 'Estado', placeholder: 'Ex: SP', category: 'client' },
   { key: 'cep', label: 'CEP', placeholder: 'Ex: 00000-000', category: 'client' },
-  { key: 'responsavel', label: 'Responsável Legal', placeholder: 'Ex: João Silva', category: 'client' },
+  { key: 'responsavel', label: 'Responsável Legal', placeholder: 'Ex: Nome do responsável', category: 'client' },
   
   // Dados do Serviço
   { key: 'palavras_chave', label: 'Palavras-Chave', placeholder: 'Ex: dentista, clínica odontológica', category: 'service' },

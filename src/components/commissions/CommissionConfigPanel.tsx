@@ -346,7 +346,7 @@ function ConfigForm(props: ConfigFormProps) {
         <Input
           value={formName}
           onChange={(e) => setFormName(e.target.value)}
-          placeholder="Ex: Amanda, João..."
+          placeholder="Ex: Gestor, Operacional..."
         />
       </div>
 

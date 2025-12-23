@@ -7,6 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ChecklistItem as ChecklistItemType } from "@/types/client";
 import { useTaskTimer } from "@/hooks/useTaskTimer";
 import { TOOLTIP_CONTENT } from "@/lib/tooltipContent";
+import { getResponsibleShort } from "@/lib/responsibleTemplate";
 import { cn } from "@/lib/utils";
 
 interface ChecklistItemProps {
@@ -20,7 +21,7 @@ interface ChecklistItemProps {
 }
 
 const TASK_TIPS: Record<string, string> = {
-  "1-1": "Crie o grupo incluindo Amanda para ela começar o onboarding",
+  "1-1": "Crie o grupo incluindo o Operacional para começar o onboarding",
   "1-2": "Use a foto padrão RANKEIA que está na pasta de assets",
   "1-3": "Envie mensagem de boas-vindas padrão e pergunte disponibilidade",
   "1-4": "Agende para no máximo 48h após entrada do cliente",
@@ -34,7 +35,7 @@ const TASK_TIPS: Record<string, string> = {
   "2-8": "Crie 3-5 slogans e peça aprovação do cliente",
   "2-9": "Crie versão longa e curta para diferentes usos",
   "2-10": "Ative o botão de chat do Google Business Profile",
-  "3-1": "Defina com o cliente se João vai presencialmente ou se cliente envia",
+  "3-1": "Defina com o cliente se o Gestor vai presencialmente ou se o cliente envia",
   "3-2": "Leve equipamento profissional e tire fotos dos ambientes principais",
   "3-3": "Peça fotos da fachada, interior, produtos/serviços em destaque",
   "4-1": "Use Lightroom para ajustar cores, luz e enquadramento",
@@ -56,7 +57,7 @@ const TASK_TIPS: Record<string, string> = {
   "6-9": "Descrições devem ter keywords e chamar para ação",
   "6-10": "Crie postagens sobre serviços, promoções, novidades",
   "6-11": "Use GBRank CRM AI para criar textos persuasivos",
-  "6-12": "Ex: 'Barbearia Premium em Florianópolis' - validar com João",
+  "6-12": "Ex: 'Barbearia Premium em Florianópolis' - validar com o Gestor",
   "6-13": "Responda perguntas existentes ou crie novas relevantes",
   "6-14": "Perguntas frequentes melhoram visibilidade no Google",
   "7-1": "Cadastre em pelo menos 10 diretórios relevantes do setor",
@@ -158,7 +159,7 @@ export function ChecklistItem({
 
         {/* Badge responsável */}
         <span className="text-[10px] font-medium px-2 py-0.5 rounded-full flex-shrink-0 bg-primary/20 text-primary">
-          {item.responsible?.charAt(0) || "?"}
+          {getResponsibleShort(item.responsible)}
         </span>
 
         {/* Ações */}

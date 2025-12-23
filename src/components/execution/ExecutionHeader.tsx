@@ -7,6 +7,7 @@ import { Client, COLUMNS } from "@/types/client";
 import { calculateProgress } from "@/lib/clientUtils";
 import { getDaysRemaining } from "@/lib/dateUtils";
 import { cn } from "@/lib/utils";
+import { toResponsibleRole } from "@/lib/responsibleTemplate";
 import {
   Dialog,
   DialogContent,
@@ -41,12 +42,12 @@ export function ExecutionHeader({ client, onBack }: ExecutionHeaderProps) {
   const currentColumn = COLUMNS.find(c => c.id === client.columnId);
   const daysRemaining = getDaysRemaining(client.startDate);
 
-  // Calculate stats by responsible
+  // Calculate stats by role (template)
   const allItems = client.checklist.flatMap(s => s.items);
-  const joaoItems = allItems.filter(i => i.responsible === "João");
-  const amandaItems = allItems.filter(i => i.responsible === "Amanda");
-  const joaoCompleted = joaoItems.filter(i => i.completed).length;
-  const amandaCompleted = amandaItems.filter(i => i.completed).length;
+  const managerItems = allItems.filter(i => toResponsibleRole(i.responsible) === "manager");
+  const opsItems = allItems.filter(i => toResponsibleRole(i.responsible) === "ops");
+  const managerCompleted = managerItems.filter(i => i.completed).length;
+  const opsCompleted = opsItems.filter(i => i.completed).length;
 
   const handleOpenEdit = () => {
     setEditData({
@@ -142,17 +143,17 @@ export function ExecutionHeader({ client, onBack }: ExecutionHeaderProps) {
 
         {/* Team Progress */}
         <div className="hidden lg:flex items-center gap-3">
-          <div className="flex items-center gap-1.5 text-xs">
+          <div className="flex items-center gap-1.5 text-xs" aria-label="Gestor (Comercial)">
             <div className="w-6 h-6 rounded-full bg-status-info/20 flex items-center justify-center">
               <User className="w-3 h-3 text-status-info" />
             </div>
-            <span className="font-mono text-status-info">{joaoCompleted}/{joaoItems.length}</span>
+            <span className="font-mono text-status-info">{managerCompleted}/{managerItems.length}</span>
           </div>
-          <div className="flex items-center gap-1.5 text-xs">
+          <div className="flex items-center gap-1.5 text-xs" aria-label="Operacional">
             <div className="w-6 h-6 rounded-full bg-status-purple/20 flex items-center justify-center">
               <User className="w-3 h-3 text-status-purple" />
             </div>
-            <span className="font-mono text-status-purple">{amandaCompleted}/{amandaItems.length}</span>
+            <span className="font-mono text-status-purple">{opsCompleted}/{opsItems.length}</span>
           </div>
         </div>
 

@@ -14,6 +14,7 @@ import { useRecurring } from "@/hooks/useRecurring";
 import { useFunnelMode } from "@/contexts/FunnelModeContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { getResponsibleLabel, toResponsibleRole } from "@/lib/responsibleTemplate";
 
 export function ClientDetailPanel() {
   const { selectedClient, isDetailOpen, setDetailOpen, toggleChecklistItem, updateChecklistItemAttachment, deleteClient } = useClientStore();
@@ -29,15 +30,15 @@ export function ClientDetailPanel() {
   const progress = calculateProgress(selectedClient);
   const currentColumn = COLUMNS.find(c => c.id === selectedClient.columnId);
 
-  // Calculate stats by responsible
+  // Calculate stats by role (template)
   const allItems = (selectedClient.checklist || []).flatMap(s => s?.items || []);
-  const joaoItems = allItems.filter(i => i.responsible === "João");
-  const amandaItems = allItems.filter(i => i.responsible === "Amanda");
-  const joaoProgress = joaoItems.length > 0 
-    ? Math.round((joaoItems.filter(i => i.completed).length / joaoItems.length) * 100) 
+  const managerItems = allItems.filter(i => toResponsibleRole(i.responsible) === "manager");
+  const opsItems = allItems.filter(i => toResponsibleRole(i.responsible) === "ops");
+  const managerProgress = managerItems.length > 0 
+    ? Math.round((managerItems.filter(i => i.completed).length / managerItems.length) * 100) 
     : 0;
-  const amandaProgress = amandaItems.length > 0 
-    ? Math.round((amandaItems.filter(i => i.completed).length / amandaItems.length) * 100) 
+  const opsProgress = opsItems.length > 0 
+    ? Math.round((opsItems.filter(i => i.completed).length / opsItems.length) * 100) 
     : 0;
 
   const handleToggleItem = (sectionId: string, itemId: string) => {
@@ -126,25 +127,25 @@ export function ClientDetailPanel() {
               <Progress value={progress} className="h-2" />
             </div>
 
-            {/* João */}
+            {/* Gestor (Comercial) */}
             <div className="bg-status-info/10 rounded-xl p-4 border border-status-info/30">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-status-info">João</span>
-                <span className="text-xl font-mono font-bold text-status-info">{joaoProgress}%</span>
+                <span className="text-xs text-status-info">Gestor (Comercial)</span>
+                <span className="text-xl font-mono font-bold text-status-info">{managerProgress}%</span>
               </div>
               <div className="h-2 bg-surface-1 rounded-full overflow-hidden">
-                <div className="h-full bg-status-info rounded-full" style={{ width: `${joaoProgress}%` }} />
+                <div className="h-full bg-status-info rounded-full" style={{ width: `${managerProgress}%` }} />
               </div>
             </div>
 
-            {/* Amanda */}
+            {/* Operacional */}
             <div className="bg-status-purple/10 rounded-xl p-4 border border-status-purple/30">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-status-purple">Amanda</span>
-                <span className="text-xl font-mono font-bold text-status-purple">{amandaProgress}%</span>
+                <span className="text-xs text-status-purple">Operacional</span>
+                <span className="text-xl font-mono font-bold text-status-purple">{opsProgress}%</span>
               </div>
               <div className="h-2 bg-surface-1 rounded-full overflow-hidden">
-                <div className="h-full bg-status-purple rounded-full" style={{ width: `${amandaProgress}%` }} />
+                <div className="h-full bg-status-purple rounded-full" style={{ width: `${opsProgress}%` }} />
               </div>
             </div>
           </div>
@@ -252,7 +253,7 @@ export function ClientDetailPanel() {
               <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border/30">
                 <div>
                   <label className="text-xs text-muted-foreground">Responsável</label>
-                  <p className="text-sm font-medium">{selectedClient.responsible}</p>
+                  <p className="text-sm font-medium">{getResponsibleLabel(selectedClient.responsible)}</p>
                 </div>
                 <div>
                   <label className="text-xs text-muted-foreground">Data de Início</label>
@@ -347,7 +348,7 @@ export function ClientDetailPanel() {
                     <div className="flex-1 pb-4">
                       <p className="text-sm text-foreground">{entry.action}</p>
                       <p className="text-xs text-muted-foreground mt-1">
-                        {entry.user} • {formatDateTime(entry.timestamp)}
+                        {getResponsibleLabel(entry.user)} • {formatDateTime(entry.timestamp)}
                       </p>
                     </div>
                   </div>
