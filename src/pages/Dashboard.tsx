@@ -71,6 +71,7 @@ const Dashboard = () => {
   const { 
     leads: kanbanLeads, 
     loading: isKanbanLoading, 
+    optimisticMove,
     refetch: refetchKanbanLeads 
   } = useLeadsKanban();
   
@@ -157,12 +158,11 @@ const Dashboard = () => {
     setSelectedLead(null);
   };
 
-  const handleMoveLead = async (leadId: string, newStage: LeadPipelineStage) => {
-    const success = await moveLead(leadId, newStage);
-    if (success) {
-      // Force refetch to ensure UI updates immediately
-      await refetchLeads();
-    }
+  const handleMoveLead = (leadId: string, newStage: LeadPipelineStage) => {
+    // Instant UI update on both Kanban views
+    optimisticMove(leadId, newStage);
+    // Fire-and-forget: persist to database (has its own optimistic + rollback)
+    moveLead(leadId, newStage);
   };
 
   // Delivery (Clients) view

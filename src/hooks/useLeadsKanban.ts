@@ -100,6 +100,20 @@ export function useLeadsKanban() {
     }
   }, [hasMore, loading, page, fetchLeads]);
 
+  // Optimistic update for moving leads - instant UI update
+  const optimisticMove = useCallback((leadId: string, newStage: LeadPipelineStage) => {
+    let newStatus = 'open';
+    if (newStage === 'gained') newStatus = 'gained';
+    else if (newStage === 'lost') newStatus = 'lost';
+    else if (newStage === 'future') newStatus = 'future';
+
+    setLeads(prev => prev.map(l => 
+      l.id === leadId 
+        ? { ...l, pipeline_stage: newStage, status: newStatus }
+        : l
+    ));
+  }, []);
+
   useEffect(() => {
     fetchLeads(0, false);
 
@@ -124,6 +138,7 @@ export function useLeadsKanban() {
     hasMore,
     totalCount,
     loadMore,
+    optimisticMove,
     refetch: () => fetchLeads(0, false),
   };
 }
