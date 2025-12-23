@@ -1,8 +1,9 @@
 import { useRef, useState, useEffect, useCallback } from "react";
-import { COLUMNS, Client } from "@/types/client";
+import { COLUMNS, Client, ColumnId } from "@/types/client";
 import { useClientStore } from "@/stores/clientStore";
 import { KanbanColumn } from "./KanbanColumn";
 import { RecurrenceConversionDialog } from "./RecurrenceConversionDialog";
+import { NewClientWizard } from "./NewClientWizard";
 import { useRecurring } from "@/hooks/useRecurring";
 import { toast } from "sonner";
 import { useFunnelMode } from "@/contexts/FunnelModeContext";
@@ -23,6 +24,10 @@ export function KanbanBoard() {
   // Recurrence conversion dialog state
   const [recurrenceDialogOpen, setRecurrenceDialogOpen] = useState(false);
   const [clientToConvert, setClientToConvert] = useState<Client | null>(null);
+  
+  // New client wizard state
+  const [newClientOpen, setNewClientOpen] = useState(false);
+  const [initialColumnId, setInitialColumnId] = useState<ColumnId>("onboarding");
 
   // Auto-scroll when dragging card near edges
   useEffect(() => {
@@ -155,6 +160,11 @@ export function KanbanBoard() {
     setClientToConvert(null);
   };
 
+  const handleAddClient = (columnId: ColumnId) => {
+    setInitialColumnId(columnId);
+    setNewClientOpen(true);
+  };
+
   return (
     <>
       <div
@@ -188,6 +198,7 @@ export function KanbanBoard() {
               onClientClick={setSelectedClient}
               onConvertToRecurring={handleConvertToRecurring}
               onDropToFinalized={handleConvertToRecurring}
+              onAddClient={handleAddClient}
             />
           </div>
         ))}
@@ -200,6 +211,13 @@ export function KanbanBoard() {
         client={clientToConvert}
         onConfirm={handleConfirmRecurrence}
         onDecline={handleDeclineRecurrence}
+      />
+
+      {/* New Client Wizard */}
+      <NewClientWizard 
+        open={newClientOpen} 
+        onOpenChange={setNewClientOpen}
+        initialColumnId={initialColumnId}
       />
     </>
   );

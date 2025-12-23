@@ -6,6 +6,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useClientStore } from "@/stores/clientStore";
 import { TOOLTIP_CONTENT } from "@/lib/tooltipContent";
 import { cn } from "@/lib/utils";
+import { UserPlus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface KanbanColumnProps {
   column: ColumnType;
@@ -14,6 +16,7 @@ interface KanbanColumnProps {
   onClientClick: (client: Client) => void;
   onConvertToRecurring?: (client: Client) => void;
   onDropToFinalized?: (client: Client) => void;
+  onAddClient?: (columnId: ColumnId) => void;
 }
 
 const columnColors: Record<ColumnId, string> = {
@@ -46,7 +49,7 @@ const columnTooltips: Record<ColumnId, string> = {
   finalized: TOOLTIP_CONTENT.columns.finalized,
 };
 
-export function KanbanColumn({ column, clients, allClients, onClientClick, onConvertToRecurring, onDropToFinalized }: KanbanColumnProps) {
+export function KanbanColumn({ column, clients, allClients, onClientClick, onConvertToRecurring, onDropToFinalized, onAddClient }: KanbanColumnProps) {
   const { moveClient } = useClientStore();
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -102,14 +105,36 @@ export function KanbanColumn({ column, clients, allClients, onClientClick, onCon
                   <span className="text-base sm:text-lg">{column.emoji}</span>
                   <h2 className="font-semibold text-xs sm:text-sm text-foreground">{column.title}</h2>
                 </div>
-                <span className={cn(
-                  "text-xs font-mono px-2.5 py-1 rounded-full border transition-all",
-                  clients.length > 0 
-                    ? "bg-primary/15 text-primary border-primary/30 neon-glow" 
-                    : "bg-muted/50 text-muted-foreground border-border/30"
-                )}>
-                  {clients.length}
-                </span>
+                <div className="flex items-center gap-2">
+                  {onAddClient && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 text-muted-foreground hover:text-primary hover:bg-primary/10"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onAddClient(column.id);
+                          }}
+                        >
+                          <UserPlus className="h-3.5 w-3.5" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom">
+                        <p className="text-xs">Adicionar cliente nesta coluna</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
+                  <span className={cn(
+                    "text-xs font-mono px-2.5 py-1 rounded-full border transition-all",
+                    clients.length > 0 
+                      ? "bg-primary/15 text-primary border-primary/30 neon-glow" 
+                      : "bg-muted/50 text-muted-foreground border-border/30"
+                  )}>
+                    {clients.length}
+                  </span>
+                </div>
               </div>
             </div>
           </TooltipTrigger>
