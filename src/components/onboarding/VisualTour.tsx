@@ -74,6 +74,17 @@ const ALLOWED_ROUTES = ['/', '/dashboard'];
 const STEPS_REQUIRING_COMERCIAL = ['section-commercial', 'proposals', 'contracts', 'raiox'];
 const STEPS_REQUIRING_FERRAMENTAS = ['section-tools', 'agent-seo', 'agent-suspensions', 'agent-reports', 'questions'];
 
+// Helper to open collapsible sections
+const openCollapsibleSection = (tourId: string) => {
+  const section = document.querySelector(`[data-tour="${tourId}"]`);
+  if (section) {
+    const parent = section.closest('[data-state]');
+    if (parent?.getAttribute('data-state') === 'closed') {
+      (section as HTMLElement).click();
+    }
+  }
+};
+
 interface VisualTourProps {
   autoStart?: boolean;
 }
@@ -97,44 +108,39 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
 
   // Open collapsible sections before showing their steps
   const prepareStep = useCallback((stepId: string) => {
-    // Find and click the section header to open it
+    // Open both sections for any commercial or tool step
     if (STEPS_REQUIRING_COMERCIAL.includes(stepId)) {
-      const comercialSection = document.querySelector('[data-tour="section-comercial"]');
-      if (comercialSection) {
-        const parent = comercialSection.closest('[data-state]');
-        if (parent?.getAttribute('data-state') === 'closed') {
-          (comercialSection as HTMLElement).click();
-        }
-      }
+      openCollapsibleSection('section-comercial');
     }
     
     if (STEPS_REQUIRING_FERRAMENTAS.includes(stepId)) {
-      const ferramentasSection = document.querySelector('[data-tour="section-ferramentas"]');
-      if (ferramentasSection) {
-        const parent = ferramentasSection.closest('[data-state]');
-        if (parent?.getAttribute('data-state') === 'closed') {
-          (ferramentasSection as HTMLElement).click();
-        }
-      }
+      openCollapsibleSection('section-ferramentas');
     }
   }, []);
 
   // Enhanced callback that prepares steps before showing them
   const enhancedCallback = useCallback((data: CallBackProps) => {
-    const { type, index } = data;
+    const { type, index, action } = data;
     
     // When about to show a step, prepare it
-    if (type === 'step:before' && index < TOUR_STEPS.length) {
-      const stepId = TOUR_STEPS[index].id;
-      prepareStep(stepId);
-      
-      // Small delay to allow collapsible to open
-      setTimeout(() => {}, 100);
+    if ((type === 'step:before' || type === 'step:after') && index < TOUR_STEPS.length) {
+      const nextIndex = type === 'step:after' ? index + 1 : index;
+      if (nextIndex < TOUR_STEPS.length) {
+        const stepId = TOUR_STEPS[nextIndex].id;
+        
+        // Open necessary sections
+        if (STEPS_REQUIRING_COMERCIAL.includes(stepId)) {
+          openCollapsibleSection('section-comercial');
+        }
+        if (STEPS_REQUIRING_FERRAMENTAS.includes(stepId)) {
+          openCollapsibleSection('section-ferramentas');
+        }
+      }
     }
     
     // Call the original handler
     handleJoyrideCallback(data);
-  }, [handleJoyrideCallback, prepareStep]);
+  }, [handleJoyrideCallback]);
 
   // Auto-start tour on first visit (only once per session)
   useEffect(() => {
