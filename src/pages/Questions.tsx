@@ -187,7 +187,7 @@ export default function Questions() {
           Dúvidas da Equipe
         </h1>
         <p className="text-muted-foreground">
-          Comunicação interna sobre clientes entre João e Amanda
+          Comunicação interna sobre clientes entre Gestor e Operacional
         </p>
         
         {/* New Question Button */}

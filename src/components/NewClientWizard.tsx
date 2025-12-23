@@ -317,7 +317,7 @@ export function NewClientWizard({ open, onOpenChange, initialColumnId }: NewClie
                     )}
                   >
                     <Camera className="w-4 h-4 mx-auto mb-1" />
-                    João tira
+                    Equipe tira
                   </button>
                   <button
                     type="button"

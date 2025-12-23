@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback, useMemo } from 'react';
+import { useEffect, useRef, useCallback, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Joyride, { Styles, CallBackProps } from 'react-joyride';
 import { useVisualTour, TOUR_STEPS } from '@/hooks/useVisualTour';
@@ -127,8 +127,25 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
     handleJoyrideCallback,
   } = useVisualTour();
 
-  // Detect theme changes and regenerate styles
-  const isDarkMode = document.documentElement.classList.contains('dark');
+  // Use state for theme detection to trigger re-render on theme change
+  const [isDarkMode, setIsDarkMode] = useState(() => 
+    document.documentElement.classList.contains('dark')
+  );
+  
+  // Listen for theme changes
+  useEffect(() => {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+          const newIsDark = document.documentElement.classList.contains('dark');
+          setIsDarkMode(newIsDark);
+        }
+      });
+    });
+    
+    observer.observe(document.documentElement, { attributes: true });
+    return () => observer.disconnect();
+  }, []);
   
   // Generate styles dynamically based on current theme
   const tourStyles = useMemo(() => {
