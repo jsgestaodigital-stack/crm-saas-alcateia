@@ -4041,6 +4041,47 @@ export type Database = {
           },
         ]
       }
+      user_engagement_events: {
+        Row: {
+          agency_id: string
+          created_at: string
+          event_category: string
+          event_type: string
+          id: string
+          metadata: Json | null
+          user_id: string
+          weight: number
+        }
+        Insert: {
+          agency_id: string
+          created_at?: string
+          event_category: string
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          user_id: string
+          weight?: number
+        }
+        Update: {
+          agency_id?: string
+          created_at?: string
+          event_category?: string
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          user_id?: string
+          weight?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_engagement_events_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_permissions: {
         Row: {
           can_admin: boolean
@@ -4500,6 +4541,31 @@ export type Database = {
         }
         Relationships: []
       }
+      user_engagement_scores: {
+        Row: {
+          active_days: number | null
+          agency_id: string | null
+          agency_name: string | null
+          crud_events: number | null
+          feature_events: number | null
+          first_activity: string | null
+          last_activity: string | null
+          navigation_events: number | null
+          total_events: number | null
+          total_score: number | null
+          user_id: string | null
+          user_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_engagement_events_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       accept_invite: { Args: { _token: string }; Returns: Json }
@@ -4786,6 +4852,25 @@ export type Database = {
           updated_at: string
         }[]
       }
+      get_engagement_rankings: {
+        Args: { _days_back?: number; _limit?: number }
+        Returns: {
+          active_days: number
+          agency_id: string
+          agency_name: string
+          avg_daily_score: number
+          crud_score: number
+          days_since_last_activity: number
+          engagement_level: string
+          feature_score: number
+          last_activity: string
+          navigation_score: number
+          total_events: number
+          total_score: number
+          user_id: string
+          user_name: string
+        }[]
+      }
       get_health_summary: {
         Args: never
         Returns: {
@@ -4912,6 +4997,15 @@ export type Database = {
       log_activation_event: {
         Args: { _event: string; _metadata?: Json }
         Returns: Json
+      }
+      log_engagement_event: {
+        Args: {
+          _event_category: string
+          _event_type: string
+          _metadata?: Json
+          _weight?: number
+        }
+        Returns: string
       }
       log_lead_activity: {
         Args: {

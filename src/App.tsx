@@ -16,6 +16,7 @@ import { ImpersonateBanner } from "@/components/ImpersonateBanner";
 import { PendingRegistrationsBanner } from "@/components/admin/PendingRegistrationsBanner";
 import { ErrorBoundaryLogger } from "@/components/ErrorBoundaryLogger";
 import { NPSModal } from "@/components/nps";
+import { EngagementTracker } from "@/components/EngagementTracker";
 import { Loader2 } from "lucide-react";
 
 // ============ LAZY LOADED PAGES ============
@@ -205,7 +206,8 @@ const App = () => (
                         <Route path="*" element={<NotFound />} />
                       </Routes>
                     </Suspense>
-                    {/* Global Modals */}
+                    {/* Global Components */}
+                    <EngagementTracker />
                     <NPSModal />
                     {/* QA Debug Tools */}
                     <QADebugTrigger />
