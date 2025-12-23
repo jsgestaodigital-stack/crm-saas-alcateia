@@ -7,6 +7,47 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Input validation
+const VALID_PLAN_TYPES = ['unique', 'recurring'];
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+interface ConvertInput {
+  leadId: string;
+  planType: string;
+}
+
+function validateInput(data: unknown): { valid: true; data: ConvertInput } | { valid: false; error: string } {
+  if (typeof data !== 'object' || data === null) {
+    return { valid: false, error: 'Invalid request body' };
+  }
+
+  const input = data as Record<string, unknown>;
+
+  // Validate leadId (required, must be UUID)
+  if (!input.leadId || typeof input.leadId !== 'string') {
+    return { valid: false, error: 'leadId is required' };
+  }
+  if (!UUID_REGEX.test(input.leadId)) {
+    return { valid: false, error: 'leadId must be a valid UUID' };
+  }
+
+  // Validate planType (required, must be valid enum)
+  if (!input.planType || typeof input.planType !== 'string') {
+    return { valid: false, error: 'planType is required' };
+  }
+  if (!VALID_PLAN_TYPES.includes(input.planType)) {
+    return { valid: false, error: 'planType must be "unique" or "recurring"' };
+  }
+
+  return {
+    valid: true,
+    data: {
+      leadId: input.leadId,
+      planType: input.planType,
+    }
+  };
+}
+
 const DEFAULT_CHECKLIST = [
   {
     id: "section-1",
@@ -53,8 +94,8 @@ serve(async (req) => {
     // Get the user from the authorization header
     const authHeader = req.headers.get('authorization');
     if (!authHeader) {
-      console.error('No authorization header');
-      return new Response(JSON.stringify({ error: 'No authorization header' }), {
+      console.error('[convert-lead-to-client] No authorization header');
+      return new Response(JSON.stringify({ error: 'Autenticação necessária' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -70,14 +111,14 @@ serve(async (req) => {
 
     const { data: { user }, error: userError } = await supabaseUser.auth.getUser();
     if (userError || !user) {
-      console.error('User auth error:', userError);
-      return new Response(JSON.stringify({ error: 'Invalid user' }), {
+      console.error('[convert-lead-to-client] User auth error');
+      return new Response(JSON.stringify({ error: 'Usuário não autenticado' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    console.log('User authenticated:', user.id);
+    console.log('[convert-lead-to-client] User authenticated:', user.id);
 
     // Verify user has sales access
     const { data: canSales } = await supabaseAdmin.rpc('can_access_sales', { _user_id: user.id });
@@ -85,23 +126,35 @@ serve(async (req) => {
     const { data: isAdmin } = await supabaseAdmin.rpc('is_admin', { _user_id: user.id });
 
     if (!canSales && !canAdmin && !isAdmin) {
-      console.error('User does not have sales access:', user.id);
-      return new Response(JSON.stringify({ error: 'Access denied - Sales permission required' }), {
+      console.error('[convert-lead-to-client] User does not have sales access:', user.id);
+      return new Response(JSON.stringify({ error: 'Acesso negado. Permissão de vendas necessária.' }), {
         status: 403,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    const { leadId, planType } = await req.json();
-
-    if (!leadId || !planType) {
-      return new Response(JSON.stringify({ error: 'leadId and planType are required' }), {
+    // Parse and validate input
+    let rawInput: unknown;
+    try {
+      rawInput = await req.json();
+    } catch {
+      return new Response(JSON.stringify({ error: 'Corpo da requisição inválido' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    console.log('Converting lead:', leadId, 'to plan:', planType);
+    const validation = validateInput(rawInput);
+    if (!validation.valid) {
+      return new Response(JSON.stringify({ error: validation.error }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const { leadId, planType } = validation.data;
+
+    console.log('[convert-lead-to-client] Converting lead:', leadId, 'to plan:', planType);
 
     // 1. Fetch the lead
     const { data: lead, error: leadFetchError } = await supabaseAdmin
@@ -111,8 +164,8 @@ serve(async (req) => {
       .single();
 
     if (leadFetchError || !lead) {
-      console.error('Lead fetch error:', leadFetchError);
-      return new Response(JSON.stringify({ error: 'Lead not found' }), {
+      console.error('[convert-lead-to-client] Lead fetch error');
+      return new Response(JSON.stringify({ error: 'Lead não encontrado' }), {
         status: 404,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -120,7 +173,7 @@ serve(async (req) => {
 
     // If already converted, return existing client (idempotent)
     if (lead.converted_client_id) {
-      console.log('Lead already converted, returning existing client:', lead.converted_client_id);
+      console.log('[convert-lead-to-client] Lead already converted, returning existing client:', lead.converted_client_id);
       const { data: existingClient } = await supabaseAdmin
         .from('clients')
         .select('*')
@@ -139,7 +192,7 @@ serve(async (req) => {
 
     // Validate lead status - cannot convert lost leads
     if (lead.status === 'lost') {
-      console.error('Cannot convert lost lead:', leadId);
+      console.error('[convert-lead-to-client] Cannot convert lost lead:', leadId);
       return new Response(JSON.stringify({ error: 'Não é possível converter um lead perdido' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -167,14 +220,14 @@ serve(async (req) => {
       .single();
 
     if (clientError) {
-      console.error('Client creation error:', clientError);
-      return new Response(JSON.stringify({ error: 'Failed to create client', details: clientError.message }), {
+      console.error('[convert-lead-to-client] Client creation error');
+      return new Response(JSON.stringify({ error: 'Erro ao criar cliente. Tente novamente.' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    console.log('Client created:', client.id);
+    console.log('[convert-lead-to-client] Client created:', client.id);
 
     // 3. If recurring plan, also create recurring_client
     if (planType === 'recurring') {
@@ -193,10 +246,10 @@ serve(async (req) => {
         });
 
       if (recurringError) {
-        console.error('Recurring client creation error:', recurringError);
+        console.error('[convert-lead-to-client] Recurring client creation error (non-fatal)');
         // Don't fail the whole operation, just log the error
       } else {
-        console.log('Recurring client created for:', client.id);
+        console.log('[convert-lead-to-client] Recurring client created for:', client.id);
       }
     }
 
@@ -212,10 +265,10 @@ serve(async (req) => {
       .eq('id', leadId);
 
     if (leadUpdateError) {
-      console.error('Lead update error:', leadUpdateError);
+      console.error('[convert-lead-to-client] Lead update error');
       // Rollback: delete the client
       await supabaseAdmin.from('clients').delete().eq('id', client.id);
-      return new Response(JSON.stringify({ error: 'Failed to update lead', details: leadUpdateError.message }), {
+      return new Response(JSON.stringify({ error: 'Erro ao atualizar lead. Tente novamente.' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
@@ -241,7 +294,7 @@ serve(async (req) => {
         created_by_name: userName,
       });
 
-    console.log('Conversion complete for lead:', leadId, '-> client:', client.id);
+    console.log('[convert-lead-to-client] Conversion complete for lead:', leadId, '-> client:', client.id);
 
     return new Response(JSON.stringify({ 
       success: true, 
@@ -251,10 +304,9 @@ serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    console.error('Unexpected error in convert-lead-to-client:', message);
-    return new Response(JSON.stringify({ error: message }), {
+  } catch (error) {
+    console.error('[convert-lead-to-client] Unexpected error:', error);
+    return new Response(JSON.stringify({ error: 'Erro inesperado. Tente novamente.' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });

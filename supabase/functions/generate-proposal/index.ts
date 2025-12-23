@@ -6,6 +6,61 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Input validation schema
+interface ProposalInput {
+  leadId?: string;
+  clientName?: string;
+  companyName?: string;
+  city?: string;
+  category?: string;
+  keywords?: string;
+  customPrompt?: string;
+}
+
+function validateInput(data: unknown): { valid: true; data: ProposalInput } | { valid: false; error: string } {
+  if (typeof data !== 'object' || data === null) {
+    return { valid: false, error: 'Invalid request body' };
+  }
+
+  const input = data as Record<string, unknown>;
+
+  // Validate optional strings with length limits
+  if (input.leadId !== undefined && (typeof input.leadId !== 'string' || input.leadId.length > 50)) {
+    return { valid: false, error: 'leadId must be a valid string' };
+  }
+  if (input.clientName !== undefined && (typeof input.clientName !== 'string' || input.clientName.length > 200)) {
+    return { valid: false, error: 'clientName must be under 200 characters' };
+  }
+  if (input.companyName !== undefined && (typeof input.companyName !== 'string' || input.companyName.length > 200)) {
+    return { valid: false, error: 'companyName must be under 200 characters' };
+  }
+  if (input.city !== undefined && (typeof input.city !== 'string' || input.city.length > 100)) {
+    return { valid: false, error: 'city must be under 100 characters' };
+  }
+  if (input.category !== undefined && (typeof input.category !== 'string' || input.category.length > 100)) {
+    return { valid: false, error: 'category must be under 100 characters' };
+  }
+  if (input.keywords !== undefined && (typeof input.keywords !== 'string' || input.keywords.length > 500)) {
+    return { valid: false, error: 'keywords must be under 500 characters' };
+  }
+  if (input.customPrompt !== undefined && (typeof input.customPrompt !== 'string' || input.customPrompt.length > 2000)) {
+    return { valid: false, error: 'customPrompt must be under 2000 characters' };
+  }
+
+  return {
+    valid: true,
+    data: {
+      leadId: input.leadId as string | undefined,
+      clientName: input.clientName as string | undefined,
+      companyName: input.companyName as string | undefined,
+      city: input.city as string | undefined,
+      category: input.category as string | undefined,
+      keywords: input.keywords as string | undefined,
+      customPrompt: input.customPrompt as string | undefined,
+    }
+  };
+}
+
 const SYSTEM_PROMPT = `Você é um especialista em criar propostas comerciais persuasivas para agências de marketing digital focadas em SEO local e Google Meu Negócio.
 
 Seu objetivo é gerar propostas profissionais, personalizadas e convincentes baseadas nas informações do cliente.
@@ -56,11 +111,30 @@ serve(async (req) => {
       });
     }
 
+    // Parse and validate input
+    let rawInput: unknown;
+    try {
+      rawInput = await req.json();
+    } catch {
+      return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const validation = validateInput(rawInput);
+    if (!validation.valid) {
+      return new Response(JSON.stringify({ error: validation.error }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const { leadId, clientName, companyName, city, category, keywords, customPrompt } = validation.data;
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
-
-    const { leadId, clientName, companyName, city, category, keywords, customPrompt } = await req.json();
 
     // Build context for AI
     let leadContext = '';
@@ -102,10 +176,14 @@ Use as palavras-chave fornecidas nos textos de diagnóstico e objetivo para pers
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY is not configured');
+      console.error('[generate-proposal] LOVABLE_API_KEY is not configured');
+      return new Response(JSON.stringify({ error: 'Service configuration error' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    console.log('Calling Lovable AI to generate proposal...');
+    console.log('[generate-proposal] Calling Lovable AI...');
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -124,8 +202,7 @@ Use as palavras-chave fornecidas nos textos de diagnóstico e objetivo para pers
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('AI Gateway error:', response.status, errorText);
+      console.error('[generate-proposal] AI Gateway error:', response.status);
       
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: 'Rate limit exceeded. Please try again later.' }), {
@@ -140,17 +217,24 @@ Use as palavras-chave fornecidas nos textos de diagnóstico e objetivo para pers
         });
       }
       
-      throw new Error(`AI gateway error: ${response.status}`);
+      return new Response(JSON.stringify({ error: 'Failed to generate proposal. Please try again.' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const data = await response.json();
     const aiContent = data.choices?.[0]?.message?.content;
 
     if (!aiContent) {
-      throw new Error('No content returned from AI');
+      console.error('[generate-proposal] No content returned from AI');
+      return new Response(JSON.stringify({ error: 'Failed to generate proposal. Please try again.' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    console.log('AI response received, parsing...');
+    console.log('[generate-proposal] AI response received, parsing...');
 
     // Parse JSON from AI response
     let proposalData;
@@ -163,7 +247,7 @@ Use as palavras-chave fornecidas nos textos de diagnóstico e objetivo para pers
         throw new Error('No JSON found in response');
       }
     } catch (parseError) {
-      console.error('Failed to parse AI response:', parseError);
+      console.error('[generate-proposal] Failed to parse AI response:', parseError);
       // Return a fallback structure
       proposalData = {
         blocks: [
@@ -182,7 +266,7 @@ Use as palavras-chave fornecidas nos textos de diagnóstico e objetivo para pers
     }
 
     // Add IDs and order to blocks
-    const blocks = proposalData.blocks.map((block: any, index: number) => ({
+    const blocks = proposalData.blocks.map((block: Record<string, unknown>, index: number) => ({
       id: crypto.randomUUID(),
       type: block.type || 'custom',
       title: block.title,
@@ -200,9 +284,9 @@ Use as palavras-chave fornecidas nos textos de diagnóstico e objetivo para pers
     });
 
   } catch (error) {
-    console.error('Error in generate-proposal:', error);
+    console.error('[generate-proposal] Unexpected error:', error);
     return new Response(JSON.stringify({
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: 'An unexpected error occurred. Please try again.',
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
