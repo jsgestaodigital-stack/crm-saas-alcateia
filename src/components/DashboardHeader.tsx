@@ -80,10 +80,14 @@ export function DashboardHeader() {
           </div>
 
           {/* Visual Tour Button */}
-          <VisualTourButton />
+          <div data-tour="tour-button">
+            <VisualTourButton />
+          </div>
 
           {/* Theme Toggle */}
-          <ThemeToggle />
+          <div data-tour="theme-toggle">
+            <ThemeToggle />
+          </div>
 
           {/* User Menu */}
           <DropdownMenu>

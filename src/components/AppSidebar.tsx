@@ -105,7 +105,8 @@ export function AppSidebar({
     onClick, 
     count, 
     color = "primary",
-    size = "large"
+    size = "large",
+    dataTour
   }: { 
     icon: any; 
     label: string; 
@@ -114,6 +115,7 @@ export function AppSidebar({
     count?: number;
     color?: "primary" | "amber" | "violet";
     size?: "large" | "small";
+    dataTour?: string;
   }) => {
     const colorClasses = {
       primary: {
@@ -135,6 +137,7 @@ export function AppSidebar({
         <TooltipTrigger asChild>
           <button
             onClick={onClick}
+            data-tour={dataTour}
             className={cn(
               "group w-full flex items-center gap-3 rounded-xl border transition-all duration-300",
               size === "large" ? "p-3.5" : "p-2.5",
@@ -246,7 +249,8 @@ export function AppSidebar({
     isActive, 
     onClick, 
     badge,
-    color = "primary"
+    color = "primary",
+    dataTour
   }: { 
     icon: any; 
     label: string;
@@ -255,6 +259,7 @@ export function AppSidebar({
     onClick: () => void;
     badge?: number;
     color?: "primary" | "amber" | "violet" | "cyan" | "red" | "slate";
+    dataTour?: string;
   }) => {
     const colorMap = {
       primary: { active: "bg-primary/10 text-primary", hover: "hover:bg-primary/5 hover:text-primary" },
@@ -270,6 +275,7 @@ export function AppSidebar({
         <TooltipTrigger asChild>
           <button
             onClick={onClick}
+            data-tour={dataTour}
             className={cn(
               "w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all duration-200 relative group",
               collapsed && "justify-center px-2",
@@ -400,6 +406,7 @@ export function AppSidebar({
                 count={openLeads}
                 color="amber"
                 size="large"
+                dataTour="funnel-sales"
               />
             )}
 
@@ -416,6 +423,7 @@ export function AppSidebar({
                 count={activeClients}
                 color="primary"
                 size="large"
+                dataTour="funnel-optimization"
               />
             )}
 
@@ -432,6 +440,7 @@ export function AppSidebar({
                 count={todayRecurringTasks}
                 color="violet"
                 size="large"
+                dataTour="funnel-recurrence"
               />
             )}
           </div>
@@ -443,7 +452,7 @@ export function AppSidebar({
           {canAccessSales && (
             <Collapsible open={comercialOpen} onOpenChange={setComercialOpen}>
               <CollapsibleTrigger asChild>
-                <div>
+                <div data-tour="section-comercial">
                   <SectionHeader 
                     icon={Building2} 
                     label="Comercial" 
@@ -461,6 +470,7 @@ export function AppSidebar({
                   isActive={location.pathname === "/propostas"}
                   onClick={() => { navigate("/propostas"); onMobileOpenChange(false); }}
                   color="amber"
+                  dataTour="nav-propostas"
                 />
                 <NavItem
                   icon={FileSignature}
@@ -469,9 +479,10 @@ export function AppSidebar({
                   isActive={location.pathname === "/contratos"}
                   onClick={() => { navigate("/contratos"); onMobileOpenChange(false); }}
                   color="primary"
+                  dataTour="nav-contratos"
                 />
                 <AgenteRaioXModal trigger={
-                  <div className="w-full">
+                  <div className="w-full" data-tour="nav-raiox">
                     <NavItem
                       icon={Zap}
                       label="Raio-X"
@@ -489,7 +500,7 @@ export function AppSidebar({
           {/* === FERRAMENTAS - Collapsible === */}
           <Collapsible open={ferramentasOpen} onOpenChange={setFerramentasOpen}>
             <CollapsibleTrigger asChild>
-              <div>
+              <div data-tour="section-ferramentas">
                 <SectionHeader 
                   icon={Settings} 
                   label="Ferramentas" 
@@ -503,7 +514,7 @@ export function AppSidebar({
               {canAccessOps && (
                 <>
                   <AgenteSEOModal trigger={
-                    <div className="w-full">
+                    <div className="w-full" data-tour="nav-agente-seo">
                       <NavItem
                         icon={Search}
                         label="Agente SEO"
@@ -515,7 +526,7 @@ export function AppSidebar({
                     </div>
                   } />
                   <AgenteSuspensoesModal trigger={
-                    <div className="w-full">
+                    <div className="w-full" data-tour="nav-agente-suspensoes">
                       <NavItem
                         icon={AlertTriangle}
                         label="Agente Suspensões"
@@ -530,7 +541,7 @@ export function AppSidebar({
               )}
               {isRecurringMode && (
                 <AgenteRelatorioModal trigger={
-                  <div className="w-full">
+                  <div className="w-full" data-tour="nav-agente-relatorios">
                     <NavItem
                       icon={BarChart3}
                       label="Agente Relatórios"
@@ -551,6 +562,7 @@ export function AppSidebar({
                   onClick={() => { navigate("/duvidas"); onMobileOpenChange(false); }}
                   badge={pendingCount}
                   color="amber"
+                  dataTour="nav-central-operacional"
                 />
               )}
             </CollapsibleContent>
