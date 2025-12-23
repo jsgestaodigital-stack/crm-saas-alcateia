@@ -200,12 +200,14 @@ export function ContractActions({ contract, onPreview, onRefresh }: ContractActi
 
   const handlePrint = () => {
     const html = generatePdfContent();
-    const printWindow = window.open('', '_blank');
+    // Use blob URL approach instead of document.write() for XSS safety
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const printWindow = window.open(url, '_blank');
     if (printWindow) {
-      printWindow.document.write(html);
-      printWindow.document.close();
       printWindow.onload = () => {
         printWindow.print();
+        URL.revokeObjectURL(url);
       };
     }
   };
