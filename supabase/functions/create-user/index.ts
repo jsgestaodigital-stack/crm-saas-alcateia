@@ -127,6 +127,36 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Get caller's agency_id
+    const { data: callerProfile, error: profileFetchError } = await supabaseAdmin
+      .from("profiles")
+      .select("current_agency_id")
+      .eq("id", callerUser.id)
+      .single();
+
+    let callerAgencyId = callerProfile?.current_agency_id;
+
+    // Fallback: get from agency_members if not set in profile
+    if (!callerAgencyId) {
+      const { data: membership } = await supabaseAdmin
+        .from("agency_members")
+        .select("agency_id")
+        .eq("user_id", callerUser.id)
+        .limit(1)
+        .single();
+      callerAgencyId = membership?.agency_id;
+    }
+
+    if (!callerAgencyId) {
+      console.log("[create-user] Caller has no agency");
+      return new Response(
+        JSON.stringify({ error: "Você não está associado a nenhuma agência" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    console.log(`[create-user] Caller agency: ${callerAgencyId}`);
+
     // Parse and validate input
     let rawInput: unknown;
     try {
@@ -222,6 +252,31 @@ Deno.serve(async (req) => {
     if (permError) {
       console.log("[create-user] Permissions error (non-fatal)");
     }
+
+    // Add user to the caller's agency
+    const { error: memberError } = await supabaseAdmin
+      .from("agency_members")
+      .insert({
+        agency_id: callerAgencyId,
+        user_id: userId,
+        role: role,
+      });
+
+    if (memberError) {
+      console.log("[create-user] Agency member error:", memberError.message);
+      // Try to clean up
+      await supabaseAdmin.auth.admin.deleteUser(userId);
+      return new Response(
+        JSON.stringify({ error: "Erro ao adicionar usuário à equipe. Tente novamente." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Set user's current_agency_id in profile
+    await supabaseAdmin
+      .from("profiles")
+      .update({ current_agency_id: callerAgencyId })
+      .eq("id", userId);
 
     console.log(`[create-user] User created successfully: ${email} (${userId})`);
 

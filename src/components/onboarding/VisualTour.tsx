@@ -90,14 +90,12 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
   // Only run tour on dashboard where all elements exist
   const isAllowedRoute = ALLOWED_ROUTES.includes(location.pathname);
 
-  // Don't render if not on allowed route
-  if (!isAllowedRoute) return null;
-
-  // Don't render if no user
-  if (!user) return null;
-
   // Auto-start tour on first visit (only once per session)
+  // IMPORTANT: This useEffect must be called before any early returns
   useEffect(() => {
+    // Skip if not on allowed route or no user
+    if (!isAllowedRoute || !user) return;
+
     console.log('[VisualTour] Mount state:', { 
       autoStart, 
       shouldAutoStart, 
@@ -111,9 +109,7 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
     if (
       autoStart && 
       shouldAutoStart && 
-      user && 
       !hasAutoStarted.current &&
-      isAllowedRoute &&
       !tourCompleted
     ) {
       console.log('[VisualTour] Auto-starting tour...');
@@ -125,6 +121,9 @@ export function VisualTour({ autoStart = false }: VisualTourProps) {
       return () => clearTimeout(timer);
     }
   }, [autoStart, shouldAutoStart, user, startTour, isAllowedRoute, tourCompleted]);
+
+  // Don't render if not on allowed route or no user
+  if (!isAllowedRoute || !user) return null;
 
   console.log('[VisualTour] Render state:', { isRunning, stepIndex, stepsLength: steps.length });
 
