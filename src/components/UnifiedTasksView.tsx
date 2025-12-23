@@ -521,7 +521,7 @@ function TasksList({ tasksByClient, clients, onClientClick, onToggleTask }: {
                         variant="outline" 
                         className={cn(
                           "text-[9px] px-1 py-0",
-                          task.responsible === "João" 
+                          task.responsible?.toLowerCase().includes('gestor') || task.responsible?.toLowerCase().includes('comercial')
                             ? "border-blue-500/30 text-blue-400" 
                             : "border-purple-500/30 text-purple-400"
                         )}

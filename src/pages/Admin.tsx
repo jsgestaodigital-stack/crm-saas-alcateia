@@ -603,7 +603,7 @@ export default function Admin() {
                         id="newUserName"
                         value={newUserName}
                         onChange={(e) => setNewUserName(e.target.value)}
-                        placeholder="João Silva"
+                        placeholder="Nome do colaborador"
                         className="bg-background"
                         disabled={isCreatingUser}
                       />
