@@ -339,6 +339,7 @@ export function useRecurring() {
         ...data,
         schedule_variant: randomVariant,
         responsible_user_id: user.id,
+        start_date: format(new Date(), "yyyy-MM-dd"),
       })
       .select()
       .single();
@@ -348,14 +349,69 @@ export function useRecurring() {
       return null;
     }
 
-    // Generate tasks for the new client
-    if (newClient) {
-      await generateTasksForClient(newClient.id);
+    // Refresh data first to get updated clients list
+    await fetchData();
+    
+    // Generate tasks for the new client AFTER refresh
+    if (newClient && routines.length > 0) {
+      const today = startOfDay(new Date());
+      const endDate = addDays(today, 14);
+      const tasksToCreate: Array<{
+        recurring_client_id: string;
+        routine_id: string;
+        due_date: string;
+      }> = [];
+
+      const variantOffsets: Record<string, number> = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 };
+      const offset = variantOffsets[randomVariant] || 0;
+
+      for (const routine of routines) {
+        let currentDate = today;
+        while (currentDate <= endDate) {
+          let shouldCreate = false;
+          const dayOfWeek = currentDate.getDay();
+
+          switch (routine.frequency) {
+            case 'daily':
+              shouldCreate = true;
+              break;
+            case 'weekly':
+              const weeklyDays = [1 + offset, 4 + offset].map(d => d % 7);
+              shouldCreate = routine.occurrences_per_period === 2 
+                ? weeklyDays.includes(dayOfWeek)
+                : dayOfWeek === (1 + offset) % 7;
+              break;
+            case 'biweekly':
+              shouldCreate = dayOfWeek === (1 + offset) % 7;
+              break;
+            case 'monthly':
+              shouldCreate = currentDate.getDate() <= 7 && dayOfWeek === 1;
+              break;
+          }
+
+          if (shouldCreate) {
+            tasksToCreate.push({
+              recurring_client_id: newClient.id,
+              routine_id: routine.id,
+              due_date: format(currentDate, "yyyy-MM-dd"),
+            });
+          }
+          currentDate = addDays(currentDate, 1);
+        }
+      }
+
+      if (tasksToCreate.length > 0) {
+        await supabase
+          .from("recurring_tasks")
+          .upsert(tasksToCreate, { onConflict: 'recurring_client_id,routine_id,due_date', ignoreDuplicates: true });
+      }
+      
+      // Refresh again to get the tasks
+      await fetchData();
     }
 
-    await fetchData();
     return newClient;
-  }, [user, fetchData, generateTasksForClient]);
+  }, [user, fetchData, routines]);
 
   // Create a new routine (admin only)
   const createRoutine = useCallback(async (data: {
