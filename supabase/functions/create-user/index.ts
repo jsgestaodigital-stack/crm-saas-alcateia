@@ -10,10 +10,10 @@ interface CreateUserInput {
   email: string;
   password: string;
   full_name: string;
-  role: "admin" | "operador" | "visualizador";
+  role: "admin" | "operador" | "visualizador" | "manager" | "sales_rep" | "support";
 }
 
-const VALID_ROLES = ["admin", "operador", "visualizador"];
+const VALID_ROLES = ["admin", "operador", "visualizador", "manager", "sales_rep", "support"];
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function validateInput(data: unknown): { valid: true; data: CreateUserInput } | { valid: false; error: string } {
@@ -240,9 +240,10 @@ Deno.serve(async (req) => {
     const permissions = {
       user_id: userId,
       can_admin: role === "admin",
-      can_sales: role === "admin" || role === "operador",
-      can_ops: role === "admin" || role === "operador",
-      can_finance: role === "admin",
+      can_sales: role === "admin" || role === "operador" || role === "sales_rep" || role === "manager",
+      can_ops: role === "admin" || role === "operador" || role === "manager",
+      can_finance: role === "admin" || role === "manager",
+      can_recurring: role === "admin" || role === "operador" || role === "manager",
     };
 
     const { error: permError } = await supabaseAdmin
