@@ -562,7 +562,7 @@ const Landing = () => {
           </motion.div>
 
           <div className="grid md:grid-cols-2 gap-3 sm:gap-4 mb-4">
-            {/* GRank CRM - PRIMEIRO */}
+            {/* GBRank CRM - PRIMEIRO */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -699,14 +699,14 @@ const Landing = () => {
                 <h3 className="text-xl md:text-2xl font-bold text-slate-800 mb-1">João Lobo</h3>
                 <p className="text-google-green font-semibold text-sm mb-3 md:mb-4">Fundador & Especialista em Google Meu Negócio</p>
                 <p className="text-sm md:text-base text-slate-600 italic leading-relaxed">
-                  "Criei o GRank porque sentia na pele a dor de gerenciar dezenas de perfis sem um sistema adequado. 
+                  "Criei o GBRank porque sentia na pele a dor de gerenciar dezenas de perfis sem um sistema adequado. 
                   Cada funcionalidade aqui resolveu um problema real da minha operação."
                 </p>
               </div>
               <div className="flex justify-center order-1 md:order-2">
                 <img 
                   src={joaoLoboPhoto}
-                  alt="João Lobo - Fundador GRank CRM" 
+                  alt="João Lobo - Fundador GBRank CRM" 
                   className="w-28 h-28 md:w-36 md:h-36 rounded-full object-cover border-4 border-google-green shadow-xl"
                 />
               </div>
@@ -937,8 +937,8 @@ const Landing = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-4 sm:mb-6">
             <div className="sm:col-span-2">
               <Link to="/" className="flex items-center gap-2 mb-4">
-                <img src={grankLogoDark} alt="GRank CRM" className="h-7 sm:h-8 w-auto brightness-0 invert" />
-                <span className="font-bold text-lg sm:text-xl text-google-green">GRank CRM</span>
+                <img src={grankLogoDark} alt="GBRank CRM" className="h-7 sm:h-8 w-auto brightness-0 invert" />
+                <span className="font-bold text-lg sm:text-xl text-google-green">GBRank CRM</span>
               </Link>
               <p className="text-gray-400 mb-4 text-sm sm:text-base">
                 Gestão Profissional para Agências de Google Meu Negócio e SEO Local

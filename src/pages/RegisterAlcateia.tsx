@@ -245,7 +245,7 @@ export default function RegisterAlcateia() {
                   <div>
                     <p className="font-semibold">Acesso Vitalício Ativado!</p>
                     <p className="text-sm text-white/90">
-                      Você agora é um membro fundador do GRank CRM.
+                      Você agora é um membro fundador do GBRank CRM.
                     </p>
                   </div>
                 </div>
@@ -302,13 +302,13 @@ export default function RegisterAlcateia() {
             <div className="flex items-center gap-3 mb-6">
               <img src={alcateiaLogo} alt="Alcateia" className="h-12" />
               <span className="text-amber-500 font-bold text-xl">×</span>
-              <img src={grankLogoDark} alt="GRank" className="h-10" />
+              <img src={grankLogoDark} alt="GBRank CRM" className="h-10" />
             </div>
             <h1 className="text-3xl font-bold text-foreground mb-3">
               Acesso Vitalício Alcateia
             </h1>
             <p className="text-muted-foreground text-lg">
-              Você está prestes a se tornar um membro fundador do GRank CRM.
+              Você está prestes a se tornar um membro fundador do GBRank CRM.
             </p>
           </div>
 
@@ -337,7 +337,7 @@ export default function RegisterAlcateia() {
 
           <div className="p-4 rounded-xl bg-white border border-amber-200">
             <p className="text-sm text-muted-foreground italic">
-              "Vocês fazem parte da construção do GRank. Por isso, vocês ficam para sempre."
+              "Vocês fazem parte da construção do GBRank. Por isso, vocês ficam para sempre."
             </p>
             <p className="text-xs text-amber-600 mt-2 font-medium">— João Lobo</p>
           </div>
@@ -349,7 +349,7 @@ export default function RegisterAlcateia() {
             <div className="flex items-center justify-center gap-2 lg:hidden mb-2">
               <img src={alcateiaLogo} alt="Alcateia" className="h-10" />
               <span className="text-amber-500 font-bold">×</span>
-              <img src={grankLogoDark} alt="GRank" className="h-8" />
+              <img src={grankLogoDark} alt="GBRank CRM" className="h-8" />
             </div>
             <div>
               <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm font-medium mb-3">

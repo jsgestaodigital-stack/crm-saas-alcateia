@@ -1,4 +1,4 @@
-# 📋 Relatório de Auditoria UI/UX - GRank CRM
+# 📋 Relatório de Auditoria UI/UX - GBRank CRM
 
 **Data:** 2025-12-21  
 **Versão:** Pós-revisão de acessibilidade e usabilidade
@@ -171,4 +171,4 @@ A auditoria foi concluída com sucesso:
 
 ---
 
-*Gerado automaticamente pela auditoria GRank CRM*
+*Gerado automaticamente pela auditoria GBRank CRM*
