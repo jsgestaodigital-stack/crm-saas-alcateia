@@ -13,9 +13,11 @@ import {
 } from '@/components/proposals';
 import { Proposal, ProposalBlock } from '@/types/proposal';
 import { ArrowLeft, FileText, Plus } from 'lucide-react';
+import { useSafeBack } from '@/hooks/useSafeBack';
 
 export default function Propostas() {
   const navigate = useNavigate();
+  const goBack = useSafeBack();
   const [searchParams] = useSearchParams();
   const { user, currentAgencyId, isAdmin } = useAuth();
   const { toast } = useToast();
@@ -168,11 +170,14 @@ export default function Propostas() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            {view !== 'list' && (
-              <Button variant="ghost" size="icon" onClick={() => setView('list')} aria-label="Voltar para lista de propostas">
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-            )}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => view === 'list' ? goBack() : setView('list')} 
+              aria-label={view === 'list' ? "Voltar" : "Voltar para lista de propostas"}
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
             <div>
               <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
                 <FileText className="h-6 w-6 text-primary" />
