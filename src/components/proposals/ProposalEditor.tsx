@@ -253,35 +253,60 @@ export function ProposalEditor({
     }
   };
 
+  // Calculate progress for stepper
+  const hasClientInfo = Boolean(clientName || companyName);
+  const hasBlocks = blocks.length > 0 && blocks.some(b => b.content || (b.checklist && b.checklist.length > 0));
+  const hasPricing = Boolean(fullPrice || discountedPrice);
+  const isReadyToSend = hasClientInfo && hasBlocks && hasPricing;
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Main Editor */}
       <div className="lg:col-span-2 space-y-6">
+        {/* Progress Stepper */}
+        <Card className="bg-gradient-to-r from-primary/5 to-transparent border-primary/20">
+          <CardContent className="py-4">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium">Progresso da proposta</span>
+              <span className="text-xs text-muted-foreground">
+                {[hasClientInfo, hasBlocks, hasPricing].filter(Boolean).length}/3 etapas
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className={cn(
+                "flex-1 h-2 rounded-full transition-colors",
+                hasClientInfo ? "bg-primary" : "bg-muted"
+              )} />
+              <div className={cn(
+                "flex-1 h-2 rounded-full transition-colors",
+                hasBlocks ? "bg-primary" : "bg-muted"
+              )} />
+              <div className={cn(
+                "flex-1 h-2 rounded-full transition-colors",
+                hasPricing ? "bg-primary" : "bg-muted"
+              )} />
+            </div>
+            <div className="flex justify-between mt-2 text-xs text-muted-foreground">
+              <span className={hasClientInfo ? "text-primary font-medium" : ""}>① Dados do cliente</span>
+              <span className={hasBlocks ? "text-primary font-medium" : ""}>② Conteúdo</span>
+              <span className={hasPricing ? "text-primary font-medium" : ""}>③ Valores</span>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Header */}
         <Card>
           <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-wrap gap-2">
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-primary" />
-                Editor de Proposta
+                ① Dados do Cliente
               </CardTitle>
               <div className="flex gap-2">
-                {proposal?.public_token && (
-                  <Button variant="outline" size="sm" onClick={copyPublicLink}>
-                    <Link className="h-4 w-4 mr-1" />
-                    Copiar Link
-                  </Button>
-                )}
                 <Button variant="outline" size="sm" onClick={handleSave} disabled={isSaving}>
                   <Save className="h-4 w-4 mr-1" />
                   {isSaving ? 'Salvando...' : 'Salvar'}
                 </Button>
-                {onSend && proposal?.status === 'draft' && (
-                  <Button size="sm" onClick={onSend}>
-                    <Send className="h-4 w-4 mr-1" />
-                    Enviar
-                  </Button>
-                )}
               </div>
             </div>
           </CardHeader>
@@ -395,7 +420,7 @@ export function ProposalEditor({
         {/* Blocks */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold">Blocos da Proposta</h3>
+            <h3 className="font-semibold">② Conteúdo da Proposta</h3>
             <Select onValueChange={(v) => handleAddBlock(v as ProposalBlockType)}>
               <SelectTrigger className="w-[180px]">
                 <Plus className="h-4 w-4 mr-2" />
@@ -427,28 +452,67 @@ export function ProposalEditor({
             ))}
           </div>
 
-          {/* Copy Full Proposal Button */}
+          {/* Final CTA */}
           {blocks.length > 0 && (
-            <Card className="border-2 border-dashed border-primary/30 bg-primary/5">
-              <CardContent className="py-4">
-                <Button 
-                  onClick={handleCopyFullProposal}
-                  className="w-full gap-2"
-                  variant="outline"
-                  size="lg"
-                >
-                  {copiedAll ? (
-                    <>
-                      <Check className="h-5 w-5 text-green-500" />
-                      Proposta Copiada!
-                    </>
-                  ) : (
-                    <>
-                      <ClipboardCopy className="h-5 w-5" />
-                      Copiar Proposta Completa
-                    </>
-                  )}
-                </Button>
+            <Card className={cn(
+              "border-2 transition-all",
+              isReadyToSend 
+                ? "border-primary bg-primary/10" 
+                : "border-dashed border-muted-foreground/30 bg-surface-1/50"
+            )}>
+              <CardContent className="py-5 space-y-4">
+                {isReadyToSend ? (
+                  <>
+                    <div className="text-center mb-3">
+                      <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-2">
+                        <Check className="h-6 w-6 text-primary" />
+                      </div>
+                      <h4 className="font-semibold">Proposta pronta!</h4>
+                      <p className="text-sm text-muted-foreground">Salve e copie o link para enviar ao cliente</p>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Button 
+                        onClick={async () => {
+                          await handleSave();
+                          copyPublicLink();
+                        }}
+                        className="w-full gap-2"
+                        size="lg"
+                      >
+                        <Link className="h-5 w-5" />
+                        Salvar e Copiar Link
+                      </Button>
+                      <Button 
+                        onClick={handleCopyFullProposal}
+                        className="w-full gap-2"
+                        variant="outline"
+                      >
+                        {copiedAll ? (
+                          <>
+                            <Check className="h-4 w-4 text-green-500" />
+                            Copiado!
+                          </>
+                        ) : (
+                          <>
+                            <ClipboardCopy className="h-4 w-4" />
+                            Copiar texto completo
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center">
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Complete as etapas acima para enviar a proposta
+                    </p>
+                    <div className="flex flex-wrap justify-center gap-2 text-xs">
+                      {!hasClientInfo && <Badge variant="outline">Falta: Dados do cliente</Badge>}
+                      {!hasBlocks && <Badge variant="outline">Falta: Conteúdo</Badge>}
+                      {!hasPricing && <Badge variant="outline">Falta: Valores</Badge>}
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           )}
@@ -458,10 +522,11 @@ export function ProposalEditor({
       {/* Sidebar */}
       <div className="space-y-6">
         {/* Pricing */}
-        <Card>
+        <Card className={cn(!hasPricing && "border-primary/30 bg-primary/5")}>
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
-              💰 Investimento
+              ③ Investimento
+              {!hasPricing && <Badge variant="secondary" className="text-xs">Preencha</Badge>}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
