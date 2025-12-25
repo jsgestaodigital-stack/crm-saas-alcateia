@@ -16,7 +16,7 @@ export const TOUR_STEPS: TourStep[] = [
   {
     id: 'welcome',
     target: 'body',
-    content: '🎉 Bem-vindo ao GRank CRM! Este é o sistema completo para gestão de agências de Google Meu Negócio. Vamos conhecer TUDO que você pode fazer aqui!',
+    content: '🎉 Bem-vindo ao GBRank CRM! Este é o sistema completo para gestão de agências de Google Meu Negócio. Vamos conhecer TUDO que você pode fazer aqui!',
     placement: 'center',
     disableBeacon: true,
   },
@@ -196,7 +196,7 @@ export const TOUR_STEPS: TourStep[] = [
   {
     id: 'complete',
     target: 'body',
-    content: '🚀 PRONTO! Você conheceu todas as funcionalidades do GRank CRM. Agora é só começar a usar! Dica: Inicie cadastrando seu primeiro lead no Funil de Vendas. Bom trabalho!',
+    content: '🚀 PRONTO! Você conheceu todas as funcionalidades do GBRank CRM. Agora é só começar a usar! Dica: Inicie cadastrando seu primeiro lead no Funil de Vendas. Bom trabalho!',
     placement: 'center',
     disableBeacon: true,
   },

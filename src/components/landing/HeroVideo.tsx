@@ -16,7 +16,7 @@ export const HeroVideo = () => {
       <div className="relative rounded-2xl overflow-hidden border border-border/50 shadow-2xl shadow-primary/20 bg-card">
         <img 
           src={grankDashboardComplete} 
-          alt="GRank CRM - Sistema completo de gestão de vendas, otimização GBP e recorrências para agências de Google Meu Negócio"
+          alt="GBRank CRM - Sistema completo de gestão de vendas, otimização GBP e recorrências para agências de Google Meu Negócio"
           className="w-full h-auto"
         />
       </div>

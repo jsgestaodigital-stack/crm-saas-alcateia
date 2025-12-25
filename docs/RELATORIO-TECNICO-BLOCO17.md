@@ -1,5 +1,5 @@
 # 📘 RELATÓRIO TÉCNICO E FUNCIONAL COMPLETO
-## GRank CRM — Sistema Multi-Tenant para Agências de Google Meu Negócio
+## GBRank CRM — Sistema Multi-Tenant para Agências de Google Meu Negócio
 
 > **Versão:** Bloco 17 (RBAC Completo)  
 > **Data:** Dezembro 2024  
@@ -9,7 +9,7 @@
 
 ## 📋 RESUMO GERAL
 
-O **GRank CRM** é um SaaS multi-tenant desenvolvido em React + TypeScript + Supabase, voltado para **agências que gerenciam perfis do Google Meu Negócio**. O sistema oferece:
+O **GBRank CRM** é um SaaS multi-tenant desenvolvido em React + TypeScript + Supabase, voltado para **agências que gerenciam perfis do Google Meu Negócio**. O sistema oferece:
 
 - 🎯 **Funil de Vendas (Leads)** — Pipeline comercial completo com Kanban
 - 📋 **Funil de Otimização (Clientes)** — Gestão operacional com checklists

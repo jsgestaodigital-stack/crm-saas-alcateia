@@ -30,10 +30,10 @@ const LandingAlcateia = () => {
 
   // Set custom meta tags for Alcateia page (WhatsApp/Instagram preview)
   usePageMeta({
-    title: "🐺 Oportunidade Exclusiva Alcateia — Membros Fundadores GRank CRM",
+    title: "🐺 Oportunidade Exclusiva Alcateia — Membros Fundadores GBRank CRM",
     description: "Acesso vitalício exclusivo para alunos da Alcateia. Faça parte da construção do melhor CRM de Google Meu Negócio. Sem mensalidade, para sempre.",
-    ogTitle: "🐺 Exclusivo Alcateia — Membros Fundadores GRank CRM",
-    ogDescription: "Você foi convidado para fazer parte da construção do GRank CRM. Acesso vitalício, sem mensalidade. Oferta exclusiva para alunos Alcateia.",
+    ogTitle: "🐺 Exclusivo Alcateia — Membros Fundadores GBRank CRM",
+    ogDescription: "Você foi convidado para fazer parte da construção do GBRank CRM. Acesso vitalício, sem mensalidade. Oferta exclusiva para alunos Alcateia.",
     ogType: "website",
   });
 

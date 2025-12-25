@@ -207,7 +207,7 @@ export const AlcateiaQuiz = ({ onComplete }: AlcateiaQuizProps) => {
                     variant="outline"
                     className="w-full h-12"
                   >
-                    Conhecer o GRank CRM
+                    Conhecer o GBRank CRM
                   </Button>
                 </>
               )}

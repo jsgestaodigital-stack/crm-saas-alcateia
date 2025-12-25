@@ -20,7 +20,7 @@ const SubscriptionLocked = () => {
       case 'cancelled':
         return {
           title: "Assinatura cancelada",
-          description: "Sua assinatura foi cancelada. Reative seu plano para voltar a usar o GRank CRM."
+          description: "Sua assinatura foi cancelada. Reative seu plano para voltar a usar o GBRank CRM."
         };
       case 'expired':
         return {
@@ -39,7 +39,7 @@ const SubscriptionLocked = () => {
 
   // WhatsApp support link (replace with actual number)
   const whatsappLink = `https://wa.me/5511999999999?text=${encodeURIComponent(
-    `Olá! Preciso de ajuda com minha assinatura do GRank CRM. Email: ${user?.email}`
+    `Olá! Preciso de ajuda com minha assinatura do GBRank CRM. Email: ${user?.email}`
   )}`;
 
   return (
@@ -55,7 +55,7 @@ const SubscriptionLocked = () => {
         <Link to="/" className="flex items-center gap-2 w-fit">
           <ThemeLogo className="h-8" />
           <span className="font-bold text-xl bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">
-            GRank CRM
+            GBRank CRM
           </span>
         </Link>
       </header>
@@ -132,7 +132,7 @@ const SubscriptionLocked = () => {
 
       {/* Footer */}
       <footer className="relative z-10 p-6 text-center text-sm text-gray-500">
-        © {new Date().getFullYear()} GRank CRM. Todos os direitos reservados.
+        © {new Date().getFullYear()} GBRank CRM. Todos os direitos reservados.
       </footer>
     </div>
   );
