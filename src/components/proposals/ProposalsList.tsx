@@ -84,6 +84,15 @@ export function ProposalsList({
 
   return (
     <div className="space-y-4">
+      {/* Header with explanation */}
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div className="space-y-1">
+          <p className="text-sm text-muted-foreground">
+            💡 Crie propostas com link rastreável. Você saberá quando o cliente abriu e se aceitou.
+          </p>
+        </div>
+      </div>
+      
       <div className="flex items-center justify-between gap-4">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -94,30 +103,66 @@ export function ProposalsList({
             className="pl-10"
           />
         </div>
-        <Button onClick={onNew} aria-label="Criar nova proposta">
-          <Plus className="h-4 w-4 mr-2" />
-          Criar Proposta
+        <Button onClick={onNew} aria-label="Criar nova proposta" className="gap-2">
+          <Plus className="h-4 w-4" />
+          Nova Proposta
         </Button>
       </div>
 
       {filteredProposals.length === 0 ? (
-        <Card className="p-12 text-center">
-          <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-          <h3 className="font-semibold text-lg mb-2">Nenhuma proposta encontrada</h3>
-          <p className="text-muted-foreground mb-4">
-            {search ? 'Tente uma busca diferente' : 'Comece criando sua primeira proposta'}
-          </p>
-          {!search && (
-            <Button onClick={onNew}>
-              <Plus className="h-4 w-4 mr-2" />
-              Criar Proposta
-            </Button>
+        <Card className="p-8 md:p-12">
+          {search ? (
+            <div className="text-center">
+              <Search className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <h3 className="font-semibold text-lg mb-2">Nenhum resultado encontrado</h3>
+              <p className="text-muted-foreground">Tente uma busca diferente</p>
+            </div>
+          ) : (
+            <div className="max-w-2xl mx-auto">
+              <div className="text-center mb-8">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                  <FileText className="h-8 w-8 text-primary" />
+                </div>
+                <h3 className="font-semibold text-xl mb-2">Crie sua primeira proposta</h3>
+                <p className="text-muted-foreground">
+                  Propostas rastreáveis te ajudam a fechar mais negócios
+                </p>
+              </div>
+              
+              {/* Step by step guide */}
+              <div className="grid md:grid-cols-3 gap-4 mb-8">
+                <div className="flex flex-col items-center text-center p-4 rounded-lg border border-border/50 bg-surface-1/30">
+                  <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold mb-3">1</div>
+                  <h4 className="font-medium mb-1">Crie</h4>
+                  <p className="text-xs text-muted-foreground">Preencha os dados do cliente e personalize com IA</p>
+                </div>
+                <div className="flex flex-col items-center text-center p-4 rounded-lg border border-border/50 bg-surface-1/30">
+                  <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold mb-3">2</div>
+                  <h4 className="font-medium mb-1">Envie</h4>
+                  <p className="text-xs text-muted-foreground">Copie o link e envie por WhatsApp ou e-mail</p>
+                </div>
+                <div className="flex flex-col items-center text-center p-4 rounded-lg border border-border/50 bg-surface-1/30">
+                  <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold mb-3">3</div>
+                  <h4 className="font-medium mb-1">Acompanhe</h4>
+                  <p className="text-xs text-muted-foreground">Saiba quando abriram e se aceitaram ou recusaram</p>
+                </div>
+              </div>
+              
+              <div className="text-center">
+                <Button onClick={onNew} size="lg" className="gap-2">
+                  <Plus className="h-5 w-5" />
+                  Criar Primeira Proposta
+                </Button>
+              </div>
+            </div>
           )}
         </Card>
       ) : (
         <div className="grid gap-4">
           {filteredProposals.map((proposal) => {
             const statusConfig = PROPOSAL_STATUS_CONFIG[proposal.status];
+            const isDraft = proposal.status === 'draft';
+            const hasSent = proposal.status === 'sent' || proposal.status === 'viewed';
             
             return (
               <Card key={proposal.id} className="hover:border-primary/30 transition-colors">
@@ -146,7 +191,7 @@ export function ProposalsList({
                           </span>
                         )}
                         {proposal.view_count > 0 && (
-                          <span className="flex items-center gap-1">
+                          <span className="flex items-center gap-1 text-primary font-medium">
                             <Eye className="h-3 w-3" />
                             {proposal.view_count} visualização{proposal.view_count > 1 ? 'ões' : ''}
                           </span>
@@ -160,6 +205,31 @@ export function ProposalsList({
                           {formatCurrency(proposal.discounted_price || proposal.full_price)}
                         </p>
                       </div>
+                      
+                      {/* Primary action based on status */}
+                      {isDraft && (
+                        <Button 
+                          size="sm" 
+                          variant="default"
+                          onClick={() => copyPublicLink(proposal)}
+                          className="gap-1.5"
+                        >
+                          <Link className="h-4 w-4" />
+                          Copiar Link
+                        </Button>
+                      )}
+                      
+                      {hasSent && proposal.public_token && (
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => copyPublicLink(proposal)}
+                          className="gap-1.5"
+                        >
+                          <Link className="h-4 w-4" />
+                          Copiar Link
+                        </Button>
+                      )}
                       
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
