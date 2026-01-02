@@ -921,6 +921,7 @@ export type Database = {
           status: string
           suspended_at: string | null
           updated_at: string
+          useful_links: Json | null
           whatsapp_group_url: string | null
           whatsapp_link: string | null
           whatsapp_link_short: string | null
@@ -957,6 +958,7 @@ export type Database = {
           status?: string
           suspended_at?: string | null
           updated_at?: string
+          useful_links?: Json | null
           whatsapp_group_url?: string | null
           whatsapp_link?: string | null
           whatsapp_link_short?: string | null
@@ -993,6 +995,7 @@ export type Database = {
           status?: string
           suspended_at?: string | null
           updated_at?: string
+          useful_links?: Json | null
           whatsapp_group_url?: string | null
           whatsapp_link?: string | null
           whatsapp_link_short?: string | null
