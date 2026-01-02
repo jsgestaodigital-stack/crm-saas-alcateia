@@ -200,9 +200,11 @@ serve(async (req) => {
     }
 
     // 2. Create the client (using service role to bypass RLS)
+    // IMPORTANT: Must include agency_id from the lead to maintain multi-tenant isolation
     const { data: client, error: clientError } = await supabaseAdmin
       .from('clients')
       .insert({
+        agency_id: lead.agency_id, // Critical: inherit agency from lead
         company_name: lead.company_name,
         city: lead.city || null,
         main_category: lead.main_category || null,
@@ -237,6 +239,7 @@ serve(async (req) => {
       const { error: recurringError } = await supabaseAdmin
         .from('recurring_clients')
         .insert({
+          agency_id: lead.agency_id, // Critical: inherit agency from lead
           client_id: client.id,
           company_name: lead.company_name,
           responsible_name: 'Amanda',
