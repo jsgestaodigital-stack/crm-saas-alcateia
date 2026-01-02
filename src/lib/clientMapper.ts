@@ -1,4 +1,4 @@
-import { Client, ClientStatus, ColumnId, PhotoMode, ChecklistSection, CoverConfig, ClientLabel, Comparison, HistoryEntry } from "@/types/client";
+import { Client, ClientStatus, ColumnId, PhotoMode, ChecklistSection, CoverConfig, ClientLabel, Comparison, HistoryEntry, UsefulLink } from "@/types/client";
 import { DEFAULT_CHECKLIST } from "@/types/client";
 
 // Database row type
@@ -36,6 +36,7 @@ export interface ClientRow {
   deleted_at: string | null;
   created_at: string;
   updated_at: string;
+  useful_links: UsefulLink[] | null;
 }
 
 // Map database row to Client type
@@ -71,6 +72,7 @@ export function mapRowToClient(row: ClientRow): Client {
     photoMode: row.photo_mode as PhotoMode | undefined,
     yahooEmail: row.yahoo_email || undefined,
     suspendedAt: row.suspended_at || undefined,
+    usefulLinks: row.useful_links || undefined,
   };
 }
 
@@ -108,6 +110,7 @@ export function mapClientToRow(client: Partial<Client>): Partial<ClientRow> {
   if (client.photoMode !== undefined) row.photo_mode = client.photoMode || null;
   if (client.yahooEmail !== undefined) row.yahoo_email = client.yahooEmail || null;
   if (client.suspendedAt !== undefined) row.suspended_at = client.suspendedAt || null;
+  if (client.usefulLinks !== undefined) row.useful_links = client.usefulLinks || null;
 
   return row;
 }
@@ -144,5 +147,6 @@ export function createClientInsertRow(client: Omit<Client, 'id'>): Omit<ClientRo
     photo_mode: client.photoMode || null,
     yahoo_email: client.yahooEmail || null,
     suspended_at: client.suspendedAt || null,
+    useful_links: client.usefulLinks || null,
   };
 }

@@ -54,6 +54,12 @@ export interface Appointment {
   completed: boolean;
 }
 
+export interface UsefulLink {
+  id: string;
+  title: string;
+  url: string;
+}
+
 export interface Client {
   id: string;
   companyName: string;
@@ -85,6 +91,7 @@ export interface Client {
   photoMode?: PhotoMode;
   yahooEmail?: string;
   suspendedAt?: string;
+  usefulLinks?: UsefulLink[];
 }
 
 export interface Column {
