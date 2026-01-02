@@ -48,37 +48,50 @@ function validateInput(data: unknown): { valid: true; data: ConvertInput } | { v
   };
 }
 
+// DEFAULT CHECKLIST - Must match frontend structure in src/types/client.ts
+// Uses 'items' with 'completed' (not 'tasks' with 'done')
 const DEFAULT_CHECKLIST = [
   {
-    id: "section-1",
-    title: "📋 Onboarding",
-    tasks: [
-      { id: "task-1-1", label: "Briefing recebido", done: false },
-      { id: "task-1-2", label: "Acesso GMN configurado", done: false },
-      { id: "task-1-3", label: "Criar pasta Drive", done: false },
-    ]
+    id: "etapa1",
+    title: "1. Onboarding",
+    items: [
+      { id: "1-1", title: "Fechar venda e criar grupo de comunicação com cliente", completed: false, responsible: "Admin" },
+      { id: "1-2", title: "Alterar foto do grupo para foto padrão da agência", completed: false, responsible: "Admin" },
+      { id: "1-3", title: "Dar boas vindas no grupo e se deixar à disposição", completed: false, responsible: "Operador" },
+      { id: "1-4", title: "Agendar reunião de briefing (até 48h)", completed: false, responsible: "Operador" },
+    ],
   },
   {
-    id: "section-2",
-    title: "⚙️ Otimização GMN",
-    tasks: [
-      { id: "task-2-1", label: "Informações básicas", done: false },
-      { id: "task-2-2", label: "Categorias e serviços", done: false },
-      { id: "task-2-3", label: "Fotos otimizadas", done: false },
-      { id: "task-2-4", label: "Descrição com palavras-chave", done: false },
-      { id: "task-2-5", label: "Horário de funcionamento", done: false },
-      { id: "task-2-6", label: "Atributos preenchidos", done: false },
-    ]
+    id: "etapa2",
+    title: "2. Preparação",
+    items: [
+      { id: "2-1", title: "Criar ou obter conta de e-mail para o cliente", completed: false, responsible: "Operador" },
+      { id: "2-2", title: "Criar pasta do cliente no armazenamento em nuvem", completed: false, responsible: "Operador" },
+      { id: "2-3", title: "Configurar ferramentas de IA para o projeto", completed: false, responsible: "Operador" },
+      { id: "2-4", title: "Registrar métricas ANTES da execução", completed: false, responsible: "Operador" },
+      { id: "2-5", title: "Realizar briefing + pegar propriedade do Perfil", completed: false, responsible: "Operador" },
+    ],
   },
   {
-    id: "section-3",
-    title: "✅ Finalização",
-    tasks: [
-      { id: "task-3-1", label: "Revisão final", done: false },
-      { id: "task-3-2", label: "Entrega ao cliente", done: false },
-      { id: "task-3-3", label: "Feedback coletado", done: false },
-    ]
-  }
+    id: "etapa3",
+    title: "3. Otimização",
+    items: [
+      { id: "3-1", title: "Atualizar informações principais do cliente no Perfil", completed: false, responsible: "Operador" },
+      { id: "3-2", title: "Subir fotos com palavras-chave e geolocalização", completed: false, responsible: "Operador" },
+      { id: "3-3", title: "Criar e subir postagens no Perfil", completed: false, responsible: "Operador" },
+      { id: "3-4", title: "Responder avaliações usando palavras-chave", completed: false, responsible: "Operador" },
+    ],
+  },
+  {
+    id: "etapa4",
+    title: "4. Entrega",
+    items: [
+      { id: "4-1", title: "Registrar métricas DEPOIS da execução", completed: false, responsible: "Operador" },
+      { id: "4-2", title: "Criar relatório de entrega comparando ANTES x DEPOIS", completed: false, responsible: "Operador" },
+      { id: "4-3", title: "Entregar com apresentação do resultado", completed: false, responsible: "Operador" },
+      { id: "4-4", title: "💰 Pagar comissão da equipe", completed: false, responsible: "Admin" },
+    ],
+  },
 ];
 
 serve(async (req) => {
