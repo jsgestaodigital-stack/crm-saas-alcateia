@@ -17,6 +17,7 @@ import { PendingRegistrationsBanner } from "@/components/admin/PendingRegistrati
 import { ErrorBoundaryLogger } from "@/components/ErrorBoundaryLogger";
 import { NPSModal } from "@/components/nps";
 import { EngagementTracker } from "@/components/EngagementTracker";
+import { GlobalUndoRedoKeyboard } from "@/components/GlobalUndoRedoKeyboard";
 import { Loader2 } from "lucide-react";
 
 // ============ LAZY LOADED PAGES ============
@@ -207,6 +208,7 @@ const App = () => (
                       </Routes>
                     </Suspense>
                     {/* Global Components */}
+                    <GlobalUndoRedoKeyboard />
                     <EngagementTracker />
                     <NPSModal />
                     {/* QA Debug Tools */}
