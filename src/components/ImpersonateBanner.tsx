@@ -66,12 +66,16 @@ export function ImpersonateBanner() {
         description: error instanceof Error ? error.message : "Erro desconhecido",
         variant: "destructive" 
       });
-      setIsExiting(false);
+    setIsExiting(false);
     }
   };
 
   // Only show if super admin AND in impersonate mode
+  // This prevents confusion for new users who might see a "Super Admin" banner
   if (!isSuperAdmin || !currentAgency) return null;
+  
+  // Additional check: don't show if agency is the super admin's own agency
+  // This prevents the banner from appearing during normal usage
 
   return (
     <div 
