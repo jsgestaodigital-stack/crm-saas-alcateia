@@ -227,6 +227,27 @@ export function useSuperAdmin() {
     },
   });
 
+  // Delete agency mutation (complete deletion)
+  const deleteAgency = useMutation({
+    mutationFn: async (agencyId: string) => {
+      const { data, error } = await supabase.rpc("delete_agency_complete", { _agency_id: agencyId });
+      if (error) throw error;
+      return data as { success: boolean; agency_name: string; users_deleted: number };
+    },
+    onSuccess: (data) => {
+      toast({ 
+        title: "Agência excluída com sucesso", 
+        description: `"${data.agency_name}" foi removida permanentemente.`
+      });
+      queryClient.invalidateQueries({ queryKey: ["super-admin-agencies"] });
+      queryClient.invalidateQueries({ queryKey: ["super-admin-logs"] });
+      queryClient.invalidateQueries({ queryKey: ["super-admin-subscriptions"] });
+    },
+    onError: (error) => {
+      toast({ title: "Erro ao excluir agência", description: error.message, variant: "destructive" });
+    },
+  });
+
   // Computed stats
   const stats = {
     total: agencies?.length || 0,
@@ -273,6 +294,7 @@ export function useSuperAdmin() {
     reactivateAgency,
     impersonateAgency,
     exitImpersonate,
+    deleteAgency,
     isSuperAdmin,
   };
 }

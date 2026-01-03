@@ -5228,6 +5228,7 @@ export type Database = {
         Args: { _encrypted: string; _key?: string }
         Returns: string
       }
+      delete_agency_complete: { Args: { _agency_id: string }; Returns: Json }
       delete_lead: { Args: { _lead_id: string }; Returns: undefined }
       detect_rls_policy_changes: { Args: never; Returns: number }
       detect_suspicious_logins: {
