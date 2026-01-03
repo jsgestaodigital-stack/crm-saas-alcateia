@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { isValidDate } from '@/lib/dateUtils';
 
 export function SystemHealthPanel() {
   const { 
@@ -125,7 +126,7 @@ export function SystemHealthPanel() {
           <div>
             <p className="text-xs text-muted-foreground">Último erro</p>
             <p className="text-sm font-medium truncate">
-              {summary?.last_error_at 
+              {summary?.last_error_at && isValidDate(summary.last_error_at)
                 ? formatDistanceToNow(new Date(summary.last_error_at), { 
                     addSuffix: true, 
                     locale: ptBR 

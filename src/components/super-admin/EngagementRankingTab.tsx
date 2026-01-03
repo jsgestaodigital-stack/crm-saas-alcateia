@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { isValidDate } from '@/lib/dateUtils';
 
 function getEngagementBadge(level: EngagementRanking['engagement_level']) {
   switch (level) {
@@ -297,7 +298,7 @@ export function EngagementRankingTab() {
                     </TableCell>
                     <TableCell>
                       <div className="text-sm">
-                        {ranking.last_activity ? (
+                        {ranking.last_activity && isValidDate(ranking.last_activity) ? (
                           <>
                             <div className="text-muted-foreground">
                               {formatDistanceToNow(new Date(ranking.last_activity), { 

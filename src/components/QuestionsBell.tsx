@@ -5,6 +5,7 @@ import { useQuestions, Question } from '@/hooks/useQuestions';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { isValidDate } from '@/lib/dateUtils';
 import {
   Popover,
   PopoverContent,
@@ -118,10 +119,12 @@ export function QuestionsBell() {
                       </div>
                       <p className="text-xs text-muted-foreground flex items-center gap-1">
                         <Clock className="h-3 w-3" />
-                        {formatDistanceToNow(new Date(q.created_at), { 
-                          addSuffix: true, 
-                          locale: ptBR 
-                        })}
+                        {isValidDate(q.created_at) 
+                          ? formatDistanceToNow(new Date(q.created_at), { 
+                              addSuffix: true, 
+                              locale: ptBR 
+                            })
+                          : 'recentemente'}
                         <span className="mx-1">•</span>
                         por {q.asked_by_name}
                       </p>
