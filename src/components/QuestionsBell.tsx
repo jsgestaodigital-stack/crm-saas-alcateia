@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Bell, MessageCircleQuestion, Clock, CheckCircle2, X } from 'lucide-react';
 import { useQuestions, Question } from '@/hooks/useQuestions';
 import { useAuth } from '@/contexts/AuthContext';
@@ -20,6 +21,7 @@ import { cn } from '@/lib/utils';
 export function QuestionsBell() {
   const { questions, pendingCount, answerQuestion, markAsResolved } = useQuestions();
   const { isAdmin } = useAuth();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [answeringId, setAnsweringId] = useState<string | null>(null);
   const [answerText, setAnswerText] = useState('');
@@ -212,7 +214,7 @@ export function QuestionsBell() {
             className="w-full text-sm"
             onClick={() => {
               setOpen(false);
-              window.location.href = '/duvidas';
+              navigate('/duvidas');
             }}
           >
             Ver todas as dúvidas

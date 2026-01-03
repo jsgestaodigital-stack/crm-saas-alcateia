@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Crown, Check, X, ArrowRight, Lock, Sparkles, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,7 @@ const questions = [
 ];
 
 export const AlcateiaQuiz = ({ onComplete }: AlcateiaQuizProps) => {
+  const navigate = useNavigate();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<boolean[]>([]);
   const [showResult, setShowResult] = useState(false);
@@ -203,7 +205,7 @@ export const AlcateiaQuiz = ({ onComplete }: AlcateiaQuizProps) => {
                     </p>
                   </div>
                   <Button
-                    onClick={() => window.location.href = '/'}
+                    onClick={() => navigate('/')}
                     variant="outline"
                     className="w-full h-12"
                   >
