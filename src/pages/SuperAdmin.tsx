@@ -36,7 +36,8 @@ import {
   AlertTriangle,
   CreditCard,
   DollarSign,
-  Trophy
+  Trophy,
+  Trash2
 } from "lucide-react";
 import { EngagementRankingTab } from "@/components/super-admin/EngagementRankingTab";
 import { format } from "date-fns";
@@ -62,6 +63,7 @@ export default function SuperAdmin() {
     suspendAgency,
     reactivateAgency,
     impersonateAgency,
+    deleteAgency,
   } = useSuperAdmin();
 
   const {
@@ -75,7 +77,9 @@ export default function SuperAdmin() {
   // Dialog states
   const [approveDialogOpen, setApproveDialogOpen] = useState(false);
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedRegistration, setSelectedRegistration] = useState<any>(null);
+  const [selectedAgencyToDelete, setSelectedAgencyToDelete] = useState<{ id: string; name: string } | null>(null);
   const [tempPassword, setTempPassword] = useState("");
   const [rejectReason, setRejectReason] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -133,8 +137,23 @@ export default function SuperAdmin() {
       approve_registration: "Aprovou solicitação",
       reject_registration: "Rejeitou solicitação",
       create_agency_owner: "Criou owner da agência",
+      delete_agency: "Excluiu agência",
     };
     return labels[action] || action;
+  };
+
+  const handleDeleteAgency = async () => {
+    if (!selectedAgencyToDelete) return;
+    setIsProcessing(true);
+    try {
+      await deleteAgency.mutateAsync(selectedAgencyToDelete.id);
+      setDeleteDialogOpen(false);
+      setSelectedAgencyToDelete(null);
+    } catch (error) {
+      // Error handled in hook
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleApprove = async () => {
@@ -608,6 +627,17 @@ export default function SuperAdmin() {
                                 <LogIn className="h-4 w-4 mr-1" />
                                 Entrar
                               </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-red-500 border-red-500/30 hover:bg-red-500/10"
+                                onClick={() => {
+                                  setSelectedAgencyToDelete({ id: agency.id, name: agency.name });
+                                  setDeleteDialogOpen(true);
+                                }}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
                             </div>
                           </TableCell>
                         </TableRow>
@@ -956,6 +986,56 @@ export default function SuperAdmin() {
                 <>
                   <XCircle className="h-4 w-4 mr-2" />
                   Rejeitar
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Agency Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-500">
+              <Trash2 className="h-5 w-5" />
+              Excluir Agência Permanentemente
+            </DialogTitle>
+            <DialogDescription>
+              Esta ação é <strong>irreversível</strong>! Todos os dados serão excluídos:
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
+              <p className="font-semibold text-red-500 mb-2">
+                Agência: {selectedAgencyToDelete?.name}
+              </p>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li>• Todos os clientes e leads</li>
+                <li>• Todos os contratos e propostas</li>
+                <li>• Todos os membros da equipe</li>
+                <li>• Todo o histórico e logs</li>
+                <li>• Assinatura e dados financeiros</li>
+              </ul>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Use esta opção apenas para agências de teste ou cadastros duplicados/inválidos.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleDeleteAgency} disabled={isProcessing} variant="destructive">
+              {isProcessing ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Excluindo...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Excluir Permanentemente
                 </>
               )}
             </Button>
