@@ -301,8 +301,25 @@ export function LeadsKanban({ leads, onLeadClick, onMoveLead, onRefresh, onAddLe
               ))}
               
               {leadsByColumn[column.id]?.length === 0 && (
-                <div className="text-center py-8 text-muted-foreground text-xs md:text-sm">
-                  Nenhum lead
+                <div 
+                  className={cn(
+                    "flex flex-col items-center justify-center py-8 text-muted-foreground",
+                    "border-2 border-dashed rounded-xl transition-all",
+                    dragOverColumn === column.id 
+                      ? "border-amber-500/50 bg-amber-500/10" 
+                      : "border-border/30 bg-muted/5 hover:border-amber-500/20 hover:bg-amber-500/5"
+                  )}
+                >
+                  {dragOverColumn === column.id ? (
+                    <span className="text-amber-400 font-medium text-sm">Solte aqui</span>
+                  ) : (
+                    <>
+                      <span className="text-sm mb-1">Vazio</span>
+                      <span className="text-[10px] text-muted-foreground/70">
+                        {onAddLeadToStage ? "Clique + para adicionar" : "Arraste um lead"}
+                      </span>
+                    </>
+                  )}
                 </div>
               )}
             </div>

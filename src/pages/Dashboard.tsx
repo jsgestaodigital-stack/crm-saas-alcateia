@@ -41,6 +41,8 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import { DayAgenda } from "@/components/DayAgenda";
 import { FunnelToggle } from "@/components/FunnelToggle";
 import { OnboardingChecklist, VisualTour } from "@/components/onboarding";
+import { WelcomeCard } from "@/components/WelcomeCard";
+import { EmptyStateCard } from "@/components/EmptyStateCard";
 
 import { useClientStore } from "@/stores/clientStore";
 import { useAuth } from "@/contexts/AuthContext";
@@ -145,6 +147,9 @@ const Dashboard = () => {
     !["finalized", "delivered"].includes(c.columnId) || 
     new Date(c.lastUpdate) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
   );
+
+  // Check if this is a new user (no clients and no leads)
+  const isNewUser = clients.length === 0 && fullLeads.length === 0;
 
   const handleClientClick = (client: typeof clients[0]) => {
     setSelectedClient(client);
@@ -422,6 +427,15 @@ const Dashboard = () => {
 
           {/* Onboarding Checklist - show on first visit */}
           <div className="px-4 pt-4">
+            {/* Welcome Card for brand new users */}
+            {isNewUser && (
+              <WelcomeCard 
+                onNewClient={() => setWizardOpen(true)}
+                onNewLead={() => setNewLeadOpen(true)}
+              />
+            )}
+            
+            {/* Onboarding Checklist */}
             <OnboardingChecklist 
               onNewClient={() => setWizardOpen(true)}
               onNewLead={() => setNewLeadOpen(true)}

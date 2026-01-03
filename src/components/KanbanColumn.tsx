@@ -166,13 +166,24 @@ export function KanbanColumn({ column, clients, allClients, onClientClick, onCon
         ))}
         
         {clients.length === 0 && (
-          <div className={cn(
-            "flex items-center justify-center h-24 sm:h-32 text-muted-foreground text-xs sm:text-sm",
-            "border-2 border-dashed border-primary/20 rounded-xl bg-primary/5",
-            "transition-all duration-300",
-            isDragOver && "border-primary/50 bg-primary/10"
-          )}>
-            {isDragOver ? "Solte aqui" : "Nenhum cliente"}
+          <div 
+            className={cn(
+              "flex flex-col items-center justify-center h-24 sm:h-32 text-muted-foreground text-xs sm:text-sm",
+              "border-2 border-dashed rounded-xl",
+              "transition-all duration-300",
+              isDragOver 
+                ? "border-primary/50 bg-primary/10" 
+                : "border-border/30 bg-muted/5 hover:border-primary/20 hover:bg-primary/5"
+            )}
+          >
+            {isDragOver ? (
+              <span className="text-primary font-medium">Solte aqui</span>
+            ) : (
+              <>
+                <span className="text-muted-foreground">Vazio</span>
+                <span className="text-[10px] text-muted-foreground/70 mt-1">Arraste um card ou clique +</span>
+              </>
+            )}
           </div>
         )}
       </div>
