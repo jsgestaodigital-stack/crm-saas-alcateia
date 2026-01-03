@@ -201,7 +201,7 @@ export function ClientDetailPanel() {
           {/* Checklist Tab - Nova experiência visual */}
           <TabsContent value="checklist" className="flex-1 overflow-y-auto p-4 m-0">
             <div className="space-y-3">
-              {selectedClient.checklist.map((section, index) => (
+              {(selectedClient.checklist || []).map((section, index) => (
                 <ChecklistBlock
                   key={section.id}
                   section={section}
@@ -211,7 +211,7 @@ export function ClientDetailPanel() {
                   onToggleItem={(itemId) => handleToggleItem(section.id, itemId)}
                   onAttachmentChange={(itemId, url) => handleAttachmentChange(section.id, itemId, url)}
                   lastActionDate={selectedClient.lastUpdate}
-                  defaultExpanded={section.items.some(i => !i.completed) && !selectedClient.checklist.slice(0, index).some(s => s.items.some(i => !i.completed))}
+                  defaultExpanded={(section?.items || []).some(i => !i.completed) && !(selectedClient.checklist || []).slice(0, index).some(s => (s?.items || []).some(i => !i.completed))}
                 />
               ))}
             </div>

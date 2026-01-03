@@ -354,11 +354,11 @@ export const useClientStore = create<ClientStore>((set, get) => ({
     }
 
     const updateChecklist = (checklist: Client["checklist"]) =>
-      checklist.map(section => {
+      (checklist || []).map(section => {
         if (section.id !== sectionId) return section;
         return {
           ...section,
-          items: section.items.map(item => {
+          items: (section?.items || []).map(item => {
             if (item.id !== itemId) return item;
             return {
               ...item,
@@ -371,8 +371,8 @@ export const useClientStore = create<ClientStore>((set, get) => ({
 
     // Check if all items are completed after update
     const checkAllCompleted = (checklist: Client["checklist"]) => {
-      return checklist.every(section => 
-        section.items.every(item => item.completed)
+      return (checklist || []).every(section => 
+        (section?.items || []).every(item => item.completed)
       );
     };
 
@@ -415,11 +415,11 @@ export const useClientStore = create<ClientStore>((set, get) => ({
 
   updateChecklistItemAttachment: async (clientId, sectionId, itemId, url) => {
     const updateChecklist = (checklist: Client["checklist"]) =>
-      checklist.map(section => {
+      (checklist || []).map(section => {
         if (section.id !== sectionId) return section;
         return {
           ...section,
-          items: section.items.map(item => {
+          items: (section?.items || []).map(item => {
             if (item.id !== itemId) return item;
             return { ...item, attachmentUrl: url };
           }),

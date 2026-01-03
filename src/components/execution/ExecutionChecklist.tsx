@@ -51,9 +51,10 @@ export function ExecutionChecklist({
   }, [currentSectionId]);
 
   const sections = useMemo(() => {
-    return checklist.map((section, idx) => {
-      const total = section.items.length;
-      const done = section.items.filter((i) => i.completed).length;
+    return (checklist || []).map((section, idx) => {
+      const items = section?.items || [];
+      const total = items.length;
+      const done = items.filter((i) => i.completed).length;
       const percent = total > 0 ? Math.round((done / total) * 100) : 0;
       const isComplete = done === total;
       const isCurrent = idx === resolvedCurrentIndex;
@@ -66,25 +67,25 @@ export function ExecutionChecklist({
   }, [sections, activeSectionId, resolvedCurrentIndex]);
 
   const filteredItems = useMemo(() => {
-    const base = active.section.items;
+    const base = active?.section?.items || [];
 
     return base
       .filter((item) => {
         if (!showCompleted && item.completed) return false;
-        if (responsible !== "all" && toResponsibleRole(item.responsible) !== responsible) return false;
+        if (responsible !== "all" && toResponsibleRole(item?.responsible) !== responsible) return false;
         if (query.trim()) {
           const q = query.trim().toLowerCase();
-          return item.title.toLowerCase().includes(q);
+          return (item?.title || '').toLowerCase().includes(q);
         }
         return true;
       })
       .sort((a, b) => Number(a.completed) - Number(b.completed));
-  }, [active.section.items, responsible, showCompleted, query]);
+  }, [active?.section?.items, responsible, showCompleted, query]);
 
   // Find next pending item across all sections
   const nextPendingItem = useMemo(() => {
-    for (const section of checklist) {
-      const pendingItem = section.items.find(item => !item.completed);
+    for (const section of (checklist || [])) {
+      const pendingItem = (section?.items || []).find(item => !item.completed);
       if (pendingItem) {
         return { sectionId: section.id, itemId: pendingItem.id, sectionTitle: section.title, itemTitle: pendingItem.title };
       }
@@ -98,9 +99,9 @@ export function ExecutionChecklist({
     }
   };
 
-  const pendingCount = active.section.items.filter((i) => !i.completed).length;
-  const totalPending = checklist.reduce((acc, s) => acc + s.items.filter(i => !i.completed).length, 0);
-  const totalCompleted = checklist.reduce((acc, s) => acc + s.items.filter(i => i.completed).length, 0);
+  const pendingCount = (active?.section?.items || []).filter((i) => !i.completed).length;
+  const totalPending = (checklist || []).reduce((acc, s) => acc + (s?.items || []).filter(i => !i.completed).length, 0);
+  const totalCompleted = (checklist || []).reduce((acc, s) => acc + (s?.items || []).filter(i => i.completed).length, 0);
 
   // Show limited sections unless expanded
   const visibleSections = showAllSections ? sections : sections.slice(0, 5);

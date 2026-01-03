@@ -32,22 +32,22 @@ type FilterResponsible = "all" | string;
 type FilterPending = "all" | "client" | "internal" | "stalled";
 
 function getCurrentStage(client: Client): string {
-  const incompleteSection = client.checklist.find(section => 
-    section.items.some(item => !item.completed)
+  const incompleteSection = (client.checklist || []).find(section => 
+    (section?.items || []).some(item => !item.completed)
   );
   return incompleteSection?.title || "Concluído";
 }
 
 function getPendingTasks(client: Client): number {
-  return client.checklist.reduce((acc, section) => 
-    acc + section.items.filter(item => !item.completed).length, 0
+  return (client.checklist || []).reduce((acc, section) => 
+    acc + (section?.items || []).filter(item => !item.completed).length, 0
   );
 }
 
 function getClientPendingCount(client: Client): number {
   // Tarefas do Admin que estão pendentes (geralmente são as que dependem do cliente)
-  return client.checklist.reduce((acc, section) => 
-    acc + section.items.filter(item => !item.completed && item.responsible === "Admin").length, 0
+  return (client.checklist || []).reduce((acc, section) => 
+    acc + (section?.items || []).filter(item => !item.completed && item?.responsible === "Admin").length, 0
   );
 }
 
@@ -84,8 +84,8 @@ export function ChecklistOverviewTable({ clients, onClientClick }: ChecklistOver
 
       // Responsible filter
       if (filterResponsible !== "all") {
-        const hasTasks = client.checklist.some(section =>
-          section.items.some(item => !item.completed && item.responsible === filterResponsible)
+        const hasTasks = (client.checklist || []).some(section =>
+          (section?.items || []).some(item => !item.completed && item?.responsible === filterResponsible)
         );
         if (!hasTasks) return false;
       }
