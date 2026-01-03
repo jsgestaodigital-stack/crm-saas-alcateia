@@ -972,7 +972,7 @@ const Landing = () => {
               <ul className="space-y-2 text-xs sm:text-sm text-gray-400">
                 <li className="flex items-center gap-2">
                   <span>📧</span>
-                  contato@grank.com.br
+                  contato@gbrank.com.br
                 </li>
                 <li className="flex items-center gap-2">
                   <span>📱</span>
@@ -983,7 +983,7 @@ const Landing = () => {
           </div>
           
           <div className="border-t border-gray-700 pt-6 sm:pt-8 text-center text-xs sm:text-sm text-gray-500">
-            © {new Date().getFullYear()} GRank CRM. Todos os direitos reservados.
+            © {new Date().getFullYear()} GBRank CRM. Todos os direitos reservados.
           </div>
         </div>
       </footer>
