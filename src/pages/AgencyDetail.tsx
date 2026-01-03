@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { 
   ArrowLeft, 
@@ -22,7 +23,8 @@ import {
   Save,
   Loader2,
   Mail,
-  User
+  User,
+  Pencil
 } from "lucide-react";
 
 interface AgencyDetails {
@@ -47,6 +49,7 @@ interface AgencyDetails {
   members_count: number;
   owner_name: string | null;
   owner_email: string | null;
+  owner_id: string | null;
 }
 
 export default function AgencyDetail() {
@@ -63,6 +66,10 @@ export default function AgencyDetail() {
   const [maxLeads, setMaxLeads] = useState(500);
   const [maxRecurring, setMaxRecurring] = useState(50);
   const [storageMb, setStorageMb] = useState(5120);
+  
+  // Email change dialog state
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [newEmail, setNewEmail] = useState("");
 
   // Check super admin
   useEffect(() => {
@@ -134,6 +141,28 @@ export default function AgencyDetail() {
     },
     onError: (error) => {
       toast.error("Erro ao atualizar", { description: error.message });
+    },
+  });
+
+  // Change email mutation
+  const changeEmail = useMutation({
+    mutationFn: async () => {
+      const { data: session } = await supabase.auth.getSession();
+      const response = await supabase.functions.invoke("admin-change-email", {
+        body: { user_id: agency?.owner_id, new_email: newEmail },
+      });
+      if (response.error) throw new Error(response.error.message);
+      if (response.data?.error) throw new Error(response.data.error);
+      return response.data;
+    },
+    onSuccess: () => {
+      toast.success("E-mail alterado com sucesso!");
+      setEmailDialogOpen(false);
+      setNewEmail("");
+      queryClient.invalidateQueries({ queryKey: ["agency-detail", id] });
+    },
+    onError: (error) => {
+      toast.error("Erro ao alterar e-mail", { description: error.message });
     },
   });
 
@@ -223,7 +252,7 @@ export default function AgencyDetail() {
                 Owner da Agência
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex items-center gap-4">
+            <CardContent className="flex items-center gap-4 flex-wrap">
               <div className="flex items-center gap-2 text-sm">
                 <User className="h-4 w-4 text-muted-foreground" />
                 {agency.owner_name}
@@ -233,6 +262,48 @@ export default function AgencyDetail() {
                   <Mail className="h-4 w-4" />
                   {agency.owner_email}
                 </div>
+              )}
+              {agency.owner_id && (
+                <Dialog open={emailDialogOpen} onOpenChange={setEmailDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm" className="ml-auto">
+                      <Pencil className="h-3 w-3 mr-1" />
+                      Alterar E-mail
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Alterar E-mail do Owner</DialogTitle>
+                      <DialogDescription>
+                        E-mail atual: <strong>{agency.owner_email}</strong>
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="newEmail">Novo E-mail</Label>
+                        <Input
+                          id="newEmail"
+                          type="email"
+                          placeholder="novo@email.com"
+                          value={newEmail}
+                          onChange={(e) => setNewEmail(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setEmailDialogOpen(false)}>
+                        Cancelar
+                      </Button>
+                      <Button 
+                        onClick={() => changeEmail.mutate()}
+                        disabled={!newEmail || changeEmail.isPending}
+                      >
+                        {changeEmail.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                        Confirmar
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               )}
             </CardContent>
           </Card>

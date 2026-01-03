@@ -5347,6 +5347,7 @@ export type Database = {
           members_count: number
           name: string
           owner_email: string
+          owner_id: string
           owner_name: string
           settings: Json
           slug: string
