@@ -17,6 +17,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useClientStore } from '@/stores/clientStore';
 import { formatDistanceToNow, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { isValidDate } from '@/lib/dateUtils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -367,7 +368,7 @@ export default function Questions() {
                   <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
                     <MessageSquare className="h-3.5 w-3.5" />
                     Resposta de {q.answered_by_name}
-                    {q.answered_at && (
+                    {q.answered_at && isValidDate(q.answered_at) && (
                       <span className="ml-2">
                         • {formatDistanceToNow(new Date(q.answered_at), { addSuffix: true, locale: ptBR })}
                       </span>

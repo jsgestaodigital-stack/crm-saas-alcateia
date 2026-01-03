@@ -3,6 +3,7 @@ import { Bell, Check, CheckCheck, Clock, AlertTriangle, Sparkles, Users, Calenda
 import { useNotifications, Notification } from '@/hooks/useNotifications';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { isValidDate } from '@/lib/dateUtils';
 import { useNavigate } from 'react-router-dom';
 import {
   Popover,
@@ -150,10 +151,12 @@ export function NotificationBell() {
                         )}
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <Clock className="h-3 w-3" />
-                          {formatDistanceToNow(new Date(notification.created_at), {
-                            addSuffix: true,
-                            locale: ptBR,
-                          })}
+                          {isValidDate(notification.created_at) 
+                            ? formatDistanceToNow(new Date(notification.created_at), {
+                                addSuffix: true,
+                                locale: ptBR,
+                              })
+                            : 'recentemente'}
                           {!notification.read_at && (
                             <Badge variant="secondary" className="text-[10px] h-4">
                               Nova

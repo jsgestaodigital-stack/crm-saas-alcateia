@@ -36,6 +36,7 @@ import InviteMemberModal from "@/components/team/InviteMemberModal";
 import { Database } from "@/integrations/supabase/types";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { isValidDate } from "@/lib/dateUtils";
 
 type AppRole = Database["public"]["Enums"]["app_role"];
 
@@ -305,7 +306,9 @@ export default function Equipe() {
                             <Badge variant="secondary">{roleLabels[invite.role]}</Badge>
                             <span className="flex items-center gap-1">
                               <Clock className="h-3 w-3" />
-                              Expira {formatDistanceToNow(new Date(invite.expires_at), { addSuffix: true, locale: ptBR })}
+                              Expira {isValidDate(invite.expires_at)
+                                ? formatDistanceToNow(new Date(invite.expires_at), { addSuffix: true, locale: ptBR })
+                                : 'em breve'}
                             </span>
                           </div>
                         </div>

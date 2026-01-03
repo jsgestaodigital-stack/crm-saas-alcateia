@@ -125,3 +125,51 @@ export function formatCardDate(date: Date | string): string {
     month: 'short',
   });
 }
+
+/**
+ * Safe formatDistanceToNow wrapper that handles invalid dates
+ * Prevents RangeError: Invalid time value
+ * Returns a valid Date object or null if invalid
+ */
+export function getSafeDate(date: string | Date | null | undefined): Date | null {
+  if (!date) return null;
+  
+  try {
+    const d = typeof date === 'string' ? new Date(date) : date;
+    
+    // Check if date is valid
+    if (isNaN(d.getTime())) {
+      console.warn('[getSafeDate] Invalid date:', date);
+      return null;
+    }
+    
+    // If date is too far in the past or future (more than 100 years), consider invalid
+    const now = Date.now();
+    const dateTime = d.getTime();
+    const hundredYearsMs = 100 * 365 * 24 * 60 * 60 * 1000;
+    
+    if (Math.abs(dateTime - now) > hundredYearsMs) {
+      console.warn('[getSafeDate] Date too far:', date);
+      return null;
+    }
+    
+    return d;
+  } catch (error) {
+    console.warn('[getSafeDate] Error parsing date:', date, error);
+    return null;
+  }
+}
+
+/**
+ * Check if a date string is valid
+ */
+export function isValidDate(date: string | Date | null | undefined): boolean {
+  if (!date) return false;
+  
+  try {
+    const d = typeof date === 'string' ? new Date(date) : date;
+    return !isNaN(d.getTime());
+  } catch {
+    return false;
+  }
+}

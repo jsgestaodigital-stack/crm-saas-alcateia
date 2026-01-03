@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { isValidDate } from "@/lib/dateUtils";
 import {
   ArrowLeft,
   Bell,
@@ -376,10 +377,12 @@ export default function Notifications() {
                           <div className="flex items-center gap-4 text-xs text-muted-foreground">
                             <span className="flex items-center gap-1">
                               <Clock className="h-3 w-3" />
-                              {formatDistanceToNow(new Date(notification.created_at), {
-                                addSuffix: true,
-                                locale: ptBR,
-                              })}
+                              {isValidDate(notification.created_at)
+                                ? formatDistanceToNow(new Date(notification.created_at), {
+                                    addSuffix: true,
+                                    locale: ptBR,
+                                  })
+                                : 'recentemente'}
                             </span>
                             {notification.priority !== 'normal' && (
                               <Badge 

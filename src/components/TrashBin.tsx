@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { isValidDate } from "@/lib/dateUtils";
 
 export function TrashBin() {
   const { deletedClients, restoreClient, permanentlyDeleteClient, isTrashOpen, setTrashOpen } = useClientStore();
@@ -139,10 +140,12 @@ export function TrashBin() {
                       )}
                       <p className="text-xs text-muted-foreground/70 mt-1">
                         Excluído{" "}
-                        {formatDistanceToNow(new Date((client as any).deletedAt), {
-                          addSuffix: true,
-                          locale: ptBR,
-                        })}
+                        {isValidDate((client as any).deletedAt)
+                          ? formatDistanceToNow(new Date((client as any).deletedAt), {
+                              addSuffix: true,
+                              locale: ptBR,
+                            })
+                          : 'recentemente'}
                       </p>
                     </div>
                   </div>
