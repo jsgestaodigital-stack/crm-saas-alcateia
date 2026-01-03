@@ -384,8 +384,8 @@ export default function Auth() {
       <div className="w-full max-w-md">
         <div className="text-center mb-6 sm:mb-8">
           <ThemeLogo className="h-16 sm:h-20 md:h-24 mx-auto mb-4 sm:mb-6" />
-          <h1 className="text-xl sm:text-2xl font-bold text-foreground">GRank CRM</h1>
-          <p className="text-muted-foreground text-xs sm:text-sm mt-2 max-w-xs mx-auto px-2">CRM para vendas e gestão de perfis da empresa no Google</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">GBRank CRM</h1>
+          <p className="text-muted-foreground text-xs sm:text-sm mt-2 max-w-xs mx-auto px-2">CRM para gestão de perfis de empresas no Google</p>
         </div>
 
         {/* Alerta de usuário bloqueado */}
@@ -870,7 +870,7 @@ export default function Auth() {
         </div>
 
         <p className="text-center text-xs text-muted-foreground mt-6">
-          © {new Date().getFullYear()} G Rank CRM. Todos os direitos reservados.
+          © {new Date().getFullYear()} GBRank CRM. Todos os direitos reservados.
         </p>
       </div>
     </div>
