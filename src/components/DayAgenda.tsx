@@ -95,8 +95,8 @@ export function DayAgenda() {
         const daysStalled = getDaysSinceUpdate(client.lastUpdate);
         const daysToDeadline = getDaysToDeadline(client.startDate);
 
-        for (const section of client.checklist) {
-          for (const item of section.items) {
+        for (const section of (client.checklist || [])) {
+          for (const item of (section?.items || [])) {
             if (!item.completed) {
               let urgencyLevel: "critical" | "high" | "medium" = "medium";
               let urgencyReason = "";
@@ -122,7 +122,7 @@ export function DayAgenda() {
                 clientId: client.id,
                 clientName: client.companyName,
                 taskTitle: item.title,
-                responsible: item.responsible,
+                responsible: item?.responsible || 'N/A',
                 urgencyReason,
                 urgencyLevel,
                 daysStalled,

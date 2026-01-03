@@ -34,8 +34,8 @@ export function MyTasksView() {
         const daysSinceUpdate = getDaysSinceUpdate(client.lastUpdate);
         const progress = calculateProgress(client);
         
-        client.checklist.forEach(section => {
-          section.items
+        (client.checklist || []).forEach(section => {
+          (section?.items || [])
             .filter(item => !item.completed)
             .forEach(item => {
               tasks.push({
@@ -46,7 +46,7 @@ export function MyTasksView() {
                 sectionTitle: section.title,
                 itemId: item.id,
                 itemTitle: item.title,
-                responsible: item.responsible,
+                responsible: item?.responsible || 'N/A',
                 daysSinceUpdate,
                 progress,
               });

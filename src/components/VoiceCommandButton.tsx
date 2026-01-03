@@ -602,10 +602,10 @@ export function VoiceCommandButton() {
         const taskDesc = normalizeKey(params.taskDescription);
         let taskFound = false;
         
-        const updatedChecklist = client.checklist.map(section => ({
+        const updatedChecklist = (client.checklist || []).map(section => ({
           ...section,
-          items: section.items.map(item => {
-            if (!taskFound && normalizeKey(item.title).includes(taskDesc)) {
+          items: (section?.items || []).map(item => {
+            if (!taskFound && normalizeKey(item?.title || '').includes(taskDesc)) {
               taskFound = true;
               return { ...item, completed: true, completedAt: new Date().toISOString() };
             }
