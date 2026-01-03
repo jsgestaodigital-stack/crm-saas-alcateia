@@ -134,7 +134,20 @@ export default function Register() {
       // Handle function response errors
       if (!data?.success) {
         const errorMessage = data?.error || "Erro ao criar conta. Tente novamente.";
-        toast.error(errorMessage);
+        
+        // Provide clearer guidance for duplicate agency name
+        if (errorMessage.includes("agência com esse nome já existe")) {
+          toast.error("Já existe uma agência com esse nome! Se você já se cadastrou antes, faça login. Ou escolha um nome diferente para sua agência.", {
+            duration: 8000,
+          });
+        } else if (errorMessage.includes("já está cadastrado") || errorMessage.includes("already registered")) {
+          toast.error("Este email já está cadastrado! Tente fazer login ou use a opção 'Esqueci minha senha'.", {
+            duration: 8000,
+          });
+        } else {
+          toast.error(errorMessage);
+        }
+        
         setIsLoading(false);
         return;
       }
