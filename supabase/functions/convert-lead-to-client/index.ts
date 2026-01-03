@@ -133,6 +133,24 @@ serve(async (req) => {
 
     console.log('[convert-lead-to-client] User authenticated:', user.id);
 
+    // Get user's current agency context
+    const { data: userProfile, error: profileError } = await supabaseAdmin
+      .from('profiles')
+      .select('current_agency_id, full_name')
+      .eq('id', user.id)
+      .single();
+
+    if (profileError || !userProfile?.current_agency_id) {
+      console.error('[convert-lead-to-client] User profile or agency not found:', user.id);
+      return new Response(JSON.stringify({ error: 'Usuário sem agência associada' }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const userAgencyId = userProfile.current_agency_id;
+    console.log('[convert-lead-to-client] User agency:', userAgencyId);
+
     // Verify user has sales access
     const { data: canSales } = await supabaseAdmin.rpc('can_access_sales', { _user_id: user.id });
     const { data: canAdmin } = await supabaseAdmin.rpc('can_access_admin', { _user_id: user.id });
@@ -180,6 +198,15 @@ serve(async (req) => {
       console.error('[convert-lead-to-client] Lead fetch error');
       return new Response(JSON.stringify({ error: 'Lead não encontrado' }), {
         status: 404,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // SECURITY: Verify user belongs to the same agency as the lead (multi-tenant isolation)
+    if (lead.agency_id !== userAgencyId) {
+      console.error('[convert-lead-to-client] Agency mismatch! User agency:', userAgencyId, 'Lead agency:', lead.agency_id);
+      return new Response(JSON.stringify({ error: 'Acesso negado. Lead pertence a outra agência.' }), {
+        status: 403,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
@@ -290,14 +317,8 @@ serve(async (req) => {
       });
     }
 
-    // 5. Get user name for activity
-    const { data: profile } = await supabaseAdmin
-      .from('profiles')
-      .select('full_name')
-      .eq('id', user.id)
-      .maybeSingle();
-
-    const userName = profile?.full_name || user.email || 'Usuário';
+    // 5. Use already fetched user name for activity
+    const userName = userProfile?.full_name || user.email || 'Usuário';
 
     // 6. Add activity to lead
     await supabaseAdmin
