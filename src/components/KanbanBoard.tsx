@@ -10,10 +10,13 @@ import { useFunnelMode } from "@/contexts/FunnelModeContext";
 import { useNavigate } from "react-router-dom";
 
 export function KanbanBoard() {
-  const { clients, setSelectedClient, deleteClient } = useClientStore();
-  const { addRecurringClient, generateAllTasks } = useRecurring();
+  const { clients, setSelectedClient, updateClient } = useClientStore();
+  const { addRecurringClient } = useRecurring();
   const { setMode } = useFunnelMode();
   const navigate = useNavigate();
+
+  // No funil de Otimização, não exibimos clientes já marcados como recorrentes
+  const optimizationClients = clients.filter((c) => c.planType !== "recurring");
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -137,11 +140,11 @@ export function KanbanBoard() {
       if (newRecurringClient) {
         console.log("Recurring client created:", newRecurringClient.id);
         
-        // Generate tasks for the new client
-        await generateAllTasks();
-        
-        // Remove from clients (soft delete or move to finalized)
-        await deleteClient(client.id);
+        // Marca o cliente como recorrente (sem enviar para a lixeira)
+        await updateClient(client.id, {
+          planType: "recurring",
+          lastUpdate: new Date().toISOString(),
+        });
         
         toast.success(`${client.companyName} convertido para Recorrência!`, {
           description: "O cliente foi movido para o funil de Recorrência e as tarefas foram criadas.",
@@ -204,8 +207,8 @@ export function KanbanBoard() {
           >
           <KanbanColumn
               column={column}
-              clients={clients.filter((c) => c.columnId === column.id)}
-              allClients={clients}
+              clients={optimizationClients.filter((c) => c.columnId === column.id)}
+              allClients={optimizationClients}
               onClientClick={setSelectedClient}
               onConvertToRecurring={handleConvertToRecurring}
               onDropToFinalized={handleConvertToRecurring}
