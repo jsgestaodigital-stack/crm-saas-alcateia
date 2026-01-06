@@ -17,8 +17,8 @@ import { toast } from "sonner";
 import { getResponsibleLabel, toResponsibleRole } from "@/lib/responsibleTemplate";
 
 export function ClientDetailPanel() {
-  const { selectedClient, isDetailOpen, setDetailOpen, toggleChecklistItem, updateChecklistItemAttachment, deleteClient } = useClientStore();
-  const { addRecurringClient, generateAllTasks } = useRecurring();
+  const { selectedClient, isDetailOpen, setDetailOpen, toggleChecklistItem, updateChecklistItemAttachment, updateClient } = useClientStore();
+  const { addRecurringClient } = useRecurring();
   const { setMode } = useFunnelMode();
   const navigate = useNavigate();
   
@@ -58,25 +58,35 @@ export function ClientDetailPanel() {
       });
 
       if (newRecurringClient) {
-        await generateAllTasks();
-        await deleteClient(selectedClient.id);
+        // CORREÇÃO: Marca como recorrente SEM enviar para lixeira
+        // Apenas atualiza o planType - o cliente sai do Kanban de Otimização naturalmente
+        await updateClient(selectedClient.id, {
+          planType: "recurring",
+          lastUpdate: new Date().toISOString(),
+        });
         
         toast.success(`${selectedClient.companyName} convertido para Recorrência!`, {
-          description: "O cliente foi movido para o funil de Recorrência.",
+          description: "O cliente foi movido para o funil de Recorrência e as tarefas foram criadas.",
           action: {
             label: "Ver Recorrência",
             onClick: () => {
               setMode('recurring');
-              navigate('/');
+              navigate('/recorrencia');
             }
           }
         });
         
         setDetailOpen(false);
+      } else {
+        toast.error("Erro ao converter cliente para recorrência", {
+          description: "Verifique se você tem permissão de acesso ao módulo de recorrência."
+        });
       }
     } catch (error) {
       console.error("Error converting to recurring:", error);
-      toast.error("Erro ao converter cliente para recorrência");
+      toast.error("Erro ao converter cliente para recorrência", {
+        description: "Ocorreu um erro inesperado. Tente novamente."
+      });
     }
   };
 
