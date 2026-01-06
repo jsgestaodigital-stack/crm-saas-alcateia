@@ -53,6 +53,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useFunnelMode } from "@/contexts/FunnelModeContext";
 import { cn } from "@/lib/utils";
 import { RecurrenceReportAgent } from "@/components/recurring/RecurrenceReportAgent";
+import { RoutineConfigCard } from "@/components/recurring/RoutineConfigCard";
 
 // Routine icon mapping
 const ROUTINE_ICONS: Record<string, React.ElementType> = {
@@ -336,17 +337,8 @@ export default function Recorrencia() {
   const [activeTab, setActiveTab] = useState("hoje");
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   
-  // Routine management state
-  const [routineDialogOpen, setRoutineDialogOpen] = useState(false);
-  const [editingRoutine, setEditingRoutine] = useState<RecurringRoutine | null>(null);
-  const [deleteRoutineId, setDeleteRoutineId] = useState<string | null>(null);
-  const [routineForm, setRoutineForm] = useState({
-    title: "",
-    description: "",
-    frequency: "weekly" as "daily" | "weekly" | "biweekly" | "monthly",
-    occurrences_per_period: 1,
-    active: true,
-  });
+  
+  // Note: Routine management state is now handled by RoutineConfigCard component
 
   const {
     clients,
@@ -442,80 +434,7 @@ export default function Recorrencia() {
     });
   };
 
-  // Routine CRUD handlers
-  const openNewRoutineDialog = () => {
-    setEditingRoutine(null);
-    setRoutineForm({
-      title: "",
-      description: "",
-      frequency: "weekly",
-      occurrences_per_period: 1,
-      active: true,
-    });
-    setRoutineDialogOpen(true);
-  };
-
-  const openEditRoutineDialog = (routine: RecurringRoutine) => {
-    setEditingRoutine(routine);
-    setRoutineForm({
-      title: routine.title,
-      description: routine.description || "",
-      frequency: routine.frequency,
-      occurrences_per_period: routine.occurrences_per_period,
-      active: routine.active,
-    });
-    setRoutineDialogOpen(true);
-  };
-
-  const handleSaveRoutine = async () => {
-    if (!routineForm.title.trim()) {
-      toast({ title: "Erro", description: "O título é obrigatório.", variant: "destructive" });
-      return;
-    }
-
-    if (editingRoutine) {
-      const success = await updateRoutine(editingRoutine.id, {
-        title: routineForm.title,
-        description: routineForm.description || null,
-        frequency: routineForm.frequency,
-        occurrences_per_period: routineForm.occurrences_per_period,
-        active: routineForm.active,
-      });
-      if (success) {
-        toast({ title: "Rotina atualizada!", description: "As alterações foram salvas." });
-        setRoutineDialogOpen(false);
-      }
-    } else {
-      const newRoutine = await createRoutine({
-        title: routineForm.title,
-        description: routineForm.description,
-        frequency: routineForm.frequency,
-        occurrences_per_period: routineForm.occurrences_per_period,
-        active: routineForm.active,
-      });
-      if (newRoutine) {
-        toast({ title: "Rotina criada!", description: "A nova rotina foi adicionada." });
-        setRoutineDialogOpen(false);
-      }
-    }
-  };
-
-  const handleDeleteRoutine = async () => {
-    if (!deleteRoutineId) return;
-    const success = await deleteRoutine(deleteRoutineId);
-    if (success) {
-      toast({ title: "Rotina excluída", description: "A rotina foi removida." });
-    }
-    setDeleteRoutineId(null);
-  };
-
-  const handleToggleRoutineActive = async (routine: RecurringRoutine) => {
-    await updateRoutine(routine.id, { active: !routine.active });
-    toast({
-      title: routine.active ? "Rotina desativada" : "Rotina ativada",
-      description: routine.active ? "A rotina não gerará mais tarefas." : "A rotina voltará a gerar tarefas.",
-    });
-  };
+  // Note: Routine CRUD handlers are now in RoutineConfigCard component
 
   const handleBackNavigation = () => {
     setMode('delivery');
@@ -970,124 +889,16 @@ export default function Recorrencia() {
 
           {/* Admin Configuration Tab */}
           {isAdmin && activeTab === "configuracoes" && (
-            <Card className="glass-card">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <Settings className="h-5 w-5 text-violet-400" />
-                      Configurar Rotinas
-                    </CardTitle>
-                    <CardDescription>Defina as tarefas recorrentes e suas periodicidades</CardDescription>
-                  </div>
-                  <Button onClick={openNewRoutineDialog} className="gap-2 bg-violet-500 hover:bg-violet-600">
-                    <Plus className="h-4 w-4" />
-                    Nova Rotina
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {allRoutines.map(routine => (
-                    <div key={routine.id} className={cn(
-                      "flex items-center justify-between p-4 rounded-lg border",
-                      routine.active ? "bg-card border-border" : "bg-muted/30 border-muted opacity-60"
-                    )}>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3">
-                          <h4 className="font-medium">{routine.title}</h4>
-                          <Badge variant="outline">{FREQUENCY_LABELS[routine.frequency]}</Badge>
-                          {routine.occurrences_per_period > 1 && (
-                            <Badge variant="secondary">{routine.occurrences_per_period}x</Badge>
-                          )}
-                          {!routine.active && <Badge variant="destructive">Inativa</Badge>}
-                        </div>
-                        {routine.description && (
-                          <p className="text-sm text-muted-foreground mt-1">{routine.description}</p>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Switch checked={routine.active} onCheckedChange={() => handleToggleRoutineActive(routine)} />
-                        <Button variant="ghost" size="icon" onClick={() => openEditRoutineDialog(routine)}>
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="text-status-danger hover:text-status-danger" onClick={() => setDeleteRoutineId(routine.id)}>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                  {allRoutines.length === 0 && (
-                    <div className="text-center py-8 text-muted-foreground">
-                      <Settings className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>Nenhuma rotina configurada</p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+            <RoutineConfigCard
+              routines={allRoutines}
+              onCreateRoutine={createRoutine}
+              onUpdateRoutine={updateRoutine}
+              onDeleteRoutine={deleteRoutine}
+            />
           )}
       </main>
 
-      {/* Routine Dialog */}
-      <Dialog open={routineDialogOpen} onOpenChange={setRoutineDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{editingRoutine ? "Editar Rotina" : "Nova Rotina"}</DialogTitle>
-            <DialogDescription>Configure os detalhes da tarefa recorrente</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label>Título *</Label>
-              <Input value={routineForm.title} onChange={e => setRoutineForm(f => ({ ...f, title: e.target.value }))} placeholder="Ex: Verificar avaliações" />
-            </div>
-            <div>
-              <Label>Descrição</Label>
-              <Textarea value={routineForm.description} onChange={e => setRoutineForm(f => ({ ...f, description: e.target.value }))} placeholder="O que deve ser feito nesta tarefa..." />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>Frequência</Label>
-                <Select value={routineForm.frequency} onValueChange={(v: any) => setRoutineForm(f => ({ ...f, frequency: v }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="daily">Diária</SelectItem>
-                    <SelectItem value="weekly">Semanal</SelectItem>
-                    <SelectItem value="biweekly">Quinzenal</SelectItem>
-                    <SelectItem value="monthly">Mensal</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label>Vezes por período</Label>
-                <Input type="number" min={1} max={7} value={routineForm.occurrences_per_period} onChange={e => setRoutineForm(f => ({ ...f, occurrences_per_period: parseInt(e.target.value) || 1 }))} />
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Switch checked={routineForm.active} onCheckedChange={v => setRoutineForm(f => ({ ...f, active: v }))} />
-              <Label>Rotina ativa</Label>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setRoutineDialogOpen(false)}>Cancelar</Button>
-            <Button onClick={handleSaveRoutine} className="gap-2"><Save className="h-4 w-4" />Salvar</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Confirmation */}
-      <AlertDialog open={!!deleteRoutineId} onOpenChange={() => setDeleteRoutineId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Excluir Rotina?</AlertDialogTitle>
-            <AlertDialogDescription>Esta ação não pode ser desfeita. As tarefas já geradas serão mantidas.</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteRoutine} className="bg-status-danger">Excluir</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Note: Routine dialogs are now handled by RoutineConfigCard */}
     </div>
   );
 }
