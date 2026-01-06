@@ -422,6 +422,22 @@ export function useRecurring() {
       return null;
     }
 
+    // Idempotência: se já existe um recorrente para este client_id, reaproveitar
+    if (data.client_id) {
+      const { data: existing, error: existingError } = await supabase
+        .from("recurring_clients")
+        .select("*")
+        .eq("client_id", data.client_id)
+        .maybeSingle();
+
+      if (existingError) {
+        console.error("Error checking existing recurring client:", existingError);
+      } else if (existing) {
+        await fetchData();
+        return existing as RecurringClient;
+      }
+    }
+
     // CRITICAL: Ensure routines exist before creating client
     // This fixes the issue where clients are created but no tasks appear
     let currentRoutines = routines;
