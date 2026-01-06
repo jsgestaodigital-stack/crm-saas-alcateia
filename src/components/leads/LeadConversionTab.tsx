@@ -55,10 +55,9 @@ export function LeadConversionTab({ lead, onClose }: LeadConversionTabProps) {
       setShowGainedDialog(false);
       onClose();
       
-      // Switch to delivery funnel to show the new client
-      setTimeout(() => {
-        setMode('delivery');
-      }, 500);
+      // Switch to delivery funnel immediately (no setTimeout race condition)
+      setMode('delivery');
+      navigate('/dashboard');
     }
   };
 
@@ -88,7 +87,10 @@ export function LeadConversionTab({ lead, onClose }: LeadConversionTabProps) {
           <Button 
             variant="outline" 
             className="mt-4 gap-2"
-            onClick={() => navigate('/')}
+            onClick={() => {
+              setMode('delivery');
+              navigate('/dashboard');
+            }}
           >
             <ExternalLink className="h-4 w-4" />
             Ver Cliente em Otimização

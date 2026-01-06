@@ -333,10 +333,12 @@ export default function Contratos() {
                 : selectedLead 
                   ? `Contrato - ${selectedLead.company_name}`
                   : 'Contrato de Prestação de Serviços',
-              contractor_name: selectedProposal?.company_name || selectedLead?.company_name,
-              contractor_email: selectedProposal?.contact_email || selectedLead?.email,
-              contractor_phone: selectedProposal?.contact_phone || selectedLead?.phone,
-              contractor_responsible: selectedProposal?.client_name || selectedLead?.contact_name,
+              // CORREÇÃO: contracted_ são os dados do CLIENTE (quem contrata o serviço)
+              // contractor_ são os dados da AGÊNCIA (quem presta o serviço) - preenchidos manualmente
+              contracted_name: selectedProposal?.company_name || selectedLead?.company_name,
+              contracted_email: selectedProposal?.contact_email || selectedLead?.email,
+              contracted_phone: selectedProposal?.contact_phone || selectedLead?.phone,
+              contracted_responsible: selectedProposal?.client_name || selectedLead?.contact_name,
               full_price: selectedProposal?.discounted_price || selectedProposal?.full_price,
               installments: selectedProposal?.installments,
               installment_value: selectedProposal?.installment_value,
