@@ -125,6 +125,8 @@ export function KanbanBoard() {
 
   const handleConfirmRecurrence = async (client: Client) => {
     try {
+      console.log("Converting client to recurring:", client.companyName);
+      
       // Create recurring client
       const newRecurringClient = await addRecurringClient({
         client_id: client.id,
@@ -133,6 +135,8 @@ export function KanbanBoard() {
       });
 
       if (newRecurringClient) {
+        console.log("Recurring client created:", newRecurringClient.id);
+        
         // Generate tasks for the new client
         await generateAllTasks();
         
@@ -140,7 +144,7 @@ export function KanbanBoard() {
         await deleteClient(client.id);
         
         toast.success(`${client.companyName} convertido para Recorrência!`, {
-          description: "O cliente foi movido para o funil de Recorrência.",
+          description: "O cliente foi movido para o funil de Recorrência e as tarefas foram criadas.",
           action: {
             label: "Ver Recorrência",
             onClick: () => {
@@ -149,10 +153,17 @@ export function KanbanBoard() {
             }
           }
         });
+      } else {
+        console.error("Failed to create recurring client - addRecurringClient returned null");
+        toast.error("Erro ao converter cliente para recorrência", {
+          description: "Verifique se você tem permissão de acesso ao módulo de recorrência."
+        });
       }
     } catch (error) {
       console.error("Error converting to recurring:", error);
-      toast.error("Erro ao converter cliente para recorrência");
+      toast.error("Erro ao converter cliente para recorrência", {
+        description: "Ocorreu um erro inesperado. Tente novamente."
+      });
     }
   };
 

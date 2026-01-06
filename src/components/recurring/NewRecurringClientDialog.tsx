@@ -96,12 +96,19 @@ export function NewRecurringClientDialog({ open, onOpenChange }: NewRecurringCli
       });
 
       if (result) {
-        toast.success(`${client.companyName} adicionado à recorrência!`);
+        toast.success(`${client.companyName} adicionado à recorrência!`, {
+          description: "Tarefas periódicas serão geradas automaticamente."
+        });
         resetForm();
         onOpenChange(false);
       } else {
-        toast.error("Erro ao adicionar cliente");
+        toast.error("Erro ao adicionar cliente", {
+          description: "Verifique se você tem permissão de acesso ao módulo de recorrência."
+        });
       }
+    } catch (error) {
+      console.error("Error adding existing client to recurring:", error);
+      toast.error("Erro inesperado ao adicionar cliente");
     } finally {
       setIsSubmitting(false);
     }
@@ -122,15 +129,23 @@ export function NewRecurringClientDialog({ open, onOpenChange }: NewRecurringCli
       const result = await addRecurringClient({
         company_name: companyName.trim(),
         responsible_name: responsibleName.trim(),
+        monthly_value: monthlyValue ? parseFloat(monthlyValue) : undefined,
       });
 
       if (result) {
-        toast.success(`${companyName} adicionado à recorrência!`);
+        toast.success(`${companyName} adicionado à recorrência!`, {
+          description: "Tarefas periódicas serão geradas automaticamente."
+        });
         resetForm();
         onOpenChange(false);
       } else {
-        toast.error("Erro ao adicionar cliente");
+        toast.error("Erro ao adicionar cliente", {
+          description: "Verifique se você tem permissão de acesso ao módulo de recorrência."
+        });
       }
+    } catch (error) {
+      console.error("Error creating recurring client:", error);
+      toast.error("Erro inesperado ao criar cliente");
     } finally {
       setIsSubmitting(false);
     }
