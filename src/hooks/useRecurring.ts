@@ -77,22 +77,70 @@ export function useRecurring() {
     weeklyComplianceRate: 0,
   });
 
-  // Helper: Create default routines if none exist
+  // Helper: Create default routines if none exist (based on GMB best practices)
   const ensureDefaultRoutines = useCallback(async () => {
+    // Default routines based on GMB management best practices
+    // Note: These are for RECURRING clients (already optimized, no initial setup tasks)
     const defaultRoutines = [
-      { title: 'Verificar Perfil GMB', description: 'Revisar informações do perfil no Google Meu Negócio', frequency: 'weekly', occurrences_per_period: 2, sort_order: 1 },
-      { title: 'Postar Atualização', description: 'Publicar uma atualização ou post no GMB', frequency: 'weekly', occurrences_per_period: 2, sort_order: 2 },
-      { title: 'Responder Avaliações', description: 'Responder novas avaliações recebidas', frequency: 'weekly', occurrences_per_period: 2, sort_order: 3 },
-      { title: 'Verificar Insights', description: 'Analisar métricas e insights do perfil', frequency: 'weekly', occurrences_per_period: 1, sort_order: 4 },
-      { title: 'Atualizar Fotos', description: 'Adicionar ou atualizar fotos do negócio', frequency: 'biweekly', occurrences_per_period: 1, sort_order: 5 },
-      { title: 'Relatório Mensal', description: 'Gerar e enviar relatório mensal ao cliente', frequency: 'monthly', occurrences_per_period: 1, sort_order: 6 },
+      { 
+        title: 'Responder Avaliações', 
+        description: 'Responder todas as avaliações novas (positivas e negativas) de forma personalizada', 
+        frequency: 'weekly', 
+        occurrences_per_period: 3, 
+        sort_order: 1,
+        category: 'engagement'
+      },
+      { 
+        title: 'Publicar Post/Novidade', 
+        description: 'Criar e publicar um post com novidades, promoções ou conteúdo relevante', 
+        frequency: 'weekly', 
+        occurrences_per_period: 2, 
+        sort_order: 2,
+        category: 'content'
+      },
+      { 
+        title: 'Adicionar Fotos', 
+        description: 'Fazer upload de fotos novas do estabelecimento, produtos ou serviços', 
+        frequency: 'weekly', 
+        occurrences_per_period: 1, 
+        sort_order: 3,
+        category: 'content'
+      },
+      { 
+        title: 'Verificar Perguntas', 
+        description: 'Responder perguntas de usuários no perfil do Google', 
+        frequency: 'weekly', 
+        occurrences_per_period: 2, 
+        sort_order: 4,
+        category: 'engagement'
+      },
+      { 
+        title: 'Monitorar Métricas', 
+        description: 'Analisar insights do GMB: visualizações, cliques, ligações e rotas', 
+        frequency: 'weekly', 
+        occurrences_per_period: 1, 
+        sort_order: 5,
+        category: 'analytics'
+      },
+      { 
+        title: 'Relatório ao Cliente', 
+        description: 'Enviar relatório de performance e resultados ao cliente', 
+        frequency: 'monthly', 
+        occurrences_per_period: 1, 
+        sort_order: 6,
+        category: 'report'
+      },
     ];
 
     const { error } = await supabase
       .from("recurring_routines")
       .insert(defaultRoutines.map(r => ({
-        ...r,
-        rules_json: {},
+        title: r.title,
+        description: r.description,
+        frequency: r.frequency,
+        occurrences_per_period: r.occurrences_per_period,
+        sort_order: r.sort_order,
+        rules_json: { category: r.category },
         active: true,
       })));
 
@@ -608,6 +656,56 @@ export function useRecurring() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // Real-time subscriptions for automatic UI updates
+  useEffect(() => {
+    if (!user) return;
+
+    // Subscribe to routines changes
+    const routinesChannel = supabase
+      .channel('recurring_routines_changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'recurring_routines' },
+        () => {
+          console.log('Routines changed, refreshing...');
+          fetchData();
+        }
+      )
+      .subscribe();
+
+    // Subscribe to clients changes
+    const clientsChannel = supabase
+      .channel('recurring_clients_changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'recurring_clients' },
+        () => {
+          console.log('Clients changed, refreshing...');
+          fetchData();
+        }
+      )
+      .subscribe();
+
+    // Subscribe to tasks changes
+    const tasksChannel = supabase
+      .channel('recurring_tasks_changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'recurring_tasks' },
+        () => {
+          console.log('Tasks changed, refreshing...');
+          fetchData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(routinesChannel);
+      supabase.removeChannel(clientsChannel);
+      supabase.removeChannel(tasksChannel);
+    };
+  }, [user, fetchData]);
 
   // Get tasks by filter
   const getTodayTasks = useCallback(() => {
