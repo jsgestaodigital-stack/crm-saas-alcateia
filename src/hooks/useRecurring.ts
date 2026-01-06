@@ -79,6 +79,17 @@ export function useRecurring() {
 
   // Helper: Create default routines if none exist (based on GMB best practices)
   const ensureDefaultRoutines = useCallback(async () => {
+    // Check if routines already exist for this agency (prevent duplicates)
+    const { data: existing } = await supabase
+      .from("recurring_routines")
+      .select("id")
+      .limit(1);
+
+    if (existing && existing.length > 0) {
+      console.log("Routines already exist, skipping default creation");
+      return true;
+    }
+
     // Default routines based on GMB management best practices
     // Note: These are for RECURRING clients (already optimized, no initial setup tasks)
     const defaultRoutines = [
@@ -185,15 +196,32 @@ export function useRecurring() {
       const activeRoutines = (allRoutinesData as RecurringRoutine[])?.filter(r => r.active) || [];
       setRoutines(activeRoutines);
 
-      // Fetch clients
+      // Fetch clients (including paused for display, exclude cancelled)
       const { data: clientsData, error: clientsError } = await supabase
         .from("recurring_clients")
-        .select("*")
-        .eq("status", "active")
+        .select("*, clients!recurring_clients_client_id_fkey(deleted_at)")
+        .neq("status", "cancelled")
         .order("company_name");
       
       if (clientsError) throw clientsError;
-      setClients((clientsData as RecurringClient[]) || []);
+      
+      // Filter out clients linked to deleted optimization clients (ghost records)
+      const validClients = ((clientsData as any[]) || []).filter(c => {
+        // Se não tem client_id vinculado, é um cliente novo direto na recorrência (válido)
+        if (!c.client_id) return true;
+        // Se tem clients vinculado mas o clients foi deletado, é fantasma (inválido)
+        if (c.clients?.deleted_at) {
+          console.warn(`Skipping ghost recurring client: ${c.company_name} (linked client deleted)`);
+          return false;
+        }
+        return true;
+      }).map((c: any) => {
+        // Remove o join para não quebrar a tipagem
+        const { clients, ...rest } = c;
+        return rest;
+      });
+      
+      setClients(validClients as RecurringClient[]);
 
       // Fetch tasks for the current week + overdue
       const today = new Date();
@@ -697,6 +725,23 @@ export function useRecurring() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // Auto-generate tasks on first load if there are clients but no tasks
+  useEffect(() => {
+    if (loading || clients.length === 0 || routines.length === 0) return;
+    
+    // Check if any active client has no tasks this week
+    const hasClientWithoutTasks = clients.some(c => {
+      if (c.status !== 'active') return false;
+      const clientTaskCount = tasks.filter(t => t.recurring_client_id === c.id).length;
+      return clientTaskCount === 0;
+    });
+
+    if (hasClientWithoutTasks) {
+      console.log('Found clients without tasks, auto-generating...');
+      ensureFutureTasks().then(() => fetchData());
+    }
+  }, [loading, clients, routines, tasks, ensureFutureTasks, fetchData]);
 
   // Real-time subscriptions for automatic UI updates
   useEffect(() => {
