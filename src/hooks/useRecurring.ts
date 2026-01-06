@@ -652,6 +652,31 @@ export function useRecurring() {
     return true;
   }, [user, fetchData]);
 
+  // Pause a recurring client
+  const pauseRecurringClient = useCallback(async (clientId: string) => {
+    return updateRecurringClient(clientId, { status: 'paused' });
+  }, [updateRecurringClient]);
+
+  // Resume a recurring client
+  const resumeRecurringClient = useCallback(async (clientId: string) => {
+    return updateRecurringClient(clientId, { status: 'active' });
+  }, [updateRecurringClient]);
+
+  // Remove (cancel) a recurring client
+  const removeRecurringClient = useCallback(async (clientId: string) => {
+    return updateRecurringClient(clientId, { status: 'cancelled' });
+  }, [updateRecurringClient]);
+
+  // Auto-generate tasks for future weeks (called periodically)
+  const ensureFutureTasks = useCallback(async () => {
+    if (!user || clients.length === 0 || routines.length === 0) return;
+
+    // Generate tasks for next 14 days for all active clients
+    for (const client of clients.filter(c => c.status === 'active')) {
+      await generateTasksForClient(client.id, 14);
+    }
+  }, [user, clients, routines, generateTasksForClient]);
+
   // Initial fetch
   useEffect(() => {
     fetchData();
@@ -780,11 +805,15 @@ export function useRecurring() {
     loading,
     fetchData,
     generateAllTasks,
+    ensureFutureTasks,
     completeTask,
     skipTask,
     reopenTask,
     addRecurringClient,
     updateRecurringClient,
+    pauseRecurringClient,
+    resumeRecurringClient,
+    removeRecurringClient,
     createRoutine,
     updateRoutine,
     deleteRoutine,

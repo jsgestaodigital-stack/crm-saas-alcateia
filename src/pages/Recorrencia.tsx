@@ -54,6 +54,8 @@ import { useFunnelMode } from "@/contexts/FunnelModeContext";
 import { cn } from "@/lib/utils";
 import { RecurrenceReportAgent } from "@/components/recurring/RecurrenceReportAgent";
 import { RoutineConfigCard } from "@/components/recurring/RoutineConfigCard";
+import { ClientRecurringCard } from "@/components/recurring/ClientRecurringCard";
+import { NewRecurringClientDialog } from "@/components/recurring/NewRecurringClientDialog";
 
 // Routine icon mapping
 const ROUTINE_ICONS: Record<string, React.ElementType> = {
@@ -336,6 +338,7 @@ export default function Recorrencia() {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("hoje");
   const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
+  const [showNewClientDialog, setShowNewClientDialog] = useState(false);
   
   
   // Note: Routine management state is now handled by RoutineConfigCard component
@@ -348,15 +351,20 @@ export default function Recorrencia() {
     allRoutines,
     fetchData,
     generateAllTasks,
+    ensureFutureTasks,
     completeTask,
     skipTask,
     reopenTask,
+    pauseRecurringClient,
+    resumeRecurringClient,
+    removeRecurringClient,
     createRoutine,
     updateRoutine,
     deleteRoutine,
     getTodayTasks,
     getWeekTasks,
     getOverdueTasks,
+    getTasksByClient,
     getClientStats,
   } = useRecurring();
 
@@ -508,22 +516,23 @@ export default function Recorrencia() {
             <div className="flex items-center gap-2">
               <RecurrenceReportAgent />
               <Button
-                variant="outline"
-                size="sm"
-                onClick={handleGenerateTasks}
-                className="gap-2"
+                onClick={() => setShowNewClientDialog(true)}
+                className="gap-2 bg-violet-500 hover:bg-violet-600"
               >
-                <RefreshCw className="h-4 w-4" />
-                Gerar Tarefas
+                <Plus className="h-4 w-4" />
+                <span className="hidden sm:inline">Novo Cliente</span>
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={fetchData}
+                onClick={() => {
+                  handleGenerateTasks();
+                  ensureFutureTasks();
+                }}
                 className="gap-2"
               >
                 <RefreshCw className="h-4 w-4" />
-                Atualizar
+                <span className="hidden sm:inline">Gerar Tarefas</span>
               </Button>
             </div>
           </div>
@@ -755,39 +764,63 @@ export default function Recorrencia() {
             </Card>
           </TabsContent>
 
-          {/* Clients Tab */}
+          {/* Clients Tab - Now using improved card */}
           <TabsContent value="clientes" className="space-y-4">
-            <Card className="glass-card">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-semibold flex items-center gap-2">
                   <Users className="h-5 w-5 text-primary" />
                   Clientes Recorrentes
-                </CardTitle>
-                <CardDescription>
+                </h2>
+                <p className="text-sm text-muted-foreground">
                   {clients.length} cliente(s) com recorrência ativa
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {clients.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Nenhum cliente com recorrência</p>
-                    <p className="text-sm">Ative a recorrência em clientes existentes.</p>
+                </p>
+              </div>
+              <Button
+                onClick={() => setShowNewClientDialog(true)}
+                className="gap-2 bg-violet-500 hover:bg-violet-600"
+              >
+                <Plus className="h-4 w-4" />
+                Adicionar Cliente
+              </Button>
+            </div>
+
+            {clients.length === 0 ? (
+              <Card className="glass-card">
+                <CardContent className="py-12">
+                  <div className="text-center text-muted-foreground">
+                    <Users className="h-16 w-16 mx-auto mb-4 opacity-30" />
+                    <h3 className="text-lg font-medium mb-2">Nenhum cliente recorrente</h3>
+                    <p className="text-sm mb-4">
+                      Adicione clientes para começar a gerar tarefas periódicas automaticamente.
+                    </p>
+                    <Button
+                      onClick={() => setShowNewClientDialog(true)}
+                      className="gap-2 bg-violet-500 hover:bg-violet-600"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Adicionar Primeiro Cliente
+                    </Button>
                   </div>
-                ) : (
-                  <div className="space-y-2">
-                    {clients.map(client => (
-                      <ClientRow
-                        key={client.id}
-                        client={client}
-                        stats={getClientStats(client.id)}
-                        onClick={() => setSelectedClientId(client.id)}
-                      />
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {clients.map(client => (
+                  <ClientRecurringCard
+                    key={client.id}
+                    client={client}
+                    tasks={getTasksByClient(client.id)}
+                    onCompleteTask={completeTask}
+                    onSkipTask={skipTask}
+                    onReopenTask={reopenTask}
+                    onPauseClient={pauseRecurringClient}
+                    onResumeClient={resumeRecurringClient}
+                    onRemoveClient={removeRecurringClient}
+                  />
+                ))}
+              </div>
+            )}
           </TabsContent>
 
           {/* Indicators Tab */}
@@ -898,7 +931,11 @@ export default function Recorrencia() {
           )}
       </main>
 
-      {/* Note: Routine dialogs are now handled by RoutineConfigCard */}
+      {/* New Recurring Client Dialog */}
+      <NewRecurringClientDialog 
+        open={showNewClientDialog} 
+        onOpenChange={setShowNewClientDialog} 
+      />
     </div>
   );
 }
