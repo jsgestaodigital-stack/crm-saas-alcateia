@@ -642,11 +642,35 @@ export default function Recorrencia() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {todayTasks.length === 0 ? (
+                {todayTasks.length === 0 && clients.length > 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <CalendarCheck className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Nenhuma tarefa para hoje!</p>
-                    <p className="text-sm">Aproveite para verificar a semana.</p>
+                    <p className="font-medium">Nenhuma tarefa para hoje!</p>
+                    <p className="text-sm mb-4">As tarefas são geradas automaticamente. Clique no botão abaixo se precisar forçar a geração.</p>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        handleGenerateTasks();
+                        ensureFutureTasks();
+                      }}
+                      className="gap-2"
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                      Gerar Tarefas Agora
+                    </Button>
+                  </div>
+                ) : todayTasks.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p className="font-medium">Nenhum cliente na recorrência</p>
+                    <p className="text-sm mb-4">Adicione clientes para começar a gerar tarefas.</p>
+                    <Button
+                      onClick={() => setShowNewClientDialog(true)}
+                      className="gap-2 bg-violet-500 hover:bg-violet-600"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Adicionar Cliente
+                    </Button>
                   </div>
                 ) : (
                   <div className="space-y-2">

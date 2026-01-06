@@ -475,6 +475,7 @@ export function ClientRecurringCard({
               <div className="text-center py-6 text-muted-foreground">
                 <Calendar className="h-8 w-8 mx-auto mb-2 opacity-30" />
                 <p className="text-sm">Nenhuma tarefa esta semana</p>
+                <p className="text-xs mt-1">As tarefas são geradas automaticamente. Clique em "Gerar Tarefas" no topo da página.</p>
               </div>
             )}
 
