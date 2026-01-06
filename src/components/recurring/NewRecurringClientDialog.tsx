@@ -156,8 +156,8 @@ export function NewRecurringClientDialog({ open, onOpenChange }: NewRecurringCli
       if (!isOpen) resetForm();
       onOpenChange(isOpen);
     }}>
-      <DialogContent className="bg-surface-1 border-border max-w-md max-h-[85vh] overflow-hidden flex flex-col">
-        <DialogHeader>
+      <DialogContent className="bg-surface-1 border-border max-w-md max-h-[90vh] flex flex-col">
+        <DialogHeader className="shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <RefreshCw className="w-5 h-5 text-violet-400" />
             Adicionar à Recorrência
@@ -167,8 +167,8 @@ export function NewRecurringClientDialog({ open, onOpenChange }: NewRecurringCli
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "existing" | "new")} className="flex-1 flex flex-col min-h-0">
-          <TabsList className="grid grid-cols-2 w-full">
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as "existing" | "new")} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+          <TabsList className="grid grid-cols-2 w-full shrink-0">
             <TabsTrigger value="existing" className="gap-2">
               <Building2 className="w-4 h-4" />
               Cliente Existente
@@ -180,22 +180,22 @@ export function NewRecurringClientDialog({ open, onOpenChange }: NewRecurringCli
           </TabsList>
 
           {/* Existing Client Tab */}
-          <TabsContent value="existing" className="flex-1 flex flex-col min-h-0 mt-4">
-            <div className="space-y-3 flex-1 flex flex-col min-h-0">
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  placeholder="Buscar cliente..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-surface-2 border-border"
-                />
-              </div>
+          <TabsContent value="existing" className="flex-1 flex flex-col min-h-0 mt-4 overflow-hidden">
+            <ScrollArea className="flex-1 min-h-0 pr-2">
+              <div className="space-y-3">
+                {/* Search */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar cliente..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 bg-surface-2 border-border"
+                  />
+                </div>
 
-              {/* Client List */}
-              <ScrollArea className="flex-1 min-h-0 max-h-[280px]">
-                <div className="space-y-2 pr-2">
+                {/* Client List */}
+                <div className="space-y-2">
                   {filteredClients.length === 0 ? (
                     <div className="text-center py-8 text-muted-foreground">
                       <Building2 className="w-10 h-10 mx-auto mb-2 opacity-30" />
@@ -219,7 +219,7 @@ export function NewRecurringClientDialog({ open, onOpenChange }: NewRecurringCli
                             : "bg-surface-2 border-border hover:border-violet-500/30"
                         )}
                       >
-                        <div className="w-10 h-10 rounded-full bg-violet-500/10 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-full bg-violet-500/10 flex items-center justify-center shrink-0">
                           <Building2 className="w-5 h-5 text-violet-400" />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -235,18 +235,18 @@ export function NewRecurringClientDialog({ open, onOpenChange }: NewRecurringCli
                     ))
                   )}
                 </div>
-              </ScrollArea>
 
-              {/* Info */}
-              {eligibleClients.length > 0 && (
-                <p className="text-xs text-muted-foreground text-center">
-                  {eligibleClients.length} cliente(s) disponíveis para recorrência
-                </p>
-              )}
-            </div>
+                {/* Info */}
+                {eligibleClients.length > 0 && (
+                  <p className="text-xs text-muted-foreground text-center pb-2">
+                    {eligibleClients.length} cliente(s) disponíveis para recorrência
+                  </p>
+                )}
+              </div>
+            </ScrollArea>
 
-            {/* Submit Button */}
-            <div className="flex gap-2 pt-4 mt-4 border-t border-border">
+            {/* Submit Button - Always visible at bottom */}
+            <div className="flex gap-2 pt-4 mt-4 border-t border-border shrink-0">
               <Button
                 variant="ghost"
                 onClick={() => onOpenChange(false)}
@@ -266,59 +266,61 @@ export function NewRecurringClientDialog({ open, onOpenChange }: NewRecurringCli
           </TabsContent>
 
           {/* New Client Tab */}
-          <TabsContent value="new" className="flex-1 flex flex-col mt-4">
-            <div className="space-y-4 flex-1">
-              {/* Info Banner */}
-              <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-sm">
-                <p className="text-amber-400 font-medium">⚠️ Cliente sem histórico</p>
-                <p className="text-muted-foreground text-xs mt-1">
-                  Este cliente não passará pelo funil de otimização. Use apenas para clientes já configurados externamente.
-                </p>
-              </div>
+          <TabsContent value="new" className="flex-1 flex flex-col min-h-0 mt-4 overflow-hidden">
+            <ScrollArea className="flex-1 min-h-0 pr-2">
+              <div className="space-y-4 pb-2">
+                {/* Info Banner */}
+                <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-sm">
+                  <p className="text-amber-400 font-medium">⚠️ Cliente sem histórico</p>
+                  <p className="text-muted-foreground text-xs mt-1">
+                    Este cliente não passará pelo funil de otimização. Use apenas para clientes já configurados externamente.
+                  </p>
+                </div>
 
-              {/* Company Name */}
-              <div>
-                <Label className="text-sm font-medium mb-1.5 block">Nome da Empresa *</Label>
-                <Input
-                  placeholder="Ex: Barbearia Premium"
-                  value={companyName}
-                  onChange={(e) => setCompanyName(e.target.value)}
-                  className="bg-surface-2 border-border"
-                />
-              </div>
-
-              {/* Responsible */}
-              <div>
-                <Label className="text-sm font-medium mb-1.5 block">Responsável *</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                {/* Company Name */}
+                <div>
+                  <Label className="text-sm font-medium mb-1.5 block">Nome da Empresa *</Label>
                   <Input
-                    placeholder="Nome do responsável"
-                    value={responsibleName}
-                    onChange={(e) => setResponsibleName(e.target.value)}
-                    className="pl-10 bg-surface-2 border-border"
+                    placeholder="Ex: Barbearia Premium"
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                    className="bg-surface-2 border-border"
                   />
                 </div>
-              </div>
 
-              {/* Monthly Value (optional) */}
-              <div>
-                <Label className="text-sm font-medium mb-1.5 block">Valor Mensal (opcional)</Label>
-                <div className="relative">
-                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    type="number"
-                    placeholder="0,00"
-                    value={monthlyValue}
-                    onChange={(e) => setMonthlyValue(e.target.value)}
-                    className="pl-10 bg-surface-2 border-border"
-                  />
+                {/* Responsible */}
+                <div>
+                  <Label className="text-sm font-medium mb-1.5 block">Responsável *</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Nome do responsável"
+                      value={responsibleName}
+                      onChange={(e) => setResponsibleName(e.target.value)}
+                      className="pl-10 bg-surface-2 border-border"
+                    />
+                  </div>
+                </div>
+
+                {/* Monthly Value (optional) */}
+                <div>
+                  <Label className="text-sm font-medium mb-1.5 block">Valor Mensal (opcional)</Label>
+                  <div className="relative">
+                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      type="number"
+                      placeholder="0,00"
+                      value={monthlyValue}
+                      onChange={(e) => setMonthlyValue(e.target.value)}
+                      className="pl-10 bg-surface-2 border-border"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            </ScrollArea>
 
-            {/* Submit Button */}
-            <div className="flex gap-2 pt-4 mt-4 border-t border-border">
+            {/* Submit Button - Always visible at bottom */}
+            <div className="flex gap-2 pt-4 mt-4 border-t border-border shrink-0">
               <Button
                 variant="ghost"
                 onClick={() => onOpenChange(false)}
