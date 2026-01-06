@@ -10,7 +10,7 @@ import { DEFAULT_CHECKLIST, PhotoMode, ColumnId } from "@/types/client";
 import { findPotentialDuplicates, DuplicateMatch } from "@/lib/duplicateUtils";
 import { toast } from "sonner";
 import { 
-  Building2, Camera, ChevronDown, Sparkles, Flame, User, AlertTriangle, ExternalLink
+  Building2, Camera, ChevronDown, Sparkles, Flame, User, AlertTriangle, ExternalLink, CheckCircle2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -216,15 +216,15 @@ export function NewClientWizard({ open, onOpenChange, initialColumnId }: NewClie
             />
           </div>
 
-          {/* Quick Select: Stage */}
+          {/* Quick Select: Stage - All stages available for importing existing clients */}
           <div>
-            <Label className="text-sm font-medium mb-1.5 block">Estágio</Label>
-            <div className="flex gap-2">
+            <Label className="text-sm font-medium mb-1.5 block">Estágio Inicial</Label>
+            <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => setColumnId("pipeline")}
                 className={cn(
-                  "flex-1 flex items-center justify-center gap-2 p-2.5 rounded-lg border transition-all text-sm",
+                  "flex items-center justify-center gap-2 p-2.5 rounded-lg border transition-all text-sm",
                   columnId === "pipeline" 
                     ? "bg-orange-500/20 border-orange-500/50 text-orange-400" 
                     : "bg-surface-2 border-border hover:border-orange-500/30"
@@ -237,7 +237,7 @@ export function NewClientWizard({ open, onOpenChange, initialColumnId }: NewClie
                 type="button"
                 onClick={() => setColumnId("onboarding")}
                 className={cn(
-                  "flex-1 flex items-center justify-center gap-2 p-2.5 rounded-lg border transition-all text-sm",
+                  "flex items-center justify-center gap-2 p-2.5 rounded-lg border transition-all text-sm",
                   columnId === "onboarding" 
                     ? "bg-status-info/20 border-status-info/50 text-status-info" 
                     : "bg-surface-2 border-border hover:border-status-info/30"
@@ -246,7 +246,36 @@ export function NewClientWizard({ open, onOpenChange, initialColumnId }: NewClie
                 <Building2 className="w-4 h-4" />
                 Onboarding
               </button>
+              <button
+                type="button"
+                onClick={() => setColumnId("optimization")}
+                className={cn(
+                  "flex items-center justify-center gap-2 p-2.5 rounded-lg border transition-all text-sm",
+                  columnId === "optimization" 
+                    ? "bg-violet-500/20 border-violet-500/50 text-violet-400" 
+                    : "bg-surface-2 border-border hover:border-violet-500/30"
+                )}
+              >
+                <Sparkles className="w-4 h-4" />
+                Em Otimização
+              </button>
+              <button
+                type="button"
+                onClick={() => setColumnId("delivered")}
+                className={cn(
+                  "flex items-center justify-center gap-2 p-2.5 rounded-lg border transition-all text-sm",
+                  columnId === "delivered" 
+                    ? "bg-status-success/20 border-status-success/50 text-status-success" 
+                    : "bg-surface-2 border-border hover:border-status-success/30"
+                )}
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                Entregue
+              </button>
             </div>
+            <p className="text-xs text-muted-foreground mt-1.5 text-center">
+              Use para importar clientes já existentes em qualquer etapa
+            </p>
           </div>
 
           {/* Quick Select: Responsible */}
