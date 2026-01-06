@@ -77,6 +77,32 @@ export function useRecurring() {
     weeklyComplianceRate: 0,
   });
 
+  // Helper: Create default routines if none exist
+  const ensureDefaultRoutines = useCallback(async () => {
+    const defaultRoutines = [
+      { title: 'Verificar Perfil GMB', description: 'Revisar informações do perfil no Google Meu Negócio', frequency: 'weekly', occurrences_per_period: 2, sort_order: 1 },
+      { title: 'Postar Atualização', description: 'Publicar uma atualização ou post no GMB', frequency: 'weekly', occurrences_per_period: 2, sort_order: 2 },
+      { title: 'Responder Avaliações', description: 'Responder novas avaliações recebidas', frequency: 'weekly', occurrences_per_period: 2, sort_order: 3 },
+      { title: 'Verificar Insights', description: 'Analisar métricas e insights do perfil', frequency: 'weekly', occurrences_per_period: 1, sort_order: 4 },
+      { title: 'Atualizar Fotos', description: 'Adicionar ou atualizar fotos do negócio', frequency: 'biweekly', occurrences_per_period: 1, sort_order: 5 },
+      { title: 'Relatório Mensal', description: 'Gerar e enviar relatório mensal ao cliente', frequency: 'monthly', occurrences_per_period: 1, sort_order: 6 },
+    ];
+
+    const { error } = await supabase
+      .from("recurring_routines")
+      .insert(defaultRoutines.map(r => ({
+        ...r,
+        rules_json: {},
+        active: true,
+      })));
+
+    if (error && !error.message.includes('duplicate')) {
+      console.error("Error creating default routines:", error);
+      return false;
+    }
+    return true;
+  }, []);
+
   // Fetch all data
   const fetchData = useCallback(async () => {
     if (!user) return;
@@ -84,12 +110,27 @@ export function useRecurring() {
     setLoading(true);
     try {
       // Fetch all routines (for admin)
-      const { data: allRoutinesData, error: allRoutinesError } = await supabase
+      let { data: allRoutinesData, error: allRoutinesError } = await supabase
         .from("recurring_routines")
         .select("*")
         .order("sort_order");
       
       if (allRoutinesError) throw allRoutinesError;
+      
+      // If no routines exist, create default ones
+      if (!allRoutinesData || allRoutinesData.length === 0) {
+        console.log("No routines found, creating defaults...");
+        const created = await ensureDefaultRoutines();
+        if (created) {
+          // Re-fetch routines after creation
+          const { data: newRoutinesData } = await supabase
+            .from("recurring_routines")
+            .select("*")
+            .order("sort_order");
+          allRoutinesData = newRoutinesData || [];
+        }
+      }
+      
       setAllRoutines((allRoutinesData as RecurringRoutine[]) || []);
       
       // Filter active routines
@@ -162,7 +203,7 @@ export function useRecurring() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, ensureDefaultRoutines]);
 
   // Generate tasks for a client (idempotent)
   const generateTasksForClient = useCallback(async (clientId: string, daysAhead: number = 14) => {
@@ -326,34 +367,68 @@ export function useRecurring() {
     client_id?: string;
     company_name: string;
     responsible_name: string;
-  }) => {
-    if (!user) return null;
+    monthly_value?: number;
+  }): Promise<RecurringClient | null> => {
+    if (!user) {
+      console.error("No user authenticated");
+      return null;
+    }
+
+    // CRITICAL: Ensure routines exist before creating client
+    // This fixes the issue where clients are created but no tasks appear
+    let currentRoutines = routines;
+    if (currentRoutines.length === 0) {
+      console.log("No routines found, creating defaults before adding client...");
+      await ensureDefaultRoutines();
+      // Re-fetch routines
+      const { data: freshRoutines } = await supabase
+        .from("recurring_routines")
+        .select("*")
+        .eq("active", true)
+        .order("sort_order");
+      currentRoutines = (freshRoutines as RecurringRoutine[]) || [];
+      setRoutines(currentRoutines);
+    }
 
     // Assign random schedule variant
     const variants = ['A', 'B', 'C', 'D'];
     const randomVariant = variants[Math.floor(Math.random() * variants.length)];
 
+    // Build insert data
+    const insertData = {
+      client_id: data.client_id || null,
+      company_name: data.company_name,
+      responsible_name: data.responsible_name,
+      schedule_variant: randomVariant,
+      responsible_user_id: user.id,
+      start_date: format(new Date(), "yyyy-MM-dd"),
+      monthly_value: data.monthly_value && data.monthly_value > 0 ? data.monthly_value : undefined,
+    };
+
     const { data: newClient, error } = await supabase
       .from("recurring_clients")
-      .insert({
-        ...data,
-        schedule_variant: randomVariant,
-        responsible_user_id: user.id,
-        start_date: format(new Date(), "yyyy-MM-dd"),
-      })
+      .insert(insertData)
       .select()
       .single();
 
     if (error) {
       console.error("Error adding recurring client:", error);
+      // Provide more specific error messages
+      if (error.message.includes('agency')) {
+        console.error("Agency ID issue - user may not have an agency selected");
+      }
       return null;
     }
 
-    // Refresh data first to get updated clients list
-    await fetchData();
-    
-    // Generate tasks for the new client AFTER refresh
-    if (newClient && routines.length > 0) {
+    if (!newClient) {
+      console.error("Client inserted but no data returned");
+      return null;
+    }
+
+    console.log("Recurring client created successfully:", newClient.id);
+
+    // Generate tasks for the new client
+    if (currentRoutines.length > 0) {
       const today = startOfDay(new Date());
       const endDate = addDays(today, 14);
       const tasksToCreate: Array<{
@@ -365,7 +440,7 @@ export function useRecurring() {
       const variantOffsets: Record<string, number> = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 };
       const offset = variantOffsets[randomVariant] || 0;
 
-      for (const routine of routines) {
+      for (const routine of currentRoutines) {
         let currentDate = today;
         while (currentDate <= endDate) {
           let shouldCreate = false;
@@ -401,17 +476,25 @@ export function useRecurring() {
       }
 
       if (tasksToCreate.length > 0) {
-        await supabase
+        const { error: taskError } = await supabase
           .from("recurring_tasks")
           .upsert(tasksToCreate, { onConflict: 'recurring_client_id,routine_id,due_date', ignoreDuplicates: true });
+        
+        if (taskError) {
+          console.error("Error creating tasks for new client:", taskError);
+        } else {
+          console.log(`Created ${tasksToCreate.length} tasks for new recurring client`);
+        }
       }
-      
-      // Refresh again to get the tasks
-      await fetchData();
+    } else {
+      console.warn("No routines available to generate tasks");
     }
+    
+    // Refresh data to update UI
+    await fetchData();
 
-    return newClient;
-  }, [user, fetchData, routines]);
+    return newClient as RecurringClient;
+  }, [user, fetchData, routines, ensureDefaultRoutines]);
 
   // Create a new routine (admin only)
   const createRoutine = useCallback(async (data: {
