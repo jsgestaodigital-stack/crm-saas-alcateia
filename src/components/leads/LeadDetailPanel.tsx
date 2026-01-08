@@ -57,8 +57,9 @@ interface LeadDetailPanelProps {
 export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProps) {
   const { updateLead, deleteLead } = useLeads();
   const { sources } = useLeadSources();
-  const { derived } = useAuth();
-  const canEditLeads = derived?.canSalesOrAdmin ?? false;
+  const { derived, userRole, isAdmin, permissions } = useAuth();
+  // Permite edição se: tem permissão canSalesOrAdmin OU é admin/owner OU tem can_sales explícito
+  const canEditLeads = derived?.canSalesOrAdmin || isAdmin || userRole === 'admin' || userRole === 'owner' || permissions?.canSales || permissions?.canAdmin;
   const [activeTab, setActiveTab] = useState('resumo');
 
   if (!lead) return null;
