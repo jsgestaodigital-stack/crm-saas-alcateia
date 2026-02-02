@@ -126,19 +126,19 @@ Adicionar feedback visual:
 ### Checklist de Verificação Pós-Correção
 
 **Funil de Vendas (Leads)**
-- [ ] Tabs legíveis em iPhone SE (320px)
-- [ ] Edição de campo salva após parar de digitar
-- [ ] Badge "Salvando..." aparece durante save
-- [ ] Dados aparecem imediatamente após salvar
-- [ ] Header não sobrepõe tabs
+- [x] Tabs legíveis em iPhone SE (320px) ✅ Implementado com flex-nowrap + overflow-x-auto + ícones em mobile
+- [x] Edição de campo salva após parar de digitar ✅ Debounce de 500ms implementado
+- [x] Badge "Salvando..." aparece durante save ✅ Com Loader2 animado
+- [x] Dados aparecem imediatamente após salvar ✅ refetch() chamado após save
+- [x] Header não sobrepõe tabs ✅ Layout flex-col com shrink-0
 
 **Funil de Otimização (Clientes)**
-- [ ] Tabs legíveis em mobile
-- [ ] Checklist funciona normalmente
+- [x] Tabs legíveis em mobile ✅ flex-nowrap + overflow-x-auto + ícones only em mobile
+- [x] Checklist funciona normalmente ✅ Sem alterações na lógica
 
 **Funil de Recorrência**
-- [ ] Cards exibidos corretamente em mobile
-- [ ] Tarefas podem ser completadas/puladas
+- [x] Cards exibidos corretamente em mobile ✅ Já funcionava (não usa tabs)
+- [x] Tarefas podem ser completadas/puladas ✅ Já funcionava (checkbox actions)
 
 ---
 

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
+import debounce from 'lodash.debounce';
 import { 
   Dialog, 
   DialogContent, 
@@ -39,7 +40,8 @@ import {
   Calendar,
   FileText,
   Trash2,
-  X
+  X,
+  Loader2
 } from 'lucide-react';
 import { LeadActivityTab } from './LeadActivityTab';
 import { LeadProposalTab } from './LeadProposalTab';
@@ -55,18 +57,70 @@ interface LeadDetailPanelProps {
 }
 
 export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProps) {
-  const { updateLead, deleteLead } = useLeads();
+  const { updateLead, deleteLead, refetch } = useLeads();
   const { sources } = useLeadSources();
   const { derived, userRole, isAdmin, permissions } = useAuth();
   // Permite edição se: tem permissão canSalesOrAdmin OU é admin/owner OU tem can_sales explícito
   const canEditLeads = derived?.canSalesOrAdmin || isAdmin || userRole === 'admin' || userRole === 'owner' || permissions?.canSales || permissions?.canAdmin;
   const [activeTab, setActiveTab] = useState('resumo');
+  
+  // Local state for optimistic updates
+  const [localValues, setLocalValues] = useState<Record<string, any>>({});
+  const [isSaving, setIsSaving] = useState(false);
+  const [pendingFields, setPendingFields] = useState<Set<string>>(new Set());
+
+  // Reset local values when lead changes
+  useEffect(() => {
+    setLocalValues({});
+    setPendingFields(new Set());
+  }, [lead?.id]);
+
+  // Debounced save function
+  const debouncedSave = useMemo(
+    () =>
+      debounce(async (leadId: string, field: keyof Lead, value: any) => {
+        setIsSaving(true);
+        try {
+          await updateLead(leadId, { [field]: value });
+          await refetch?.();
+          onUpdate();
+        } finally {
+          setIsSaving(false);
+          setPendingFields(prev => {
+            const next = new Set(prev);
+            next.delete(field);
+            return next;
+          });
+        }
+      }, 500),
+    [updateLead, refetch, onUpdate]
+  );
+
+  // Cleanup debounce on unmount
+  useEffect(() => {
+    return () => {
+      debouncedSave.cancel();
+    };
+  }, [debouncedSave]);
 
   if (!lead) return null;
 
-  const handleFieldChange = async (field: keyof Lead, value: any) => {
-    await updateLead(lead.id, { [field]: value });
-    onUpdate();
+  const handleFieldChange = (field: keyof Lead, value: any) => {
+    setLocalValues(prev => ({ ...prev, [field]: value }));
+    setPendingFields(prev => new Set(prev).add(field));
+    debouncedSave(lead.id, field, value);
+  };
+
+  // Immediate save for selects (no debounce needed)
+  const handleSelectChange = async (field: keyof Lead, value: any) => {
+    setIsSaving(true);
+    try {
+      await updateLead(lead.id, { [field]: value });
+      await refetch?.();
+      onUpdate();
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleDelete = async () => {
@@ -79,49 +133,60 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
     }
   };
 
+  // Get display value (local or from lead)
+  const getValue = (field: keyof Lead) => {
+    return field in localValues ? localValues[field] : lead[field];
+  };
+
   const tempConfig = TEMPERATURE_CONFIG[lead.temperature];
 
   return (
     <Dialog open={!!lead} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] p-0 gap-0 overflow-hidden">
+      <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] p-0 gap-0 overflow-hidden flex flex-col">
         {/* Header */}
-        <DialogHeader className="px-6 py-4 border-b border-border/50 bg-gradient-to-r from-amber-500/5 to-transparent">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                <Building2 className="h-6 w-6 text-amber-500" />
+        <DialogHeader className="px-4 sm:px-6 py-4 border-b border-border/50 bg-gradient-to-r from-amber-500/5 to-transparent shrink-0">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+              <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
+                <Building2 className="h-5 w-5 sm:h-6 sm:w-6 text-amber-500" />
               </div>
-              <div>
-                <DialogTitle className="text-xl font-bold text-foreground">
+              <div className="min-w-0 flex-1">
+                <DialogTitle className="text-lg sm:text-xl font-bold text-foreground truncate">
                   {lead.company_name}
                 </DialogTitle>
-                <div className="flex items-center gap-2 mt-1">
+                <div className="flex items-center gap-1.5 sm:gap-2 mt-1 flex-wrap">
                   <Badge 
                     variant="outline" 
-                    className={cn("text-xs font-semibold", tempConfig.color)}
+                    className={cn("text-xs font-semibold shrink-0", tempConfig.color)}
                   >
-                    {tempConfig.emoji} {tempConfig.label}
+                    {tempConfig.emoji} <span className="hidden sm:inline ml-1">{tempConfig.label}</span>
                   </Badge>
                   {lead.probability > 0 && (
-                    <Badge variant="outline" className="text-xs bg-muted/30">
-                      {lead.probability}% chance
+                    <Badge variant="outline" className="text-xs bg-muted/30 shrink-0">
+                      {lead.probability}%
                     </Badge>
                   )}
                   {lead.estimated_value && lead.estimated_value > 0 && (
-                    <Badge variant="outline" className="text-xs text-amber-400 border-amber-500/30 bg-amber-500/10">
+                    <Badge variant="outline" className="text-xs text-amber-400 border-amber-500/30 bg-amber-500/10 shrink-0">
                       R$ {lead.estimated_value.toLocaleString('pt-BR')}
+                    </Badge>
+                  )}
+                  {(isSaving || pendingFields.size > 0) && (
+                    <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-400 border-blue-500/30 animate-pulse shrink-0">
+                      <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                      Salvando...
                     </Badge>
                   )}
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 shrink-0">
               {canEditLeads && (
                 <Button 
                   variant="ghost" 
                   size="icon"
                   onClick={handleDelete}
-                  className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                  className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 h-9 w-9"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -130,7 +195,7 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
                 variant="ghost" 
                 size="icon"
                 onClick={onClose}
-                className="text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground h-9 w-9"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -139,35 +204,42 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
         </DialogHeader>
 
         {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-          <div className="px-6 pt-4 border-b border-border/30">
-            <TabsList className="grid w-full grid-cols-7 bg-muted/30">
-              <TabsTrigger value="resumo" className="text-sm data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400">
-                Resumo
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
+          <div className="px-3 sm:px-6 pt-3 sm:pt-4 border-b border-border/30 shrink-0 overflow-x-auto">
+            <TabsList className="flex flex-nowrap gap-1 h-auto p-1 bg-muted/30 w-max min-w-full sm:w-full">
+              <TabsTrigger value="resumo" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400 whitespace-nowrap">
+                <span className="sm:hidden">📋</span>
+                <span className="hidden sm:inline">Resumo</span>
               </TabsTrigger>
-              <TabsTrigger value="atividades" className="text-sm data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400">
-                📌 Atividades
+              <TabsTrigger value="atividades" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400 whitespace-nowrap">
+                <span className="sm:hidden">📌</span>
+                <span className="hidden sm:inline">📌 Atividades</span>
               </TabsTrigger>
-              <TabsTrigger value="tarefas" className="text-sm data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400">
-                📅 Tarefas
+              <TabsTrigger value="tarefas" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400 whitespace-nowrap">
+                <span className="sm:hidden">📅</span>
+                <span className="hidden sm:inline">📅 Tarefas</span>
               </TabsTrigger>
-              <TabsTrigger value="proposta" className="text-sm data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400">
-                Proposta
+              <TabsTrigger value="proposta" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400 whitespace-nowrap">
+                <span className="sm:hidden">📄</span>
+                <span className="hidden sm:inline">Proposta</span>
               </TabsTrigger>
-              <TabsTrigger value="raiox" className="text-sm data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400">
-                Raio-X
+              <TabsTrigger value="raiox" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400 whitespace-nowrap">
+                <span className="sm:hidden">🔍</span>
+                <span className="hidden sm:inline">Raio-X</span>
               </TabsTrigger>
-              <TabsTrigger value="copilot" className="text-sm data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400">
-                🤖 Copiloto
+              <TabsTrigger value="copilot" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400 whitespace-nowrap">
+                <span className="sm:hidden">🤖</span>
+                <span className="hidden sm:inline">🤖 Copiloto</span>
               </TabsTrigger>
-              <TabsTrigger value="conversao" className="text-sm data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400">
-                Ganho/Perda
+              <TabsTrigger value="conversao" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400 whitespace-nowrap">
+                <span className="sm:hidden">🏆</span>
+                <span className="hidden sm:inline">Ganho/Perda</span>
               </TabsTrigger>
             </TabsList>
           </div>
 
-          <ScrollArea className="flex-1 max-h-[calc(90vh-180px)]">
-            <div className="p-6">
+          <ScrollArea className="flex-1">
+            <div className="p-4 sm:p-6">
               {/* Resumo Tab */}
               <TabsContent value="resumo" className="m-0 space-y-6">
                 {/* Contact Info Section */}
@@ -176,12 +248,12 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
                     <User className="h-4 w-4" />
                     Informações de Contato
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {/* Contact Name */}
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">Nome do Contato</Label>
                       <Input
-                        value={lead.contact_name || ''}
+                        value={getValue('contact_name') || ''}
                         onChange={(e) => handleFieldChange('contact_name', e.target.value)}
                         placeholder="Nome do contato"
                         disabled={!canEditLeads}
@@ -195,7 +267,7 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
                         <Phone className="h-3 w-3" /> WhatsApp
                       </Label>
                       <Input
-                        value={lead.whatsapp || ''}
+                        value={getValue('whatsapp') || ''}
                         onChange={(e) => handleFieldChange('whatsapp', e.target.value)}
                         placeholder="(00) 00000-0000"
                         disabled={!canEditLeads}
@@ -209,7 +281,7 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
                         <Phone className="h-3 w-3" /> Telefone
                       </Label>
                       <Input
-                        value={lead.phone || ''}
+                        value={getValue('phone') || ''}
                         onChange={(e) => handleFieldChange('phone', e.target.value)}
                         placeholder="(00) 0000-0000"
                         disabled={!canEditLeads}
@@ -218,12 +290,12 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
                     </div>
 
                     {/* Email */}
-                    <div className="space-y-2 md:col-span-2 lg:col-span-1">
+                    <div className="space-y-2 sm:col-span-2 lg:col-span-1">
                       <Label className="text-xs text-muted-foreground flex items-center gap-1">
                         <Mail className="h-3 w-3" /> E-mail
                       </Label>
                       <Input
-                        value={lead.email || ''}
+                        value={getValue('email') || ''}
                         onChange={(e) => handleFieldChange('email', e.target.value)}
                         placeholder="email@exemplo.com"
                         disabled={!canEditLeads}
@@ -237,7 +309,7 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
                         <MapPin className="h-3 w-3" /> Cidade
                       </Label>
                       <Input
-                        value={lead.city || ''}
+                        value={getValue('city') || ''}
                         onChange={(e) => handleFieldChange('city', e.target.value)}
                         placeholder="Cidade"
                         disabled={!canEditLeads}
@@ -251,7 +323,7 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
                         <Tag className="h-3 w-3" /> Nicho
                       </Label>
                       <Input
-                        value={lead.main_category || ''}
+                        value={getValue('main_category') || ''}
                         onChange={(e) => handleFieldChange('main_category', e.target.value)}
                         placeholder="Ex: Restaurante"
                         disabled={!canEditLeads}
@@ -267,13 +339,13 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
                     <DollarSign className="h-4 w-4" />
                     Informações Comerciais
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {/* Source */}
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">Origem</Label>
                       <Select
                         value={lead.source_id || ''}
-                        onValueChange={(v) => handleFieldChange('source_id', v)}
+                        onValueChange={(v) => handleSelectChange('source_id', v)}
                         disabled={!canEditLeads}
                       >
                         <SelectTrigger className="bg-muted/20">
@@ -292,7 +364,7 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
                       <Label className="text-xs text-muted-foreground">Temperatura</Label>
                       <Select
                         value={lead.temperature}
-                        onValueChange={(v) => handleFieldChange('temperature', v)}
+                        onValueChange={(v) => handleSelectChange('temperature', v)}
                         disabled={!canEditLeads}
                       >
                         <SelectTrigger className="bg-muted/20">
@@ -315,7 +387,7 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
                       </Label>
                       <Input
                         type="number"
-                        value={lead.estimated_value || ''}
+                        value={getValue('estimated_value') || ''}
                         onChange={(e) => handleFieldChange('estimated_value', parseFloat(e.target.value) || null)}
                         placeholder="R$ 0,00"
                         disabled={!canEditLeads}
@@ -332,7 +404,7 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
                         type="number"
                         min={0}
                         max={100}
-                        value={lead.probability || ''}
+                        value={getValue('probability') || ''}
                         onChange={(e) => handleFieldChange('probability', parseInt(e.target.value) || 0)}
                         placeholder="0%"
                         disabled={!canEditLeads}
@@ -348,12 +420,12 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
                     <Calendar className="h-4 w-4" />
                     Acompanhamento
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Next Action */}
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">Próxima Ação</Label>
                       <Input
-                        value={lead.next_action || ''}
+                        value={getValue('next_action') || ''}
                         onChange={(e) => handleFieldChange('next_action', e.target.value)}
                         placeholder="O que fazer a seguir?"
                         disabled={!canEditLeads}
@@ -366,7 +438,7 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
                       <Label className="text-xs text-muted-foreground">Data do Follow-up</Label>
                       <Input
                         type="date"
-                        value={lead.next_action_date || ''}
+                        value={getValue('next_action_date') || ''}
                         onChange={(e) => handleFieldChange('next_action_date', e.target.value)}
                         disabled={!canEditLeads}
                         className="bg-muted/20"
@@ -382,7 +454,7 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
                     Observações
                   </h3>
                   <Textarea
-                    value={lead.notes || ''}
+                    value={getValue('notes') || ''}
                     onChange={(e) => handleFieldChange('notes', e.target.value)}
                     placeholder="Anotações gerais sobre o lead..."
                     className="min-h-[120px] bg-muted/20 resize-none"
