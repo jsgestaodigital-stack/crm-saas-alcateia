@@ -189,22 +189,22 @@ export function ClientDetailPanel() {
 
         {/* Tabs */}
         <Tabs defaultValue="checklist" className="flex-1 flex flex-col h-[calc(100vh-320px)]">
-          <TabsList className="w-full justify-start px-4 pt-4 bg-transparent border-b border-border/30 rounded-none h-auto pb-0">
-            <TabsTrigger value="checklist" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3">
-              <Check className="w-4 h-4 mr-2" />
-              Checklist
+          <TabsList className="flex flex-nowrap gap-1 px-2 sm:px-4 pt-4 bg-transparent border-b border-border/30 rounded-none h-auto pb-0 overflow-x-auto w-max min-w-full sm:w-full">
+            <TabsTrigger value="checklist" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3 px-2 sm:px-4 whitespace-nowrap">
+              <Check className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Checklist</span>
             </TabsTrigger>
-            <TabsTrigger value="general" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3">
-              <FileText className="w-4 h-4 mr-2" />
-              Dados
+            <TabsTrigger value="general" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3 px-2 sm:px-4 whitespace-nowrap">
+              <FileText className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Dados</span>
             </TabsTrigger>
-            <TabsTrigger value="uploads" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3">
-              <Image className="w-4 h-4 mr-2" />
-              Uploads
+            <TabsTrigger value="uploads" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3 px-2 sm:px-4 whitespace-nowrap">
+              <Image className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Uploads</span>
             </TabsTrigger>
-            <TabsTrigger value="history" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3">
-              <History className="w-4 h-4 mr-2" />
-              Histórico
+            <TabsTrigger value="history" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3 px-2 sm:px-4 whitespace-nowrap">
+              <History className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Histórico</span>
             </TabsTrigger>
           </TabsList>
 
