@@ -11,7 +11,7 @@
 
 @layer base {
   :root {
-    /* === G-RANK CRM - TEMA CLARO (Base Principal) === */
+    /* === GBRANK CRM - TEMA CLARO (Base Principal) === */
     /* Branco limpo + Verde esmeralda #10B981 */
 
     /* Base - Branco puro e limpo */
@@ -53,7 +53,7 @@
 
     --radius: 0.625rem;
 
-    /* === G-RANK BRAND TOKENS === */
+    /* === GBRANK BRAND TOKENS === */
     /* Emerald Primary - #10B981 */
     --emerald: 160 84% 39%;
     --emerald-glow: 0 0 20px hsl(160 84% 39% / 0.35);
@@ -156,7 +156,7 @@
   }
 
   .dark {
-    /* === G-RANK CRM - TEMA ESCURO === */
+    /* === GBRANK CRM - TEMA ESCURO === */
     /* Navy profundo + Cyan/Verde-limão para destaques */
 
     --background: 222 47% 8%;

@@ -1,5 +1,5 @@
 /**
- * Visual PDF Export Utility - G-Rank CRM
+ * Visual PDF Export Utility - GBRank CRM
  * Generates professional PDF with white background, clean layout
  * 
  * PERFORMANCE OPTIMIZATIONS FOR MOBILE:
@@ -263,7 +263,7 @@ export async function exportVisualPdf(options) {
     pdf.setTextColor(255, 255, 255);
     pdf.setFontSize(24);
     pdf.setFont('helvetica', 'bold');
-    pdf.text('G-RANK CRM', margin, 20);
+    pdf.text('GBRANK CRM', margin, 20);
     
     pdf.setFontSize(14);
     pdf.setFont('helvetica', 'normal');
@@ -434,7 +434,7 @@ export async function exportVisualPdf(options) {
       
       // Footer text
       if (i > 1) {
-        pdf.text('G-Rank CRM - Relatório do Gestor', margin, pageHeight - 6);
+        pdf.text('GBRank CRM - Relatório do Gestor', margin, pageHeight - 6);
       }
     }
 

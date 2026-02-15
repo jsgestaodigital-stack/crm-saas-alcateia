@@ -50,7 +50,7 @@ export const SHARED_VARIABLES: SharedVariable[] = [
   { key: 'validade_proposta', label: 'Validade da Proposta', placeholder: 'Ex: 7 dias', category: 'dates' },
   
   // Dados da Empresa (Contratada)
-  { key: 'contratada_nome', label: 'Nome da Contratada', placeholder: 'Ex: G Rank Marketing', category: 'company' },
+  { key: 'contratada_nome', label: 'Nome da Contratada', placeholder: 'Ex: GBRank Marketing', category: 'company' },
   { key: 'contratada_cnpj', label: 'CNPJ da Contratada', placeholder: 'Ex: 00.000.000/0001-00', category: 'company' },
   { key: 'contratada_endereco', label: 'Endereço da Contratada', placeholder: 'Rua da Empresa, 456', category: 'company' },
   { key: 'contratada_email', label: 'Email da Contratada', placeholder: 'contato@empresa.com', category: 'company' },
