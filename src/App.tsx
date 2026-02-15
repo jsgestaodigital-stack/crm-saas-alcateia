@@ -49,6 +49,7 @@ const ActivationDashboard = lazy(() => import("./pages/ActivationDashboard"));
 const Questions = lazy(() => import("./pages/Questions"));
 const RaioX = lazy(() => import("./pages/RaioX"));
 const AgenteSEO = lazy(() => import("./pages/AgenteSEO"));
+const AgentesIA = lazy(() => import("./pages/AgentesIA"));
 const AgenteSuspensoes = lazy(() => import("./pages/AgenteSuspensoes"));
 const Historico = lazy(() => import("./pages/Historico"));
 const Suggestions = lazy(() => import("./pages/Suggestions"));
@@ -127,6 +128,9 @@ const App = () => (
                         } />
                         <Route path="/agente-seo" element={
                           <SubscriptionGuard><AgenteSEO /></SubscriptionGuard>
+                        } />
+                        <Route path="/agentes-ia" element={
+                          <SubscriptionGuard><AgentesIA /></SubscriptionGuard>
                         } />
                         <Route path="/agente-suspensoes" element={
                           <SubscriptionGuard><AgenteSuspensoes /></SubscriptionGuard>
