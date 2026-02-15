@@ -10,3 +10,4 @@ export { FinancialProjection } from "./FinancialProjection";
 export { RankingTable } from "./RankingTable";
 export { WeeklyHeatmap } from "./WeeklyHeatmap";
 export { TrendComparisonTable } from "./TrendComparisonTable";
+export { ActivityHeatmap } from "./ActivityHeatmap";

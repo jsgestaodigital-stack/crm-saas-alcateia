@@ -77,6 +77,7 @@ import {
   RankingTable,
   WeeklyHeatmap,
   TrendComparisonTable,
+  ActivityHeatmap,
 } from "@/components/manager-report";
 import { ProFeatureGate } from "@/components/plan";
 import { useTrialFeatures } from "@/hooks/useTrialFeatures";
@@ -1096,6 +1097,9 @@ const ManagerReport = () => {
 
             {/* ===================== OPERATIONAL TAB ===================== */}
             <TabsContent value="ops" className="space-y-6 fade-in-up">
+              {/* Activity Heatmap */}
+              <ActivityHeatmap data={metrics.timeline.map(t => ({ date: t.date, count: t.count }))} />
+
               <SectionHeader
                 title="Performance Operacional"
                 subtitle="Status de clientes, progressão e eficiência da operação"
