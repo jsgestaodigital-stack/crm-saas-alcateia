@@ -1,9 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { getCorsHeaders, handleCors } from "../_shared/cors.ts";
 
 interface SelfResetRequest {
   email: string;
@@ -100,9 +96,9 @@ function isStrongPassword(password: string): boolean {
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsHeaders = getCorsHeaders(req);
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -163,8 +159,8 @@ Deno.serve(async (req) => {
     if (!matchingUser) {
       console.error(`No user found with email: ${email}`);
       return new Response(
-        JSON.stringify({ error: "E-mail não encontrado no sistema. Verifique se digitou corretamente." }),
-        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ error: "As informações fornecidas não correspondem aos nossos registros. Verifique e tente novamente." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -238,8 +234,7 @@ Deno.serve(async (req) => {
       console.error(`Name mismatch: "${full_name}" vs "${storedName}" (${nameCheck.similarity}%)`);
       return new Response(
         JSON.stringify({ 
-          error: "Nome não corresponde ao cadastro. Digite seu nome completo conforme cadastrado.",
-          hint: `Dica: seu nome começa com "${storedName.split(' ')[0]}"`
+          error: "As informações fornecidas não correspondem aos nossos registros. Verifique e tente novamente."
         }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
@@ -249,7 +244,7 @@ Deno.serve(async (req) => {
       console.error(`Agency mismatch: "${agency_name}" vs "${storedAgencyName}" (${agencySimilarity}%)`);
       return new Response(
         JSON.stringify({ 
-          error: "Nome da agência não corresponde ao cadastro. Verifique o nome correto da sua agência."
+          error: "As informações fornecidas não correspondem aos nossos registros. Verifique e tente novamente."
         }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );

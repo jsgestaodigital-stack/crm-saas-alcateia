@@ -1,9 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { getCorsHeaders, handleCors } from "../_shared/cors.ts";
 
 interface ProvisionUser {
   email: string;
@@ -73,10 +69,9 @@ function validateUsers(users: ProvisionUser[]) {
 }
 
 Deno.serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsHeaders = getCorsHeaders(req);
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
     const body = await req.json();
@@ -138,16 +133,31 @@ Deno.serve(async (req) => {
         .filter(Boolean)
     );
 
+    // Auto-disable: if ANY non-whitelisted user exists, bootstrap is permanently disabled
     for (const email of existingEmails) {
       if (!ALLOWED_EMAILS.has(email)) {
         return new Response(
           JSON.stringify({
             error:
-              "Project already initialized with other users. This endpoint is disabled for safety.",
+              "Project already initialized with other users. Bootstrap endpoint is permanently disabled.",
           }),
-          { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+    }
+
+    // Also check if agencies exist (beyond initial setup) - if >1 agency, system is live
+    const { count: agencyCount } = await supabaseAdmin
+      .from("agencies")
+      .select("*", { count: "exact", head: true });
+
+    if (agencyCount && agencyCount > 3) {
+      return new Response(
+        JSON.stringify({
+          error: "System is already in production. Bootstrap endpoint is disabled.",
+        }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const results: Array<{ email: string; success: boolean; error?: string }> = [];

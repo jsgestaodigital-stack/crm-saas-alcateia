@@ -1,10 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { getCorsHeaders, handleCors } from "../_shared/cors.ts";
 
 const SYSTEM_PROMPT = `🐺 Lobo SEO Local – Versão Lendária Otimização Local Agressiva (Best Practices 2025) – Alcateia Lobos do Google
 
@@ -230,9 +226,9 @@ Se algo estiver faltando, diga: "Falta isso aqui pra otimização completa: [lis
 Take a deep breath and work on this problem step-by-step.`;
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsHeaders = getCorsHeaders(req);
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
     // Verify authentication

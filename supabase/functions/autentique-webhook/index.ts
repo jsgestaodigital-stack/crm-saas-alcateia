@@ -1,16 +1,12 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-autentique-signature',
-};
+import { getCorsHeaders, handleCors } from "../_shared/cors.ts";
 
 // Autentique webhook integration is disabled
 // To re-enable, configure AUTENTIQUE_WEBHOOK_SECRET and restore the original implementation
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsHeaders = getCorsHeaders(req);
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   console.log('[autentique-webhook] Integration disabled');
   
