@@ -1,223 +1,102 @@
 
-# Plano de Otimizacao Robusta - GBRANK CRM
-## Baseado na Analise Comparativa PRD Externo vs Sistema Atual
+# Plano de Teste Completo - 50 Verificacoes do GBRANK CRM
+
+## Objetivo
+Executar 50 testes end-to-end cobrindo todas as areas criticas do sistema, organizados por modulo. Cada teste sera executado navegando no app, verificando console/network, e consultando o banco de dados quando necessario.
 
 ---
 
-## 1. Analise de Gaps: PRD vs Sistema Atual
+## BLOCO 1: AUTENTICACAO E REGISTRO (Testes 1-8)
 
-Apos analisar os 3 documentos enviados (PRD completo, Plano de Interface, pesquisa de concorrentes) e comparar com o codigo-fonte existente, identifiquei **14 gaps criticos** organizados por prioridade.
+1. **Rota /auth carrega sem erros** - Navegar para /auth, verificar que o formulario de login renderiza, sem erros no console
+2. **Validacao de email invalido** - Digitar email invalido e clicar "Entrar", verificar que a mensagem de erro aparece inline
+3. **Validacao de senha curta** - Digitar senha com menos de 8 caracteres, verificar erro
+4. **Rate limit visual** - Verificar que o componente de rate limit esta presente no codigo e funcional
+5. **Rota /register carrega sem erros** - Navegar para /register, verificar formulario completo com todos os campos
+6. **Validacao de registro** - Testar validacoes Zod (nome curto, email invalido, senha fraca, senhas diferentes)
+7. **Redirect autenticado** - Verificar que usuario logado em /auth e redirecionado para /dashboard
+8. **Recuperacao de senha** - Verificar que o fluxo "Esqueci minha senha" renderiza corretamente
 
-### Legenda de Status
-- **EXISTE** = Funcionalidade ja implementada
-- **PARCIAL** = Existe mas incompleto vs PRD
-- **FALTA** = Nao implementado
+## BLOCO 2: DASHBOARD E NAVEGACAO (Testes 9-16)
 
-| # | Funcionalidade PRD | Status | Impacto |
-|---|-------------------|--------|---------|
-| 1 | Dashboard com KPIs draggable/resize | PARCIAL | Alto |
-| 2 | Feed de Atividades em tempo real | FALTA | Alto |
-| 3 | FAB contextual por funil | FALTA | Medio |
-| 4 | Comparacao Antes/Depois (imagens) | FALTA | Alto |
-| 5 | Calendario drag-and-drop recorrencia | PARCIAL | Medio |
-| 6 | Editor WYSIWYG propostas com blocos drag | PARCIAL | Alto |
-| 7 | Preview ao vivo lado-a-lado propostas | PARCIAL | Alto |
-| 8 | Hub centralizado de Agentes IA | FALTA | Alto |
-| 9 | Mapa de calor atividades (Manager Report) | FALTA | Medio |
-| 10 | Sessoes ativas no perfil | FALTA | Medio |
-| 11 | Customizacao do checklist (admin) | FALTA | Alto |
-| 12 | Upload com preview drag-and-drop | PARCIAL | Medio |
-| 13 | Filtros avancados colapsaveis reutilizaveis | PARCIAL | Medio |
-| 14 | Graficos de projecao comissoes (barras) | PARCIAL | Baixo |
+9. **Dashboard carrega com skeleton** - Navegar para /dashboard, verificar que skeleton screens aparecem durante loading
+10. **Sidebar renderiza todas as secoes** - Verificar que AppSidebar tem links para todos os modulos (Vendas, Otimizacao, Recorrencia, Propostas, Contratos, etc.)
+11. **FunnelToggle alterna modos** - Verificar que o seletor de funil alterna entre Vendas/Otimizacao/Recorrencia sem erros
+12. **KPIs do Dashboard calculam corretamente** - Verificar que DashboardGrid renderiza os 6 KPIs com dados reais do banco
+13. **PriorityAlerts renderiza alertas** - Verificar que alertas de clientes sem atualizar >7 dias e leads >5 dias aparecem
+14. **Agenda lateral abre** - Verificar que o Sheet de Agenda abre ao clicar no botao Calendar
+15. **Mobile header renderiza** - Verificar que o header mobile com menu hamburger aparece em viewport mobile
+16. **Todas as 39 rotas carregam sem erro** - Navegar para cada rota definida em App.tsx e verificar que nao ha crash
 
----
+## BLOCO 3: FUNIL DE VENDAS (Testes 17-26)
 
-## 2. Plano de Implementacao por Fases
+17. **LeadsKanban renderiza 10 colunas** - Verificar que todas as 10 colunas do pipeline estao presentes
+18. **Contadores de valor por coluna** - Verificar que cada coluna mostra a soma de estimated_value dos leads
+19. **NewLeadDialog abre e valida** - Abrir dialog de novo lead, verificar campos obrigatorios e validacao Zod
+20. **Deteccao de duplicatas funciona** - Criar lead com nome similar a existente, verificar alerta de duplicata
+21. **Drag & Drop de leads** - Arrastar um lead entre colunas e verificar que pipeline_stage atualiza no banco
+22. **LeadDetailPanel abre** - Clicar em um lead e verificar que o painel lateral abre com todas as tabs
+23. **Lead Copilot tab renderiza** - Verificar que a tab de IA do lead abre sem erro
+24. **Conversao de lead para cliente** - Verificar que o botao de conversao chama o edge function convert-lead-to-client
+25. **Lead marcado como perdido** - Verificar que o fluxo de marcar lead como perdido atualiza status e registra atividade
+26. **Filtros e busca de leads** - Verificar que busca por nome e filtros por temperatura/responsavel funcionam
 
-### FASE 1 - Quick Wins (Impacto alto, Esforco baixo)
+## BLOCO 4: FUNIL DE OTIMIZACAO (Testes 27-33)
 
-**1.1 FAB (Floating Action Button) Contextual**
-- Botao flutuante fixo no canto inferior direito
-- Muda funcao conforme funil ativo:
-  - Vendas: "Novo Lead"
-  - Otimizacao: "Adicionar Cliente"
-  - Recorrencia: "Novo Cliente Recorrente"
-- Arquivo: `src/components/FloatingActionButton.tsx` (novo)
-- Integra com `useFunnelMode()` para contexto
+27. **KanbanBoard renderiza 7 colunas** - Verificar colunas: Suspensos, Fila, Onboarding, Otimizacao, Pronto, Finalizado, Entregue
+28. **ClientCard mostra informacoes corretas** - Verificar nome, cidade, barra de progresso, dias sem atualizar
+29. **NewClientWizard abre e funciona** - Criar novo cliente pelo wizard e verificar que salva no banco
+30. **ClientExecutionView abre** - Clicar em cliente e verificar que a view de execucao full-screen carrega
+31. **Checklist de 47 pontos renderiza** - Verificar que o checklist completo carrega na view de execucao
+32. **Conversao para recorrencia** - Verificar que o RecurrenceConversionDialog funciona ao mover para "Finalizado"
+33. **Visualizacoes alternativas** - Verificar que Tabela, Timeline, Calendario, Cards carregam sem erro
 
-**1.2 Feed de Atividades em Tempo Real**
-- Componente `ActivityFeed.tsx` no Dashboard
-- Usa Supabase Realtime no `audit_logs` table
-- Mostra ultimas 20 acoes: "Joao moveu Lead X para Reuniao"
-- Atualiza sem refresh
-- Arquivo: `src/components/dashboard/ActivityFeed.tsx` (novo)
+## BLOCO 5: RECORRENCIA (Testes 34-37)
 
-**1.3 Sessoes Ativas no Perfil**
-- Setar no `/meu-perfil` usando tabela `active_sessions` ja existente
-- Lista dispositivos com IP, user-agent, ultimo acesso
-- Botao "Encerrar Sessao" para outros dispositivos
-- Arquivo: modificar `src/pages/MeuPerfil.tsx`
+34. **RecurringExecutionView carrega** - Verificar que as tarefas recorrentes carregam do banco
+35. **Completar tarefa recorrente** - Marcar tarefa como concluida e verificar atualizacao no banco
+36. **Pular tarefa recorrente** - Pular tarefa e verificar status "skipped"
+37. **RecurringOverview mostra estatisticas** - Verificar KPIs de compliance e tarefas atrasadas
 
----
+## BLOCO 6: PROPOSTAS E CONTRATOS (Testes 38-42)
 
-### FASE 2 - Melhorias de UX Core (Impacto alto, Esforco medio)
+38. **Pagina /propostas carrega** - Verificar listagem de propostas sem erro
+39. **Criar nova proposta** - Verificar que o editor de propostas abre e permite salvar
+40. **Pagina /contratos carrega** - Verificar listagem de contratos sem erro
+41. **Gerar contrato via IA** - Verificar que o edge function generate-contract responde corretamente
+42. **Pagina publica de proposta** - Verificar que /proposta/:token carrega sem autenticacao
 
-**2.1 Hub Centralizado de Agentes IA**
-- Nova rota `/agentes-ia` com cards de cada agente
-- Agentes: Lead Copilot, Raio-X, SEO, Suspensoes, Relatorio, Propostas
-- Cada card: descricao, botao de acao, historico de uso
-- Interface unificada em vez de modais espalhados
-- Arquivos: `src/pages/AgentesIA.tsx` (novo), rota em `App.tsx`
+## BLOCO 7: SEGURANCA E PERMISSOES (Testes 43-47)
 
-**2.2 Comparacao Antes/Depois para Otimizacao**
-- Componente slider que sobrepoe 2 imagens
-- Arraste horizontal para comparar estado anterior vs atual do GMB
-- Integra na view de execucao do cliente (checklist)
-- Arquivo: `src/components/execution/BeforeAfterCompare.tsx` (novo)
+43. **RLS esta ativo em tabelas criticas** - Consultar pg_tables para verificar RLS habilitado em leads, clients, contracts, proposals
+44. **Isolamento multi-tenant** - Verificar que leads de uma agencia nao aparecem para outra
+45. **Permissoes por role funcionam** - Verificar que canAccessSales/canAccessDelivery respeita user_permissions
+46. **SubscriptionGuard bloqueia rotas** - Verificar que rotas protegidas redirecionam quando subscription expirada
+47. **Edge functions validam agency_id** - Verificar que convert-lead-to-client valida pertencimento do lead a agencia
 
-**2.3 Filtros Avancados Reutilizaveis**
-- Componente colapsavel generico com selects, date pickers, toggles
-- Reutilizar em: Leads Kanban, Otimizacao, Recorrencia, Propostas, Contratos
-- Arquivo: `src/components/ui/advanced-filters.tsx` (novo)
-- Substitui filtros inline atuais por componente padronizado
+## BLOCO 8: INFRAESTRUTURA E PERFORMANCE (Testes 48-50)
+
+48. **Lazy loading funciona** - Verificar que paginas pesadas (Dashboard, Contratos) usam React.lazy corretamente
+49. **Erro no console** - Verificar console do preview para erros JavaScript nao tratados
+50. **Edge functions deployadas** - Verificar que todas as edge functions listadas em config.toml estao responsivas
 
 ---
 
-### FASE 3 - Propostas e Editor Visual (Impacto alto, Esforco alto)
+## Execucao Tecnica
 
-**3.1 Editor de Propostas com Drag-and-Drop de Blocos**
-- Melhorar `ProposalEditor.tsx` existente:
-  - Sidebar com biblioteca de blocos arrastaveis
-  - Area principal com reordenacao por drag
-  - Preview ao vivo em painel lateral (split view)
-- Usar `@dnd-kit/core` para drag-and-drop
-- Suporte a variaveis dinamicas: `{{nome_cliente}}`, `{{valor}}`
-- Arquivos: refatorar `src/components/proposals/ProposalEditor.tsx`
+Para cada teste, a execucao seguira este padrao:
+1. Navegar para a rota/componente usando browser tools
+2. Verificar console logs para erros
+3. Verificar network requests para falhas HTTP
+4. Consultar banco de dados quando necessario para validar dados
+5. Documentar resultado: PASSOU / FALHOU + detalhes
 
-**3.2 Preview ao Vivo Lado-a-Lado**
-- Split view: editor esquerda, preview direita
-- Usa `react-resizable-panels` (ja instalado)
-- Preview atualiza em tempo real conforme edita blocos
-- Arquivo: integrar em `ProposalEditor.tsx`
+### Criterios de Falha
+- Erro JavaScript no console (exceto warnings do React Router v6)
+- Request HTTP com status 4xx/5xx
+- Componente que nao renderiza ou mostra tela branca
+- Dados inconsistentes entre UI e banco
+- Fluxo que nao completa (botao que nao faz nada)
 
----
-
-### FASE 4 - Dashboard Inteligente (Impacto alto, Esforco alto)
-
-**4.1 KPIs Draggable e Resizable**
-- Implementar grid de widgets no Dashboard
-- Cada KPI eh um widget movivel/redimensionavel
-- Salvar layout por usuario no localStorage
-- Usar CSS Grid com posicoes salvas
-- Arquivo: `src/components/dashboard/DashboardGrid.tsx` (novo)
-
-**4.2 Widget de Alertas Prioritarios**
-- Banner destacado no topo do dashboard
-- Categorias: vermelho (critico), amarelo (atencao), azul (info)
-- Dados: clientes atrasados, trials vencendo, leads sem resposta
-- Arquivo: `src/components/dashboard/PriorityAlerts.tsx` (novo)
-
----
-
-### FASE 5 - Manager Report e Admin Avancado (Impacto medio, Esforco medio)
-
-**5.1 Mapa de Calor de Atividades**
-- Calendario tipo GitHub contribution graph
-- Cores representam intensidade de atividades da equipe
-- Filtro por membro da equipe
-- Arquivo: `src/components/manager-report/ActivityHeatmap.tsx` (novo)
-
-**5.2 Customizacao do Checklist pelo Admin**
-- Interface para admin adicionar/remover/reordenar itens do checklist de 47 pontos
-- Salvar por agencia na tabela `agency_checklists` (nova migration)
-- Override padrao do sistema com checklist customizado
-- Arquivo: `src/components/admin/ChecklistCustomizer.tsx` (novo)
-- Migration: criar `agency_custom_checklists` table
-
-**5.3 Graficos de Projecao de Comissoes**
-- Grafico de barras comparando projetado vs pago por mes
-- Integrar Recharts (ja instalado) no `CommissionForecast.tsx`
-- Adicionar grafico de linha com tendencia de 6 meses
-
----
-
-## 3. Detalhamento Tecnico
-
-### Novas Dependencias Necessarias
-- `@dnd-kit/core` + `@dnd-kit/sortable` - drag-and-drop para propostas e dashboard
-- Nenhuma outra dependencia nova necessaria (Recharts, framer-motion, resizable-panels ja instalados)
-
-### Migrations de Banco de Dados
-```text
-1. agency_custom_checklists
-   - id (uuid PK)
-   - agency_id (uuid FK)
-   - items (jsonb) -- array de {id, title, category, order, required}
-   - created_at, updated_at
-   - RLS: agency_id = current_agency_id()
-
-2. dashboard_layouts
-   - id (uuid PK)
-   - user_id (uuid)
-   - agency_id (uuid)
-   - layout (jsonb) -- posicoes e tamanhos dos widgets
-   - RLS: user_id = auth.uid()
-```
-
-### Novas Rotas
-```text
-/agentes-ia    -- Hub centralizado de Agentes IA
-```
-
-### Arquivos Novos (estimativa)
-```text
-src/components/FloatingActionButton.tsx
-src/components/dashboard/ActivityFeed.tsx
-src/components/dashboard/DashboardGrid.tsx
-src/components/dashboard/PriorityAlerts.tsx
-src/components/execution/BeforeAfterCompare.tsx
-src/components/ui/advanced-filters.tsx
-src/components/manager-report/ActivityHeatmap.tsx
-src/components/admin/ChecklistCustomizer.tsx
-src/pages/AgentesIA.tsx
-```
-
-### Arquivos Modificados
-```text
-src/pages/Dashboard.tsx -- integrar FAB, ActivityFeed, PriorityAlerts
-src/pages/MeuPerfil.tsx -- adicionar sessoes ativas
-src/pages/ManagerReport.tsx -- adicionar ActivityHeatmap
-src/components/proposals/ProposalEditor.tsx -- drag-and-drop + split preview
-src/components/commissions/CommissionForecast.tsx -- graficos de barras
-src/App.tsx -- nova rota /agentes-ia
-```
-
----
-
-## 4. Ordem de Execucao Recomendada
-
-Dado que o sistema ja esta em producao com usuarios ativos, a ordem prioriza:
-
-1. **Fase 1** (Quick Wins) -- implementar primeiro pois sao mudancas isoladas sem risco de regressao
-2. **Fase 2** (UX Core) -- Hub IA e filtros melhoram navegabilidade
-3. **Fase 5** (Admin) -- heatmap e checklist customizavel agregam valor ao plano Master
-4. **Fase 3** (Propostas) -- refatoracao maior, precisa de testes extensivos
-5. **Fase 4** (Dashboard) -- maior complexidade, implementar por ultimo
-
-Cada fase pode ser implementada de forma independente sem quebrar funcionalidades existentes.
-
----
-
-## 5. Concorrentes Identificados (do PRD)
-
-O PRD externo identificou 8 concorrentes relevantes:
-- **BrightLocal** (4.5/5) -- rank tracking, reviews, auditoria GMB
-- **Local Viking** (4.7/5) -- foco em rank tracking GMB
-- **Whitespark** (4.6/5) -- citacoes locais, rank tracker
-- **Podium** (4.5/5) -- reviews + mensagens + pagamentos
-- **Moz Local** (4.3/5) -- otimizacao de listagens
-- **Synup** (4.4/5) -- automacao de posts
-- **Reputation.com** (4.3/5) -- analise de sentimentos
-- **Yext** (4.2/5) -- gestao centralizada multi-plataforma
-
-O GBRANK CRM se diferencia por ser um **CRM completo + otimizacao GMB** em vez de apenas ferramentas isoladas de SEO local, com foco no mercado brasileiro e modelo SaaS multi-tenant.
+### Entregavel Final
+Relatorio completo com status de cada um dos 50 testes, bugs encontrados, e correcoes implementadas imediatamente para cada falha critica.
