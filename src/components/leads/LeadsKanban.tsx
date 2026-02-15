@@ -286,6 +286,8 @@ export function LeadsKanban({ leads, onLeadClick, onMoveLead, onRefresh, onAddLe
                   </Badge>
                 </div>
               </div>
+              {/* Column Value Sum */}
+              <ColumnValueSum leads={leadsByColumn[column.id] || []} />
             </div>
 
             {/* Column Content */}
@@ -340,6 +342,16 @@ export function LeadsKanban({ leads, onLeadClick, onMoveLead, onRefresh, onAddLe
         onSuccess={onRefresh}
       />
     </>
+  );
+}
+
+function ColumnValueSum({ leads }: { leads: KanbanLeadItem[] }) {
+  const totalValue = leads.reduce((sum, l) => sum + (l.estimated_value || 0), 0);
+  if (totalValue <= 0) return null;
+  return (
+    <p className="text-[10px] text-amber-500/80 font-semibold mt-1 tabular-nums">
+      R$ {totalValue.toLocaleString('pt-BR')}
+    </p>
   );
 }
 
