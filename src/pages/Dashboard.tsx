@@ -36,6 +36,8 @@ import { GlobalProgressBar } from "@/components/GlobalProgressBar";
 import { Confetti, useConfetti } from "@/components/Confetti";
 import { NewClientWizard } from "@/components/NewClientWizard";
 import { TrashBin } from "@/components/TrashBin";
+import { FloatingActionButton } from "@/components/FloatingActionButton";
+import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { DayAgenda } from "@/components/DayAgenda";
@@ -440,6 +442,11 @@ const Dashboard = () => {
               onNewClient={() => setWizardOpen(true)}
               onNewLead={() => setNewLeadOpen(true)}
             />
+
+            {/* Activity Feed */}
+            <div className="mt-4">
+              <ActivityFeed />
+            </div>
           </div>
 
           {/* View Content with Animation */}
@@ -459,6 +466,11 @@ const Dashboard = () => {
 
         {/* Floating buttons - improved positioning with safe area */}
         <div className="fixed bottom-6 right-4 sm:right-6 z-40 flex flex-col items-center gap-3 safe-area-inset-bottom">
+          <FloatingActionButton
+            onNewLead={() => setNewLeadOpen(true)}
+            onNewClient={() => setWizardOpen(true)}
+            onNewRecurring={() => setNewRecurringOpen(true)}
+          />
           <TrashBin />
         </div>
       </div>
