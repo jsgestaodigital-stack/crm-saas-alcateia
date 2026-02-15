@@ -247,7 +247,7 @@ serve(async (req) => {
         main_category: lead.main_category || null,
         notes: lead.notes || null,
         whatsapp_link: lead.whatsapp || null,
-        responsible: 'Amanda',
+        responsible: userProfile?.full_name || 'Equipe',
         plan_type: planType,
         status: 'on_track',
         column_id: 'onboarding',
@@ -279,15 +279,20 @@ serve(async (req) => {
           agency_id: lead.agency_id, // Critical: inherit agency from lead
           client_id: client.id,
           company_name: lead.company_name,
-          responsible_name: 'Amanda',
+          responsible_name: userProfile?.full_name || 'Equipe',
           responsible_user_id: user.id,
           schedule_variant: randomVariant,
           status: 'active',
         });
 
       if (recurringError) {
-        console.error('[convert-lead-to-client] Recurring client creation error (non-fatal)');
-        // Don't fail the whole operation, just log the error
+        console.error('[convert-lead-to-client] Recurring client creation error:', recurringError.message);
+        // Rollback: delete the client since recurring was requested but failed
+        await supabaseAdmin.from('clients').delete().eq('id', client.id);
+        return new Response(JSON.stringify({ error: 'Erro ao criar cliente recorrente. Tente novamente.' }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
       } else {
         console.log('[convert-lead-to-client] Recurring client created for:', client.id);
       }

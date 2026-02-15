@@ -27,16 +27,32 @@ export function useLeadDuplicates() {
     const results: DuplicateResult[] = [];
 
     try {
-      // Fetch existing leads for comparison
-      const { data: existingLeads, error } = await supabase
-        .from('leads')
-        .select('id, company_name, whatsapp, email, instagram')
-        .neq('status', 'lost')
-        .limit(500);
+      // Fetch all existing leads for comparison (paginated to bypass 1000 limit)
+      let allLeads: any[] = [];
+      let page = 0;
+      const PAGE_SIZE = 1000;
+      let hasMore = true;
 
-      if (error) throw error;
+      while (hasMore) {
+        const { data: batch, error } = await supabase
+          .from('leads')
+          .select('id, company_name, whatsapp, email, instagram')
+          .neq('status', 'lost')
+          .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
 
-      if (!existingLeads) {
+        if (error) throw error;
+        if (!batch || batch.length === 0) {
+          hasMore = false;
+        } else {
+          allLeads = allLeads.concat(batch);
+          if (batch.length < PAGE_SIZE) hasMore = false;
+          page++;
+        }
+      }
+
+      const existingLeads = allLeads;
+
+      if (!existingLeads || existingLeads.length === 0) {
         setDuplicates([]);
         return [];
       }
