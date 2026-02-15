@@ -5,7 +5,7 @@ import {
   ChevronLeft, ChevronRight, Zap, AlertTriangle, X, DollarSign, 
   MessageCircleQuestion, Search, FileText, Users, Lightbulb, Bell, 
   History, FileSignature, ChevronDown, TrendingUp, RefreshCw, Flame,
-  Building2, Settings, BarChart3
+  Building2, Settings, BarChart3, Brain
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -89,7 +89,7 @@ export function AppSidebar({
     if (location.pathname === "/propostas" || location.pathname === "/contratos") {
       setComercialOpen(true);
     }
-    if (location.pathname === "/agente-seo" || location.pathname === "/agente-suspensoes" || location.pathname === "/duvidas") {
+    if (location.pathname === "/agente-seo" || location.pathname === "/agente-suspensoes" || location.pathname === "/duvidas" || location.pathname === "/agentes-ia") {
       setFerramentasOpen(true);
     }
     if (location.pathname.includes("/admin") || location.pathname === "/equipe" || location.pathname === "/relatorio-gestor") {
@@ -511,6 +511,16 @@ export function AppSidebar({
               </div>
             </CollapsibleTrigger>
             <CollapsibleContent className="space-y-0.5 pt-1 animate-accordion-down">
+              {/* Hub de Agentes IA */}
+              <NavItem
+                icon={Brain}
+                label="Hub Agentes IA"
+                description="Central de agentes"
+                isActive={location.pathname === "/agentes-ia"}
+                onClick={() => { navigate("/agentes-ia"); onMobileOpenChange(false); }}
+                color="violet"
+                dataTour="nav-agentes-ia"
+              />
               {canAccessOps && (
                 <>
                   <AgenteSEOModal trigger={
