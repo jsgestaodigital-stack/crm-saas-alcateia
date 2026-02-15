@@ -18,6 +18,7 @@ import { Loader2, Save, User, Mail, Building2, Phone, Shield, Calendar, Menu } f
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { ActiveSessionsCard } from "@/components/profile/ActiveSessionsCard";
 
 // Validation schema
 const profileSchema = z.object({
@@ -378,6 +379,9 @@ export default function MeuPerfil() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Active Sessions */}
+            <ActiveSessionsCard />
           </div>
         </main>
       </div>
