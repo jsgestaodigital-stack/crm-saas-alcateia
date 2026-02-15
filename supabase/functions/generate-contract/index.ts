@@ -1,9 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { getCorsHeaders, handleCors } from "../_shared/cors.ts";
 
 // Input validation
 interface ContractInput {
@@ -94,9 +90,9 @@ Para RECORRÊNCIA:
 - Política de cancelamento com aviso prévio`;
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsHeaders = getCorsHeaders(req);
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
     // Parse and validate input

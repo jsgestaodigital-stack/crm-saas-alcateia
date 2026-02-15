@@ -1,10 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { getCorsHeaders, handleCors } from "../_shared/cors.ts";
 
 // Input validation
 const MAX_TRANSCRIPTION_LENGTH = 100000; // ~100KB of text
@@ -150,10 +146,9 @@ Nada de parágrafos gigantes ou frases soltas demais.
 Sempre entregue valor prático que o consultor pode usar agora.`;
 
 serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsHeaders = getCorsHeaders(req);
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
     // Verify authentication

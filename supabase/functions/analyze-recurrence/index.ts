@@ -1,10 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { getCorsHeaders, handleCors } from "../_shared/cors.ts";
 
 // System prompt - GPT Especialista em Google Business Profile & Relatórios Estratégicos de Valor
 const SYSTEM_PROMPT = `🧠 Você é um Agente IA especialista em Google Business Profile (antigo Google Meu Negócio), com mais de 15 anos de experiência em SEO local, autoridade online e gestão de clientes.
@@ -118,9 +114,9 @@ Seções obrigatórias:
 Se alguma métrica não estiver visível nas imagens, simplesmente NÃO a mencione.`;
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const corsHeaders = getCorsHeaders(req);
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
     // Verify authentication
