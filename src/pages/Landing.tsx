@@ -761,7 +761,7 @@ const Landing = () => {
           </motion.div>
 
           {/* Grid de planos */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto items-stretch">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 max-w-4xl mx-auto items-stretch">
             {plans.map((plan, index) => (
               <motion.div
                 key={plan.name}
