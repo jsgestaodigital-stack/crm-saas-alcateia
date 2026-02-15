@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -19,7 +19,7 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, RotateCcw, Users, Target, CheckCircle2, TrendingUp, DollarSign, Clock } from 'lucide-react';
+import { GripVertical, RotateCcw, Users, Target, CheckCircle2, TrendingUp, TrendingDown, DollarSign, Clock, ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface KPIWidget {
@@ -28,12 +28,30 @@ interface KPIWidget {
   value: string | number;
   subtitle?: string;
   icon: React.ReactNode;
-  trend?: string;
+  trend?: { value: number; label: string };
   color: string;
 }
 
 interface SortableKPIProps {
   widget: KPIWidget;
+}
+
+function TrendIndicator({ trend }: { trend: { value: number; label: string } }) {
+  const isPositive = trend.value > 0;
+  const isNeutral = trend.value === 0;
+
+  return (
+    <div className={cn(
+      "flex items-center gap-0.5 text-[10px] font-semibold rounded-full px-1.5 py-0.5",
+      isPositive && "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10",
+      !isPositive && !isNeutral && "text-red-600 dark:text-red-400 bg-red-500/10",
+      isNeutral && "text-muted-foreground bg-muted/50"
+    )}>
+      {isPositive ? <ArrowUpRight className="h-3 w-3" /> : isNeutral ? <Minus className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+      {isNeutral ? '—' : `${isPositive ? '+' : ''}${trend.value}%`}
+      <span className="text-muted-foreground font-normal hidden sm:inline">{trend.label}</span>
+    </div>
+  );
 }
 
 function SortableKPI({ widget }: SortableKPIProps) {
@@ -56,7 +74,7 @@ function SortableKPI({ widget }: SortableKPIProps) {
   return (
     <div ref={setNodeRef} style={style} {...attributes}>
       <Card className={cn(
-        'relative group hover:shadow-md transition-shadow border-border/60',
+        'relative group hover:shadow-md transition-all border-border/60',
         isDragging && 'shadow-lg ring-2 ring-primary/30'
       )}>
         <div
@@ -72,13 +90,13 @@ function SortableKPI({ widget }: SortableKPIProps) {
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-xs text-muted-foreground truncate">{widget.title}</p>
-              <p className="text-xl font-bold">{widget.value}</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-xl font-bold tabular-nums">{widget.value}</p>
+              </div>
               {widget.subtitle && (
-                <p className="text-xs text-muted-foreground">{widget.subtitle}</p>
+                <p className="text-[10px] text-muted-foreground">{widget.subtitle}</p>
               )}
-              {widget.trend && (
-                <Badge variant="secondary" className="text-xs mt-1">{widget.trend}</Badge>
-              )}
+              {widget.trend && <TrendIndicator trend={widget.trend} />}
             </div>
           </div>
         </CardContent>
@@ -96,6 +114,18 @@ interface DashboardGridProps {
   pendingTasks: number;
   conversionRate: number;
   monthlyRevenue: number;
+  // Previous period for trend calculation
+  prevClientsCount?: number;
+  prevLeadsCount?: number;
+  prevCompletedTasks?: number;
+  prevConversionRate?: number;
+  prevMonthlyRevenue?: number;
+}
+
+function calcTrend(current: number, previous?: number): { value: number; label: string } {
+  if (previous === undefined || previous === 0) return { value: 0, label: 'vs mês ant.' };
+  const pct = Math.round(((current - previous) / previous) * 100);
+  return { value: pct, label: 'vs mês ant.' };
 }
 
 export function DashboardGrid({
@@ -105,6 +135,11 @@ export function DashboardGrid({
   pendingTasks,
   conversionRate,
   monthlyRevenue,
+  prevClientsCount,
+  prevLeadsCount,
+  prevCompletedTasks,
+  prevConversionRate,
+  prevMonthlyRevenue,
 }: DashboardGridProps) {
   const defaultOrder = ['clients', 'leads', 'completed', 'pending', 'conversion', 'revenue'];
 
@@ -129,6 +164,7 @@ export function DashboardGrid({
       value: clientsCount,
       icon: <Users className="h-4 w-4 text-primary" />,
       color: 'bg-primary/10',
+      trend: calcTrend(clientsCount, prevClientsCount),
     },
     leads: {
       id: 'leads',
@@ -136,37 +172,41 @@ export function DashboardGrid({
       value: leadsCount,
       icon: <Target className="h-4 w-4 text-amber-500" />,
       color: 'bg-amber-500/10',
+      trend: calcTrend(leadsCount, prevLeadsCount),
     },
     completed: {
       id: 'completed',
-      title: 'Tarefas Concluídas',
+      title: 'Concluídas',
       value: completedTasks,
       subtitle: 'Este mês',
       icon: <CheckCircle2 className="h-4 w-4 text-emerald-500" />,
       color: 'bg-emerald-500/10',
+      trend: calcTrend(completedTasks, prevCompletedTasks),
     },
     pending: {
       id: 'pending',
-      title: 'Tarefas Pendentes',
+      title: 'Pendentes',
       value: pendingTasks,
       icon: <Clock className="h-4 w-4 text-orange-500" />,
       color: 'bg-orange-500/10',
     },
     conversion: {
       id: 'conversion',
-      title: 'Taxa de Conversão',
+      title: 'Conversão',
       value: `${conversionRate}%`,
       icon: <TrendingUp className="h-4 w-4 text-blue-500" />,
       color: 'bg-blue-500/10',
+      trend: prevConversionRate !== undefined ? { value: conversionRate - prevConversionRate, label: 'pp vs ant.' } : undefined,
     },
     revenue: {
       id: 'revenue',
-      title: 'Receita Mensal',
-      value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(monthlyRevenue),
+      title: 'MRR',
+      value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(monthlyRevenue),
       icon: <DollarSign className="h-4 w-4 text-emerald-600" />,
       color: 'bg-emerald-600/10',
+      trend: calcTrend(monthlyRevenue, prevMonthlyRevenue),
     },
-  }), [clientsCount, leadsCount, completedTasks, pendingTasks, conversionRate, monthlyRevenue]);
+  }), [clientsCount, leadsCount, completedTasks, pendingTasks, conversionRate, monthlyRevenue, prevClientsCount, prevLeadsCount, prevCompletedTasks, prevConversionRate, prevMonthlyRevenue]);
 
   const widgets = order.map(id => widgetMap[id]).filter(Boolean);
 

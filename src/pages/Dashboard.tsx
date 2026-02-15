@@ -123,20 +123,27 @@ const Dashboard = () => {
 
   if (isLoading || isClientsLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className={cn(
-            "w-12 h-12 border-4 rounded-full animate-spin",
-            isSalesMode 
-              ? "border-amber-500/30 border-t-amber-500" 
-              : "border-primary/30 border-t-primary"
-          )} />
-          <div className={cn(
-            "text-lg font-medium animate-pulse",
-            isSalesMode ? "text-amber-400" : "text-primary"
-          )}>
-            Carregando...
-          </div>
+      <div className="min-h-screen bg-background p-4 sm:p-8 space-y-6">
+        {/* Skeleton header */}
+        <div className="flex items-center justify-between">
+          <div className="h-8 w-48 bg-muted rounded animate-pulse" />
+          <div className="h-8 w-32 bg-muted rounded animate-pulse" />
+        </div>
+        {/* Skeleton KPIs */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-24 bg-muted rounded-xl animate-pulse" style={{ animationDelay: `${i * 100}ms` }} />
+          ))}
+        </div>
+        {/* Skeleton content */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="h-48 bg-muted rounded-xl animate-pulse" />
+          <div className="h-48 bg-muted rounded-xl animate-pulse" />
+        </div>
+        <div className="flex flex-wrap gap-3">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="h-[300px] w-[280px] bg-muted rounded-xl animate-pulse shrink-0" style={{ animationDelay: `${i * 75}ms` }} />
+          ))}
         </div>
       </div>
     );

@@ -500,7 +500,12 @@ export function ClientCard({ client, onClick, onConvertToRecurring }: ClientCard
         <div className="flex items-center justify-between text-[10px] text-muted-foreground">
           <div className="flex items-center gap-1">
             <Clock className="w-3 h-3" />
-            <span>{getDaysAgo(client.lastUpdate)}</span>
+            <span className={cn(
+              daysSinceUpdate >= 7 && "text-status-danger font-bold",
+              daysSinceUpdate >= 3 && daysSinceUpdate < 7 && "text-status-warning font-semibold"
+            )}>
+              {daysSinceUpdate === 0 ? 'Hoje' : `${daysSinceUpdate}d atrás`}
+            </span>
             {isStalled && (
               <>
                 <AlertTriangle className="w-3 h-3 text-status-danger ml-1" />
@@ -517,12 +522,17 @@ export function ClientCard({ client, onClick, onConvertToRecurring }: ClientCard
               </>
             )}
           </div>
-          <span className={cn(
-            "px-1.5 py-0.5 rounded text-[9px] font-medium",
-            client.planType === "recurring" ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
-          )}>
-            {client.planType === "recurring" ? "REC" : "ÚNICO"}
-          </span>
+          <div className="flex items-center gap-1.5">
+            {client.city && (
+              <span className="text-[9px] text-muted-foreground/70 truncate max-w-[60px]">{client.city}</span>
+            )}
+            <span className={cn(
+              "px-1.5 py-0.5 rounded text-[9px] font-medium",
+              client.planType === "recurring" ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
+            )}>
+              {client.planType === "recurring" ? "REC" : "ÚNICO"}
+            </span>
+          </div>
         </div>
       </div>
     </div>
