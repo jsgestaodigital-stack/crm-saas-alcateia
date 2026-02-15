@@ -38,6 +38,8 @@ import { NewClientWizard } from "@/components/NewClientWizard";
 import { TrashBin } from "@/components/TrashBin";
 import { FloatingActionButton } from "@/components/FloatingActionButton";
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
+import { PriorityAlerts } from "@/components/dashboard/PriorityAlerts";
+import { DashboardGrid } from "@/components/dashboard/DashboardGrid";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { DayAgenda } from "@/components/DayAgenda";
@@ -428,7 +430,32 @@ const Dashboard = () => {
           )}
 
           {/* Onboarding Checklist - show on first visit */}
-          <div className="px-4 pt-4">
+          <div className="px-4 pt-4 space-y-4">
+            {/* Priority Alerts */}
+            <PriorityAlerts
+              clientsCount={clients.length}
+              overdueClients={clients.filter(c => {
+                const lastUpdate = new Date(c.lastUpdate);
+                const daysAgo = (Date.now() - lastUpdate.getTime()) / (1000 * 60 * 60 * 24);
+                return daysAgo > 7 && !["finalized", "delivered"].includes(c.columnId);
+              }).length}
+              staleLeads={fullLeads.filter(l => {
+                const updated = new Date(l.updated_at);
+                const daysAgo = (Date.now() - updated.getTime()) / (1000 * 60 * 60 * 24);
+                return daysAgo > 5 && l.status === 'open';
+              }).length}
+            />
+
+            {/* Draggable KPI Grid */}
+            <DashboardGrid
+              clientsCount={clients.length}
+              leadsCount={activeLeads.length}
+              completedTasks={clients.filter(c => ["finalized", "delivered"].includes(c.columnId)).length}
+              pendingTasks={clients.filter(c => !["finalized", "delivered"].includes(c.columnId)).length}
+              conversionRate={fullLeads.length > 0 ? Math.round((fullLeads.filter(l => l.pipeline_stage === 'gained').length / fullLeads.length) * 100) : 0}
+              monthlyRevenue={0}
+            />
+
             {/* Welcome Card for brand new users */}
             {isNewUser && (
               <WelcomeCard 
@@ -444,9 +471,7 @@ const Dashboard = () => {
             />
 
             {/* Activity Feed */}
-            <div className="mt-4">
-              <ActivityFeed />
-            </div>
+            <ActivityFeed />
           </div>
 
           {/* View Content with Animation */}
