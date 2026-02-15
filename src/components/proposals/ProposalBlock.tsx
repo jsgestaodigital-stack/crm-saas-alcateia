@@ -19,6 +19,7 @@ interface ProposalBlockProps {
   isFirst?: boolean;
   isLast?: boolean;
   variables?: Record<string, string>;
+  dragListeners?: Record<string, Function>;
 }
 
 export function ProposalBlockComponent({
@@ -29,7 +30,8 @@ export function ProposalBlockComponent({
   onMoveDown,
   isFirst,
   isLast,
-  variables = {}
+  variables = {},
+  dragListeners
 }: ProposalBlockProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [newChecklistItem, setNewChecklistItem] = useState('');
@@ -45,12 +47,6 @@ export function ProposalBlockComponent({
     onUpdate({ ...block, content });
   };
 
-  const handleChecklistItemToggle = (index: number) => {
-    if (!block.checklist) return;
-    const newChecklist = [...block.checklist];
-    onUpdate({ ...block, checklist: newChecklist });
-  };
-
   const handleAddChecklistItem = () => {
     if (!newChecklistItem.trim()) return;
     const newChecklist = [...(block.checklist || []), newChecklistItem.trim()];
@@ -64,7 +60,6 @@ export function ProposalBlockComponent({
     onUpdate({ ...block, checklist: newChecklist });
   };
 
-  // Replace variables in content for preview
   const getPreviewContent = (content: string) => {
     let result = content;
     Object.entries(variables).forEach(([key, value]) => {
@@ -73,16 +68,13 @@ export function ProposalBlockComponent({
     return result;
   };
 
-  // Get full block text for copying
   const getBlockTextForCopy = () => {
     let text = `${block.title}\n\n`;
-    
     if (block.type === 'scope' && block.checklist) {
       text += block.checklist.map(item => `✓ ${item}`).join('\n');
     } else if (block.content) {
       text += getPreviewContent(block.content);
     }
-    
     return text;
   };
 
@@ -100,7 +92,12 @@ export function ProposalBlockComponent({
   return (
     <Card className="border-2 border-border/60 bg-card shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-center gap-2 p-3 border-b border-border/50 bg-muted/30">
-        <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab" />
+        <div
+          className="cursor-grab active:cursor-grabbing touch-none"
+          {...(dragListeners || {})}
+        >
+          <GripVertical className="h-4 w-4 text-muted-foreground" />
+        </div>
         
         <span className="text-lg">{config.emoji}</span>
         
@@ -111,43 +108,23 @@ export function ProposalBlockComponent({
         />
         
         <div className="flex items-center gap-1">
-          <Button 
-            variant="outline" 
-            size="icon" 
-            className="h-7 w-7"
-            onClick={handleCopyBlock}
-            title="Copiar bloco"
-          >
-            {copied ? (
-              <Check className="h-3.5 w-3.5 text-green-500" />
-            ) : (
-              <Copy className="h-3.5 w-3.5" />
-            )}
+          <Button variant="outline" size="icon" className="h-7 w-7" onClick={handleCopyBlock} title="Copiar bloco">
+            {copied ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
           </Button>
-          {!isFirst && (
+          {!isFirst && onMoveUp && (
             <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onMoveUp}>
               <ChevronUp className="h-4 w-4" />
             </Button>
           )}
-          {!isLast && (
+          {!isLast && onMoveDown && (
             <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onMoveDown}>
               <ChevronDown className="h-4 w-4" />
             </Button>
           )}
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="h-7 w-7"
-            onClick={() => setIsExpanded(!isExpanded)}
-          >
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setIsExpanded(!isExpanded)}>
             {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
           </Button>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="h-7 w-7 text-destructive hover:text-destructive"
-            onClick={onDelete}
-          >
+          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive" onClick={onDelete}>
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
@@ -203,7 +180,6 @@ export function ProposalBlockComponent({
             </div>
           )}
 
-          {/* Preview with variables replaced */}
           {block.content && Object.keys(variables).length > 0 && (
             <div className="pt-3 border-t border-border/30 bg-muted/20 -mx-4 px-4 pb-2 mt-2 rounded-b-lg">
               <Label className="text-xs text-muted-foreground mb-2 block">Prévia:</Label>
