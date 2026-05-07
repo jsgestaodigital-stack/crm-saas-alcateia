@@ -105,11 +105,15 @@ export default function TeamMemberCard({
   canAssignRoles,
   canRemove,
   isCurrentUser,
+  actorRole,
+  isLastOwner = false,
   onRoleChange,
   onRemove,
 }: TeamMemberCardProps) {
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
   const role = member.app_role || "visualizador";
+  const allowRemove = canRemove && !isCurrentUser && podeRemover(actorRole, role) && !(isLastOwner && role === 'owner');
+  const lockRoleSelect = isLastOwner && role === 'owner';
 
   const getInitials = (name: string) => {
     return name
