@@ -1,5 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
-import { LEAD_COLUMNS, LeadPipelineStage } from '@/types/lead';
+import { useEffect, useState, useCallback, useRef } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { LEAD_COLUMNS } from '@/types/lead';
 
 export interface PipelineColumn {
   id: string;
@@ -10,98 +12,195 @@ export interface PipelineColumn {
   isDefault: boolean;
 }
 
-const STORAGE_KEY = 'rankeia-pipeline-columns';
+const LEGACY_STORAGE_KEY = 'rankeia-pipeline-columns';
 
-// Default columns from lead.ts
-const getDefaultColumns = (): PipelineColumn[] => {
-  return LEAD_COLUMNS.map((col, index) => ({
+const getDefaultColumns = (): PipelineColumn[] =>
+  LEAD_COLUMNS.map((col, index) => ({
     ...col,
     order: index,
     isDefault: true,
   }));
-};
+
+interface DbRow {
+  id: string;
+  title: string;
+  emoji: string;
+  color: string;
+  position: number;
+  is_default: boolean;
+}
+
+const rowToColumn = (r: DbRow): PipelineColumn => ({
+  id: r.id,
+  title: r.title,
+  emoji: r.emoji,
+  color: r.color,
+  order: r.position,
+  isDefault: r.is_default,
+});
 
 export function usePipelineColumns() {
+  const { currentAgencyId } = useAuth();
   const [columns, setColumns] = useState<PipelineColumn[]>([]);
   const [loading, setLoading] = useState(true);
+  const seededRef = useRef<string | null>(null);
 
-  // Load columns from localStorage
-  useEffect(() => {
+  const fetchColumns = useCallback(async (agencyId: string): Promise<PipelineColumn[]> => {
+    const { data, error } = await (supabase as any)
+      .from('pipeline_columns')
+      .select('id, title, emoji, color, position, is_default')
+      .eq('agency_id', agencyId)
+      .order('position', { ascending: true });
+    if (error) {
+      console.error('[pipeline_columns] fetch error', error);
+      return getDefaultColumns();
+    }
+    return (data as DbRow[]).map(rowToColumn);
+  }, []);
+
+  const seedDefaults = useCallback(async (agencyId: string) => {
+    const defaults = getDefaultColumns();
+    const rows = defaults.map(c => ({
+      id: c.id,
+      agency_id: agencyId,
+      title: c.title,
+      emoji: c.emoji,
+      color: c.color,
+      position: c.order,
+      is_default: true,
+    }));
+    await (supabase as any)
+      .from('pipeline_columns')
+      .upsert(rows, { onConflict: 'id' });
+  }, []);
+
+  const migrateFromLocalStorage = useCallback(async (agencyId: string) => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        // Merge with defaults to handle new columns
-        const defaults = getDefaultColumns();
-        const merged = defaults.map(def => {
-          const saved = parsed.find((p: PipelineColumn) => p.id === def.id);
-          return saved ? { ...def, ...saved } : def;
-        });
-        // Add any custom columns
-        const customColumns = parsed.filter((p: PipelineColumn) => !p.isDefault);
-        setColumns([...merged, ...customColumns].sort((a, b) => a.order - b.order));
-      } else {
-        setColumns(getDefaultColumns());
+      const stored = localStorage.getItem(LEGACY_STORAGE_KEY);
+      if (!stored) return;
+      const parsed = JSON.parse(stored) as PipelineColumn[];
+      if (!Array.isArray(parsed) || parsed.length === 0) {
+        localStorage.removeItem(LEGACY_STORAGE_KEY);
+        return;
       }
-    } catch (error) {
-      console.error('Error loading columns:', error);
-      setColumns(getDefaultColumns());
-    } finally {
-      setLoading(false);
+      const rows = parsed.map((c, i) => ({
+        id: c.id,
+        agency_id: agencyId,
+        title: c.title,
+        emoji: c.emoji,
+        color: c.color,
+        position: typeof c.order === 'number' ? c.order : i,
+        is_default: !!c.isDefault,
+      }));
+      await (supabase as any)
+        .from('pipeline_columns')
+        .upsert(rows, { onConflict: 'id' });
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
+    } catch (e) {
+      console.error('[pipeline_columns] localStorage migration failed', e);
     }
   }, []);
 
-  // Save columns to localStorage (supports functional updates to avoid stale state)
-  const saveColumns = useCallback(
-    (
-      next:
-        | PipelineColumn[]
-        | ((prev: PipelineColumn[]) => PipelineColumn[]),
-    ) => {
-      setColumns(prev => {
-        const newColumns = typeof next === 'function' ? next(prev) : next;
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(newColumns));
-        } catch (error) {
-          console.error('Error saving columns:', error);
-        }
-        return newColumns;
-      });
-    },
-    [],
-  );
+  const reload = useCallback(async () => {
+    if (!currentAgencyId) return;
+    const cols = await fetchColumns(currentAgencyId);
+    setColumns(cols);
+  }, [currentAgencyId, fetchColumns]);
 
-  // Add new column
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      if (!currentAgencyId) {
+        setColumns(getDefaultColumns());
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+
+      // One-time per agency: migrate localStorage + seed defaults if empty
+      if (seededRef.current !== currentAgencyId) {
+        await migrateFromLocalStorage(currentAgencyId);
+        const existing = await fetchColumns(currentAgencyId);
+        if (existing.length === 0) {
+          await seedDefaults(currentAgencyId);
+        }
+        seededRef.current = currentAgencyId;
+      }
+
+      const cols = await fetchColumns(currentAgencyId);
+      if (!cancelled) {
+        setColumns(cols);
+        setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [currentAgencyId, fetchColumns, migrateFromLocalStorage, seedDefaults]);
+
+  // Realtime sync
+  useEffect(() => {
+    if (!currentAgencyId) return;
+    const channel = supabase
+      .channel(`pipeline_columns:${currentAgencyId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'pipeline_columns', filter: `agency_id=eq.${currentAgencyId}` },
+        () => { reload(); },
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [currentAgencyId, reload]);
+
   const addColumn = useCallback(
     (title: string, emoji: string, color: string) => {
       const id = `custom_${Date.now()}`;
-      saveColumns(prev => {
-        const newColumn: PipelineColumn = {
+      if (!currentAgencyId) return id;
+      const nextPos = columns.length;
+      // Optimistic
+      setColumns(prev => [...prev, { id, title, emoji, color, order: nextPos, isDefault: false }]);
+      (supabase as any)
+        .from('pipeline_columns')
+        .insert({
           id,
+          agency_id: currentAgencyId,
           title,
           emoji,
           color,
-          order: prev.length,
-          isDefault: false,
-        };
-        return [...prev, newColumn];
-      });
+          position: nextPos,
+          is_default: false,
+        })
+        .then(({ error }: any) => {
+          if (error) {
+            console.error('[pipeline_columns] insert failed', error);
+            reload();
+          }
+        });
       return id;
     },
-    [saveColumns],
+    [columns.length, currentAgencyId, reload],
   );
 
-  // Update column
   const updateColumn = useCallback(
     (id: string, updates: Partial<PipelineColumn>) => {
-      saveColumns(prev =>
-        prev.map(col => (col.id === id ? { ...col, ...updates } : col)),
-      );
+      setColumns(prev => prev.map(c => (c.id === id ? { ...c, ...updates } : c)));
+      const payload: any = {};
+      if (updates.title !== undefined) payload.title = updates.title;
+      if (updates.emoji !== undefined) payload.emoji = updates.emoji;
+      if (updates.color !== undefined) payload.color = updates.color;
+      if (updates.order !== undefined) payload.position = updates.order;
+      (supabase as any)
+        .from('pipeline_columns')
+        .update(payload)
+        .eq('id', id)
+        .then(({ error }: any) => {
+          if (error) {
+            console.error('[pipeline_columns] update failed', error);
+            reload();
+          }
+        });
     },
-    [saveColumns],
+    [reload],
   );
 
-  // Delete column (only custom columns, unless admin)
   const deleteColumn = useCallback(
     (id: string, isAdmin: boolean = false) => {
       const column = columns.find(c => c.id === id);
@@ -109,35 +208,83 @@ export function usePipelineColumns() {
         console.warn('Cannot delete default columns without admin privileges');
         return false;
       }
-      saveColumns(prev => prev.filter(col => col.id !== id));
+      setColumns(prev => prev.filter(c => c.id !== id));
+      (supabase as any)
+        .from('pipeline_columns')
+        .delete()
+        .eq('id', id)
+        .then(({ error }: any) => {
+          if (error) {
+            console.error('[pipeline_columns] delete failed', error);
+            reload();
+          }
+        });
       return true;
     },
-    [columns, saveColumns],
+    [columns, reload],
   );
 
-  // Reorder columns
-  const reorderColumns = useCallback((orderedIds: string[]) => {
-    const newColumns = orderedIds.map((id, index) => {
-      const col = columns.find(c => c.id === id);
-      return col ? { ...col, order: index } : null;
-    }).filter(Boolean) as PipelineColumn[];
-    saveColumns(newColumns);
-  }, [columns, saveColumns]);
+  const persistOrder = useCallback(
+    async (ordered: PipelineColumn[]) => {
+      if (!currentAgencyId) return;
+      const rows = ordered.map((c, i) => ({
+        id: c.id,
+        agency_id: currentAgencyId,
+        title: c.title,
+        emoji: c.emoji,
+        color: c.color,
+        position: i,
+        is_default: c.isDefault,
+      }));
+      const { error } = await (supabase as any)
+        .from('pipeline_columns')
+        .upsert(rows, { onConflict: 'id' });
+      if (error) {
+        console.error('[pipeline_columns] reorder failed', error);
+        reload();
+      }
+    },
+    [currentAgencyId, reload],
+  );
 
-  // Move column
-  const moveColumn = useCallback((fromIndex: number, toIndex: number) => {
-    const newColumns = [...columns];
-    const [moved] = newColumns.splice(fromIndex, 1);
-    newColumns.splice(toIndex, 0, moved);
-    const reordered = newColumns.map((col, i) => ({ ...col, order: i }));
-    saveColumns(reordered);
-  }, [columns, saveColumns]);
+  const reorderColumns = useCallback(
+    (orderedIds: string[]) => {
+      const newColumns = orderedIds
+        .map((id, index) => {
+          const col = columns.find(c => c.id === id);
+          return col ? { ...col, order: index } : null;
+        })
+        .filter(Boolean) as PipelineColumn[];
+      setColumns(newColumns);
+      persistOrder(newColumns);
+    },
+    [columns, persistOrder],
+  );
 
-  // Reset to defaults
-  const resetToDefaults = useCallback(() => {
+  const moveColumn = useCallback(
+    (fromIndex: number, toIndex: number) => {
+      const newColumns = [...columns];
+      const [moved] = newColumns.splice(fromIndex, 1);
+      newColumns.splice(toIndex, 0, moved);
+      const reordered = newColumns.map((col, i) => ({ ...col, order: i }));
+      setColumns(reordered);
+      persistOrder(reordered);
+    },
+    [columns, persistOrder],
+  );
+
+  const resetToDefaults = useCallback(async () => {
+    if (!currentAgencyId) return;
     const defaults = getDefaultColumns();
-    saveColumns(defaults);
-  }, [saveColumns]);
+    // Delete all custom and reseed defaults
+    await (supabase as any)
+      .from('pipeline_columns')
+      .delete()
+      .eq('agency_id', currentAgencyId)
+      .eq('is_default', false);
+    await seedDefaults(currentAgencyId);
+    reload();
+  }, [currentAgencyId, reload, seedDefaults]);
 
   return {
     columns,
