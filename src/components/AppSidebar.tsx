@@ -485,73 +485,21 @@ export function AppSidebar({
             </Collapsible>
           )}
 
-          {/* === FERRAMENTAS - Collapsible === */}
-          <Collapsible open={ferramentasOpen} onOpenChange={setFerramentasOpen}>
-            <CollapsibleTrigger asChild>
-              <div data-tour="section-ferramentas">
-                <SectionHeader 
-                  icon={Settings} 
-                  label="Ferramentas" 
-                  isOpen={ferramentasOpen} 
-                  onToggle={() => setFerramentasOpen(!ferramentasOpen)}
-                  color="cyan"
-                />
-              </div>
-            </CollapsibleTrigger>
-            <CollapsibleContent className="space-y-0.5 pt-1 animate-accordion-down">
-              {/* Hub de Agentes IA */}
-              <NavItem
-                icon={Brain}
-                label="Hub Agentes IA"
-                description="Central de agentes"
-                isActive={location.pathname === "/agentes-ia"}
-                onClick={() => { navigate("/agentes-ia"); onMobileOpenChange(false); }}
-                color="violet"
-                dataTour="nav-agentes-ia"
-              />
-              {canAccessOps && (
-                <>
-                  <AgenteSEOModal trigger={
-                    <div className="w-full" data-tour="nav-agente-seo">
-                      <NavItem
-                        icon={Search}
-                        label="Agente SEO"
-                        description="Otimização de perfil"
-                        isActive={false}
-                        onClick={() => {}}
-                        color="primary"
-                      />
-                    </div>
-                  } />
-                  <AgenteSuspensoesModal trigger={
-                    <div className="w-full" data-tour="nav-agente-suspensoes">
-                      <NavItem
-                        icon={AlertTriangle}
-                        label="Agente Suspensões"
-                        description="Análise de perfis"
-                        isActive={false}
-                        onClick={() => {}}
-                        color="amber"
-                      />
-                    </div>
-                  } />
-                </>
-              )}
-              {isRecurringMode && (
-                <AgenteRelatorioModal trigger={
-                  <div className="w-full" data-tour="nav-agente-relatorios">
-                    <NavItem
-                      icon={BarChart3}
-                      label="Agente Relatórios"
-                      description="Análise IA de métricas"
-                      isActive={false}
-                      onClick={() => {}}
-                      color="violet"
-                    />
-                  </div>
-                } />
-              )}
-              {canAccessOps && (
+          {/* === FERRAMENTAS - Collapsible (apenas admin) === */}
+          {canAccessAdmin && (
+            <Collapsible open={ferramentasOpen} onOpenChange={setFerramentasOpen}>
+              <CollapsibleTrigger asChild>
+                <div data-tour="section-ferramentas">
+                  <SectionHeader 
+                    icon={Settings} 
+                    label="Ferramentas" 
+                    isOpen={ferramentasOpen} 
+                    onToggle={() => setFerramentasOpen(!ferramentasOpen)}
+                    color="cyan"
+                  />
+                </div>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-0.5 pt-1 animate-accordion-down">
                 <NavItem
                   icon={MessageCircleQuestion}
                   label="Central Operacional"
@@ -562,9 +510,9 @@ export function AppSidebar({
                   color="amber"
                   dataTour="nav-central-operacional"
                 />
-              )}
-            </CollapsibleContent>
-          </Collapsible>
+              </CollapsibleContent>
+            </Collapsible>
+          )}
 
           {/* === ADMINISTRAÇÃO - Collapsible === */}
           {canAccessAdmin && (
