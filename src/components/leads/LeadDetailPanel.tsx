@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import debounce from 'lodash.debounce';
+import { toast } from 'sonner';
 import { 
   Dialog, 
   DialogContent, 
@@ -63,61 +63,57 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
   // Permite edição se: tem permissão canSalesOrAdmin OU é admin/owner OU tem can_sales explícito
   const canEditLeads = derived?.canSalesOrAdmin || isAdmin || userRole === 'admin' || userRole === 'owner' || permissions?.canSales || permissions?.canAdmin;
   const [activeTab, setActiveTab] = useState('resumo');
-  
-  // Local state for optimistic updates
+
+  // Local edit state (no auto-save)
   const [localValues, setLocalValues] = useState<Record<string, any>>({});
   const [isSaving, setIsSaving] = useState(false);
-  const [pendingFields, setPendingFields] = useState<Set<string>>(new Set());
+  const [justSaved, setJustSaved] = useState(false);
 
   // Reset local values when lead changes
   useEffect(() => {
     setLocalValues({});
-    setPendingFields(new Set());
+    setJustSaved(false);
   }, [lead?.id]);
 
-  // Debounced save function
-  const debouncedSave = useMemo(
-    () =>
-      debounce(async (leadId: string, field: keyof Lead, value: any) => {
-        setIsSaving(true);
-        try {
-          await updateLead(leadId, { [field]: value });
-          await refetch?.();
-          onUpdate();
-        } finally {
-          setIsSaving(false);
-          setPendingFields(prev => {
-            const next = new Set(prev);
-            next.delete(field);
-            return next;
-          });
-        }
-      }, 500),
-    [updateLead, refetch, onUpdate]
-  );
-
-  // Cleanup debounce on unmount
-  useEffect(() => {
-    return () => {
-      debouncedSave.cancel();
-    };
-  }, [debouncedSave]);
+  const isDirty = Object.keys(localValues).length > 0;
 
   if (!lead) return null;
 
   const handleFieldChange = (field: keyof Lead, value: any) => {
     setLocalValues(prev => ({ ...prev, [field]: value }));
-    setPendingFields(prev => new Set(prev).add(field));
-    debouncedSave(lead.id, field, value);
+    setJustSaved(false);
   };
 
-  // Immediate save for selects (no debounce needed)
+  // Immediate save for selects (these are atomic actions)
   const handleSelectChange = async (field: keyof Lead, value: any) => {
     setIsSaving(true);
     try {
-      await updateLead(lead.id, { [field]: value });
-      await refetch?.();
-      onUpdate();
+      const ok = await updateLead(lead.id, { [field]: value });
+      if (ok) {
+        await refetch?.();
+        onUpdate();
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSaveChanges = async () => {
+    if (!isDirty || isSaving) return;
+    setIsSaving(true);
+    try {
+      const ok = await updateLead(lead.id, localValues as Partial<Lead>);
+      if (ok) {
+        setLocalValues({});
+        setJustSaved(true);
+        await refetch?.();
+        onUpdate();
+        setTimeout(() => setJustSaved(false), 2000);
+      } else {
+        toast.error('Erro ao salvar. Tente novamente.');
+      }
+    } catch {
+      toast.error('Erro ao salvar. Tente novamente.');
     } finally {
       setIsSaving(false);
     }
