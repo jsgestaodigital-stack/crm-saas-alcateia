@@ -114,10 +114,22 @@ export default function Equipe() {
   }, [members]);
 
   const handleRoleChange = (userId: string, newRole: AppRole) => {
+    const target = (members || []).find((m: any) => m.user_id === userId);
+    const ownerCount = (members || []).filter((m: any) => m.app_role === 'owner').length;
+    if (target?.app_role === 'owner' && newRole !== 'owner' && ownerCount <= 1) {
+      toast.error('Promova outro membro a Dono antes de realizar esta ação.');
+      return;
+    }
     assignRole.mutate({ targetUserId: userId, newRole });
   };
 
   const handleRemove = (memberId: string) => {
+    const target = (members || []).find((m: any) => m.id === memberId);
+    const ownerCount = (members || []).filter((m: any) => m.app_role === 'owner').length;
+    if (target?.app_role === 'owner' && ownerCount <= 1) {
+      toast.error('Promova outro membro a Dono antes de realizar esta ação.');
+      return;
+    }
     removeMember.mutate(memberId);
   };
 
