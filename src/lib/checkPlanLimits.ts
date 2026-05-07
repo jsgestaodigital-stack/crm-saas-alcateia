@@ -145,8 +145,14 @@ const limitMessages: Record<keyof UsageToCheck, string> = {
  */
 export function checkPlanLimit(
   agency: Agency | null | undefined,
-  usage: UsageToCheck
+  usage: UsageToCheck,
+  userProfile?: UserProfileForLimits | null
 ): LimitCheckResult {
+  // Membros da Alcateia recebem limites do Lobão
+  if (userProfile?.alcateia_member === true) {
+    return checkPlanLimit({ id: 'alcateia', name: 'Alcateia', plan: LOBAO_LIMITS }, usage);
+  }
+
   // Se não há agência ou plano, permitir (fallback seguro)
   if (!agency?.plan) {
     return { valid: true };
