@@ -47,6 +47,7 @@ export default function Auth() {
     fullName?: string;
     agencyName?: string;
   }>({});
+  const [needsEmailConfirmation, setNeedsEmailConfirmation] = useState(false);
   const [rateLimitInfo, setRateLimitInfo] = useState<{
     isBlocked: boolean;
     remainingSeconds: number;
@@ -338,20 +339,24 @@ export default function Auth() {
 
           // Tratamento de erro diferenciado
           const classified = classifyError(error);
-          if (classified.type === ErrorType.Authentication || 
-              error.message.includes("Invalid login credentials")) {
-            toast.error("E-mail ou senha incorretos");
-          } else if (error.message.includes("Email not confirmed")) {
-            toast.error("E-mail não confirmado. Verifique sua caixa de entrada.");
-          } else if (classified.type === ErrorType.RateLimit) {
-            toast.error("Muitas tentativas. Aguarde antes de tentar novamente.");
+          const msg = error.message || '';
+          if (msg.includes('Email not confirmed')) {
+            setNeedsEmailConfirmation(true);
+            toast.error('Confirme seu email antes de entrar. Verifique sua caixa de entrada.');
+          } else if (classified.type === ErrorType.Authentication || msg.includes('Invalid login credentials')) {
+            toast.error('Email ou senha incorretos.');
+          } else if (msg.includes('User not found')) {
+            toast.error('Nenhuma conta encontrada com este email.');
+          } else if (classified.type === ErrorType.RateLimit || msg.includes('Too many requests')) {
+            toast.error('Muitas tentativas. Aguarde 1 minuto e tente novamente.');
           } else if (classified.type === ErrorType.Network) {
-            toast.error("Erro de conexão. Verifique sua internet.");
+            toast.error('Erro de conexão. Verifique sua internet.');
           } else {
-            toast.error(classified.userMessage);
+            toast.error('Erro ao entrar. Tente novamente.');
           }
           return;
         }
+        setNeedsEmailConfirmation(false);
         // O useEffect vai cuidar do redirecionamento após verificar status
       }
     } catch (err) {
@@ -821,6 +826,31 @@ export default function Auth() {
                       }}
                     >
                       Esqueceu sua senha?
+                    </Button>
+                  </div>
+                )}
+
+                {needsEmailConfirmation && authMode === 'login' && (
+                  <div className="rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-sm space-y-2">
+                    <p className="text-amber-200">Seu email ainda não foi confirmado.</p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={async () => {
+                        if (!email) {
+                          toast.error('Informe o email primeiro.');
+                          return;
+                        }
+                        const { error } = await supabase.auth.resend({ type: 'signup', email });
+                        if (error) {
+                          toast.error('Não foi possível reenviar. Tente novamente em instantes.');
+                        } else {
+                          toast.success('Email de confirmação reenviado.');
+                        }
+                      }}
+                    >
+                      Reenviar email de confirmação
                     </Button>
                   </div>
                 )}

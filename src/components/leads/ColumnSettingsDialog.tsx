@@ -22,6 +22,7 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { usePipelineColumns, PipelineColumn } from '@/hooks/usePipelineColumns';
+import { useLeads } from '@/hooks/useLeads';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
@@ -56,6 +57,7 @@ export function ColumnSettingsDialog({ open, onOpenChange }: ColumnSettingsDialo
     moveColumn, 
     resetToDefaults 
   } = usePipelineColumns();
+  const { leads } = useLeads();
   
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
@@ -110,11 +112,17 @@ export function ColumnSettingsDialog({ open, onOpenChange }: ColumnSettingsDialo
       toast.error('Apenas administradores podem excluir colunas padrão');
       return;
     }
-    
+
+    const leadsInStage = (leads || []).filter((l: any) => l.pipeline_stage === id || l.stage === id || l.column_id === id);
+    if (leadsInStage.length > 0) {
+      toast.error(`Mova ou exclua os ${leadsInStage.length} lead(s) desta etapa antes de removê-la.`);
+      return;
+    }
+
     const confirmMsg = column?.isDefault 
       ? `⚠️ Esta é uma coluna padrão. Excluir "${column?.title}"?` 
       : `Excluir coluna "${column?.title}"?`;
-    
+
     if (confirm(confirmMsg)) {
       deleteColumn(id, isAdmin);
       toast.success('Coluna excluída');

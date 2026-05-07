@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import {
   Users,
   Search,
@@ -114,10 +115,22 @@ export default function Equipe() {
   }, [members]);
 
   const handleRoleChange = (userId: string, newRole: AppRole) => {
+    const target = (members || []).find((m: any) => m.user_id === userId);
+    const ownerCount = (members || []).filter((m: any) => m.app_role === 'owner').length;
+    if (target?.app_role === 'owner' && newRole !== 'owner' && ownerCount <= 1) {
+      toast.error('Promova outro membro a Dono antes de realizar esta ação.');
+      return;
+    }
     assignRole.mutate({ targetUserId: userId, newRole });
   };
 
   const handleRemove = (memberId: string) => {
+    const target = (members || []).find((m: any) => m.id === memberId);
+    const ownerCount = (members || []).filter((m: any) => m.app_role === 'owner').length;
+    if (target?.app_role === 'owner' && ownerCount <= 1) {
+      toast.error('Promova outro membro a Dono antes de realizar esta ação.');
+      return;
+    }
     removeMember.mutate(memberId);
   };
 
@@ -264,17 +277,22 @@ export default function Equipe() {
               </div>
             ) : (
               <div className="space-y-3">
-                {filteredMembers.map((member) => (
-                  <TeamMemberCard
-                    key={member.id}
-                    member={member}
-                    canAssignRoles={canAssignRoles}
-                    canRemove={canManage}
-                    isCurrentUser={member.user_id === user?.id}
-                    onRoleChange={handleRoleChange}
-                    onRemove={handleRemove}
-                  />
-                ))}
+                {(() => {
+                  const ownerCount = (members || []).filter((m: any) => m.app_role === 'owner').length;
+                  return filteredMembers.map((member) => (
+                    <TeamMemberCard
+                      key={member.id}
+                      member={member}
+                      canAssignRoles={canAssignRoles}
+                      canRemove={canManage}
+                      isCurrentUser={member.user_id === user?.id}
+                      actorRole={myRole as any}
+                      isLastOwner={ownerCount <= 1 && member.app_role === 'owner'}
+                      onRoleChange={handleRoleChange}
+                      onRemove={handleRemove}
+                    />
+                  ));
+                })()}
               </div>
             )}
           </TabsContent>

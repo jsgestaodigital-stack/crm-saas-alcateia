@@ -47,8 +47,18 @@ interface TeamMemberCardProps {
   canAssignRoles: boolean;
   canRemove: boolean;
   isCurrentUser: boolean;
+  actorRole?: AppRole | null;
+  isLastOwner?: boolean;
   onRoleChange: (userId: string, newRole: AppRole) => void;
   onRemove: (memberId: string) => void;
+}
+
+export function podeRemover(papelAtor?: string | null, papelAlvo?: string | null): boolean {
+  if (!papelAtor || !papelAlvo) return false;
+  if (papelAtor === 'super_admin') return true;
+  if (papelAtor === 'owner') return papelAlvo !== 'owner';
+  if (papelAtor === 'admin') return !['owner', 'admin', 'super_admin'].includes(papelAlvo);
+  return false;
 }
 
 const roleLabels: Record<AppRole, string> = {
@@ -95,11 +105,15 @@ export default function TeamMemberCard({
   canAssignRoles,
   canRemove,
   isCurrentUser,
+  actorRole,
+  isLastOwner = false,
   onRoleChange,
   onRemove,
 }: TeamMemberCardProps) {
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
   const role = member.app_role || "visualizador";
+  const allowRemove = canRemove && !isCurrentUser && podeRemover(actorRole, role) && !(isLastOwner && role === 'owner');
+  const lockRoleSelect = isLastOwner && role === 'owner';
 
   const getInitials = (name: string) => {
     return name
@@ -150,9 +164,10 @@ export default function TeamMemberCard({
           {canAssignRoles && !isCurrentUser ? (
             <Select
               value={role}
+              disabled={lockRoleSelect}
               onValueChange={(value) => onRoleChange(member.user_id, value as AppRole)}
             >
-              <SelectTrigger className="w-40">
+              <SelectTrigger className="w-40" title={lockRoleSelect ? 'Promova outro membro a Dono antes de sair.' : undefined}>
                 <SelectValue>
                   <div className="flex items-center gap-2">
                     {roleIcons[role]}
@@ -181,7 +196,7 @@ export default function TeamMemberCard({
             </Badge>
           )}
 
-          {canRemove && !isCurrentUser && (
+          {allowRemove && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">

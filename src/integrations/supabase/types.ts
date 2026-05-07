@@ -2854,6 +2854,8 @@ export type Database = {
       }
       profiles: {
         Row: {
+          alcateia_member: boolean
+          alcateia_member_since: string | null
           avatar_url: string | null
           blocked: boolean | null
           blocked_at: string | null
@@ -2869,6 +2871,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          alcateia_member?: boolean
+          alcateia_member_since?: string | null
           avatar_url?: string | null
           blocked?: boolean | null
           blocked_at?: string | null
@@ -2884,6 +2888,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          alcateia_member?: boolean
+          alcateia_member_since?: string | null
           avatar_url?: string | null
           blocked?: boolean | null
           blocked_at?: string | null
