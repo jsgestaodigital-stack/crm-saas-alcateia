@@ -87,8 +87,8 @@ const Landing = () => {
       name: "Lobinho",
       emoji: "🐺",
       tagline: "Para quem está começando",
-      monthlyPrice: 67,
-      annualPrice: 54,
+      monthlyPrice: 47,
+      annualPrice: 38,
       color: "google-green",
       features: [
         "1 usuário (admin)",
