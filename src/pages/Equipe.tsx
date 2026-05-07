@@ -264,17 +264,22 @@ export default function Equipe() {
               </div>
             ) : (
               <div className="space-y-3">
-                {filteredMembers.map((member) => (
-                  <TeamMemberCard
-                    key={member.id}
-                    member={member}
-                    canAssignRoles={canAssignRoles}
-                    canRemove={canManage}
-                    isCurrentUser={member.user_id === user?.id}
-                    onRoleChange={handleRoleChange}
-                    onRemove={handleRemove}
-                  />
-                ))}
+                {(() => {
+                  const ownerCount = (members || []).filter((m: any) => m.app_role === 'owner').length;
+                  return filteredMembers.map((member) => (
+                    <TeamMemberCard
+                      key={member.id}
+                      member={member}
+                      canAssignRoles={canAssignRoles}
+                      canRemove={canManage}
+                      isCurrentUser={member.user_id === user?.id}
+                      actorRole={myRole as any}
+                      isLastOwner={ownerCount <= 1 && member.app_role === 'owner'}
+                      onRoleChange={handleRoleChange}
+                      onRemove={handleRemove}
+                    />
+                  ));
+                })()}
               </div>
             )}
           </TabsContent>
