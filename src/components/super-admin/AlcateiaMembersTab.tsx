@@ -44,16 +44,19 @@ export function AlcateiaMembersTab() {
 
   const toggle = async (row: ProfileRow, next: boolean) => {
     setUpdatingId(row.id);
-    const payload: any = next
-      ? { alcateia_member: true, alcateia_member_since: new Date().toISOString() }
-      : { alcateia_member: false };
-    const { error } = await supabase.from("profiles").update(payload).eq("id", row.id);
+    const { error } = await supabase.rpc("set_alcateia_member", {
+      target_user_id: row.id,
+      new_value: next,
+    });
     setUpdatingId(null);
     if (error) {
       toast.error("Erro ao atualizar acesso Alcateia.");
       return;
     }
-    setRows(prev => prev.map(r => (r.id === row.id ? { ...r, ...payload } : r)));
+    const patch: Partial<ProfileRow> = next
+      ? { alcateia_member: true, alcateia_member_since: new Date().toISOString() }
+      : { alcateia_member: false, alcateia_member_since: null };
+    setRows(prev => prev.map(r => (r.id === row.id ? { ...r, ...patch } : r)));
     toast.success(next ? "Acesso Alcateia ativado." : "Acesso Alcateia removido.");
   };
 
