@@ -37,9 +37,11 @@ import {
   CreditCard,
   DollarSign,
   Trophy,
-  Trash2
+  Trash2,
+  Star
 } from "lucide-react";
 import { EngagementRankingTab } from "@/components/super-admin/EngagementRankingTab";
+import { AlcateiaMembersTab } from "@/components/super-admin/AlcateiaMembersTab";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CreateAgencyModal } from "@/components/agency/CreateAgencyModal";
