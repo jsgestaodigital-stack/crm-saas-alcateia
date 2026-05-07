@@ -334,7 +334,7 @@ export default function Admin() {
     try {
       const { error } = await supabase
         .from("user_permissions")
-        .update({ [permission]: value })
+        .update({ [permission]: value } as any)
         .eq("user_id", userId);
 
       if (error) throw error;
