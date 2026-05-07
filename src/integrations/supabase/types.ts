@@ -2792,6 +2792,50 @@ export type Database = {
         }
         Relationships: []
       }
+      pipeline_columns: {
+        Row: {
+          agency_id: string
+          color: string
+          created_at: string
+          emoji: string
+          id: string
+          is_default: boolean
+          position: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          agency_id: string
+          color?: string
+          created_at?: string
+          emoji?: string
+          id: string
+          is_default?: boolean
+          position?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          agency_id?: string
+          color?: string
+          created_at?: string
+          emoji?: string
+          id?: string
+          is_default?: boolean
+          position?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pipeline_columns_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       plans: {
         Row: {
           active: boolean
