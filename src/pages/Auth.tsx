@@ -339,20 +339,24 @@ export default function Auth() {
 
           // Tratamento de erro diferenciado
           const classified = classifyError(error);
-          if (classified.type === ErrorType.Authentication || 
-              error.message.includes("Invalid login credentials")) {
-            toast.error("E-mail ou senha incorretos");
-          } else if (error.message.includes("Email not confirmed")) {
-            toast.error("E-mail não confirmado. Verifique sua caixa de entrada.");
-          } else if (classified.type === ErrorType.RateLimit) {
-            toast.error("Muitas tentativas. Aguarde antes de tentar novamente.");
+          const msg = error.message || '';
+          if (msg.includes('Email not confirmed')) {
+            setNeedsEmailConfirmation(true);
+            toast.error('Confirme seu email antes de entrar. Verifique sua caixa de entrada.');
+          } else if (classified.type === ErrorType.Authentication || msg.includes('Invalid login credentials')) {
+            toast.error('Email ou senha incorretos.');
+          } else if (msg.includes('User not found')) {
+            toast.error('Nenhuma conta encontrada com este email.');
+          } else if (classified.type === ErrorType.RateLimit || msg.includes('Too many requests')) {
+            toast.error('Muitas tentativas. Aguarde 1 minuto e tente novamente.');
           } else if (classified.type === ErrorType.Network) {
-            toast.error("Erro de conexão. Verifique sua internet.");
+            toast.error('Erro de conexão. Verifique sua internet.');
           } else {
-            toast.error(classified.userMessage);
+            toast.error('Erro ao entrar. Tente novamente.');
           }
           return;
         }
+        setNeedsEmailConfirmation(false);
         // O useEffect vai cuidar do redirecionamento após verificar status
       }
     } catch (err) {
