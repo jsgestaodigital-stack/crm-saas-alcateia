@@ -22,6 +22,7 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { usePipelineColumns, PipelineColumn } from '@/hooks/usePipelineColumns';
+import { useLeads } from '@/hooks/useLeads';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
