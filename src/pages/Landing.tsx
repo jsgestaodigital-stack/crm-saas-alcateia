@@ -99,7 +99,6 @@ const Landing = () => {
         "Funil visual de leads",
         "Propostas + Contratos digitais",
         "Dashboard e relatórios",
-        "Dashboard e relatórios",
         "Suporte por e-mail"
       ],
       limitations: [],
