@@ -2299,7 +2299,7 @@ export type Database = {
           next_action_date: string | null
           notes: string | null
           phone: string | null
-          pipeline_stage: Database["public"]["Enums"]["lead_pipeline_stage"]
+          pipeline_stage: string
           probability: number | null
           proposal_notes: string | null
           proposal_status: Database["public"]["Enums"]["proposal_status"]
@@ -2337,7 +2337,7 @@ export type Database = {
           next_action_date?: string | null
           notes?: string | null
           phone?: string | null
-          pipeline_stage?: Database["public"]["Enums"]["lead_pipeline_stage"]
+          pipeline_stage?: string
           probability?: number | null
           proposal_notes?: string | null
           proposal_status?: Database["public"]["Enums"]["proposal_status"]
@@ -2375,7 +2375,7 @@ export type Database = {
           next_action_date?: string | null
           notes?: string | null
           phone?: string | null
-          pipeline_stage?: Database["public"]["Enums"]["lead_pipeline_stage"]
+          pipeline_stage?: string
           probability?: number | null
           proposal_notes?: string | null
           proposal_status?: Database["public"]["Enums"]["proposal_status"]
@@ -4869,9 +4869,7 @@ export type Database = {
         Row: {
           cold_leads: number | null
           hot_leads: number | null
-          pipeline_stage:
-            | Database["public"]["Enums"]["lead_pipeline_stage"]
-            | null
+          pipeline_stage: string | null
           total_leads: number | null
           total_value: number | null
           warm_leads: number | null
@@ -4900,9 +4898,7 @@ export type Database = {
           next_action_date: string | null
           notes: string | null
           phone: string | null
-          pipeline_stage:
-            | Database["public"]["Enums"]["lead_pipeline_stage"]
-            | null
+          pipeline_stage: string | null
           probability: number | null
           proposal_notes: string | null
           proposal_status: Database["public"]["Enums"]["proposal_status"] | null
@@ -4937,9 +4933,7 @@ export type Database = {
           next_action_date?: string | null
           notes?: string | null
           phone?: string | null
-          pipeline_stage?:
-            | Database["public"]["Enums"]["lead_pipeline_stage"]
-            | null
+          pipeline_stage?: string | null
           probability?: number | null
           proposal_notes?: string | null
           proposal_status?:
@@ -4976,9 +4970,7 @@ export type Database = {
           next_action_date?: string | null
           notes?: string | null
           phone?: string | null
-          pipeline_stage?:
-            | Database["public"]["Enums"]["lead_pipeline_stage"]
-            | null
+          pipeline_stage?: string | null
           probability?: number | null
           proposal_notes?: string | null
           proposal_status?:
