@@ -41,7 +41,9 @@ import {
   FileText,
   Trash2,
   X,
-  Loader2
+  Loader2,
+  Save,
+  Check
 } from 'lucide-react';
 import { LeadActivityTab } from './LeadActivityTab';
 import { LeadProposalTab } from './LeadProposalTab';
