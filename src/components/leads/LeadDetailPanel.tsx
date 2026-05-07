@@ -167,7 +167,7 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
                       R$ {lead.estimated_value.toLocaleString('pt-BR')}
                     </Badge>
                   )}
-                  {(isSaving || pendingFields.size > 0) && (
+                  {isSaving && (
                     <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-400 border-blue-500/30 animate-pulse shrink-0">
                       <Loader2 className="h-3 w-3 mr-1 animate-spin" />
                       Salvando...
