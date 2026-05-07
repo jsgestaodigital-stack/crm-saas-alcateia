@@ -1,0 +1,1 @@
+UPDATE public.plans SET price_monthly = 47.00 WHERE slug ILIKE '%lobinho%' OR name ILIKE '%lobinho%';
