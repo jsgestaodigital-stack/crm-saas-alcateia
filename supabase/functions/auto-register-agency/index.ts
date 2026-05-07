@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getCorsHeaders, handleCors } from "../_shared/cors.ts";
+import { checkRateLimit } from "../_shared/rateLimit.ts";
 
 interface AutoRegisterRequest {
   agencyName: string;
@@ -97,6 +98,13 @@ Deno.serve(async (req) => {
     const { agencyName, agencySlug, ownerName, ownerEmail, ownerPhone, password, isAlcateia } = body;
 
     console.log(`[auto-register-agency] Processing registration for: ${ownerEmail}, isAlcateia: ${isAlcateia}`);
+
+    // Rate limit: max 3 attempts per email per hour
+    const emailKey = `auto-register:${(ownerEmail || "").toLowerCase().trim()}`;
+    const rl = checkRateLimit(emailKey, 3, 60 * 60 * 1000);
+    if (!rl.allowed) {
+      return errorResponse("Muitas tentativas de cadastro. Tente novamente mais tarde.", 429);
+    }
 
     // ===== INPUT VALIDATION =====
     if (!agencyName?.trim()) {

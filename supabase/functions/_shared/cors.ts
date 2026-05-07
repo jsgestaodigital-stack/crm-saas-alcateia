@@ -41,14 +41,6 @@ export function getCorsHeaders(req: Request): Record<string, string> {
   };
 }
 
-/**
- * Legacy CORS headers for backwards compatibility
- * Use getCorsHeaders(req) for new functions
- */
-export const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
 
 /**
  * Handle CORS preflight requests
