@@ -48,8 +48,6 @@ import {
 import { LeadActivityTab } from './LeadActivityTab';
 import { LeadProposalTab } from './LeadProposalTab';
 import { LeadConversionTab } from './LeadConversionTab';
-import { LeadRaioXTab } from './LeadRaioXTab';
-import { LeadCopilotTab } from './LeadCopilotTab';
 import { LeadTasksTab } from './LeadTasksTab';
 
 interface LeadDetailPanelProps {
