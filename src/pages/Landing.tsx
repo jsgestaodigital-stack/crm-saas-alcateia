@@ -98,7 +98,7 @@ const Landing = () => {
         "Checklist completo de otimização",
         "Funil visual de leads",
         "Propostas + Contratos digitais",
-        "Agentes IA (SEO, Suspensões, Raio-X)",
+        "Dashboard e relatórios",
         "Dashboard e relatórios",
         "Suporte por e-mail"
       ],
