@@ -66,9 +66,6 @@ verify_jwt = true
 [functions.send-to-autentique]
 verify_jwt = true
 
-[functions.autentique-webhook]
-verify_jwt = false
-
 [functions.self-reset-password]
 verify_jwt = false
 
