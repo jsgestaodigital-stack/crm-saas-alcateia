@@ -9,6 +9,7 @@ export interface ChecklistItem {
   responsible: string; // Nome dinâmico do responsável - pode ser qualquer membro da equipe
   completedAt?: string;
   attachmentUrl?: string;
+  optional?: boolean;
 }
 
 export interface ChecklistSection {
