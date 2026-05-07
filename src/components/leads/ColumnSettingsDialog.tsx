@@ -57,6 +57,7 @@ export function ColumnSettingsDialog({ open, onOpenChange }: ColumnSettingsDialo
     moveColumn, 
     resetToDefaults 
   } = usePipelineColumns();
+  const { leads } = useLeads();
   
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
