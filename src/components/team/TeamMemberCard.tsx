@@ -47,8 +47,18 @@ interface TeamMemberCardProps {
   canAssignRoles: boolean;
   canRemove: boolean;
   isCurrentUser: boolean;
+  actorRole?: AppRole | null;
+  isLastOwner?: boolean;
   onRoleChange: (userId: string, newRole: AppRole) => void;
   onRemove: (memberId: string) => void;
+}
+
+export function podeRemover(papelAtor?: string | null, papelAlvo?: string | null): boolean {
+  if (!papelAtor || !papelAlvo) return false;
+  if (papelAtor === 'super_admin') return true;
+  if (papelAtor === 'owner') return papelAlvo !== 'owner';
+  if (papelAtor === 'admin') return !['owner', 'admin', 'super_admin'].includes(papelAlvo);
+  return false;
 }
 
 const roleLabels: Record<AppRole, string> = {
