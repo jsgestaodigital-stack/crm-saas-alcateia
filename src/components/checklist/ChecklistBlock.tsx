@@ -27,10 +27,11 @@ export function ChecklistBlock({
 }: ChecklistBlockProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   
-  const completedCount = section.items.filter(i => i.completed).length;
-  const totalCount = section.items.length;
-  const progress = Math.round((completedCount / totalCount) * 100);
-  const isComplete = progress === 100;
+  const requiredItems = section.items.filter(i => !(i as any).optional);
+  const completedCount = requiredItems.filter(i => i.completed).length;
+  const totalCount = requiredItems.length;
+  const progress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+  const isComplete = totalCount > 0 && progress === 100;
   const isInProgress = progress > 0 && progress < 100;
 
   return (
