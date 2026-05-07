@@ -405,6 +405,10 @@ export default function SuperAdmin() {
               )}
             </TabsTrigger>
             <TabsTrigger value="logs">Logs de Auditoria</TabsTrigger>
+            <TabsTrigger value="alcateia" className="flex items-center gap-1">
+              <Star className="h-4 w-4" />
+              Alcateia
+            </TabsTrigger>
           </TabsList>
 
           {/* Solicitações Pendentes */}
