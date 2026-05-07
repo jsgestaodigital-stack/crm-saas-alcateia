@@ -15,7 +15,7 @@ export function useAutoRefresh({
   enabled = true,
   onRefresh,
 }: UseAutoRefreshOptions) {
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastRefreshRef = useRef<Date>(new Date());
 
   const refresh = useCallback(async () => {

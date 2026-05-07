@@ -80,7 +80,7 @@ export function VoiceCommandButton() {
   const [executedActions, setExecutedActions] = useState<string[]>([]);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
-  const autoCloseTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const autoCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   const { clients, setSelectedClient, setDetailOpen, deleteClient, updateClient, moveClient } = useClientStore();
   const { user, permissions, isAdmin } = useAuth();

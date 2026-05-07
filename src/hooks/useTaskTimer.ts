@@ -39,7 +39,7 @@ export function useTaskTimer() {
   const { user } = useAuth();
   const [activeTimer, setActiveTimer] = useState<ActiveTimer | null>(globalActiveTimer);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const userName = user?.user_metadata?.full_name || user?.email || 'Usuário';
 
