@@ -156,7 +156,7 @@ const Landing = () => {
     },
     {
       question: "Qual o investimento mensal?",
-      answer: "Os valores variam de acordo com o tamanho da sua operação. Planos a partir de R$67/mês. Veja os detalhes acima."
+      answer: "Os valores variam de acordo com o tamanho da sua operação. Planos a partir de R$47/mês. Veja os detalhes acima."
     }
   ];
 
