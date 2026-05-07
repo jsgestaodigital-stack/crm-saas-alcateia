@@ -196,7 +196,7 @@ export default function TeamMemberCard({
             </Badge>
           )}
 
-          {canRemove && !isCurrentUser && (
+          {allowRemove && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
