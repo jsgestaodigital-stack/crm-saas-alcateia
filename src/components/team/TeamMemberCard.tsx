@@ -164,6 +164,7 @@ export default function TeamMemberCard({
           {canAssignRoles && !isCurrentUser ? (
             <Select
               value={role}
+              disabled={lockRoleSelect}
               onValueChange={(value) => onRoleChange(member.user_id, value as AppRole)}
             >
               <SelectTrigger className="w-40">
