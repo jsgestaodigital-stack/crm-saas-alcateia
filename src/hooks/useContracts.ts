@@ -148,7 +148,7 @@ export function useContracts() {
       
       const { error } = await supabase
         .from('contracts')
-        .update(updateData)
+        .update(updateData as any)
         .eq('id', id);
 
       if (error) throw error;

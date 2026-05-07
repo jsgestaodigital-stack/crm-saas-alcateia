@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { usePlanFeatures } from "@/hooks/usePlanFeatures";
 
 interface ProFeatureBadgeProps {
   feature: string;
@@ -211,12 +212,12 @@ export const ProFeatureGate: React.FC<ProFeatureGateProps> = ({
  */
 export const useIsTrialBlocked = () => {
   // Import from usePlanFeatures inside the hook to avoid circular deps
-  const { usePlanFeatures } = require("@/hooks/usePlanFeatures");
   const { isInTrial, rawDbFeatures } = usePlanFeatures();
   
   const isTrialWithoutFeature = (featureKey: string): boolean => {
     if (!isInTrial) return false;
-    return rawDbFeatures?.is_trial === true && rawDbFeatures?.[featureKey] !== true;
+    const features = rawDbFeatures as any;
+    return features?.is_trial === true && features?.[featureKey] !== true;
   };
 
   return {

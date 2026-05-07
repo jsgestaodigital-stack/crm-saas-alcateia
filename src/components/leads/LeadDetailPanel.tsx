@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import debounce from 'lodash.debounce';
+import { toast } from 'sonner';
 import { 
   Dialog, 
   DialogContent, 
@@ -41,7 +41,9 @@ import {
   FileText,
   Trash2,
   X,
-  Loader2
+  Loader2,
+  Save,
+  Check
 } from 'lucide-react';
 import { LeadActivityTab } from './LeadActivityTab';
 import { LeadProposalTab } from './LeadProposalTab';
@@ -63,61 +65,57 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
   // Permite edição se: tem permissão canSalesOrAdmin OU é admin/owner OU tem can_sales explícito
   const canEditLeads = derived?.canSalesOrAdmin || isAdmin || userRole === 'admin' || userRole === 'owner' || permissions?.canSales || permissions?.canAdmin;
   const [activeTab, setActiveTab] = useState('resumo');
-  
-  // Local state for optimistic updates
+
+  // Local edit state (no auto-save)
   const [localValues, setLocalValues] = useState<Record<string, any>>({});
   const [isSaving, setIsSaving] = useState(false);
-  const [pendingFields, setPendingFields] = useState<Set<string>>(new Set());
+  const [justSaved, setJustSaved] = useState(false);
 
   // Reset local values when lead changes
   useEffect(() => {
     setLocalValues({});
-    setPendingFields(new Set());
+    setJustSaved(false);
   }, [lead?.id]);
 
-  // Debounced save function
-  const debouncedSave = useMemo(
-    () =>
-      debounce(async (leadId: string, field: keyof Lead, value: any) => {
-        setIsSaving(true);
-        try {
-          await updateLead(leadId, { [field]: value });
-          await refetch?.();
-          onUpdate();
-        } finally {
-          setIsSaving(false);
-          setPendingFields(prev => {
-            const next = new Set(prev);
-            next.delete(field);
-            return next;
-          });
-        }
-      }, 500),
-    [updateLead, refetch, onUpdate]
-  );
-
-  // Cleanup debounce on unmount
-  useEffect(() => {
-    return () => {
-      debouncedSave.cancel();
-    };
-  }, [debouncedSave]);
+  const isDirty = Object.keys(localValues).length > 0;
 
   if (!lead) return null;
 
   const handleFieldChange = (field: keyof Lead, value: any) => {
     setLocalValues(prev => ({ ...prev, [field]: value }));
-    setPendingFields(prev => new Set(prev).add(field));
-    debouncedSave(lead.id, field, value);
+    setJustSaved(false);
   };
 
-  // Immediate save for selects (no debounce needed)
+  // Immediate save for selects (these are atomic actions)
   const handleSelectChange = async (field: keyof Lead, value: any) => {
     setIsSaving(true);
     try {
-      await updateLead(lead.id, { [field]: value });
-      await refetch?.();
-      onUpdate();
+      const ok = await updateLead(lead.id, { [field]: value });
+      if (ok) {
+        await refetch?.();
+        onUpdate();
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSaveChanges = async () => {
+    if (!isDirty || isSaving) return;
+    setIsSaving(true);
+    try {
+      const ok = await updateLead(lead.id, localValues as Partial<Lead>);
+      if (ok) {
+        setLocalValues({});
+        setJustSaved(true);
+        await refetch?.();
+        onUpdate();
+        setTimeout(() => setJustSaved(false), 2000);
+      } else {
+        toast.error('Erro ao salvar. Tente novamente.');
+      }
+    } catch {
+      toast.error('Erro ao salvar. Tente novamente.');
     } finally {
       setIsSaving(false);
     }
@@ -169,12 +167,6 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
                   {lead.estimated_value && lead.estimated_value > 0 && (
                     <Badge variant="outline" className="text-xs text-amber-400 border-amber-500/30 bg-amber-500/10 shrink-0">
                       R$ {lead.estimated_value.toLocaleString('pt-BR')}
-                    </Badge>
-                  )}
-                  {(isSaving || pendingFields.size > 0) && (
-                    <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-400 border-blue-500/30 animate-pulse shrink-0">
-                      <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                      Salvando...
                     </Badge>
                   )}
                 </div>
@@ -461,6 +453,28 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
                     disabled={!canEditLeads}
                   />
                 </div>
+
+                {/* Save Footer */}
+                {canEditLeads && (
+                  <div className="sticky bottom-0 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 border-t border-border/30 bg-background/95 backdrop-blur flex items-center justify-end gap-2">
+                    {isDirty && !isSaving && (
+                      <span className="text-xs text-muted-foreground">Alterações não salvas</span>
+                    )}
+                    <Button
+                      onClick={handleSaveChanges}
+                      disabled={!isDirty || isSaving}
+                      className="gap-2 bg-amber-500 hover:bg-amber-600 text-black"
+                    >
+                      {isSaving ? (
+                        <><Loader2 className="h-4 w-4 animate-spin" /> Salvando...</>
+                      ) : justSaved ? (
+                        <><Check className="h-4 w-4" /> Salvo</>
+                      ) : (
+                        <><Save className="h-4 w-4" /> Salvar alterações</>
+                      )}
+                    </Button>
+                  </div>
+                )}
               </TabsContent>
 
               {/* Atividades Tab */}

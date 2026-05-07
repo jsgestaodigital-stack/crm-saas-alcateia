@@ -258,7 +258,7 @@ export function usePlansAdmin() {
 
       const { data, error } = await supabase
         .from("plans")
-        .update(updateData)
+        .update(updateData as any)
         .eq("id", id)
         .select()
         .single();
