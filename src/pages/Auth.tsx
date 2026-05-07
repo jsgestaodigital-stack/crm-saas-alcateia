@@ -47,6 +47,7 @@ export default function Auth() {
     fullName?: string;
     agencyName?: string;
   }>({});
+  const [needsEmailConfirmation, setNeedsEmailConfirmation] = useState(false);
   const [rateLimitInfo, setRateLimitInfo] = useState<{
     isBlocked: boolean;
     remainingSeconds: number;
