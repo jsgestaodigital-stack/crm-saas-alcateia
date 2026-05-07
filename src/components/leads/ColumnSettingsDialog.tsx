@@ -112,11 +112,17 @@ export function ColumnSettingsDialog({ open, onOpenChange }: ColumnSettingsDialo
       toast.error('Apenas administradores podem excluir colunas padrão');
       return;
     }
-    
+
+    const leadsInStage = (leads || []).filter((l: any) => l.pipeline_stage === id || l.stage === id || l.column_id === id);
+    if (leadsInStage.length > 0) {
+      toast.error(`Mova ou exclua os ${leadsInStage.length} lead(s) desta etapa antes de removê-la.`);
+      return;
+    }
+
     const confirmMsg = column?.isDefault 
       ? `⚠️ Esta é uma coluna padrão. Excluir "${column?.title}"?` 
       : `Excluir coluna "${column?.title}"?`;
-    
+
     if (confirm(confirmMsg)) {
       deleteColumn(id, isAdmin);
       toast.success('Coluna excluída');
