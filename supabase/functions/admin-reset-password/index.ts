@@ -15,6 +15,18 @@ Deno.serve(async (req) => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 
+    // Defense in depth: require BOOTSTRAP_TOKEN before doing anything
+    const bootstrapToken = Deno.env.get("BOOTSTRAP_TOKEN");
+    const providedToken =
+      req.headers.get("x-bootstrap-token") ||
+      req.headers.get("X-Bootstrap-Token");
+    if (!bootstrapToken || providedToken?.trim() !== bootstrapToken.trim()) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Verify caller is authenticated via JWT
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
