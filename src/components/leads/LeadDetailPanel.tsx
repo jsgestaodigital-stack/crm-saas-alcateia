@@ -484,15 +484,6 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
                 <LeadProposalTab lead={lead} onUpdate={onUpdate} />
               </TabsContent>
 
-              {/* Raio-X Tab */}
-              <TabsContent value="raiox" className="m-0">
-                <LeadRaioXTab leadId={lead.id} />
-              </TabsContent>
-
-              {/* Copilot Tab */}
-              <TabsContent value="copilot" className="m-0">
-                <LeadCopilotTab leadId={lead.id} />
-              </TabsContent>
 
               {/* Conversão Tab */}
               <TabsContent value="conversao" className="m-0">
