@@ -37,9 +37,11 @@ import {
   CreditCard,
   DollarSign,
   Trophy,
-  Trash2
+  Trash2,
+  Star
 } from "lucide-react";
 import { EngagementRankingTab } from "@/components/super-admin/EngagementRankingTab";
+import { AlcateiaMembersTab } from "@/components/super-admin/AlcateiaMembersTab";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CreateAgencyModal } from "@/components/agency/CreateAgencyModal";
@@ -403,6 +405,10 @@ export default function SuperAdmin() {
               )}
             </TabsTrigger>
             <TabsTrigger value="logs">Logs de Auditoria</TabsTrigger>
+            <TabsTrigger value="alcateia" className="flex items-center gap-1">
+              <Star className="h-4 w-4" />
+              Alcateia
+            </TabsTrigger>
           </TabsList>
 
           {/* Solicitações Pendentes */}
@@ -787,8 +793,67 @@ export default function SuperAdmin() {
             <EngagementRankingTab />
           </TabsContent>
 
+          {/* Alcateia Members */}
+          <TabsContent value="alcateia">
+            <AlcateiaMembersTab />
+          </TabsContent>
+
           {/* Logs */}
           <TabsContent value="logs" className="space-y-4">
+            <Card className="border-border/40">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Activity className="h-5 w-5" />
+                  Logs de Auditoria
+                </CardTitle>
+                <CardDescription>
+                  Histórico de ações do Super Admin
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isLoadingLogs ? (
+                  <div className="space-y-3">
+                    {[1, 2, 3].map((i) => (
+                      <Skeleton key={i} className="h-12 w-full" />
+                    ))}
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Data/Hora</TableHead>
+                        <TableHead>Admin</TableHead>
+                        <TableHead>Ação</TableHead>
+                        <TableHead>Agência</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {auditLogs?.map((log) => (
+                        <TableRow key={log.id}>
+                          <TableCell className="text-muted-foreground">
+                            {format(new Date(log.created_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                          </TableCell>
+                          <TableCell>{log.super_admin_name || "—"}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline">{getActionLabel(log.action)}</Badge>
+                          </TableCell>
+                          <TableCell>{log.agency_name || "—"}</TableCell>
+                        </TableRow>
+                      ))}
+                      {(!auditLogs || auditLogs.length === 0) && (
+                        <TableRow>
+                          <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                            Nenhum log de auditoria encontrado
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
             <Card className="border-border/40">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
