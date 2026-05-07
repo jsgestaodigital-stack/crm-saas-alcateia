@@ -215,14 +215,6 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
                 <span className="sm:hidden">📄</span>
                 <span className="hidden sm:inline">Proposta</span>
               </TabsTrigger>
-              <TabsTrigger value="raiox" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400 whitespace-nowrap">
-                <span className="sm:hidden">🔍</span>
-                <span className="hidden sm:inline">Raio-X</span>
-              </TabsTrigger>
-              <TabsTrigger value="copilot" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400 whitespace-nowrap">
-                <span className="sm:hidden">🤖</span>
-                <span className="hidden sm:inline">🤖 Copiloto</span>
-              </TabsTrigger>
               <TabsTrigger value="conversao" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400 whitespace-nowrap">
                 <span className="sm:hidden">🏆</span>
                 <span className="hidden sm:inline">Ganho/Perda</span>
