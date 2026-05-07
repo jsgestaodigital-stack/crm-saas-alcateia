@@ -830,6 +830,31 @@ export default function Auth() {
                   </div>
                 )}
 
+                {needsEmailConfirmation && authMode === 'login' && (
+                  <div className="rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-sm space-y-2">
+                    <p className="text-amber-200">Seu email ainda não foi confirmado.</p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={async () => {
+                        if (!email) {
+                          toast.error('Informe o email primeiro.');
+                          return;
+                        }
+                        const { error } = await supabase.auth.resend({ type: 'signup', email });
+                        if (error) {
+                          toast.error('Não foi possível reenviar. Tente novamente em instantes.');
+                        } else {
+                          toast.success('Email de confirmação reenviado.');
+                        }
+                      }}
+                    >
+                      Reenviar email de confirmação
+                    </Button>
+                  </div>
+                )}
+
                 <Button 
                   type="submit" 
                   className="w-full bg-primary text-primary-foreground hover:bg-primary/90 neon-glow" 
