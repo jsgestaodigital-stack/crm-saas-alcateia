@@ -548,13 +548,6 @@ export function AppSidebar({
                   />
                 </div>
                 <NavItem
-                  icon={FileText}
-                  label="Relatório Gestor"
-                  isActive={location.pathname === "/relatorio-gestor"}
-                  onClick={() => { navigate("/relatorio-gestor"); onMobileOpenChange(false); }}
-                  color="cyan"
-                />
-                <NavItem
                   icon={History}
                   label="Auditoria"
                   isActive={location.pathname === "/admin/audit"}
