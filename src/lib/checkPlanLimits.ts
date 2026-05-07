@@ -59,6 +59,41 @@ export interface Agency {
   plan?: AgencyPlan | null;
 }
 
+// Perfil do usuário (para verificações especiais como Alcateia)
+export interface UserProfileForLimits {
+  alcateia_member?: boolean | null;
+}
+
+// Limites equivalentes ao plano Lobão (concedidos para membros Alcateia)
+export const LOBAO_LIMITS: AgencyPlan = {
+  name: 'Lobão',
+  slug: 'lobao',
+  max_users: 6,
+  max_clients: 500,
+  max_leads: 5000,
+  max_recurring_clients: 500,
+  storage_mb: 10240,
+  features: {
+    funil_tarefas: true,
+    funil_avancado: true,
+    automacoes: true,
+    relatorios_agencia: true,
+    relatorios_cliente: true,
+    dashboard_principal: true,
+    dashboard_financeiro: true,
+    cobranca_stripe: true,
+    comissoes: true,
+    logs_auditoria: true,
+    exportacao: true,
+    integracao_alfaleads: true,
+    suporte_email: true,
+    suporte_prioritario: true,
+    suporte_whatsapp: true,
+    acesso_antecipado: true,
+    limite_tarefas_mes: 100000,
+  },
+};
+
 // Resultado da validação de limite
 export interface LimitCheckResult {
   valid: boolean;
