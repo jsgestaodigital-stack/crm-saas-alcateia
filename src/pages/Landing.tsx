@@ -47,7 +47,7 @@ const Landing = () => {
   const executionFeatures = [
     {
       icon: ListChecks,
-      title: "Checklist de 47 Pontos",
+      title: "Checklist de 32 Pontos",
       description: "Da categoria principal às fotos de fachada. Checklist completo de otimização que qualquer operador consegue seguir.",
       highlight: true
     },
@@ -321,7 +321,7 @@ const Landing = () => {
             />
             <GMBStatsCard 
               icon={ListChecks} 
-              value="47 Pontos" 
+              value="32 Pontos" 
               label="Checklist completo de otimização de perfis" 
               color="blue" 
               delay={0.1}
@@ -583,7 +583,7 @@ const Landing = () => {
                   "100% focado em Google Meu Negócio",
                   "Pronto para usar em 15 minutos",
                   "Construído por quem vende há 4 anos",
-                  "Checklist de 47 pontos de otimização",
+                  "Checklist de 32 pontos de otimização",
                   "Gestão de tarefas automáticas",
                   "Contratos com cláusulas específicas"
                 ].map((item, i) => (
@@ -666,7 +666,7 @@ const Landing = () => {
               { icon: MapPin, value: 500, suffix: "+", label: "Perfis Gerenciados", description: "Na nossa própria agência." },
               { icon: Calendar, value: 4, suffix: " anos", label: "Experiência", description: "Vendendo Google Meu Negócio." },
               { icon: Users, value: 350, suffix: "+", label: "Alunos Formados", description: "Na metodologia Alcateia." },
-              { icon: CheckCircle2, value: 47, suffix: "", label: "Pontos de Otimização", description: "Checklist testado." }
+              { icon: CheckCircle2, value: 32, suffix: "", label: "Pontos de Otimização", description: "Checklist testado." }
             ].map((stat, i) => (
               <motion.div
                 key={stat.label}

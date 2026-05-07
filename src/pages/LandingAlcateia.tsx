@@ -84,7 +84,7 @@ const LandingAlcateia = () => {
   const executionFeatures = [
     {
       icon: ListChecks,
-      title: "Checklist de 47 Pontos",
+      title: "Checklist de 32 Pontos",
       description: "O mesmo checklist que usamos na agência. Da categoria principal às fotos de fachada.",
       highlight: true
     },
@@ -374,7 +374,7 @@ const LandingAlcateia = () => {
               { value: "500+", label: "Empresas Atendidas" },
               { value: "4 anos", label: "Experiência" },
               { value: "350+", label: "Alunos Alcateia" },
-              { value: "47", label: "Pontos Checklist" }
+              { value: "32", label: "Pontos Checklist" }
             ].map((stat, i) => (
               <motion.div
                 key={stat.label}

@@ -6,7 +6,7 @@ const comparisonItems = [
   { gbrank: "100% focado em Google Meu Negócio", others: "Feitos para qualquer nicho" },
   { gbrank: "Pronto para usar em 15 minutos", others: "Você precisa configurar tudo do zero" },
   { gbrank: "Construído por quem vende há 4 anos", others: "Não entendem Google Meu Negócio" },
-  { gbrank: "Checklist de 47 pontos de otimização", others: "Sem checklist de otimização" },
+  { gbrank: "Checklist de 32 pontos de otimização", others: "Sem checklist de otimização" },
   { gbrank: "Gestão de tarefas automáticas", others: "Não controlam tarefas recorrentes" },
   { gbrank: "Contratos com cláusulas específicas", others: "Contratos genéricos" },
 ];

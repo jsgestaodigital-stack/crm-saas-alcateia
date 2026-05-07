@@ -52,7 +52,7 @@ export const TOUR_STEPS: TourStep[] = [
   {
     id: 'funnel-optimization',
     target: '[data-tour="funnel-optimization"]',
-    content: '✨ FUNIL DE OTIMIZAÇÃO: Execute o trabalho! Acompanhe seus clientes pelo checklist de 47 pontos do Google Meu Negócio, desde onboarding até entrega.',
+    content: '✨ FUNIL DE OTIMIZAÇÃO: Execute o trabalho! Acompanhe seus clientes pelo checklist de 32 pontos do Google Meu Negócio, desde onboarding até entrega.',
     placement: 'right',
     disableBeacon: true,
   },
