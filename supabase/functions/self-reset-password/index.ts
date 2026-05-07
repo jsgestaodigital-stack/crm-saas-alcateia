@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 import { getCorsHeaders, handleCors } from "../_shared/cors.ts";
+import { checkRateLimit } from "../_shared/rateLimit.ts";
 
 interface SelfResetRequest {
   email: string;
@@ -120,6 +121,16 @@ Deno.serve(async (req) => {
     }
 
     const { email, full_name, agency_name, new_password } = requestBody;
+
+    // Rate limit: max 3 attempts per email per hour
+    const emailKey = `self-reset:${(email || "").toLowerCase().trim()}`;
+    const rl = checkRateLimit(emailKey, 3, 60 * 60 * 1000);
+    if (!rl.allowed) {
+      return new Response(
+        JSON.stringify({ error: "Muitas tentativas. Tente novamente mais tarde." }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     console.log("=== Self Reset Password Request ===");
     console.log(`Email: ${email}`);
