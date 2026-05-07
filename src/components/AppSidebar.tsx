@@ -20,7 +20,7 @@ import { calculateProgress, getDaysSinceUpdate } from "@/lib/clientUtils";
 import { ThemeLogo } from "@/components/ThemeLogo";
 import { cn } from "@/lib/utils";
 import { isBefore, parseISO, isToday } from "date-fns";
-import { AgenteSEOModal, AgenteSuspensoesModal, AgenteRaioXModal, AgenteRelatorioModal } from "@/components/agents";
+
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Badge } from "@/components/ui/badge";
 
