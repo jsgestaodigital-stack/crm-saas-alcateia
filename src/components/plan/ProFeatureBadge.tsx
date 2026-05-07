@@ -216,7 +216,8 @@ export const useIsTrialBlocked = () => {
   
   const isTrialWithoutFeature = (featureKey: string): boolean => {
     if (!isInTrial) return false;
-    return rawDbFeatures?.is_trial === true && rawDbFeatures?.[featureKey] !== true;
+    const features = rawDbFeatures as any;
+    return features?.is_trial === true && features?.[featureKey] !== true;
   };
 
   return {
