@@ -580,13 +580,15 @@ export function AppSidebar({
             onClick={() => { navigate("/notifications"); onMobileOpenChange(false); }}
             color="amber"
           />
-          <NavItem
-            icon={Lightbulb}
-            label="Sugestões"
-            isActive={location.pathname === "/sugestoes"}
-            onClick={() => { navigate("/sugestoes"); onMobileOpenChange(false); }}
-            color="amber"
-          />
+          {canAccessAdmin && (
+            <NavItem
+              icon={Lightbulb}
+              label="Sugestões"
+              isActive={location.pathname === "/sugestoes"}
+              onClick={() => { navigate("/sugestoes"); onMobileOpenChange(false); }}
+              color="amber"
+            />
+          )}
         </TooltipProvider>
       </div>
     </>
