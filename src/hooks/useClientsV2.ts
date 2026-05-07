@@ -2,6 +2,14 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
+/**
+ * useClientsV2 — DEPRECATED SHIM
+ *
+ * `clients_v2` was abandoned empty. The source of truth is `public.clients`.
+ * This hook keeps the ClientV2 shape consumed by ClientsV2List/ClientV2Dialog
+ * but reads/writes against `clients` instead.
+ */
+
 export interface ClientV2 {
   id: string;
   company_name: string;
@@ -30,6 +38,49 @@ interface UseClientsV2Options {
   offset?: number;
 }
 
+type ClientsRow = {
+  id: string;
+  company_name: string;
+  city: string | null;
+  responsible: string | null;
+  notes: string | null;
+  plan_type: string | null;
+  start_date: string | null;
+  whatsapp_link: string | null;
+  suspended_at: string | null;
+  deleted_at: string | null;
+  created_at: string;
+  updated_at: string;
+  column_id: string | null;
+};
+
+function mapRow(row: ClientsRow): ClientV2 {
+  let status: ClientV2['status'] = 'active';
+  if (row.suspended_at) status = 'paused';
+  if (row.column_id === 'finalized' || row.column_id === 'delivered') status = 'cancelled';
+
+  return {
+    id: row.id,
+    company_name: row.company_name,
+    contact_name: null,
+    email: null,
+    phone: null,
+    whatsapp: row.whatsapp_link,
+    city: row.city,
+    status,
+    start_date: row.start_date,
+    end_date: null,
+    monthly_value: null,
+    plan_name: row.plan_type,
+    responsible: row.responsible,
+    custom_fields: {},
+    tags: [],
+    notes: row.notes,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  };
+}
+
 export function useClientsV2(options: UseClientsV2Options = {}) {
   const [clients, setClients] = useState<ClientV2[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,46 +91,28 @@ export function useClientsV2(options: UseClientsV2Options = {}) {
     setLoading(true);
     try {
       let query = supabase
-        .from('clients_v2')
-        .select('*', { count: 'exact' })
+        .from('clients')
+        .select('id, company_name, city, responsible, notes, plan_type, start_date, whatsapp_link, suspended_at, deleted_at, created_at, updated_at, column_id', { count: 'exact' })
         .is('deleted_at', null)
         .order('updated_at', { ascending: false })
         .range(options.offset || 0, (options.offset || 0) + (options.limit || 50) - 1);
 
-      if (options.status) {
-        query = query.eq('status', options.status as 'active' | 'paused' | 'cancelled');
+      if (options.status === 'paused') {
+        query = query.not('suspended_at', 'is', null);
+      } else if (options.status === 'active') {
+        query = query.is('suspended_at', null);
+      } else if (options.status === 'cancelled') {
+        query = query.in('column_id', ['finalized', 'delivered']);
       }
 
       if (options.search) {
-        query = query.or(`company_name.ilike.%${options.search}%,contact_name.ilike.%${options.search}%,email.ilike.%${options.search}%`);
+        query = query.ilike('company_name', `%${options.search}%`);
       }
 
       const { data, error, count } = await query;
-
       if (error) throw error;
-      
-      const mappedClients: ClientV2[] = (data || []).map((row) => ({
-        id: row.id,
-        company_name: row.company_name,
-        contact_name: row.contact_name,
-        email: row.email,
-        phone: row.phone,
-        whatsapp: row.whatsapp,
-        city: row.city,
-        status: row.status as 'active' | 'paused' | 'cancelled',
-        start_date: row.start_date,
-        end_date: row.end_date,
-        monthly_value: row.monthly_value,
-        plan_name: row.plan_name,
-        responsible: row.responsible,
-        custom_fields: (row.custom_fields as Record<string, unknown>) || {},
-        tags: (row.tags as string[]) || [],
-        notes: row.notes,
-        created_at: row.created_at,
-        updated_at: row.updated_at,
-      }));
-      
-      setClients(mappedClients);
+
+      setClients((data || []).map((r) => mapRow(r as ClientsRow)));
       setTotalCount(count || 0);
     } catch (err) {
       console.error('Error fetching clients:', err);
@@ -96,20 +129,16 @@ export function useClientsV2(options: UseClientsV2Options = {}) {
   const createClient = async (data: Partial<ClientV2>) => {
     try {
       const { data: result, error } = await supabase
-        .from('clients_v2')
+        .from('clients')
         .insert({
           company_name: data.company_name!,
-          contact_name: data.contact_name || null,
-          email: data.email || null,
-          phone: data.phone || null,
-          whatsapp: data.whatsapp || null,
           city: data.city || null,
-          status: data.status || 'active',
-          monthly_value: data.monthly_value || null,
-          plan_name: data.plan_name || null,
           responsible: data.responsible || null,
           notes: data.notes || null,
-          // agency_id filled by trigger
+          plan_type: data.plan_name || null,
+          whatsapp_link: data.whatsapp || null,
+          column_id: 'briefing',
+          status: 'on_track',
         } as never)
         .select()
         .single();
@@ -127,23 +156,18 @@ export function useClientsV2(options: UseClientsV2Options = {}) {
 
   const updateClient = async (id: string, data: Partial<ClientV2>) => {
     try {
-      const { error } = await supabase
-        .from('clients_v2')
-        .update({
-          company_name: data.company_name,
-          contact_name: data.contact_name,
-          email: data.email,
-          phone: data.phone,
-          whatsapp: data.whatsapp,
-          city: data.city,
-          status: data.status,
-          monthly_value: data.monthly_value,
-          plan_name: data.plan_name,
-          responsible: data.responsible,
-          notes: data.notes,
-        })
-        .eq('id', id);
+      const patch: Record<string, unknown> = {};
+      if (data.company_name !== undefined) patch.company_name = data.company_name;
+      if (data.city !== undefined) patch.city = data.city;
+      if (data.responsible !== undefined) patch.responsible = data.responsible;
+      if (data.notes !== undefined) patch.notes = data.notes;
+      if (data.plan_name !== undefined) patch.plan_type = data.plan_name;
+      if (data.whatsapp !== undefined) patch.whatsapp_link = data.whatsapp;
+      if (data.status !== undefined) {
+        patch.suspended_at = data.status === 'paused' ? new Date().toISOString() : null;
+      }
 
+      const { error } = await supabase.from('clients').update(patch).eq('id', id);
       if (error) throw error;
       toast({ title: 'Cliente atualizado' });
       fetchClients();
@@ -158,7 +182,7 @@ export function useClientsV2(options: UseClientsV2Options = {}) {
   const deleteClient = async (id: string) => {
     try {
       const { error } = await supabase
-        .from('clients_v2')
+        .from('clients')
         .update({ deleted_at: new Date().toISOString() })
         .eq('id', id);
 
