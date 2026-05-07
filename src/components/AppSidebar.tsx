@@ -481,18 +481,6 @@ export function AppSidebar({
                   color="primary"
                   dataTour="nav-contratos"
                 />
-                <AgenteRaioXModal trigger={
-                  <div className="w-full" data-tour="nav-raiox">
-                    <NavItem
-                      icon={Zap}
-                      label="Raio-X"
-                      description="Análise de fechamento"
-                      isActive={false}
-                      onClick={() => {}}
-                      color="violet"
-                    />
-                  </div>
-                } />
               </CollapsibleContent>
             </Collapsible>
           )}
