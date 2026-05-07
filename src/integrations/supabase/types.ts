@@ -5744,6 +5744,10 @@ export type Database = {
           whatsapp: string
         }[]
       }
+      set_alcateia_member: {
+        Args: { new_value: boolean; target_user_id: string }
+        Returns: undefined
+      }
       set_current_agency: { Args: { _agency_id: string }; Returns: undefined }
       should_show_nps: { Args: never; Returns: Json }
       sign_contract: {
