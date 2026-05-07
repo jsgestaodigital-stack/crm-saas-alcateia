@@ -9,6 +9,7 @@ export interface ChecklistItem {
   responsible: string; // Nome dinâmico do responsável - pode ser qualquer membro da equipe
   completedAt?: string;
   attachmentUrl?: string;
+  optional?: boolean;
 }
 
 export interface ChecklistSection {
@@ -115,82 +116,66 @@ export const COLUMNS: Column[] = [
 export const WHATSAPP_GROUP_PHOTO = "/rankeia-whatsapp-group.png";
 
 // Checklist Padrão - Template personalizável por agência
-// Cada agência pode definir seus próprios checklists e responsáveis
-// Os responsáveis são definidos dinamicamente pela equipe de cada agência
+// TOTAL_CHECKLIST = itens obrigatórios (optional: false) usados no cálculo de progresso
+export const TOTAL_CHECKLIST = 32;
+
 export const DEFAULT_CHECKLIST: ChecklistSection[] = [
   {
     id: "etapa1",
-    title: "1. Onboarding",
+    title: "1. Estrutura Inicial",
     items: [
-      { id: "1-1", title: "Fechar venda e criar grupo de comunicação com cliente", completed: false, responsible: "Admin" },
-      { id: "1-2", title: "Alterar foto do grupo para foto padrão da agência", completed: false, responsible: "Admin" },
-      { id: "1-3", title: "Dar boas vindas no grupo e se deixar à disposição", completed: false, responsible: "Operador" },
-      { id: "1-4", title: "Agendar reunião de briefing (até 48h)", completed: false, responsible: "Operador" },
+      { id: "1-1", title: "Solicitar acesso ao Perfil Google do cliente (ou criar caso não exista)", completed: false, responsible: "Operador", optional: false },
+      { id: "1-2", title: "Solicitar fotos da empresa (interior, exterior, equipe, produtos)", completed: false, responsible: "Operador", optional: false },
+      { id: "1-3", title: "Solicitar logo da empresa", completed: false, responsible: "Operador", optional: false },
+      { id: "1-4", title: "Criar grupo no WhatsApp com o cliente", completed: false, responsible: "Admin", optional: false },
+      { id: "1-5", title: "Criar pasta do cliente no Google Drive", completed: false, responsible: "Operador", optional: false },
+      { id: "1-6", title: "Criar email para o cliente (para cadastro em diretórios)", completed: false, responsible: "Operador", optional: false },
     ],
   },
   {
     id: "etapa2",
     title: "2. Preparação",
     items: [
-      { id: "2-1", title: "Criar ou obter conta de e-mail para o cliente", completed: false, responsible: "Operador" },
-      { id: "2-2", title: "Criar pasta do cliente no armazenamento em nuvem", completed: false, responsible: "Operador" },
-      { id: "2-3", title: "Configurar ferramentas de IA para o projeto", completed: false, responsible: "Operador" },
-      { id: "2-4", title: "Registrar métricas ANTES da execução", completed: false, responsible: "Operador" },
-      { id: "2-5", title: "Realizar briefing + pegar propriedade do Perfil", completed: false, responsible: "Operador" },
-      { id: "2-6", title: "Criar documento de briefing/notas no card do cliente", completed: false, responsible: "Operador" },
-      { id: "2-7", title: "Criar slogans para postagens e validar com cliente", completed: false, responsible: "Operador" },
-      { id: "2-8", title: "Criar link de contato direto e adicionar no card", completed: false, responsible: "Operador" },
-      { id: "2-9", title: "Inserir link de contato no perfil e ativar chat", completed: false, responsible: "Operador" },
-      { id: "2-10", title: "Definir: tirar fotos ou solicitar ao cliente", completed: false, responsible: "Admin" },
-      { id: "2-11", title: "Tirar fotos da empresa (se aplicável)", completed: false, responsible: "Admin" },
-      { id: "2-12", title: "Solicitar fotos ao cliente (se cliente vai enviar)", completed: false, responsible: "Operador" },
+      { id: "2-1", title: "Fazer briefing completo do cliente (Google Docs)", completed: false, responsible: "Operador", optional: false },
+      { id: "2-2", title: "Definir palavras-chave principais com o cliente", completed: false, responsible: "Operador", optional: false },
+      { id: "2-3", title: "Analisar perfis dos concorrentes no Google Maps", completed: false, responsible: "Operador", optional: false },
+      { id: "2-4", title: "Criar link WhatsApp longo e curto", completed: false, responsible: "Operador", optional: false },
+      { id: "2-5", title: "Salvar print do GBP Score ANTES (anexar no sistema)", completed: false, responsible: "Operador", optional: false },
+      { id: "2-6", title: "Salvar print do Localo ANTES (anexar no sistema)", completed: false, responsible: "Operador", optional: false },
+      { id: "2-7", title: "Criar artes visuais: produtos (900x900), postagens (1200x900) e QR Code", completed: false, responsible: "Designer", optional: false },
     ],
   },
   {
     id: "etapa3",
-    title: "3. Produção",
+    title: "3. Otimização do Perfil",
     items: [
-      { id: "3-1", title: "Editar fotos da empresa", completed: false, responsible: "Designer" },
-      { id: "3-2", title: "Salvar fotos editadas na pasta do cliente", completed: false, responsible: "Designer" },
-      { id: "3-3", title: "Criar modelo de geolocalização para imagens", completed: false, responsible: "Operador" },
-      { id: "3-4", title: "Criar designs de produtos", completed: false, responsible: "Operador" },
-      { id: "3-5", title: "Criar designs de postagens", completed: false, responsible: "Operador" },
-      { id: "3-6", title: "Criar arte de QR Codes", completed: false, responsible: "Operador" },
-      { id: "3-7", title: "Buscar ou criar vídeos do cliente (mínimo 3)", completed: false, responsible: "Operador" },
+      { id: "3-1", title: "Atualizar nome da empresa com palavras-chave", completed: false, responsible: "Operador", optional: false },
+      { id: "3-2", title: "Atualizar descrição do perfil com SEO", completed: false, responsible: "Operador", optional: false },
+      { id: "3-3", title: "Corrigir endereço, horário de funcionamento e telefone", completed: false, responsible: "Operador", optional: false },
+      { id: "3-4", title: "Definir e ajustar categoria principal e categorias adicionais", completed: false, responsible: "Operador", optional: false },
+      { id: "3-5", title: "Adicionar link WhatsApp e ativar chat no perfil", completed: false, responsible: "Operador", optional: false },
+      { id: "3-6", title: "Adicionar atributos relevantes ao perfil", completed: false, responsible: "Operador", optional: false },
+      { id: "3-7", title: "Responder todas as avaliações com palavras-chave", completed: false, responsible: "Operador", optional: false },
+      { id: "3-8", title: "Editar fotos e aplicar geolocalização (GeoSetter)", completed: false, responsible: "Designer", optional: false },
+      { id: "3-9", title: "Subir fotos editadas no perfil (interior, exterior, equipe)", completed: false, responsible: "Operador", optional: false },
+      { id: "3-10", title: "Subir vídeos no perfil (mínimo 3 vídeos)", completed: false, responsible: "Operador", optional: false },
+      { id: "3-11", title: "Inserir serviços com palavras-chave + fazer copy dos serviços", completed: false, responsible: "Operador", optional: false },
+      { id: "3-12", title: "Inserir produtos otimizados + fazer copy dos produtos", completed: false, responsible: "Operador", optional: false },
+      { id: "3-13", title: "Publicar postagens com palavras-chave + fazer copy das postagens", completed: false, responsible: "Operador", optional: false },
+      { id: "3-14", title: "Cadastrar em diretórios online com nome otimizado", completed: false, responsible: "Operador", optional: true },
+      { id: "3-15", title: "Criar / otimizar perfis nas redes sociais (YouTube, LinkedIn, TikTok, Pinterest, X)", completed: false, responsible: "Operador", optional: true },
     ],
   },
   {
     id: "etapa4",
-    title: "4. Otimização",
+    title: "4. Entrega",
     items: [
-      { id: "4-1", title: "Atualizar informações principais do cliente no Perfil", completed: false, responsible: "Operador" },
-      { id: "4-2", title: "Responder todas as avaliações usando palavras-chave", completed: false, responsible: "Operador" },
-      { id: "4-3", title: "Pesquisar, definir e ajustar categorias", completed: false, responsible: "Operador" },
-      { id: "4-4", title: "Subir fotos com palavras-chave e geolocalização", completed: false, responsible: "Operador" },
-      { id: "4-5", title: "Subir fotos editadas e vídeos no Perfil", completed: false, responsible: "Operador" },
-      { id: "4-6", title: "Criar e incluir serviços com palavras-chave", completed: false, responsible: "Operador" },
-      { id: "4-7", title: "Subir produtos no Perfil", completed: false, responsible: "Operador" },
-      { id: "4-8", title: "Criar e subir postagens no Perfil", completed: false, responsible: "Operador" },
-      { id: "4-9", title: "Alterar nome com palavras-chave (validar com Admin)", completed: false, responsible: "Operador" },
-      { id: "4-10", title: "Responder perguntas e respostas", completed: false, responsible: "Operador" },
-      { id: "4-11", title: "Criar FAQs no perfil", completed: false, responsible: "Operador" },
-      { id: "4-12", title: "Cadastrar empresa em diretórios", completed: false, responsible: "Operador" },
-      { id: "4-13", title: "Criar perfis em redes sociais com nome otimizado", completed: false, responsible: "Operador" },
-    ],
-  },
-  {
-    id: "etapa5",
-    title: "5. Entrega",
-    items: [
-      { id: "5-1", title: "Conferir materiais organizados na pasta do cliente", completed: false, responsible: "Operador" },
-      { id: "5-2", title: "Registrar métricas DEPOIS da execução", completed: false, responsible: "Operador" },
-      { id: "5-3", title: "Criar relatório de entrega comparando ANTES x DEPOIS", completed: false, responsible: "Operador" },
-      { id: "5-4", title: "Verificar se cliente está como proprietário principal", completed: false, responsible: "Admin" },
-      { id: "5-5", title: "Manter acesso como administrador do Perfil", completed: false, responsible: "Admin" },
-      { id: "5-6", title: "Entregar com apresentação do resultado", completed: false, responsible: "Operador" },
-      { id: "5-7", title: "Solicitar indicação de novos clientes", completed: false, responsible: "Admin" },
-      { id: "5-8", title: "Oferecer plano de recorrência se cliente for estratégico", completed: false, responsible: "Admin" },
-      { id: "5-9", title: "💰 Pagar comissão da equipe", completed: false, responsible: "Admin" },
+      { id: "4-1", title: "Conferir perfil completo (todas as seções preenchidas)", completed: false, responsible: "Operador", optional: false },
+      { id: "4-2", title: "Confirmar propriedade do cliente + agência permanece como admin", completed: false, responsible: "Admin", optional: false },
+      { id: "4-3", title: "Montar drive de entrega com todos os materiais (fotos, artes, QR Code)", completed: false, responsible: "Operador", optional: false },
+      { id: "4-4", title: "Criar relatório antes e depois (print do score + posição na palavra-chave principal)", completed: false, responsible: "Operador", optional: false },
+      { id: "4-5", title: "Reunião de entrega: apresentar evolução e mostrar antes vs depois", completed: false, responsible: "Admin", optional: false },
+      { id: "4-6", title: "Solicitar 3 indicações ao final da reunião", completed: false, responsible: "Admin", optional: false },
     ],
   },
 ];

@@ -4,18 +4,18 @@ export function calculateProgress(client: Client): number {
   if (!client.checklist || !Array.isArray(client.checklist) || client.checklist.length === 0) {
     return 0;
   }
-  
+
   const allItems = client.checklist.flatMap(section => {
-    // Handle both formats: { items: [...] } and { tasks: [...] }
     const items = (section as any).items || (section as any).tasks || [];
     return Array.isArray(items) ? items : [];
   });
-  
-  if (allItems.length === 0) return 0;
-  
-  // Handle both formats: { completed: boolean } and { done: boolean }
-  const completedItems = allItems.filter((item: any) => item?.completed || item?.done);
-  return Math.round((completedItems.length / allItems.length) * 100);
+
+  // Only required items count toward progress
+  const requiredItems = allItems.filter((item: any) => !item?.optional);
+  if (requiredItems.length === 0) return 0;
+
+  const completedRequired = requiredItems.filter((item: any) => item?.completed || item?.done);
+  return Math.round((completedRequired.length / requiredItems.length) * 100);
 }
 
 export function getStatusLabel(status: ClientStatus): string {

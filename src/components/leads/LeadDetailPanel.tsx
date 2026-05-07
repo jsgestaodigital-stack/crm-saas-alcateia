@@ -48,8 +48,6 @@ import {
 import { LeadActivityTab } from './LeadActivityTab';
 import { LeadProposalTab } from './LeadProposalTab';
 import { LeadConversionTab } from './LeadConversionTab';
-import { LeadRaioXTab } from './LeadRaioXTab';
-import { LeadCopilotTab } from './LeadCopilotTab';
 import { LeadTasksTab } from './LeadTasksTab';
 
 interface LeadDetailPanelProps {
@@ -214,14 +212,6 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
               <TabsTrigger value="proposta" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400 whitespace-nowrap">
                 <span className="sm:hidden">📄</span>
                 <span className="hidden sm:inline">Proposta</span>
-              </TabsTrigger>
-              <TabsTrigger value="raiox" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400 whitespace-nowrap">
-                <span className="sm:hidden">🔍</span>
-                <span className="hidden sm:inline">Raio-X</span>
-              </TabsTrigger>
-              <TabsTrigger value="copilot" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-400 whitespace-nowrap">
-                <span className="sm:hidden">🤖</span>
-                <span className="hidden sm:inline">🤖 Copiloto</span>
               </TabsTrigger>
               <TabsTrigger value="conversao" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400 whitespace-nowrap">
                 <span className="sm:hidden">🏆</span>
@@ -492,15 +482,6 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
                 <LeadProposalTab lead={lead} onUpdate={onUpdate} />
               </TabsContent>
 
-              {/* Raio-X Tab */}
-              <TabsContent value="raiox" className="m-0">
-                <LeadRaioXTab leadId={lead.id} />
-              </TabsContent>
-
-              {/* Copilot Tab */}
-              <TabsContent value="copilot" className="m-0">
-                <LeadCopilotTab leadId={lead.id} />
-              </TabsContent>
 
               {/* Conversão Tab */}
               <TabsContent value="conversao" className="m-0">

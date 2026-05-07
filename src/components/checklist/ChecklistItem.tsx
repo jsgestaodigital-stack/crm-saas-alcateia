@@ -137,7 +137,8 @@ export function ChecklistItem({
           "w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all",
           item.completed 
             ? "bg-status-success border-status-success" 
-            : "border-muted-foreground/40 hover:border-primary group-hover:border-primary"
+            : "border-muted-foreground/40 hover:border-primary group-hover:border-primary",
+          (item as any).optional && !item.completed && "border-dashed"
         )}>
           {item.completed && <Check className="w-3 h-3 text-status-success-foreground" />}
         </div>
@@ -149,6 +150,12 @@ export function ChecklistItem({
         )}>
           {item.title}
         </span>
+
+        {(item as any).optional && (
+          <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-muted text-muted-foreground flex-shrink-0 uppercase tracking-wide">
+            Opcional
+          </span>
+        )}
 
         {/* Timer display when active */}
         {isTimerActive && (

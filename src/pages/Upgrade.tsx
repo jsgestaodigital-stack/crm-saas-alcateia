@@ -125,7 +125,7 @@ export default function Upgrade() {
                 </div>
               </div>
               <Badge variant="outline">
-                R$ {currentPlan?.price_monthly?.toFixed(2) || "67,00"}/mês
+                R$ {currentPlan?.price_monthly?.toFixed(2) || "47,00"}/mês
               </Badge>
             </div>
           </CardHeader>
