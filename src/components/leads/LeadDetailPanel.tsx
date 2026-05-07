@@ -451,6 +451,28 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
                     disabled={!canEditLeads}
                   />
                 </div>
+
+                {/* Save Footer */}
+                {canEditLeads && (
+                  <div className="sticky bottom-0 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 border-t border-border/30 bg-background/95 backdrop-blur flex items-center justify-end gap-2">
+                    {isDirty && !isSaving && (
+                      <span className="text-xs text-muted-foreground">Alterações não salvas</span>
+                    )}
+                    <Button
+                      onClick={handleSaveChanges}
+                      disabled={!isDirty || isSaving}
+                      className="gap-2 bg-amber-500 hover:bg-amber-600 text-black"
+                    >
+                      {isSaving ? (
+                        <><Loader2 className="h-4 w-4 animate-spin" /> Salvando...</>
+                      ) : justSaved ? (
+                        <><Check className="h-4 w-4" /> Salvo</>
+                      ) : (
+                        <><Save className="h-4 w-4" /> Salvar alterações</>
+                      )}
+                    </Button>
+                  </div>
+                )}
               </TabsContent>
 
               {/* Atividades Tab */}
