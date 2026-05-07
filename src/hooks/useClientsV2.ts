@@ -167,7 +167,7 @@ export function useClientsV2(options: UseClientsV2Options = {}) {
         patch.suspended_at = data.status === 'paused' ? new Date().toISOString() : null;
       }
 
-      const { error } = await supabase.from('clients').update(patch).eq('id', id);
+      const { error } = await supabase.from('clients').update(patch as never).eq('id', id);
       if (error) throw error;
       toast({ title: 'Cliente atualizado' });
       fetchClients();
