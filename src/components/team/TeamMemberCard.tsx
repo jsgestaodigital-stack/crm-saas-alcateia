@@ -167,7 +167,7 @@ export default function TeamMemberCard({
               disabled={lockRoleSelect}
               onValueChange={(value) => onRoleChange(member.user_id, value as AppRole)}
             >
-              <SelectTrigger className="w-40">
+              <SelectTrigger className="w-40" title={lockRoleSelect ? 'Promova outro membro a Dono antes de sair.' : undefined}>
                 <SelectValue>
                   <div className="flex items-center gap-2">
                     {roleIcons[role]}
