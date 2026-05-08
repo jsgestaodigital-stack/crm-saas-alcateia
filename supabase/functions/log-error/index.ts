@@ -91,13 +91,41 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Insert error log
+    // Derive trusted user_id / agency_id from JWT instead of trusting the body.
+    let trustedUserId: string | null = null;
+    let trustedAgencyId: string | null = null;
+    let trustedEmail: string | null = null;
+    const authHeader = req.headers.get('Authorization');
+    if (authHeader) {
+      try {
+        const anonClient = createClient(
+          supabaseUrl,
+          Deno.env.get('SUPABASE_ANON_KEY')!
+        );
+        const token = authHeader.replace('Bearer ', '');
+        const { data: authData } = await anonClient.auth.getUser(token);
+        if (authData?.user) {
+          trustedUserId = authData.user.id;
+          trustedEmail = authData.user.email ?? null;
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('current_agency_id')
+            .eq('id', trustedUserId)
+            .maybeSingle();
+          trustedAgencyId = profile?.current_agency_id ?? null;
+        }
+      } catch (_e) {
+        // ignore — fall through as anonymous
+      }
+    }
+
+    // Insert error log — never trust client-supplied identity fields
     const { data, error } = await supabase
       .from('system_health_logs')
       .insert({
-        agency_id: payload.agency_id || null,
-        user_id: payload.user_id || null,
-        user_email: payload.user_email || null,
+        agency_id: trustedAgencyId,
+        user_id: trustedUserId,
+        user_email: trustedEmail,
         error_type: payload.error_type.substring(0, 200),
         error_message: payload.error_message.substring(0, 2000),
         error_stack: payload.error_stack?.substring(0, 5000) || null,
