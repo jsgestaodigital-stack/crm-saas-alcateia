@@ -113,14 +113,54 @@ export function useClientsRealtime(
 export async function createClient(client: Omit<Client, 'id'>): Promise<Client | null> {
   try {
     const insertData = createClientInsertRow(client);
-    
-    const { data, error } = await supabase
+
+    // Attempt 1: insert with checklist
+    let { data, error } = await supabase
       .from("clients")
       .insert(insertData as any)
       .select()
       .single();
 
-    if (error) throw error;
+    // Retry path: if first insert failed, try without checklist then patch it
+    if (error) {
+      console.warn("createClient: attempt 1 failed, retrying without checklist:", error.message);
+      const { checklist, ...withoutChecklist } = insertData as any;
+      const fallback = await supabase
+        .from("clients")
+        .insert({ ...withoutChecklist, checklist: [] } as any)
+        .select()
+        .single();
+
+      if (fallback.error) throw fallback.error;
+      data = fallback.data;
+
+      const patch = await supabase
+        .from("clients")
+        .update({ checklist } as any)
+        .eq("id", (data as any).id);
+
+      if (patch.error) {
+        console.error("createClient: checklist patch (attempt 2) failed:", patch.error.message);
+        const { data: userRes } = await supabase.auth.getUser();
+        const u = userRes?.user;
+        const { data: prof } = u
+          ? await supabase.from("profiles").select("full_name, current_agency_id").eq("id", u.id).single()
+          : { data: null as any };
+        if (prof?.current_agency_id && u) {
+          await supabase.from("audit_log").insert({
+            user_id: u.id,
+            user_name: prof.full_name || u.email || "Sistema",
+            action_type: "seed_checklist_failed",
+            entity_type: "client",
+            entity_id: (data as any).id,
+            entity_name: (data as any).company_name,
+            agency_id: prof.current_agency_id,
+            metadata: { error: patch.error.message, attempts: 2, source: "createClient" },
+          } as any);
+        }
+        toast.warning("Cliente criado, mas o checklist não foi gerado. Use o botão 'Gerar checklist' no painel do cliente.");
+      }
+    }
 
     toast.success(`Cliente "${client.companyName}" criado com sucesso`);
     return mapRowToClient(data as unknown as ClientRow);
@@ -128,6 +168,23 @@ export async function createClient(client: Omit<Client, 'id'>): Promise<Client |
     console.error("Error creating client:", error);
     toast.error(getErrorMessage(error));
     return null;
+  }
+}
+
+// Manually seed/regenerate the checklist for a client (used by ClientDetailPanel banner)
+export async function seedClientChecklist(clientId: string, checklist: any): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from("clients")
+      .update({ checklist } as any)
+      .eq("id", clientId);
+    if (error) throw error;
+    toast.success("Checklist gerado com sucesso");
+    return true;
+  } catch (error) {
+    console.error("seedClientChecklist error:", error);
+    toast.error(getErrorMessage(error));
+    return false;
   }
 }
 

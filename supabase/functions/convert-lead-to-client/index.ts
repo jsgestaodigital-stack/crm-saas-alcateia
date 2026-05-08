@@ -238,10 +238,10 @@ serve(async (req) => {
 
     // 2. Create the client (using service role to bypass RLS)
     // IMPORTANT: Must include agency_id from the lead to maintain multi-tenant isolation
-    const { data: client, error: clientError } = await supabaseAdmin
-      .from('clients')
-      .insert({
-        agency_id: lead.agency_id, // Critical: inherit agency from lead
+    // Seed checklist with retry — never block conversion if checklist seeding fails.
+    async function insertClientWithChecklistRetry() {
+      const baseRow = {
+        agency_id: lead.agency_id,
         company_name: lead.company_name,
         city: lead.city || null,
         main_category: lead.main_category || null,
@@ -251,14 +251,61 @@ serve(async (req) => {
         plan_type: planType,
         status: 'on_track',
         column_id: 'onboarding',
-        checklist: DEFAULT_CHECKLIST,
         comparisons: [],
         history: [],
-      })
-      .select()
-      .single();
+      };
 
-    if (clientError) {
+      // Attempt 1: insert with checklist
+      let attempt = await supabaseAdmin
+        .from('clients')
+        .insert({ ...baseRow, checklist: DEFAULT_CHECKLIST })
+        .select()
+        .single();
+
+      if (!attempt.error) {
+        return { client: attempt.data, checklistSeeded: true, error: null };
+      }
+
+      console.warn('[convert-lead-to-client] Checklist seed attempt 1 failed:', attempt.error.message);
+
+      // Attempt 2: insert without checklist, then patch checklist
+      const fallback = await supabaseAdmin
+        .from('clients')
+        .insert({ ...baseRow, checklist: [] })
+        .select()
+        .single();
+
+      if (fallback.error) {
+        return { client: null, checklistSeeded: false, error: fallback.error };
+      }
+
+      const patch = await supabaseAdmin
+        .from('clients')
+        .update({ checklist: DEFAULT_CHECKLIST })
+        .eq('id', fallback.data.id);
+
+      if (patch.error) {
+        console.error('[convert-lead-to-client] Checklist seed attempt 2 failed:', patch.error.message);
+        // Log non-blocking failure
+        await supabaseAdmin.from('audit_log').insert({
+          user_id: user.id,
+          user_name: userProfile?.full_name || user.email || 'Sistema',
+          action_type: 'seed_checklist_failed',
+          entity_type: 'client',
+          entity_id: fallback.data.id,
+          entity_name: fallback.data.company_name,
+          agency_id: lead.agency_id,
+          metadata: { error: patch.error.message, attempts: 2 },
+        });
+        return { client: fallback.data, checklistSeeded: false, error: null };
+      }
+
+      return { client: { ...fallback.data, checklist: DEFAULT_CHECKLIST }, checklistSeeded: true, error: null };
+    }
+
+    const { client, error: clientError } = await insertClientWithChecklistRetry();
+
+    if (clientError || !client) {
       console.error('[convert-lead-to-client] Client creation error');
       return new Response(JSON.stringify({ error: 'Erro ao criar cliente. Tente novamente.' }), {
         status: 500,
