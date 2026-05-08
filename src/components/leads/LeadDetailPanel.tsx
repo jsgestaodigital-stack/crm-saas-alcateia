@@ -150,6 +150,7 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
   const tempConfig = TEMPERATURE_CONFIG[lead.temperature];
 
   return (
+    <>
     <Dialog open={!!lead} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] p-0 gap-0 overflow-hidden flex flex-col">
         {/* Header */}
