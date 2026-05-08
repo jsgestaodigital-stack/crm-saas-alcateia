@@ -431,7 +431,7 @@ export default function Register() {
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Mínimo 6 caracteres"
+                    placeholder="Mín. 8 caracteres, 1 maiúscula e 1 número"
                     value={formData.password}
                     onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
                     disabled={isLoading}
@@ -447,6 +447,22 @@ export default function Register() {
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </Button>
                 </div>
+                {/* Real-time password rules */}
+                {formData.password.length > 0 && (
+                  <ul className="text-xs space-y-1 mt-1">
+                    {[
+                      { ok: formData.password.length >= 8, label: "Pelo menos 8 caracteres" },
+                      { ok: /[A-Z]/.test(formData.password), label: "Uma letra maiúscula" },
+                      { ok: /[a-z]/.test(formData.password), label: "Uma letra minúscula" },
+                      { ok: /[0-9]/.test(formData.password), label: "Um número" },
+                    ].map((r) => (
+                      <li key={r.label} className={`flex items-center gap-1 ${r.ok ? "text-green-600" : "text-muted-foreground"}`}>
+                        <CheckCircle className="w-3 h-3" />
+                        {r.label}
+                      </li>
+                    ))}
+                  </ul>
+                )}
                 {errors.password && (
                   <p className="text-xs text-destructive flex items-center gap-1">
                     <AlertCircle className="w-3 h-3" />
