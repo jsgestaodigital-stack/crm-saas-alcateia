@@ -119,7 +119,7 @@ export function useAppointments(options: UseAppointmentsOptions = {}) {
     if (!currentAgencyId) return;
 
     const channel = supabase
-      .channel("appointments-changes")
+      .channel(`appointments-changes-${crypto.randomUUID()}`)
       .on(
         "postgres_changes",
         {

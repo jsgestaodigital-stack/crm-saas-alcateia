@@ -79,7 +79,7 @@ export function useScheduledTasks(filters: TaskFilters = {}) {
     fetchTasks();
 
     const channel = supabase
-      .channel('scheduled-tasks-changes')
+      .channel(`scheduled-tasks-changes-${crypto.randomUUID()}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'scheduled_tasks' },

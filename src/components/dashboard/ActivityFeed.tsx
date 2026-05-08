@@ -75,7 +75,7 @@ export function ActivityFeed() {
 
     // Subscribe to realtime updates
     const channel = supabase
-      .channel("activity-feed")
+      .channel(`activity-feed-${crypto.randomUUID()}`)
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "audit_log" },

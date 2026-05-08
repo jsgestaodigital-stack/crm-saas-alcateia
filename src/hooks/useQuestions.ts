@@ -47,7 +47,7 @@ export function useQuestions() {
 
     // Subscribe to realtime updates
     const channel = supabase
-      .channel('questions-changes')
+      .channel(`questions-changes-${crypto.randomUUID()}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'questions' },

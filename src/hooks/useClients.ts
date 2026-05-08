@@ -88,7 +88,7 @@ export function useClientsRealtime(
   // Realtime subscription
   useEffect(() => {
     const channel = supabase
-      .channel("clients-changes")
+      .channel(`clients-changes-${crypto.randomUUID()}`)
       .on(
         "postgres_changes",
         {

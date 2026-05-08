@@ -43,7 +43,7 @@ export function PendingRegistrationsBanner() {
 
     // Subscribe to real-time changes
     const channel = supabase
-      .channel('pending-registrations-banner')
+      .channel(`pending-registrations-banner-${crypto.randomUUID()}`)
       .on(
         'postgres_changes',
         {
