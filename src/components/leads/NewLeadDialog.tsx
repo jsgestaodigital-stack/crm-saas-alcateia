@@ -22,6 +22,16 @@ import {
   AlertDescription,
   AlertTitle,
 } from '@/components/ui/alert';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { useLeads, useLeadSources } from '@/hooks/useLeads';
 import { useLeadDuplicates } from '@/hooks/useLeadDuplicates';
 import { LeadTemperature, TEMPERATURE_CONFIG } from '@/types/lead';
@@ -71,6 +81,11 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
   const [newSourceInput, setNewSourceInput] = useState('');
   const [showNewSource, setShowNewSource] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [confirmDialog, setConfirmDialog] = useState<
+    | { type: 'close'; onConfirm: () => void }
+    | { type: 'duplicate'; companyName: string; onConfirm: () => void }
+    | null
+  >(null);
   
   const [validation, setValidation] = useState<ValidationState>({
     whatsapp: { valid: true },
@@ -105,10 +120,8 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
   // Warn before closing with unsaved changes
   const handleOpenChange = useCallback((newOpen: boolean) => {
     if (!newOpen && isDirty) {
-      const confirmClose = window.confirm(
-        'Você tem alterações não salvas. Deseja realmente fechar e perder os dados?'
-      );
-      if (!confirmClose) return;
+      setConfirmDialog({ type: 'close', onConfirm: () => onOpenChange(false) });
+      return;
     }
     onOpenChange(newOpen);
   }, [isDirty, onOpenChange]);
