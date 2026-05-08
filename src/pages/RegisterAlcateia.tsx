@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -113,6 +113,7 @@ export default function RegisterAlcateia() {
           ownerPhone: formData.ownerPhone?.trim() || null,
           password: formData.password,
           isAlcateia: true, // Flag for lifetime access - IMMEDIATE ACCESS
+          alcateiaCode: searchParams.get("code") ?? "",
         },
       });
 
