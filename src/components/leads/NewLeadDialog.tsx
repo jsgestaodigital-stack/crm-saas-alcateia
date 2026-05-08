@@ -619,5 +619,35 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
         </form>
       </DialogContent>
     </Dialog>
+
+    <AlertDialog open={!!confirmDialog} onOpenChange={(o) => { if (!o) setConfirmDialog(null); }}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            {confirmDialog?.type === 'close' ? 'Descartar alterações?' : 'Lead duplicado'}
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            {confirmDialog?.type === 'close'
+              ? 'Você tem alterações não salvas. Deseja realmente fechar e perder os dados?'
+              : confirmDialog?.type === 'duplicate'
+                ? `Já existe um lead com dados idênticos: "${confirmDialog.companyName}". Deseja criar mesmo assim?`
+                : ''}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => {
+              const cb = confirmDialog?.onConfirm;
+              setConfirmDialog(null);
+              cb?.();
+            }}
+          >
+            Confirmar
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }
