@@ -35,7 +35,7 @@ const registerSchema = z.object({
     .min(2, "Nome deve ter pelo menos 2 caracteres")
     .max(100, "Nome muito longo"),
   ownerEmail: z.string()
-    .email("Email inválido")
+    .email("E-mail inválido")
     .max(255, "Email muito longo"),
   ownerPhone: z.string()
     .optional()
@@ -245,7 +245,7 @@ export default function RegisterAlcateia() {
                 <div className="flex items-center gap-3">
                   <Mail className="w-5 h-5 text-amber-600" />
                   <div>
-                    <p className="text-xs text-muted-foreground">Email</p>
+                    <p className="text-xs text-muted-foreground">E-mail</p>
                     <p className="font-medium">{formData.ownerEmail}</p>
                   </div>
                 </div>

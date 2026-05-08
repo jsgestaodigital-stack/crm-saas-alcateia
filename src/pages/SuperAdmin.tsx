@@ -886,7 +886,7 @@ export default function SuperAdmin() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between bg-background/50 rounded px-3 py-2">
                     <div>
-                      <p className="text-xs text-muted-foreground">Email</p>
+                      <p className="text-xs text-muted-foreground">E-mail</p>
                       <p className="font-mono text-sm">{approvalResult.email}</p>
                     </div>
                     <Button size="icon" variant="ghost" onClick={() => copyToClipboard(approvalResult.email)}>
@@ -923,7 +923,7 @@ export default function SuperAdmin() {
                 <div className="bg-muted/50 rounded-lg p-4 space-y-2">
                   <p className="text-sm"><strong>Agência:</strong> {selectedRegistration?.agency_name}</p>
                   <p className="text-sm"><strong>Responsável:</strong> {selectedRegistration?.owner_name}</p>
-                  <p className="text-sm"><strong>Email:</strong> {selectedRegistration?.owner_email}</p>
+                  <p className="text-sm"><strong>E-mail:</strong> {selectedRegistration?.owner_email}</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="tempPassword">Senha Temporária (opcional)</Label>

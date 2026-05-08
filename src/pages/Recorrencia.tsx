@@ -479,7 +479,7 @@ export default function Recorrencia() {
           </CardHeader>
           <CardContent>
             <Button onClick={() => navigate("/dashboard")} className="w-full">
-              Voltar ao Dashboard
+              Voltar ao Painel
             </Button>
           </CardContent>
         </Card>
@@ -816,7 +816,7 @@ export default function Recorrencia() {
                     <Users className="h-16 w-16 mx-auto mb-4 opacity-30" />
                     <h3 className="text-lg font-medium mb-2">Nenhum cliente recorrente</h3>
                     <p className="text-sm mb-4">
-                      Adicione clientes para começar a gerar tarefas periódicas automaticamente.
+                      Finalize um cliente para convertê-lo em recorrente, ou adicione um diretamente para gerar tarefas periódicas automáticas.
                     </p>
                     <Button
                       onClick={() => setShowNewClientDialog(true)}

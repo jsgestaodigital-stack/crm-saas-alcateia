@@ -94,7 +94,7 @@ export function AlcateiaMembersTab() {
             <TableHeader>
               <TableRow>
                 <TableHead>Nome</TableHead>
-                <TableHead>Email</TableHead>
+                <TableHead>E-mail</TableHead>
                 <TableHead>Desde</TableHead>
                 <TableHead className="text-right">Membro Alcateia</TableHead>
               </TableRow>

@@ -304,7 +304,7 @@ export default function Equipe() {
                   <Mail className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                   <h3 className="text-lg font-medium">Nenhum convite pendente</h3>
                   <p className="text-muted-foreground">
-                    Use o botão "Convidar por email" para enviar convites
+                    Use o botão "Convidar por e-mail" para enviar convites
                   </p>
                 </div>
               ) : (

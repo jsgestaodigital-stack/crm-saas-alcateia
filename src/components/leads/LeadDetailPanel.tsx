@@ -22,6 +22,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
+import { LabelWithHelp } from '@/components/ui/label-with-help';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
@@ -357,7 +358,7 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
 
                     {/* Temperature */}
                     <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">Temperatura</Label>
+                      <LabelWithHelp className="text-xs text-muted-foreground" help="Quão pronto este lead está para fechar: Frio = só pesquisando, Morno = tem interesse, Quente = quer fechar.">Temperatura</LabelWithHelp>
                       <Select
                         value={lead.temperature}
                         onValueChange={(v) => handleSelectChange('temperature', v)}
@@ -419,7 +420,7 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Next Action */}
                     <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">Próxima Ação</Label>
+                      <LabelWithHelp className="text-xs text-muted-foreground" help="O que você precisa fazer antes do próximo contato (ex: enviar proposta, ligar, agendar reunião).">Próxima Ação</LabelWithHelp>
                       <Input
                         value={getValue('next_action') || ''}
                         onChange={(e) => handleFieldChange('next_action', e.target.value)}

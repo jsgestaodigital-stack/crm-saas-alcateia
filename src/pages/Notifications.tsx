@@ -144,7 +144,7 @@ function NotificationPreferencesDialog() {
             <h4 className="text-sm font-medium">Canais</h4>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <Label htmlFor="email">Receber por email</Label>
+                <Label htmlFor="email">Receber por e-mail</Label>
                 <Switch
                   id="email"
                   checked={preferences?.email_enabled ?? true}

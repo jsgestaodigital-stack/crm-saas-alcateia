@@ -39,7 +39,7 @@ const SubscriptionLocked = () => {
 
   // WhatsApp support link (replace with actual number)
   const whatsappLink = `https://wa.me/5511999999999?text=${encodeURIComponent(
-    `Olá! Preciso de ajuda com minha assinatura do GBRank CRM. Email: ${user?.email}`
+    `Olá! Preciso de ajuda com minha assinatura do GBRank CRM. E-mail: ${user?.email}`
   )}`;
 
   return (

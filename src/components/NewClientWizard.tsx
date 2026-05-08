@@ -4,6 +4,7 @@ import { scrollToFirstError } from "@/lib/scrollToError";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LabelWithHelp } from "@/components/ui/label-with-help";
 import { Textarea } from "@/components/ui/textarea";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useClientStore } from "@/stores/clientStore";
@@ -219,7 +220,7 @@ export function NewClientWizard({ open, onOpenChange, initialColumnId }: NewClie
 
           {/* Quick Select: Stage - All stages available for importing existing clients */}
           <div>
-            <Label className="text-sm font-medium mb-1.5 block">Etapa Inicial</Label>
+            <LabelWithHelp className="text-sm font-medium mb-1.5" help="Em qual etapa do funil este cliente entra agora. Use 'Para Entrar' para novos contratos e as demais para importar clientes em andamento.">Etapa Inicial</LabelWithHelp>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"

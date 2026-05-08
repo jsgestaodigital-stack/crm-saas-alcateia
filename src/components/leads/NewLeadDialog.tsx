@@ -11,6 +11,7 @@ import { scrollToFirstError } from '@/lib/scrollToError';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { LabelWithHelp } from '@/components/ui/label-with-help';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -561,7 +562,7 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
 
             {/* Temperature */}
             <div>
-              <Label>Temperatura</Label>
+              <LabelWithHelp help="Quão pronto este lead está para fechar: Frio = só pesquisando, Morno = tem interesse, Quente = quer fechar.">Temperatura</LabelWithHelp>
               <Select 
                 value={formData.temperature} 
                 onValueChange={(v) => setFormData(prev => ({ ...prev, temperature: v as LeadTemperature }))}
@@ -582,7 +583,7 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
 
           {/* Next Action */}
           <div>
-            <Label>Próxima Ação</Label>
+            <LabelWithHelp help="O que você precisa fazer antes do próximo contato (ex: enviar proposta, ligar, agendar reunião).">Próxima Ação</LabelWithHelp>
             <Input
               value={formData.next_action}
               onChange={(e) => setFormData(prev => ({ ...prev, next_action: e.target.value }))}

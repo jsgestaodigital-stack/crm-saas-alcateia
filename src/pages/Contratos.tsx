@@ -227,7 +227,7 @@ export default function Contratos() {
       <div className="min-h-screen flex items-center justify-center flex-col gap-4">
         <p className="text-muted-foreground">Nenhuma agência selecionada.</p>
         <Button variant="outline" onClick={() => navigate('/dashboard')}>
-          Voltar ao Dashboard
+          Voltar ao Painel
         </Button>
       </div>
     );
