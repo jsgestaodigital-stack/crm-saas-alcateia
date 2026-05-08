@@ -88,7 +88,7 @@ export function ClientV2Dialog({ open, onOpenChange, client, onSave, onDelete }:
             </div>
 
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">E-mail</Label>
               <Input
                 id="email"
                 type="email"

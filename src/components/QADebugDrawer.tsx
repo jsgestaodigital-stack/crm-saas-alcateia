@@ -139,7 +139,7 @@ export function QADebugDrawer() {
               <span className="font-mono">{sessionState.userId?.substring(0, 12) || '—'}...</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Email:</span>
+              <span className="text-muted-foreground">E-mail:</span>
               <span className="font-mono truncate max-w-[200px]">{sessionState.userEmail || '—'}</span>
             </div>
             <div className="flex justify-between">

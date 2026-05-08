@@ -86,7 +86,7 @@ export default function InviteMemberModal({ trigger }: InviteMemberModalProps) {
         {trigger || (
           <Button>
             <Mail className="h-4 w-4 mr-2" />
-            Convidar por email
+            Convidar por e-mail
           </Button>
         )}
       </DialogTrigger>
@@ -104,7 +104,7 @@ export default function InviteMemberModal({ trigger }: InviteMemberModalProps) {
           <>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="invite-email">Email</Label>
+                <Label htmlFor="invite-email">E-mail</Label>
                 <Input
                   id="invite-email"
                   type="email"
@@ -171,7 +171,7 @@ export default function InviteMemberModal({ trigger }: InviteMemberModalProps) {
               </div>
 
               <div className="text-sm text-muted-foreground space-y-1">
-                <p>• Email: <strong>{email}</strong></p>
+                <p>• E-mail: <strong>{email}</strong></p>
                 <p>• Função: <strong>{roleLabels[role]}</strong></p>
                 <p>• Validade: <strong>7 dias</strong></p>
               </div>

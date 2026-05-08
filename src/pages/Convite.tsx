@@ -146,7 +146,7 @@ export default function Convite() {
 
       if (error) throw error;
 
-      toast.success("Conta criada! Verifique seu email para confirmar.");
+      toast.success("Conta criada! Verifique seu e-mail para confirmar.");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erro ao criar conta");
     } finally {
@@ -255,7 +255,7 @@ export default function Convite() {
     );
   }
 
-  // If user is logged in but invite email doesn't match
+  // If user is logged in but invite e-mail doesn't match
   if (user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -349,7 +349,7 @@ export default function Convite() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="signup-email">Email</Label>
+                <Label htmlFor="signup-email">E-mail</Label>
                 <Input
                   id="signup-email"
                   type="email"
@@ -358,7 +358,7 @@ export default function Convite() {
                   disabled
                 />
                 <p className="text-xs text-muted-foreground">
-                  Use o email para o qual o convite foi enviado
+                  Use o e-mail para o qual o convite foi enviado
                 </p>
                 {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
               </div>
@@ -390,7 +390,7 @@ export default function Convite() {
 
             <TabsContent value="login" className="space-y-4 mt-4">
               <div className="space-y-2">
-                <Label htmlFor="login-email">Email</Label>
+                <Label htmlFor="login-email">E-mail</Label>
                 <Input
                   id="login-email"
                   type="email"

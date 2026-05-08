@@ -344,7 +344,7 @@ export default function Auth() {
           const msg = error.message || '';
           if (msg.includes('Email not confirmed')) {
             setNeedsEmailConfirmation(true);
-            toast.error('Confirme seu email antes de entrar. Verifique sua caixa de entrada.');
+            toast.error('Confirme seu e-mail antes de entrar. Verifique sua caixa de entrada.');
           } else if (classified.type === ErrorType.Authentication || msg.includes('Invalid login credentials')) {
             toast.error('Email ou senha incorretos.');
           } else if (msg.includes('User not found')) {
