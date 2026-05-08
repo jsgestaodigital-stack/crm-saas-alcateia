@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Client } from "@/types/client";
 import { mapRowToClient, mapClientToRow, createClientInsertRow, ClientRow } from "@/lib/clientMapper";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errorHandler";
 
 export function useClientsRealtime(
   setClients: (clients: Client[]) => void,
