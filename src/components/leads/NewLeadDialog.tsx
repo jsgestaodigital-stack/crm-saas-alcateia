@@ -323,12 +323,14 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
   };
 
   return (
+    <>
     <Dialog open={open} onOpenChange={(value) => {
       if (!value && isDirty) {
-        const confirmClose = window.confirm(
-          'Você tem alterações não salvas. Deseja realmente fechar e perder os dados?'
-        );
-        if (!confirmClose) return;
+        setConfirmDialog({
+          type: 'close',
+          onConfirm: () => { resetForm(); onOpenChange(false); },
+        });
+        return;
       }
       if (!value) resetForm();
       onOpenChange(value);
