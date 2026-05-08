@@ -770,7 +770,7 @@ export function useRecurring() {
 
     // Subscribe to routines changes
     const routinesChannel = supabase
-      .channel('recurring_routines_changes')
+      .channel(`recurring_routines_changes-${crypto.randomUUID()}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'recurring_routines' },

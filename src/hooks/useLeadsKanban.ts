@@ -147,7 +147,7 @@ export function useLeadsKanban() {
 
     // Realtime updates - debounced to avoid overriding optimistic updates
     const channel = supabase
-      .channel('kanban-leads-changes')
+      .channel(`kanban-leads-changes-${crypto.randomUUID()}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'leads' },
