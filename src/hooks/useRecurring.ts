@@ -393,6 +393,7 @@ export function useRecurring() {
 
     if (error) {
       console.error("Error completing task:", error);
+      toast.error(getErrorMessage(error));
       return false;
     }
 
@@ -414,6 +415,7 @@ export function useRecurring() {
 
     if (error) {
       console.error("Error skipping task:", error);
+      toast.error(getErrorMessage(error));
       return false;
     }
 
@@ -437,6 +439,7 @@ export function useRecurring() {
 
     if (error) {
       console.error("Error reopening task:", error);
+      toast.error(getErrorMessage(error));
       return false;
     }
 
