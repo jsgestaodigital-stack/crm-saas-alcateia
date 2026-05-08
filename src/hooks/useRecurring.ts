@@ -573,15 +573,20 @@ export function useRecurring() {
           console.log(`Created ${tasksToCreate.length} tasks for new recurring client`);
         }
       }
-    } else {
-      console.warn("No routines available to generate tasks");
-    }
-    
-    // Refresh data to update UI
-    await fetchData();
+      } else {
+        console.warn("No routines available to generate tasks");
+      }
 
-    return newClient as RecurringClient;
-  }, [user, fetchData, routines, ensureDefaultRoutines]);
+      // Refresh data to update UI
+      await fetchData();
+
+      return newClient as RecurringClient;
+    } catch (err) {
+      console.error("Error adding recurring client:", err);
+      toast.error(getErrorMessage(err));
+      return null;
+    }
+  }, [user, currentAgencyId, fetchData, routines, ensureDefaultRoutines]);
 
   // Create a new routine (admin only)
   const createRoutine = useCallback(async (data: {
