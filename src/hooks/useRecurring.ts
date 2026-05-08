@@ -2,6 +2,9 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { format, startOfWeek, endOfWeek, addDays, subDays, isToday, isBefore, parseISO, startOfDay, differenceInDays } from "date-fns";
+import { requireAgencyId } from "@/lib/guardAgency";
+import { getErrorMessage } from "@/lib/errorHandler";
+import { toast } from "sonner";
 
 // Types
 export interface RecurringRoutine {
@@ -61,7 +64,7 @@ export interface RecurringStats {
 }
 
 export function useRecurring() {
-  const { user } = useAuth();
+  const { user, currentAgencyId } = useAuth();
   const [routines, setRoutines] = useState<RecurringRoutine[]>([]);
   const [allRoutines, setAllRoutines] = useState<RecurringRoutine[]>([]);
   const [clients, setClients] = useState<RecurringClient[]>([]);
@@ -201,8 +204,9 @@ export function useRecurring() {
         .from("recurring_clients")
         .select("*, clients!recurring_clients_client_id_fkey(deleted_at)")
         .neq("status", "cancelled")
-        .order("company_name");
-      
+        .order("company_name")
+        .limit(500);
+
       if (clientsError) throw clientsError;
       
       // Filter out clients linked to deleted optimization clients (ghost records)
@@ -234,7 +238,8 @@ export function useRecurring() {
         .select("*")
         .gte("due_date", format(pastStart, "yyyy-MM-dd"))
         .lte("due_date", format(weekEnd, "yyyy-MM-dd"))
-        .order("due_date");
+        .order("due_date")
+        .limit(2000);
       
       if (tasksError) throw tasksError;
       
@@ -276,6 +281,7 @@ export function useRecurring() {
 
     } catch (error) {
       console.error("Error fetching recurring data:", error);
+      toast.error(getErrorMessage(error));
     } finally {
       setLoading(false);
     }
@@ -387,6 +393,7 @@ export function useRecurring() {
 
     if (error) {
       console.error("Error completing task:", error);
+      toast.error(getErrorMessage(error));
       return false;
     }
 
@@ -408,6 +415,7 @@ export function useRecurring() {
 
     if (error) {
       console.error("Error skipping task:", error);
+      toast.error(getErrorMessage(error));
       return false;
     }
 
@@ -431,6 +439,7 @@ export function useRecurring() {
 
     if (error) {
       console.error("Error reopening task:", error);
+      toast.error(getErrorMessage(error));
       return false;
     }
 
@@ -446,78 +455,70 @@ export function useRecurring() {
     monthly_value?: number;
   }): Promise<RecurringClient | null> => {
     if (!user) {
-      console.error("No user authenticated");
+      toast.error("Você precisa estar logado");
       return null;
     }
 
-    // Idempotência: se já existe um recorrente para este client_id, reaproveitar
-    if (data.client_id) {
-      const { data: existing, error: existingError } = await supabase
+    try {
+      requireAgencyId(currentAgencyId);
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+      return null;
+    }
+
+    try {
+      // Idempotência: se já existe um recorrente para este client_id, reaproveitar
+      if (data.client_id) {
+        const { data: existing, error: existingError } = await supabase
+          .from("recurring_clients")
+          .select("*")
+          .eq("client_id", data.client_id)
+          .maybeSingle();
+
+        if (existingError) {
+          console.error("Error checking existing recurring client:", existingError);
+        } else if (existing) {
+          await fetchData();
+          return existing as RecurringClient;
+        }
+      }
+
+      // CRITICAL: Ensure routines exist before creating client
+      let currentRoutines = routines;
+      if (currentRoutines.length === 0) {
+        await ensureDefaultRoutines();
+        const { data: freshRoutines } = await supabase
+          .from("recurring_routines")
+          .select("*")
+          .eq("active", true)
+          .order("sort_order");
+        currentRoutines = (freshRoutines as RecurringRoutine[]) || [];
+        setRoutines(currentRoutines);
+      }
+
+      const variants = ['A', 'B', 'C', 'D'];
+      const randomVariant = variants[Math.floor(Math.random() * variants.length)];
+
+      const insertData = {
+        client_id: data.client_id || null,
+        company_name: data.company_name,
+        responsible_name: data.responsible_name,
+        schedule_variant: randomVariant,
+        responsible_user_id: user.id,
+        start_date: format(new Date(), "yyyy-MM-dd"),
+        monthly_value: data.monthly_value && data.monthly_value > 0 ? data.monthly_value : undefined,
+      };
+
+      const { data: newClient, error } = await supabase
         .from("recurring_clients")
-        .select("*")
-        .eq("client_id", data.client_id)
-        .maybeSingle();
+        .insert(insertData)
+        .select()
+        .single();
 
-      if (existingError) {
-        console.error("Error checking existing recurring client:", existingError);
-      } else if (existing) {
-        await fetchData();
-        return existing as RecurringClient;
-      }
-    }
+      if (error) throw error;
+      if (!newClient) throw new Error("Cliente recorrente não retornou após criação");
 
-    // CRITICAL: Ensure routines exist before creating client
-    // This fixes the issue where clients are created but no tasks appear
-    let currentRoutines = routines;
-    if (currentRoutines.length === 0) {
-      console.log("No routines found, creating defaults before adding client...");
-      await ensureDefaultRoutines();
-      // Re-fetch routines
-      const { data: freshRoutines } = await supabase
-        .from("recurring_routines")
-        .select("*")
-        .eq("active", true)
-        .order("sort_order");
-      currentRoutines = (freshRoutines as RecurringRoutine[]) || [];
-      setRoutines(currentRoutines);
-    }
-
-    // Assign random schedule variant
-    const variants = ['A', 'B', 'C', 'D'];
-    const randomVariant = variants[Math.floor(Math.random() * variants.length)];
-
-    // Build insert data
-    const insertData = {
-      client_id: data.client_id || null,
-      company_name: data.company_name,
-      responsible_name: data.responsible_name,
-      schedule_variant: randomVariant,
-      responsible_user_id: user.id,
-      start_date: format(new Date(), "yyyy-MM-dd"),
-      monthly_value: data.monthly_value && data.monthly_value > 0 ? data.monthly_value : undefined,
-    };
-
-    const { data: newClient, error } = await supabase
-      .from("recurring_clients")
-      .insert(insertData)
-      .select()
-      .single();
-
-    if (error) {
-      console.error("Error adding recurring client:", error);
-      // Provide more specific error messages
-      if (error.message.includes('agency')) {
-        console.error("Agency ID issue - user may not have an agency selected");
-      }
-      return null;
-    }
-
-    if (!newClient) {
-      console.error("Client inserted but no data returned");
-      return null;
-    }
-
-    console.log("Recurring client created successfully:", newClient.id);
+      console.log("Recurring client created successfully:", newClient.id);
 
     // Generate tasks for the new client
     if (currentRoutines.length > 0) {
@@ -578,15 +579,20 @@ export function useRecurring() {
           console.log(`Created ${tasksToCreate.length} tasks for new recurring client`);
         }
       }
-    } else {
-      console.warn("No routines available to generate tasks");
-    }
-    
-    // Refresh data to update UI
-    await fetchData();
+      } else {
+        console.warn("No routines available to generate tasks");
+      }
 
-    return newClient as RecurringClient;
-  }, [user, fetchData, routines, ensureDefaultRoutines]);
+      // Refresh data to update UI
+      await fetchData();
+
+      return newClient as RecurringClient;
+    } catch (err) {
+      console.error("Error adding recurring client:", err);
+      toast.error(getErrorMessage(err));
+      return null;
+    }
+  }, [user, currentAgencyId, fetchData, routines, ensureDefaultRoutines]);
 
   // Create a new routine (admin only)
   const createRoutine = useCallback(async (data: {
@@ -618,6 +624,7 @@ export function useRecurring() {
 
     if (error) {
       console.error("Error creating routine:", error);
+      toast.error(getErrorMessage(error));
       return null;
     }
 
@@ -649,6 +656,7 @@ export function useRecurring() {
 
     if (error) {
       console.error("Error updating routine:", error);
+      toast.error(getErrorMessage(error));
       return false;
     }
 
@@ -667,6 +675,7 @@ export function useRecurring() {
 
     if (error) {
       console.error("Error deleting routine:", error);
+      toast.error(getErrorMessage(error));
       return false;
     }
 
@@ -689,6 +698,7 @@ export function useRecurring() {
 
     if (error) {
       console.error("Error updating recurring client:", error);
+      toast.error(getErrorMessage(error));
       return false;
     }
 

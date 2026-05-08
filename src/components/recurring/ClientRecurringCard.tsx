@@ -43,6 +43,16 @@ import { cn } from "@/lib/utils";
 import { RecurringClient, RecurringTask, RecurringRoutine } from "@/hooks/useRecurring";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const CATEGORY_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   engagement: MessageSquare,
@@ -88,6 +98,7 @@ export function ClientRecurringCard({
   const { user } = useAuth();
   const [isExpanded, setIsExpanded] = useState(!compact);
   const [isActioning, setIsActioning] = useState(false);
+  const [confirmRemoveOpen, setConfirmRemoveOpen] = useState(false);
 
   // Current week tasks
   const weekTasks = useMemo(() => {
@@ -181,13 +192,16 @@ export function ClientRecurringCard({
     if (success) toast.success("Cliente reativado");
   };
 
-  const handleRemove = async () => {
+  const handleRemove = () => {
     if (!onRemoveClient) return;
-    const confirmed = window.confirm(`Remover ${client.company_name} da recorrência?`);
-    if (confirmed) {
-      const success = await onRemoveClient(client.id);
-      if (success) toast.success("Cliente removido da recorrência");
-    }
+    setConfirmRemoveOpen(true);
+  };
+
+  const confirmRemove = async () => {
+    if (!onRemoveClient) return;
+    const success = await onRemoveClient(client.id);
+    if (success) toast.success("Cliente removido da recorrência");
+    setConfirmRemoveOpen(false);
   };
 
   const renderTask = (task: RecurringTask) => {
@@ -490,6 +504,27 @@ export function ClientRecurringCard({
           </CardContent>
         </CollapsibleContent>
       </Collapsible>
+
+      <AlertDialog open={confirmRemoveOpen} onOpenChange={setConfirmRemoveOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remover cliente da recorrência?</AlertDialogTitle>
+            <AlertDialogDescription>
+              <strong>{client.company_name}</strong> sairá do fluxo de tarefas recorrentes.
+              O cliente em si não será excluído — você pode reativá-lo depois.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmRemove}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Remover cliente
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }

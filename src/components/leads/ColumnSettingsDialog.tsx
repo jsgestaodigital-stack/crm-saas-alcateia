@@ -6,17 +6,27 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Plus, 
-  GripVertical, 
-  Trash2, 
-  Edit2, 
-  Check, 
-  X, 
+import {
+  Plus,
+  GripVertical,
+  Trash2,
+  Edit2,
+  Check,
+  X,
   RotateCcw,
   ChevronUp,
   ChevronDown
@@ -69,6 +79,9 @@ export function ColumnSettingsDialog({ open, onOpenChange }: ColumnSettingsDialo
   const [newEmoji, setNewEmoji] = useState('📋');
   const [newColor, setNewColor] = useState('bg-blue-500');
 
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [confirmReset, setConfirmReset] = useState(false);
+
   const startEdit = (column: PipelineColumn) => {
     setEditingId(column.id);
     setEditTitle(column.title);
@@ -119,24 +132,28 @@ export function ColumnSettingsDialog({ open, onOpenChange }: ColumnSettingsDialo
       return;
     }
 
-    const confirmMsg = column?.isDefault 
-      ? `⚠️ Esta é uma coluna padrão. Excluir "${column?.title}"?` 
-      : `Excluir coluna "${column?.title}"?`;
+    setConfirmDeleteId(id);
+  };
 
-    if (confirm(confirmMsg)) {
-      deleteColumn(id, isAdmin);
-      toast.success('Coluna excluída');
-    }
+  const performDelete = () => {
+    if (!confirmDeleteId) return;
+    deleteColumn(confirmDeleteId, isAdmin);
+    toast.success('Coluna excluída');
+    setConfirmDeleteId(null);
   };
 
   const handleReset = () => {
-    if (confirm('Restaurar colunas padrão? Colunas personalizadas serão removidas.')) {
-      resetToDefaults();
-      toast.success('Colunas restauradas');
-    }
+    setConfirmReset(true);
+  };
+
+  const performReset = () => {
+    resetToDefaults();
+    toast.success('Colunas restauradas');
+    setConfirmReset(false);
   };
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-hidden flex flex-col">
         <DialogHeader>
@@ -375,5 +392,42 @@ export function ColumnSettingsDialog({ open, onOpenChange }: ColumnSettingsDialo
         </div>
       </DialogContent>
     </Dialog>
+
+    <AlertDialog open={!!confirmDeleteId} onOpenChange={(o) => !o && setConfirmDeleteId(null)}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Excluir coluna?</AlertDialogTitle>
+          <AlertDialogDescription>
+            {columns.find(c => c.id === confirmDeleteId)?.isDefault
+              ? '⚠️ Esta é uma coluna padrão do pipeline. Tem certeza?'
+              : 'Esta ação não pode ser desfeita.'}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction onClick={performDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            Excluir coluna
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
+    <AlertDialog open={confirmReset} onOpenChange={setConfirmReset}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Restaurar colunas padrão?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Todas as colunas personalizadas serão removidas.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction onClick={performReset} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            Restaurar
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }

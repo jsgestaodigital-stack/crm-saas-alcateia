@@ -7,6 +7,16 @@ import {
   DialogTitle 
 } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -119,10 +129,13 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
     }
   };
 
-  const handleDelete = async () => {
-    if (!confirm('Excluir este lead permanentemente?')) return;
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
+  const handleDelete = () => setConfirmDeleteOpen(true);
+
+  const performDelete = async () => {
     const ok = await deleteLead(lead.id);
+    setConfirmDeleteOpen(false);
     if (ok) {
       onUpdate();
       onClose();
@@ -137,6 +150,7 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
   const tempConfig = TEMPERATURE_CONFIG[lead.temperature];
 
   return (
+    <>
     <Dialog open={!!lead} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] p-0 gap-0 overflow-hidden flex flex-col">
         {/* Header */}
@@ -492,5 +506,23 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
         </Tabs>
       </DialogContent>
     </Dialog>
+
+    <AlertDialog open={confirmDeleteOpen} onOpenChange={setConfirmDeleteOpen}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Excluir lead?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Esta ação não pode ser desfeita. O lead e todo seu histórico serão removidos permanentemente.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction onClick={performDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            Excluir lead
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }

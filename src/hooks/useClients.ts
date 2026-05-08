@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Client } from "@/types/client";
 import { mapRowToClient, mapClientToRow, createClientInsertRow, ClientRow } from "@/lib/clientMapper";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/errorHandler";
 
 export function useClientsRealtime(
   setClients: (clients: Client[]) => void,
@@ -37,7 +38,7 @@ export function useClientsRealtime(
       setDeletedClients(deletedClients);
     } catch (error) {
       console.error("Error fetching clients:", error);
-      toast.error("Erro ao carregar clientes");
+      toast.error(getErrorMessage(error));
     } finally {
       setLoading(false);
     }
@@ -125,7 +126,7 @@ export async function createClient(client: Omit<Client, 'id'>): Promise<Client |
     return mapRowToClient(data as unknown as ClientRow);
   } catch (error) {
     console.error("Error creating client:", error);
-    toast.error("Erro ao criar cliente");
+    toast.error(getErrorMessage(error));
     return null;
   }
 }
@@ -143,7 +144,7 @@ export async function updateClientInDb(clientId: string, updates: Partial<Client
     return true;
   } catch (error) {
     console.error("Error updating client:", error);
-    toast.error("Erro ao atualizar cliente");
+    toast.error(getErrorMessage(error));
     return false;
   }
 }
@@ -161,7 +162,7 @@ export async function softDeleteClient(clientId: string): Promise<boolean> {
     return true;
   } catch (error) {
     console.error("Error deleting client:", error);
-    toast.error("Erro ao excluir cliente");
+    toast.error(getErrorMessage(error));
     return false;
   }
 }
@@ -179,7 +180,7 @@ export async function restoreClientFromDb(clientId: string): Promise<boolean> {
     return true;
   } catch (error) {
     console.error("Error restoring client:", error);
-    toast.error("Erro ao restaurar cliente");
+    toast.error(getErrorMessage(error));
     return false;
   }
 }
@@ -197,7 +198,7 @@ export async function permanentlyDeleteClientFromDb(clientId: string): Promise<b
     return true;
   } catch (error) {
     console.error("Error permanently deleting client:", error);
-    toast.error("Erro ao excluir cliente permanentemente");
+    toast.error(getErrorMessage(error));
     return false;
   }
 }
