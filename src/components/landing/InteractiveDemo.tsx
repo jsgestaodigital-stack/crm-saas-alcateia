@@ -113,9 +113,9 @@ const demoSteps = [
   },
   {
     id: "dashboard",
-    title: "Dashboard com IA",
+    title: "Painel de Desempenho",
     icon: TrendingUp,
-    description: "Insights automáticos sobre sua operação",
+    description: "Acompanhe faturamento, conversão e saúde da operação em tempo real",
     mockup: (
       <div className="p-3 grid grid-cols-2 gap-2">
         {[
