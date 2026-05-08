@@ -3,8 +3,11 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogBody,
+  DialogFooter,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { scrollToFirstError } from '@/lib/scrollToError';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -249,6 +252,7 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
       });
       setFormErrors(errors);
       toast.error('Por favor, corrija os erros no formulário');
+      scrollToFirstError();
       return;
     }
 
@@ -335,7 +339,7 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
       if (!value) resetForm();
       onOpenChange(value);
     }}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Building2 className="h-5 w-5 text-primary" />
@@ -369,7 +373,8 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
           </Alert>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 gap-4">
+          <DialogBody className="space-y-4">
           {/* Company Name */}
           <div>
             <Label className="flex items-center gap-1">
@@ -591,8 +596,9 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
               className="mt-1"
             />
           </div>
+          </DialogBody>
 
-          <div className="flex gap-2 pt-2">
+          <DialogFooter className="flex-row gap-2">
             <Button 
               type="button" 
               variant="outline" 
@@ -615,7 +621,7 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
                 'Criar Lead'
               )}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogBody, DialogFooter, DialogTitle } from "@/components/ui/dialog";
+import { scrollToFirstError } from "@/lib/scrollToError";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -136,7 +137,7 @@ export function NewClientWizard({ open, onOpenChange, initialColumnId }: NewClie
       if (!isOpen) resetForm();
       onOpenChange(isOpen);
     }}>
-      <DialogContent className="bg-surface-1 border-border max-w-md max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-surface-1 border-border max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-primary" />
@@ -144,7 +145,7 @@ export function NewClientWizard({ open, onOpenChange, initialColumnId }: NewClie
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 py-2">
+        <DialogBody className="space-y-4 py-2">
           {/* Essential: Company Name */}
           <div>
             <Label className="text-sm font-medium mb-1.5 block">Nome da Empresa *</Label>
@@ -421,10 +422,10 @@ export function NewClientWizard({ open, onOpenChange, initialColumnId }: NewClie
               </div>
             </CollapsibleContent>
           </Collapsible>
-        </div>
+        </DialogBody>
 
         {/* Submit */}
-        <div className="flex gap-2 pt-2">
+        <DialogFooter className="flex-row gap-2">
           <Button 
             variant="ghost" 
             onClick={() => onOpenChange(false)}
@@ -444,7 +445,7 @@ export function NewClientWizard({ open, onOpenChange, initialColumnId }: NewClie
           >
             {hasDuplicateWarning && !ignoreDuplicates ? "Verificar Duplicatas" : "Criar Cliente"}
           </Button>
-        </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
