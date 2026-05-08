@@ -13,6 +13,8 @@ import { QADebugDrawer, QADebugTrigger } from "@/components/QADebugDrawer";
 import { ConsentGuard } from "@/components/ConsentGuard";
 import { SubscriptionGuard } from "@/components/subscription/SubscriptionGuard";
 import { ImpersonateBanner } from "@/components/ImpersonateBanner";
+import { OfflineBanner } from "@/components/OfflineBanner";
+import { SessionRefreshOnFocus } from "@/components/SessionRefreshOnFocus";
 import { PendingRegistrationsBanner } from "@/components/admin/PendingRegistrationsBanner";
 import { ErrorBoundaryLogger } from "@/components/ErrorBoundaryLogger";
 import { NPSModal } from "@/components/nps";
@@ -100,6 +102,8 @@ const App = () => (
               <ClientsProvider>
                 <QADebugProvider>
                   <ConsentGuard>
+                    <SessionRefreshOnFocus />
+                    <OfflineBanner />
                     <PendingRegistrationsBanner />
                     <ImpersonateBanner />
                     <ErrorBoundaryLogger />

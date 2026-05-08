@@ -1412,3 +1412,16 @@
     }
   }
 }
+@layer base {
+  /* Prevent iOS Safari from auto-zooming on focus by enforcing 16px minimum
+     font-size on all form controls under the mobile breakpoint. Desktop
+     styles can still shrink type via component-level overrides. */
+  @media (max-width: 767px) {
+    input,
+    textarea,
+    select,
+    [contenteditable="true"] {
+      font-size: 16px !important;
+    }
+  }
+}
