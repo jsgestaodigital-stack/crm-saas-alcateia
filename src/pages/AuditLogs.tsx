@@ -111,7 +111,7 @@ export default function AuditLogs() {
     }
 
     if (!authLoading && user && !canAccessAdmin) {
-      toast.error("Acesso negado");
+      toast.error("Você não tem permissão para acessar esta área. Fale com o administrador da sua conta.");
       navigate("/dashboard");
       return;
     }

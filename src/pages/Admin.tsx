@@ -170,7 +170,7 @@ export default function Admin() {
     }
 
     if (!authLoading && user && !canAccessAdmin) {
-      toast.error("Acesso negado. Apenas administradores podem acessar esta página.");
+      toast.error("Você não tem permissão para acessar esta área. Fale com o administrador da sua conta.");
       navigate("/dashboard");
       return;
     }
