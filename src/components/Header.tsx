@@ -205,27 +205,16 @@ export function Header({ onNewClient }: HeaderProps) {
           {/* Theme Toggle */}
           <ThemeToggle />
 
-          {/* Admin Link - Desktop only */}
-          {isAdmin && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-muted-foreground hover:text-foreground hidden xl:flex"
-              onClick={() => navigate("/admin")}
-            >
-              <Shield className="w-4 h-4 mr-2" />
-              Admin
-            </Button>
-          )}
+          {/* Admin standalone button removed — use sidebar NavItem or avatar dropdown */}
 
-          {/* New Client */}
+          {/* New Client — only on mobile/tablet (sidebar provides this on lg+) */}
           <TooltipProvider delayDuration={800}>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button 
                   size="sm" 
                   variant="emerald"
-                  className="hidden sm:flex"
+                  className="hidden sm:flex lg:hidden"
                   onClick={onNewClient}
                 >
                   <Plus className="w-4 h-4 sm:mr-2" />
@@ -279,7 +268,7 @@ export function Header({ onNewClient }: HeaderProps) {
                 </div>
               </div>
               <DropdownMenuSeparator className="bg-border/30" />
-              <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/settings/security")}>
+              <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/meu-perfil")}>
                 <User className="w-4 h-4 mr-2" />
                 Meu Perfil
               </DropdownMenuItem>
