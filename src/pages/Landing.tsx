@@ -173,7 +173,7 @@ const Landing = () => {
       <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-border/50 safe-area-inset-top">
         <div className="container mx-auto px-3 sm:px-4 h-14 sm:h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <img src={grankLogoDark} alt="GBRank CRM" className="h-7 sm:h-8 w-auto" />
+            <img src={grankLogoDark} alt="GBRank CRM" className="h-9 sm:h-11 w-auto" />
             <span className="font-bold text-lg sm:text-xl text-google-green">GBRank CRM</span>
           </Link>
           
@@ -936,7 +936,7 @@ const Landing = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-4 sm:mb-6">
             <div className="sm:col-span-2">
               <Link to="/" className="flex items-center gap-2 mb-4">
-                <img src={grankLogoDark} alt="GBRank CRM" className="h-7 sm:h-8 w-auto brightness-0 invert" />
+                <img src={grankLogoDark} alt="GBRank CRM" className="h-9 sm:h-10 w-auto brightness-0 invert" />
                 <span className="font-bold text-lg sm:text-xl text-google-green">GBRank CRM</span>
               </Link>
               <p className="text-gray-400 mb-4 text-sm sm:text-base">

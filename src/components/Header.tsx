@@ -69,7 +69,7 @@ export function Header({ onNewClient }: HeaderProps) {
           <SheetContent side="left" className="w-72 p-4 bg-sidebar border-emerald/10">
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <ThemeLogo className="h-8" />
+                <ThemeLogo className="h-10" />
                 <ThemeToggle />
               </div>
               
@@ -117,7 +117,7 @@ export function Header({ onNewClient }: HeaderProps) {
 
         {/* Logo */}
         <div className="flex items-center gap-2 sm:gap-4">
-          <ThemeLogo className="h-7 sm:h-8 hidden sm:block" />
+          <ThemeLogo className="h-9 sm:h-10 hidden sm:block" />
           <div className="h-6 w-px bg-border/50 hidden lg:block" />
           <span className="text-xs sm:text-sm text-muted-foreground font-medium hidden lg:block">Painel Operacional</span>
         </div>

@@ -125,7 +125,7 @@ const LandingAlcateia = () => {
           <Link to="/alcateia" className="flex items-center gap-2">
             <img src={alcateiaLogo} alt="Alcateia" className="h-7 sm:h-8 w-auto" />
             <span className="font-bold text-lg sm:text-xl text-amber-600">×</span>
-            <img src={grankLogoDark} alt="GBRank CRM" className="h-6 sm:h-7 w-auto" />
+            <img src={grankLogoDark} alt="GBRank CRM" className="h-9 sm:h-10 w-auto" />
           </Link>
           
           {/* Desktop nav */}
@@ -549,7 +549,7 @@ const LandingAlcateia = () => {
           <div className="flex items-center justify-center gap-3 mb-4">
             <img src={alcateiaLogo} alt="Alcateia" className="h-8 w-auto" />
             <span className="text-amber-400 font-bold">×</span>
-            <img src={grankLogoLight} alt="GBRank CRM" className="h-7 w-auto" />
+            <img src={grankLogoLight} alt="GBRank CRM" className="h-10 w-auto" />
           </div>
           <p className="text-gray-400 text-sm mb-4">
             Programa exclusivo para alunos da comunidade Alcateia
