@@ -153,6 +153,7 @@ export function ColumnSettingsDialog({ open, onOpenChange }: ColumnSettingsDialo
   };
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-hidden flex flex-col">
         <DialogHeader>
