@@ -62,7 +62,7 @@ export function useCommissionConfigs() {
       return data as unknown as CommissionConfig;
     } catch (error) {
       console.error('Error creating commission config:', error);
-      toast.error('Erro ao criar configuração');
+      toast.error(getErrorMessage(error));
       return null;
     }
   };
@@ -81,7 +81,7 @@ export function useCommissionConfigs() {
       return true;
     } catch (error) {
       console.error('Error updating commission config:', error);
-      toast.error('Erro ao atualizar configuração');
+      toast.error(getErrorMessage(error));
       return false;
     }
   };
@@ -100,7 +100,7 @@ export function useCommissionConfigs() {
       return true;
     } catch (error) {
       console.error('Error deleting commission config:', error);
-      toast.error('Erro ao remover configuração');
+      toast.error(getErrorMessage(error));
       return false;
     }
   };
