@@ -97,21 +97,44 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get auth user from request
+    // Require authentication
     const authHeader = req.headers.get("Authorization");
-    let userId: string | null = null;
-    
-    if (authHeader) {
-      const token = authHeader.replace("Bearer ", "");
-      const { data: { user } } = await supabase.auth.getUser(token);
-      userId = user?.id || null;
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    const token = authHeader.replace("Bearer ", "");
+    const { data: authData, error: authError } = await supabase.auth.getUser(token);
+    if (authError || !authData?.user) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    const userId = authData.user.id;
+
+    // Resolve user's agency
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("current_agency_id")
+      .eq("id", userId)
+      .single();
+    const userAgencyId = profile?.current_agency_id;
+    if (!userAgencyId) {
+      return new Response(
+        JSON.stringify({ error: "Forbidden" }),
+        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
-    // Fetch lead data
+    // Fetch lead data, scoped to user's agency
     const { data: lead, error: leadError } = await supabase
       .from("leads")
       .select("*")
       .eq("id", leadId)
+      .eq("agency_id", userAgencyId)
       .single();
 
     if (leadError || !lead) {

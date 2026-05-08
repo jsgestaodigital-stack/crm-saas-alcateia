@@ -110,9 +110,41 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { agencyId, manualRun, userId, userName } = await req.json();
+    // Require authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    const token = authHeader.replace('Bearer ', '');
+    const authClient = createClient(supabaseUrl, supabaseAnonKey);
+    const { data: authData, error: authError } = await authClient.auth.getUser(token);
+    if (authError || !authData?.user) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    const callerId = authData.user.id;
+
+    const { agencyId, manualRun, userName } = await req.json();
+    const userId = callerId;
+
+    // Verify caller belongs to the requested agency
+    const { data: membership } = await supabase
+      .from('agency_members')
+      .select('agency_id')
+      .eq('user_id', callerId)
+      .eq('agency_id', agencyId)
+      .maybeSingle();
+    if (!membership) {
+      return new Response(JSON.stringify({ error: 'Forbidden' }), {
+        status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
 
     console.log(`[unify-leads] Starting for agency: ${agencyId}, manual: ${manualRun}`);
 
