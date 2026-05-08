@@ -315,7 +315,7 @@ export default function RegisterAlcateia() {
             <div className="flex items-center gap-3 mb-6">
               <img src={alcateiaLogo} alt="Alcateia" className="h-12" />
               <span className="text-amber-500 font-bold text-xl">×</span>
-              <img src={grankLogoDark} alt="GBRank CRM" className="h-10" />
+              <img src={grankLogoDark} alt="GBRank CRM" className="h-12 w-auto" />
             </div>
             <h1 className="text-3xl font-bold text-foreground mb-3">
               Acesso Vitalício Alcateia
@@ -362,7 +362,7 @@ export default function RegisterAlcateia() {
             <div className="flex items-center justify-center gap-2 lg:hidden mb-2">
               <img src={alcateiaLogo} alt="Alcateia" className="h-10" />
               <span className="text-amber-500 font-bold">×</span>
-              <img src={grankLogoDark} alt="GBRank CRM" className="h-8" />
+              <img src={grankLogoDark} alt="GBRank CRM" className="h-10 w-auto" />
             </div>
             <div>
               <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm font-medium mb-3">

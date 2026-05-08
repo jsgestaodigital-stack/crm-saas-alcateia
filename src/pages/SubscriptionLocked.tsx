@@ -53,7 +53,7 @@ const SubscriptionLocked = () => {
       {/* Header */}
       <header className="relative z-10 p-6">
         <Link to="/" className="flex items-center gap-2 w-fit">
-          <ThemeLogo className="h-8" />
+          <ThemeLogo className="h-10" />
           <span className="font-bold text-xl bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">
             GBRank CRM
           </span>

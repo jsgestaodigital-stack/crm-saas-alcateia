@@ -319,7 +319,7 @@ export function AppSidebar({
       <div className="h-14 flex items-center justify-between px-3 border-b border-border/50 bg-gradient-to-r from-primary/5 via-transparent to-violet/5">
         {!collapsed && (
           <div className="flex items-center gap-2 animate-fade-in">
-            <ThemeLogo className="h-8" />
+            <ThemeLogo className="h-10" />
           </div>
         )}
         <Button 

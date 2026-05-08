@@ -510,7 +510,7 @@ export default function Admin() {
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <ThemeLogo className="h-8" />
+            <ThemeLogo className="h-10" />
             <div className="h-6 w-px bg-border/50" />
             <h1 className="text-lg font-semibold text-foreground flex items-center gap-2">
               <Shield className="w-5 h-5 text-primary" />
