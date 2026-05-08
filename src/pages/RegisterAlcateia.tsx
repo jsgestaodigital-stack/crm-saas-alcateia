@@ -59,6 +59,7 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 
 export default function RegisterAlcateia() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
