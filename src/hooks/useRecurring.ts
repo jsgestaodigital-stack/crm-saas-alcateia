@@ -281,6 +281,7 @@ export function useRecurring() {
 
     } catch (error) {
       console.error("Error fetching recurring data:", error);
+      toast.error(getErrorMessage(error));
     } finally {
       setLoading(false);
     }
