@@ -504,6 +504,27 @@ export function ClientRecurringCard({
           </CardContent>
         </CollapsibleContent>
       </Collapsible>
+
+      <AlertDialog open={confirmRemoveOpen} onOpenChange={setConfirmRemoveOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remover cliente da recorrência?</AlertDialogTitle>
+            <AlertDialogDescription>
+              <strong>{client.company_name}</strong> sairá do fluxo de tarefas recorrentes.
+              O cliente em si não será excluído — você pode reativá-lo depois.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmRemove}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Remover cliente
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }
