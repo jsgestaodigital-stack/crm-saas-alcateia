@@ -51,7 +51,7 @@ function isBlockedEmailDomain(email: string): boolean {
 }
 
 // Helper to create error response with proper logging
-function errorResponse(message: string, status = 400) {
+function errorResponse(corsHeaders: Record<string, string>, message: string, status = 400) {
   console.error(`[auto-register-agency] Error: ${message}`);
   return new Response(
     JSON.stringify({ success: false, error: message }),
@@ -60,7 +60,7 @@ function errorResponse(message: string, status = 400) {
 }
 
 // Helper to create success response
-function successResponse(data: Record<string, unknown>) {
+function successResponse(corsHeaders: Record<string, string>, data: Record<string, unknown>) {
   console.log(`[auto-register-agency] Success:`, JSON.stringify(data));
   return new Response(
     JSON.stringify({ success: true, ...data }),
