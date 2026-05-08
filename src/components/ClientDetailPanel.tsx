@@ -213,6 +213,32 @@ export function ClientDetailPanel() {
 
           {/* Checklist Tab - Nova experiência visual */}
           <TabsContent value="checklist" className="flex-1 overflow-y-auto p-4 m-0">
+            {/* Banner: checklist not generated */}
+            {(!selectedClient.checklist || selectedClient.checklist.length === 0 ||
+              selectedClient.checklist.every(s => !s?.items || s.items.length === 0)) && (
+              <div className="mb-3 flex items-center gap-3 rounded-lg border border-yellow-500/30 bg-yellow-500/10 px-3 py-2 text-sm text-yellow-200">
+                <AlertTriangle className="h-4 w-4 shrink-0" />
+                <span className="flex-1">Checklist não gerado.</span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-yellow-500/40 text-yellow-200 hover:bg-yellow-500/20"
+                  onClick={async () => {
+                    const ok = await seedClientChecklist(
+                      selectedClient.id,
+                      JSON.parse(JSON.stringify(DEFAULT_CHECKLIST))
+                    );
+                    if (ok) {
+                      await updateClient(selectedClient.id, {
+                        checklist: JSON.parse(JSON.stringify(DEFAULT_CHECKLIST)),
+                      });
+                    }
+                  }}
+                >
+                  Gerar checklist
+                </Button>
+              </div>
+            )}
             <div className="space-y-3">
               {(selectedClient.checklist || []).map((section, index) => (
                 <ChecklistBlock
