@@ -119,14 +119,10 @@ export default function Register() {
       // Handle edge function errors
       if (error) {
         console.error("Registration error:", error);
-        // Parse error message for better UX
-        let errorMessage = "Erro ao criar conta. Tente novamente.";
-        if (error.message?.includes("non-2xx")) {
-          errorMessage = "Erro de conexão. Verifique sua internet e tente novamente.";
-        } else if (error.message) {
-          errorMessage = error.message;
-        }
-        toast.error(errorMessage);
+        toast.error("Não conseguimos criar sua conta agora. Verifique sua internet e tente novamente.", {
+          duration: 8000,
+          action: { label: "Tentar novamente", onClick: () => handleSubmit(e) },
+        });
         setIsLoading(false);
         return;
       }
@@ -145,7 +141,10 @@ export default function Register() {
             duration: 8000,
           });
         } else {
-          toast.error(errorMessage);
+          toast.error(errorMessage, {
+            duration: 8000,
+            action: { label: "Tentar novamente", onClick: () => handleSubmit(e) },
+          });
         }
         
         setIsLoading(false);
@@ -188,7 +187,10 @@ export default function Register() {
       
     } catch (err) {
       console.error("Unexpected error:", err);
-      toast.error("Erro inesperado. Verifique sua conexão e tente novamente.");
+      toast.error("Não conseguimos criar sua conta agora. Verifique sua internet e tente novamente.", {
+        duration: 8000,
+        action: { label: "Tentar novamente", onClick: () => handleSubmit(e) },
+      });
     } finally {
       setIsLoading(false);
     }
@@ -435,7 +437,7 @@ export default function Register() {
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Mínimo 6 caracteres"
+                    placeholder="Mín. 8 caracteres, 1 maiúscula e 1 número"
                     value={formData.password}
                     onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
                     disabled={isLoading}
@@ -451,6 +453,22 @@ export default function Register() {
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </Button>
                 </div>
+                {/* Real-time password rules */}
+                {formData.password.length > 0 && (
+                  <ul className="text-xs space-y-1 mt-1">
+                    {[
+                      { ok: formData.password.length >= 8, label: "Pelo menos 8 caracteres" },
+                      { ok: /[A-Z]/.test(formData.password), label: "Uma letra maiúscula" },
+                      { ok: /[a-z]/.test(formData.password), label: "Uma letra minúscula" },
+                      { ok: /[0-9]/.test(formData.password), label: "Um número" },
+                    ].map((r) => (
+                      <li key={r.label} className={`flex items-center gap-1 ${r.ok ? "text-green-600" : "text-muted-foreground"}`}>
+                        <CheckCircle className="w-3 h-3" />
+                        {r.label}
+                      </li>
+                    ))}
+                  </ul>
+                )}
                 {errors.password && (
                   <p className="text-xs text-destructive flex items-center gap-1">
                     <AlertCircle className="w-3 h-3" />

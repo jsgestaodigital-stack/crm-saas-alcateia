@@ -6,6 +6,8 @@
 // Known safe origins for this application
 const ALLOWED_ORIGINS = [
   'https://gbrankcrm.lovable.app',
+  'https://gbrankcrm.com.br',
+  'https://www.gbrankcrm.com.br',
   'https://id-preview--a3547989-d809-48e1-8acc-4a1f81c0ea2e.lovable.app',
 ];
 
