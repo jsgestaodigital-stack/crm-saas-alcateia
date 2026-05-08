@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { getErrorMessage } from '@/lib/errorHandler';
+import { requireAgencyId } from '@/lib/guardAgency';
+import { useAuth } from '@/contexts/AuthContext';
 
 /**
  * useClientsV2 — DEPRECATED SHIM
@@ -86,6 +89,7 @@ export function useClientsV2(options: UseClientsV2Options = {}) {
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
   const { toast } = useToast();
+  const { currentAgencyId } = useAuth();
 
   const fetchClients = useCallback(async () => {
     setLoading(true);
