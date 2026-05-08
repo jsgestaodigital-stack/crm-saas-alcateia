@@ -1,6 +1,6 @@
 import { useTheme } from "next-themes";
-import grankLogoDark from "@/assets/grank-logo-dark.png";
-import grankLogoLight from "@/assets/grank-logo-light.png";
+import grankLogoDark from "@/assets/gbrank-logo.png";
+import grankLogoLight from "@/assets/gbrank-logo.png";
 import { cn } from "@/lib/utils";
 
 interface ThemeLogoProps {

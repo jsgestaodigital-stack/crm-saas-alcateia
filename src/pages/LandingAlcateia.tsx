@@ -8,8 +8,8 @@ import {
   CheckCircle2, ListChecks, Rocket, Calendar, BarChart3, Infinity, Lock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import grankLogoDark from "@/assets/grank-logo-dark.png";
-import grankLogoLight from "@/assets/grank-logo-light.png";
+import grankLogoDark from "@/assets/gbrank-logo.png";
+import grankLogoLight from "@/assets/gbrank-logo.png";
 import alcateiaLogo from "@/assets/alcateia-logo.png";
 import joaoLoboPhoto from "@/assets/joao-lobo.jpg";
 import wolfHero from "@/assets/alcateia-wolf-hero.png";

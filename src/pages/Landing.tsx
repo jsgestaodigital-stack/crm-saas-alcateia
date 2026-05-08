@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import grankLogoDark from "@/assets/grank-logo-dark.png";
+import grankLogoDark from "@/assets/gbrank-logo.png";
 import joaoLoboPhoto from "@/assets/joao-lobo.jpg";
 import { 
   AnimatedCounter, ScrollProgress, InteractiveDemo, HeroVideo, ComparisonTable, SectionDivider,
