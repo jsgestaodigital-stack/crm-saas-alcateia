@@ -189,9 +189,8 @@ export async function seedClientChecklist(clientId: string, checklist: any): Pro
 }
 
 export async function updateClientInDb(clientId: string, updates: Partial<Client>): Promise<boolean> {
+  const updateData = mapClientToRow(updates);
   try {
-    const updateData = mapClientToRow(updates);
-    
     const { error } = await supabase
       .from("clients")
       .update(updateData as any)
@@ -200,6 +199,18 @@ export async function updateClientInDb(clientId: string, updates: Partial<Client
     if (error) throw error;
     return true;
   } catch (error) {
+    // If the failure is a connectivity issue, queue the mutation for retry
+    // when the browser comes back online. Optimistic UI state remains intact
+    // — no toast, no data loss. The OfflineBanner already informs the user.
+    const { isOfflineError, enqueueMutation } = await import("@/lib/offlineQueue");
+    if (isOfflineError(error)) {
+      enqueueMutation({
+        table: "clients",
+        rowId: clientId,
+        payload: updateData as Record<string, unknown>,
+      });
+      return true;
+    }
     console.error("Error updating client:", error);
     toast.error(getErrorMessage(error));
     return false;
