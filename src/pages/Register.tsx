@@ -141,7 +141,10 @@ export default function Register() {
             duration: 8000,
           });
         } else {
-          toast.error(errorMessage);
+          toast.error(errorMessage, {
+            duration: 8000,
+            action: { label: "Tentar novamente", onClick: () => handleSubmit(e) },
+          });
         }
         
         setIsLoading(false);
