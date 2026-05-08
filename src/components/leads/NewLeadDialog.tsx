@@ -257,7 +257,12 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
     }
 
     if (!validation.whatsapp.valid || !validation.email.valid || !validation.instagram.valid) {
-      toast.error('Por favor, corrija os dados inválidos');
+      const invalidFields = [
+        !validation.whatsapp.valid && 'WhatsApp',
+        !validation.email.valid && 'E-mail',
+        !validation.instagram.valid && 'Instagram',
+      ].filter(Boolean).join(', ');
+      toast.error(`Verifique o formato de: ${invalidFields}`);
       return;
     }
 

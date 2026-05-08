@@ -136,7 +136,9 @@ export default function AuditLogs() {
       setLogs((data as AuditLog[]) || []);
     } catch (err) {
       console.error("Error fetching logs:", err);
-      toast.error("Erro ao carregar logs");
+      toast.error("Não foi possível carregar os logs. Verifique sua conexão e tente novamente.", {
+        action: { label: 'Tentar novamente', onClick: () => { void fetchLogs(); } },
+      });
     } finally {
       setIsLoading(false);
     }

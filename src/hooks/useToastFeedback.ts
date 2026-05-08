@@ -67,7 +67,7 @@ export function useToastFeedback() {
   }, [success]);
 
   const saveError = useCallback((err?: string) => {
-    error('Erro ao salvar', err);
+    error('Não foi possível salvar', err || 'Verifique os dados e sua conexão e tente novamente.');
   }, [error]);
 
   const connectionError = useCallback(() => {

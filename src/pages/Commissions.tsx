@@ -153,7 +153,9 @@ export default function Commissions() {
       refetch();
     } catch (error) {
       console.error("Error adding commission:", error);
-      toast.error("Erro ao registrar comissão");
+      toast.error("Não foi possível registrar a comissão. Verifique os dados e tente novamente.", {
+        action: { label: 'Tentar novamente', onClick: () => { void handleAddCommission(); } },
+      });
     }
   };
 
