@@ -23,6 +23,12 @@ export function VisualTourButton() {
 
   const canResetTour = derived?.canAdminOrIsAdmin;
 
+  // Hide pulse if WelcomeCard is still on screen (it already promotes the tour)
+  const welcomeDismissed = typeof window !== 'undefined'
+    ? localStorage.getItem('gbrank-welcome-dismissed') === 'true'
+    : true;
+  const shouldHighlight = !tourCompleted && welcomeDismissed;
+
   if (!user || isLoading) return null;
 
   return (
@@ -36,11 +42,11 @@ export function VisualTourButton() {
                 size="icon"
                 className={cn(
                   'h-9 w-9 relative hover:bg-primary/10 transition-all',
-                  !tourCompleted && 'animate-pulse'
+                  shouldHighlight && 'animate-pulse'
                 )}
               >
                 <HelpCircle className="h-5 w-5" />
-                {!tourCompleted && (
+                {shouldHighlight && (
                   <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-primary rounded-full animate-ping" />
                 )}
               </Button>
