@@ -373,7 +373,8 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
           </Alert>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 gap-4">
+          <DialogBody className="space-y-4">
           {/* Company Name */}
           <div>
             <Label className="flex items-center gap-1">
