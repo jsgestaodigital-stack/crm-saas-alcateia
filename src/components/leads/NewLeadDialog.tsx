@@ -214,43 +214,8 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Validate with Zod
-    const result = leadFormSchema.safeParse(formData);
-    
-    if (!result.success) {
-      const errors: Record<string, string> = {};
-      result.error.errors.forEach(err => {
-        if (err.path[0]) {
-          errors[err.path[0].toString()] = err.message;
-        }
-      });
-      setFormErrors(errors);
-      toast.error('Por favor, corrija os erros no formulário');
-      return;
-    }
-    
-    // Check for validation errors
-    if (!validation.whatsapp.valid || !validation.email.valid || !validation.instagram.valid) {
-      toast.error('Por favor, corrija os dados inválidos');
-      return;
-    }
-
-    // Warn about duplicates but allow creation
-    if (duplicates.length > 0) {
-      const exactMatch = duplicates.find(d => d.similarity === 1);
-      if (exactMatch) {
-        const confirmCreate = window.confirm(
-          `Já existe um lead com dados idênticos: "${exactMatch.company_name}"\n\nDeseja criar mesmo assim?`
-        );
-        if (!confirmCreate) return;
-      }
-    }
-
+  const performSubmit = async () => {
     setIsSubmitting(true);
-    
     try {
       const lead = await createLead({
         ...formData,
@@ -268,6 +233,43 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const result = leadFormSchema.safeParse(formData);
+
+    if (!result.success) {
+      const errors: Record<string, string> = {};
+      result.error.errors.forEach(err => {
+        if (err.path[0]) {
+          errors[err.path[0].toString()] = err.message;
+        }
+      });
+      setFormErrors(errors);
+      toast.error('Por favor, corrija os erros no formulário');
+      return;
+    }
+
+    if (!validation.whatsapp.valid || !validation.email.valid || !validation.instagram.valid) {
+      toast.error('Por favor, corrija os dados inválidos');
+      return;
+    }
+
+    if (duplicates.length > 0) {
+      const exactMatch = duplicates.find(d => d.similarity === 1);
+      if (exactMatch) {
+        setConfirmDialog({
+          type: 'duplicate',
+          companyName: exactMatch.company_name,
+          onConfirm: () => { void performSubmit(); },
+        });
+        return;
+      }
+    }
+
+    await performSubmit();
   };
 
   const resetForm = () => {
