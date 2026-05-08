@@ -1,6 +1,6 @@
 import { useTheme } from "next-themes";
-import grankLogoDark from "@/assets/grank-logo-dark.png";
-import grankLogoLight from "@/assets/grank-logo-light.png";
+import grankLogoDark from "@/assets/gbrank-logo.png";
+import grankLogoLight from "@/assets/gbrank-logo.png";
 import { cn } from "@/lib/utils";
 
 interface ThemeLogoProps {
@@ -10,8 +10,8 @@ interface ThemeLogoProps {
 
 /**
  * Logo component that switches between dark and light versions based on theme
- * - Dark theme (fundo escuro) → Logo com texto branco (grank-logo-light.png)
- * - Light theme (fundo claro) → Logo com texto preto (grank-logo-dark.png)
+ * - Dark theme (fundo escuro) → Logo GBRank (gbrank-logo.png)
+ * - Light theme (fundo claro) → Logo GBRank (gbrank-logo.png)
  */
 export function ThemeLogo({ className, alt = "GBRank CRM" }: ThemeLogoProps) {
   const { resolvedTheme } = useTheme();

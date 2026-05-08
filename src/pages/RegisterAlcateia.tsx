@@ -24,7 +24,7 @@ import {
   ArrowLeft
 } from "lucide-react";
 import alcateiaLogo from "@/assets/alcateia-logo.png";
-import grankLogoDark from "@/assets/grank-logo-dark.png";
+import grankLogoDark from "@/assets/gbrank-logo.png";
 
 // Validation schema
 const registerSchema = z.object({
