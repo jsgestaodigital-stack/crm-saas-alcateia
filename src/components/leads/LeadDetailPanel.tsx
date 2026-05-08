@@ -119,10 +119,13 @@ export function LeadDetailPanel({ lead, onClose, onUpdate }: LeadDetailPanelProp
     }
   };
 
-  const handleDelete = async () => {
-    if (!confirm('Excluir este lead permanentemente?')) return;
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
+  const handleDelete = () => setConfirmDeleteOpen(true);
+
+  const performDelete = async () => {
     const ok = await deleteLead(lead.id);
+    setConfirmDeleteOpen(false);
     if (ok) {
       onUpdate();
       onClose();
