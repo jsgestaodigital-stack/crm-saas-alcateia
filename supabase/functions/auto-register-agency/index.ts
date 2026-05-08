@@ -10,6 +10,7 @@ interface AutoRegisterRequest {
   ownerPhone?: string;
   password: string;
   isAlcateia?: boolean; // Flag for lifetime access (Alcateia members)
+  alcateiaCode?: string; // Shared secret required when isAlcateia=true
 }
 
 // List of temporary/disposable email domains to block
@@ -95,7 +96,15 @@ Deno.serve(async (req) => {
       return errorResponse(corsHeaders, "Dados inválidos. Tente novamente.");
     }
 
-    const { agencyName, agencySlug, ownerName, ownerEmail, ownerPhone, password, isAlcateia } = body;
+    const { agencyName, agencySlug, ownerName, ownerEmail, ownerPhone, password, isAlcateia, alcateiaCode } = body;
+
+    // Server-side validation of Alcateia shared-secret token
+    if (isAlcateia) {
+      const expected = Deno.env.get("ALCATEIA_INVITE_TOKEN");
+      if (!expected || !alcateiaCode || alcateiaCode !== expected) {
+        return errorResponse(corsHeaders, "Código de acesso Alcateia inválido.", 403);
+      }
+    }
 
     console.log(`[auto-register-agency] Processing registration for: ${ownerEmail}, isAlcateia: ${isAlcateia}`);
 
