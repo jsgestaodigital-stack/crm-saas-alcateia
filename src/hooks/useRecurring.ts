@@ -64,7 +64,7 @@ export interface RecurringStats {
 }
 
 export function useRecurring() {
-  const { user } = useAuth();
+  const { user, currentAgencyId } = useAuth();
   const [routines, setRoutines] = useState<RecurringRoutine[]>([]);
   const [allRoutines, setAllRoutines] = useState<RecurringRoutine[]>([]);
   const [clients, setClients] = useState<RecurringClient[]>([]);
