@@ -59,8 +59,8 @@ const EMPTY_STATE_CONFIG: Record<EmptyStateType, {
     icon: Repeat,
     emoji: '🔄',
     title: 'Nenhum cliente recorrente',
-    description: 'Clientes finalizados podem ser convertidos para recorrência mensal.',
-    actionLabel: 'Configurar Recorrência',
+    description: 'Finalize um cliente para convertê-lo em recorrente e gerar tarefas mensais automáticas.',
+    actionLabel: 'Converter cliente em recorrente',
     tips: [
       'Recorrência é para manutenção mensal',
       'Tarefas são geradas automaticamente',
@@ -84,9 +84,9 @@ const EMPTY_STATE_CONFIG: Record<EmptyStateType, {
   calendar: {
     icon: Calendar,
     emoji: '📅',
-    title: 'Agenda vazia',
-    description: 'Nenhum compromisso agendado para este período.',
-    actionLabel: 'Adicionar Evento',
+    title: 'Sem compromissos para esta data',
+    description: 'Adicione uma reunião, ligação ou lembrete para organizar seu dia.',
+    actionLabel: 'Adicionar Compromisso',
     tips: [
       'Agende reuniões com clientes e leads',
       'Defina lembretes importantes',

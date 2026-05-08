@@ -565,7 +565,8 @@ export function RecurrenceView() {
               {clients.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <Users className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                  <p>Nenhum cliente recorrente cadastrado</p>
+                  <p className="mb-2">Nenhum cliente recorrente cadastrado</p>
+                  <p className="text-xs">Finalize um cliente para convertê-lo em recorrente.</p>
                 </div>
               ) : (
                 <ScrollArea className="h-[400px]">
