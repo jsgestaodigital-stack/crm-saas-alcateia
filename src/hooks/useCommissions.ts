@@ -103,7 +103,7 @@ export function useCommissions(options: UseCommissionsOptions = {}) {
 
     // Subscribe to realtime changes
     const channel = supabase
-      .channel('commissions-changes')
+      .channel(`commissions-changes-${crypto.randomUUID()}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'commissions_v2' },

@@ -783,7 +783,7 @@ export function useRecurring() {
 
     // Subscribe to clients changes
     const clientsChannel = supabase
-      .channel('recurring_clients_changes')
+      .channel(`recurring_clients_changes-${crypto.randomUUID()}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'recurring_clients' },
@@ -796,7 +796,7 @@ export function useRecurring() {
 
     // Subscribe to tasks changes
     const tasksChannel = supabase
-      .channel('recurring_tasks_changes')
+      .channel(`recurring_tasks_changes-${crypto.randomUUID()}`)
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'recurring_tasks' },
