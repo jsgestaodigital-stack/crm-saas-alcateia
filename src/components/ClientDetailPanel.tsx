@@ -15,6 +15,9 @@ import { useFunnelMode } from "@/contexts/FunnelModeContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { getResponsibleLabel, toResponsibleRole } from "@/lib/responsibleTemplate";
+import { seedClientChecklist } from "@/hooks/useClients";
+import { DEFAULT_CHECKLIST } from "@/types/client";
+import { AlertTriangle } from "lucide-react";
 
 export function ClientDetailPanel() {
   const { selectedClient, isDetailOpen, setDetailOpen, toggleChecklistItem, updateChecklistItemAttachment, updateClient } = useClientStore();
