@@ -127,7 +127,9 @@ export default function Auth() {
         await logLoginSuccess();
         
         // Redirecionar para página original ou dashboard
-        const from = (location.state as { from?: string })?.from || "/dashboard";
+        // Aceita returnTo via query string (usado pelo SessionRefreshOnFocus quando a sessão expira em background)
+        const returnTo = params.get('returnTo');
+        const from = returnTo || (location.state as { from?: string })?.from || "/dashboard";
         navigate(from);
       }
     };
