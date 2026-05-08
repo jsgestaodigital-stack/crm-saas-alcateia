@@ -41,7 +41,7 @@ export default function RaioX() {
       return;
     }
     if (!authLoading && user && !canAccessSales) {
-      toast.error("Acesso negado - apenas vendas/admin");
+      toast.error("Você não tem permissão para acessar esta área. Fale com o administrador da sua agência.");
       navigate("/dashboard");
     }
   }, [user, authLoading, canAccessSales, navigate]);
