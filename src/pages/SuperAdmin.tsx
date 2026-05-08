@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ProductionErrorsTab } from "@/components/super-admin/ProductionErrorsTab";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -405,6 +406,7 @@ export default function SuperAdmin() {
               )}
             </TabsTrigger>
             <TabsTrigger value="logs">Logs de Auditoria</TabsTrigger>
+            <TabsTrigger value="errors">Erros</TabsTrigger>
             <TabsTrigger value="alcateia" className="flex items-center gap-1">
               <Star className="h-4 w-4" />
               Alcateia
@@ -796,6 +798,11 @@ export default function SuperAdmin() {
           {/* Alcateia Members */}
           <TabsContent value="alcateia">
             <AlcateiaMembersTab />
+          </TabsContent>
+
+          {/* Erros de Produção */}
+          <TabsContent value="errors" className="space-y-4">
+            <ProductionErrorsTab />
           </TabsContent>
 
           {/* Logs */}
