@@ -204,8 +204,9 @@ export function useRecurring() {
         .from("recurring_clients")
         .select("*, clients!recurring_clients_client_id_fkey(deleted_at)")
         .neq("status", "cancelled")
-        .order("company_name");
-      
+        .order("company_name")
+        .limit(500);
+
       if (clientsError) throw clientsError;
       
       // Filter out clients linked to deleted optimization clients (ghost records)
