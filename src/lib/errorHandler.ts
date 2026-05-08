@@ -214,6 +214,14 @@ export function formatErrorForContext(
 }
 
 /**
+ * Helper rápido: retorna a mensagem amigável de qualquer erro.
+ * Use em catch blocks: `toast.error(getErrorMessage(err))`.
+ */
+export function getErrorMessage(error: unknown): string {
+  return classifyError(error).userMessage;
+}
+
+/**
  * Log de erro para debugging (não expõe ao usuário)
  */
 export function logError(error: unknown, context?: string): void {
