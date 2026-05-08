@@ -479,7 +479,7 @@ export default function Recorrencia() {
           </CardHeader>
           <CardContent>
             <Button onClick={() => navigate("/dashboard")} className="w-full">
-              Voltar ao Dashboard
+              Voltar ao Painel
             </Button>
           </CardContent>
         </Card>

@@ -18,7 +18,7 @@ const NotFound = () => {
         <Button asChild>
           <Link to="/dashboard">
             <Home className="mr-2 h-4 w-4" />
-            Voltar ao Dashboard
+            Voltar ao Painel
           </Link>
         </Button>
       </div>

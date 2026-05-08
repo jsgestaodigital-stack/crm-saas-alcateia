@@ -73,7 +73,7 @@ const EMPTY_STATE_CONFIG: Record<EmptyStateType, {
     emoji: '✅',
     title: 'Nenhuma tarefa pendente',
     description: 'Parabéns! Você está em dia com todas as suas tarefas.',
-    actionLabel: 'Ver Dashboard',
+    actionLabel: 'Ver Painel',
     tips: [
       'Tarefas vêm do checklist de clientes',
       'Priorize por data de vencimento',

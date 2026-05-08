@@ -198,7 +198,7 @@ export default function Commissions() {
           <XCircle className="w-16 h-16 text-status-danger mx-auto mb-4" />
           <h1 className="text-xl font-bold mb-2">Acesso Restrito</h1>
           <p className="text-muted-foreground mb-4">Você não tem permissão para acessar esta página</p>
-          <Button onClick={() => navigate("/dashboard")}>Voltar ao Dashboard</Button>
+          <Button onClick={() => navigate("/dashboard")}>Voltar ao Painel</Button>
         </div>
       </div>
     );

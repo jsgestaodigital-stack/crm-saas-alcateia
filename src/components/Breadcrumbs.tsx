@@ -14,7 +14,7 @@ const VIEW_LABELS: Record<string, string> = {
 };
 
 const ROUTE_LABELS: Record<string, string> = {
-  "/": "Dashboard",
+  "/": "Painel",
   "/admin": "Painel Admin",
   "/auth": "Autenticação",
 };
@@ -30,7 +30,7 @@ export function Breadcrumbs() {
 
     if (location.pathname === "/") {
       crumbs.push({
-        label: VIEW_LABELS[viewMode] || "Dashboard",
+        label: VIEW_LABELS[viewMode] || "Painel",
         current: true,
       });
 

@@ -265,7 +265,7 @@ export default function Upgrade() {
               Aproveite todos os recursos disponíveis na plataforma.
             </p>
             <Button variant="outline" onClick={() => navigate("/dashboard")}>
-              Voltar ao Dashboard
+              Voltar ao Painel
             </Button>
           </Card>
         )}
