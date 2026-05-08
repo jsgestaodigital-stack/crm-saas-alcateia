@@ -41,7 +41,7 @@ export default function AgenteSuspensoes() {
       return;
     }
     if (!authLoading && user && !canAccessOps) {
-      toast.error("Acesso negado - apenas operacional/admin");
+      toast.error("Você não tem permissão para acessar esta área. Fale com o administrador da sua agência.");
       navigate("/dashboard");
     }
   }, [user, authLoading, canAccessOps, navigate]);
