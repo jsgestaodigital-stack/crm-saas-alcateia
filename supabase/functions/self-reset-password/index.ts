@@ -239,7 +239,7 @@ Deno.serve(async (req) => {
     const agencySimilarity = similarity(agency_name, storedAgencyName);
     console.log(`Agency similarity: ${agencySimilarity}%`);
 
-    const MIN_AGENCY_SIMILARITY = 80; // 80% threshold for secure identity verification
+    const MIN_AGENCY_SIMILARITY = 100; // Require exact agency name match (case-insensitive)
 
     if (!nameCheck.matches) {
       console.error(`Name mismatch: "${full_name}" vs "${storedName}" (${nameCheck.similarity}%)`);
