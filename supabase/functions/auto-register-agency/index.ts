@@ -81,7 +81,7 @@ Deno.serve(async (req) => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
     if (!supabaseUrl || !supabaseServiceKey) {
-      return errorResponse("Configuração do servidor incompleta. Contate o suporte.", 500);
+      return errorResponse(corsHeaders, "Configuração do servidor incompleta. Contate o suporte.", 500);
     }
 
     const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
@@ -92,7 +92,7 @@ Deno.serve(async (req) => {
       body = await req.json();
     } catch (parseError) {
       console.error("[auto-register-agency] JSON parse error:", parseError);
-      return errorResponse("Dados inválidos. Tente novamente.");
+      return errorResponse(corsHeaders, "Dados inválidos. Tente novamente.");
     }
 
     const { agencyName, agencySlug, ownerName, ownerEmail, ownerPhone, password, isAlcateia } = body;
@@ -103,49 +103,49 @@ Deno.serve(async (req) => {
     const emailKey = `auto-register:${(ownerEmail || "").toLowerCase().trim()}`;
     const rl = checkRateLimit(emailKey, 3, 60 * 60 * 1000);
     if (!rl.allowed) {
-      return errorResponse("Muitas tentativas de cadastro. Tente novamente mais tarde.", 429);
+      return errorResponse(corsHeaders, "Muitas tentativas de cadastro. Tente novamente mais tarde.", 429);
     }
 
     // ===== INPUT VALIDATION =====
     if (!agencyName?.trim()) {
-      return errorResponse("Nome da agência é obrigatório.");
+      return errorResponse(corsHeaders, "Nome da agência é obrigatório.");
     }
     if (!agencySlug?.trim()) {
-      return errorResponse("Slug da agência é obrigatório.");
+      return errorResponse(corsHeaders, "Slug da agência é obrigatório.");
     }
     if (!ownerName?.trim()) {
-      return errorResponse("Nome do responsável é obrigatório.");
+      return errorResponse(corsHeaders, "Nome do responsável é obrigatório.");
     }
     if (!ownerEmail?.trim()) {
-      return errorResponse("Email é obrigatório.");
+      return errorResponse(corsHeaders, "Email é obrigatório.");
     }
     if (!password) {
-      return errorResponse("Senha é obrigatória.");
+      return errorResponse(corsHeaders, "Senha é obrigatória.");
     }
 
     // Email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(ownerEmail)) {
-      return errorResponse("Formato de email inválido.");
+      return errorResponse(corsHeaders, "Formato de email inválido.");
     }
 
     // Block temporary/disposable email domains (only for Alcateia)
     if (isAlcateia && isBlockedEmailDomain(ownerEmail)) {
-      return errorResponse("Emails temporários não são permitidos. Use seu email pessoal ou profissional.");
+      return errorResponse(corsHeaders, "Emails temporários não são permitidos. Use seu email pessoal ou profissional.");
     }
 
     // Password strength validation
     if (password.length < 8) {
-      return errorResponse("Senha deve ter pelo menos 8 caracteres.");
+      return errorResponse(corsHeaders, "Senha deve ter pelo menos 8 caracteres.");
     }
     if (!/[A-Z]/.test(password)) {
-      return errorResponse("Senha deve conter pelo menos uma letra maiúscula.");
+      return errorResponse(corsHeaders, "Senha deve conter pelo menos uma letra maiúscula.");
     }
     if (!/[a-z]/.test(password)) {
-      return errorResponse("Senha deve conter pelo menos uma letra minúscula.");
+      return errorResponse(corsHeaders, "Senha deve conter pelo menos uma letra minúscula.");
     }
     if (!/[0-9]/.test(password)) {
-      return errorResponse("Senha deve conter pelo menos um número.");
+      return errorResponse(corsHeaders, "Senha deve conter pelo menos um número.");
     }
 
     // ===== CHECK DUPLICATES =====
@@ -158,11 +158,11 @@ Deno.serve(async (req) => {
 
     if (existingAgencyError) {
       console.error("[auto-register-agency] Agency slug check error:", existingAgencyError);
-      return errorResponse("Erro ao validar nome da agência. Tente novamente.");
+      return errorResponse(corsHeaders, "Erro ao validar nome da agência. Tente novamente.");
     }
 
     if (existingAgency) {
-      return errorResponse("Uma agência com esse nome já existe. Tente outro nome.");
+      return errorResponse(corsHeaders, "Uma agência com esse nome já existe. Tente outro nome.");
     }
 
     console.log("[auto-register-agency] Checking for duplicate email...");
@@ -170,12 +170,12 @@ Deno.serve(async (req) => {
     
     if (listUsersError) {
       console.error("[auto-register-agency] List users error:", listUsersError);
-      return errorResponse("Erro ao verificar email. Tente novamente.");
+      return errorResponse(corsHeaders, "Erro ao verificar email. Tente novamente.");
     }
 
     const existingUser = existingUsers?.users?.find(u => u.email?.toLowerCase() === ownerEmail.toLowerCase());
     if (existingUser) {
-      return errorResponse("Este email já está cadastrado. Faça login ou use outro email.");
+      return errorResponse(corsHeaders, "Este email já está cadastrado. Faça login ou use outro email.");
     }
 
     // ===== CHECK PENDING REGISTRATIONS DUPLICATES =====
@@ -187,7 +187,7 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (existingPending) {
-      return errorResponse("Já existe uma solicitação pendente com este email. Aguarde a aprovação.");
+      return errorResponse(corsHeaders, "Já existe uma solicitação pendente com este email. Aguarde a aprovação.");
     }
 
     // ===== ALCATEIA: CREATE FULL ACCESS IMMEDIATELY (NO APPROVAL NEEDED) =====
@@ -220,7 +220,7 @@ Deno.serve(async (req) => {
       const planId = lobaooPlan?.id || lobinhoPlan?.id || anyActivePlan?.id;
       if (!planId) {
         console.error("[auto-register-agency] No active plan found at all");
-        return errorResponse("Nenhum plano ativo encontrado. Contate o suporte.", 500);
+        return errorResponse(corsHeaders, "Nenhum plano ativo encontrado. Contate o suporte.", 500);
       }
       console.log(`[auto-register-agency] Using plan: ${planId}`);
 
@@ -242,7 +242,7 @@ Deno.serve(async (req) => {
 
       if (alcateiaAgencyError || !alcateiaAgency) {
         console.error("[auto-register-agency] Alcateia agency creation error:", alcateiaAgencyError);
-        return errorResponse(`Erro ao criar agência: ${alcateiaAgencyError?.message || 'Unknown error'}`);
+        return errorResponse(corsHeaders, `Erro ao criar agência: ${alcateiaAgencyError?.message || 'Unknown error'}`);
       }
 
       console.log(`[auto-register-agency] Alcateia agency created: ${alcateiaAgency.id}`);
@@ -280,7 +280,7 @@ Deno.serve(async (req) => {
       if (alcateiaSubError) {
         console.error("[auto-register-agency] Alcateia subscription error:", alcateiaSubError);
         await rollbackAlcateia(`Subscription failed: ${alcateiaSubError.message}`);
-        return errorResponse("Erro ao criar assinatura. Tente novamente.");
+        return errorResponse(corsHeaders, "Erro ao criar assinatura. Tente novamente.");
       }
 
       // ===== CREATE USER =====
@@ -299,7 +299,7 @@ Deno.serve(async (req) => {
       if (alcateiaAuthError || !alcateiaAuth?.user) {
         console.error("[auto-register-agency] Alcateia user creation error:", alcateiaAuthError);
         await rollbackAlcateia(`User creation failed: ${alcateiaAuthError?.message || 'No user'}`);
-        return errorResponse(`Erro ao criar usuário: ${alcateiaAuthError?.message || 'Unknown error'}`);
+        return errorResponse(corsHeaders, `Erro ao criar usuário: ${alcateiaAuthError?.message || 'Unknown error'}`);
       }
 
       const alcateiaUserId = alcateiaAuth.user.id;
@@ -319,7 +319,7 @@ Deno.serve(async (req) => {
       if (alcateiaProfileError) {
         console.error("[auto-register-agency] Alcateia profile creation error:", alcateiaProfileError);
         await rollbackAlcateia(`Profile failed: ${alcateiaProfileError.message}`, alcateiaUserId);
-        return errorResponse("Erro ao criar perfil. Tente novamente.");
+        return errorResponse(corsHeaders, "Erro ao criar perfil. Tente novamente.");
       }
 
       // ===== ADD AS AGENCY OWNER =====
@@ -332,7 +332,7 @@ Deno.serve(async (req) => {
       if (alcateiaMemberError) {
         console.error("[auto-register-agency] Alcateia member error:", alcateiaMemberError);
         await rollbackAlcateia(`Member failed: ${alcateiaMemberError.message}`, alcateiaUserId);
-        return errorResponse("Erro ao vincular usuário à agência. Tente novamente.");
+        return errorResponse(corsHeaders, "Erro ao vincular usuário à agência. Tente novamente.");
       }
 
       // ===== SET USER ROLE =====
@@ -348,7 +348,7 @@ Deno.serve(async (req) => {
       if (alcateiaRoleError) {
         console.error("[auto-register-agency] Alcateia role error:", alcateiaRoleError);
         await rollbackAlcateia(`Role failed: ${alcateiaRoleError.message}`, alcateiaUserId);
-        return errorResponse("Erro ao definir papel do usuário. Tente novamente.");
+        return errorResponse(corsHeaders, "Erro ao definir papel do usuário. Tente novamente.");
       }
 
       // ===== SET FULL PERMISSIONS =====
@@ -442,7 +442,7 @@ Deno.serve(async (req) => {
       console.log(`[auto-register-agency] Alcateia registration COMPLETE for ${ownerEmail}`);
 
       // Return success - user has FULL access now
-      return successResponse({
+      return successResponse(corsHeaders, {
         pending: false,
         agencyId: alcateiaAgency.id,
         userId: alcateiaUserId,
@@ -473,7 +473,7 @@ Deno.serve(async (req) => {
 
     if (starterPlanError || !effectivePlan?.id) {
       console.error("[auto-register-agency] Default plan fetch error:", starterPlanError);
-      return errorResponse("Plano padrão não encontrado. Contate o suporte.", 500);
+      return errorResponse(corsHeaders, "Plano padrão não encontrado. Contate o suporte.", 500);
     }
 
     // ===== CALCULATE DATES (Trial flow only - Alcateia already returned above) =====
@@ -505,7 +505,7 @@ Deno.serve(async (req) => {
 
     if (agencyError || !newAgency) {
       console.error("[auto-register-agency] Agency creation error:", agencyError);
-      return errorResponse(`Erro ao criar agência: ${agencyError?.message || 'Unknown error'}`);
+      return errorResponse(corsHeaders, `Erro ao criar agência: ${agencyError?.message || 'Unknown error'}`);
     }
 
     console.log(`[auto-register-agency] Agency created: ${newAgency.id}`);
@@ -552,7 +552,7 @@ Deno.serve(async (req) => {
     if (subscriptionError) {
       console.error("[auto-register-agency] Subscription creation error:", subscriptionError);
       await rollback(`Subscription creation failed: ${subscriptionError.message}`);
-      return errorResponse("Erro ao criar assinatura. Tente novamente.");
+      return errorResponse(corsHeaders, "Erro ao criar assinatura. Tente novamente.");
     }
 
     // ===== CREATE USER =====
@@ -571,7 +571,7 @@ Deno.serve(async (req) => {
     if (authError || !authData?.user) {
       console.error("[auto-register-agency] User creation error:", authError);
       await rollback(`User creation failed: ${authError?.message || 'No user returned'}`);
-      return errorResponse(`Erro ao criar usuário: ${authError?.message || 'Unknown error'}`);
+      return errorResponse(corsHeaders, `Erro ao criar usuário: ${authError?.message || 'Unknown error'}`);
     }
 
     const userId = authData.user.id;
@@ -592,7 +592,7 @@ Deno.serve(async (req) => {
     if (profileError) {
       console.error("[auto-register-agency] Profile creation error:", profileError);
       await rollback(`Profile creation failed: ${profileError.message}`, userId);
-      return errorResponse("Erro ao criar perfil. Tente novamente.");
+      return errorResponse(corsHeaders, "Erro ao criar perfil. Tente novamente.");
     }
 
     // ===== ADD AS AGENCY OWNER =====
@@ -606,7 +606,7 @@ Deno.serve(async (req) => {
     if (memberError) {
       console.error("[auto-register-agency] Agency member creation error:", memberError);
       await rollback(`Agency member creation failed: ${memberError.message}`, userId);
-      return errorResponse("Erro ao vincular usuário à agência. Tente novamente.");
+      return errorResponse(corsHeaders, "Erro ao vincular usuário à agência. Tente novamente.");
     }
 
     // ===== SET USER ROLE =====
@@ -623,7 +623,7 @@ Deno.serve(async (req) => {
     if (roleError) {
       console.error("[auto-register-agency] User role upsert error:", roleError);
       await rollback(`User role creation failed: ${roleError.message}`, userId);
-      return errorResponse("Erro ao definir papel do usuário. Tente novamente.");
+      return errorResponse(corsHeaders, "Erro ao definir papel do usuário. Tente novamente.");
     }
 
     // ===== SET FULL PERMISSIONS =====
@@ -655,7 +655,7 @@ Deno.serve(async (req) => {
     if (permError) {
       console.error("[auto-register-agency] User permissions upsert error:", permError);
       await rollback(`User permissions creation failed: ${permError.message}`, userId);
-      return errorResponse("Erro ao definir permissões do usuário. Tente novamente.");
+      return errorResponse(corsHeaders, "Erro ao definir permissões do usuário. Tente novamente.");
     }
 
     // ===== CREATE AGENCY LIMITS (Trial limits) =====
@@ -746,7 +746,7 @@ Deno.serve(async (req) => {
     console.log(`[auto-register-agency] Registration complete for ${ownerEmail}`);
 
     // ===== SUCCESS RESPONSE =====
-    return successResponse({
+    return successResponse(corsHeaders, {
       userId,
       agencyId: newAgency.id,
       email: ownerEmail.toLowerCase(),
@@ -758,6 +758,6 @@ Deno.serve(async (req) => {
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
     console.error("[auto-register-agency] Unhandled error:", error);
-    return errorResponse(`Erro inesperado: ${errorMessage}`);
+    return errorResponse(corsHeaders, `Erro inesperado: ${errorMessage}`);
   }
 });
