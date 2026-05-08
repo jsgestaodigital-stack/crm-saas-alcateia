@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { getErrorMessage } from '@/lib/errorHandler';
+import { reportError } from '@/lib/reportError';
 
 export type CommissionType = 'operational' | 'sales' | 'recurring';
 export type CommissionModel = 'fixed' | 'percentage';
@@ -38,6 +39,7 @@ export function useCommissionConfigs() {
     } catch (error) {
       console.error('Error fetching commission configs:', error);
       toast.error(getErrorMessage(error));
+      void reportError('hook_error', getErrorMessage(error), 'useCommissionConfigs', { originalError: String(error) });
     } finally {
       setLoading(false);
     }
@@ -63,6 +65,7 @@ export function useCommissionConfigs() {
     } catch (error) {
       console.error('Error creating commission config:', error);
       toast.error(getErrorMessage(error));
+      void reportError('hook_error', getErrorMessage(error), 'useCommissionConfigs', { originalError: String(error) });
       return null;
     }
   };
@@ -82,6 +85,7 @@ export function useCommissionConfigs() {
     } catch (error) {
       console.error('Error updating commission config:', error);
       toast.error(getErrorMessage(error));
+      void reportError('hook_error', getErrorMessage(error), 'useCommissionConfigs', { originalError: String(error) });
       return false;
     }
   };
@@ -101,6 +105,7 @@ export function useCommissionConfigs() {
     } catch (error) {
       console.error('Error deleting commission config:', error);
       toast.error(getErrorMessage(error));
+      void reportError('hook_error', getErrorMessage(error), 'useCommissionConfigs', { originalError: String(error) });
       return false;
     }
   };

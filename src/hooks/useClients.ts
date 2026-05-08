@@ -4,6 +4,7 @@ import { Client } from "@/types/client";
 import { mapRowToClient, mapClientToRow, createClientInsertRow, ClientRow } from "@/lib/clientMapper";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/errorHandler";
+import { reportError } from '@/lib/reportError';
 
 export function useClientsRealtime(
   setClients: (clients: Client[]) => void,
@@ -39,6 +40,7 @@ export function useClientsRealtime(
     } catch (error) {
       console.error("Error fetching clients:", error);
       toast.error(getErrorMessage(error));
+      void reportError('hook_error', getErrorMessage(error), 'useClients', { originalError: String(error) });
     } finally {
       setLoading(false);
     }
@@ -167,6 +169,7 @@ export async function createClient(client: Omit<Client, 'id'>): Promise<Client |
   } catch (error) {
     console.error("Error creating client:", error);
     toast.error(getErrorMessage(error));
+    void reportError('hook_error', getErrorMessage(error), 'useClients', { originalError: String(error) });
     return null;
   }
 }
@@ -184,6 +187,7 @@ export async function seedClientChecklist(clientId: string, checklist: any): Pro
   } catch (error) {
     console.error("seedClientChecklist error:", error);
     toast.error(getErrorMessage(error));
+    void reportError('hook_error', getErrorMessage(error), 'useClients', { originalError: String(error) });
     return false;
   }
 }
@@ -213,6 +217,7 @@ export async function updateClientInDb(clientId: string, updates: Partial<Client
     }
     console.error("Error updating client:", error);
     toast.error(getErrorMessage(error));
+    void reportError('hook_error', getErrorMessage(error), 'useClients', { originalError: String(error) });
     return false;
   }
 }
@@ -231,6 +236,7 @@ export async function softDeleteClient(clientId: string): Promise<boolean> {
   } catch (error) {
     console.error("Error deleting client:", error);
     toast.error(getErrorMessage(error));
+    void reportError('hook_error', getErrorMessage(error), 'useClients', { originalError: String(error) });
     return false;
   }
 }
@@ -249,6 +255,7 @@ export async function restoreClientFromDb(clientId: string): Promise<boolean> {
   } catch (error) {
     console.error("Error restoring client:", error);
     toast.error(getErrorMessage(error));
+    void reportError('hook_error', getErrorMessage(error), 'useClients', { originalError: String(error) });
     return false;
   }
 }
@@ -267,6 +274,7 @@ export async function permanentlyDeleteClientFromDb(clientId: string): Promise<b
   } catch (error) {
     console.error("Error permanently deleting client:", error);
     toast.error(getErrorMessage(error));
+    void reportError('hook_error', getErrorMessage(error), 'useClients', { originalError: String(error) });
     return false;
   }
 }

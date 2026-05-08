@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { format, startOfWeek, endOfWeek, addDays, subDays, isToday, isBefore, parseISO, startOfDay, differenceInDays } from "date-fns";
 import { requireAgencyId } from "@/lib/guardAgency";
 import { getErrorMessage } from "@/lib/errorHandler";
+import { reportError } from '@/lib/reportError';
 import { toast } from "sonner";
 
 // Types
@@ -282,6 +283,7 @@ export function useRecurring() {
     } catch (error) {
       console.error("Error fetching recurring data:", error);
       toast.error(getErrorMessage(error));
+      void reportError('hook_error', getErrorMessage(error), 'useRecurring', { originalError: String(error) });
     } finally {
       setLoading(false);
     }
@@ -394,6 +396,7 @@ export function useRecurring() {
     if (error) {
       console.error("Error completing task:", error);
       toast.error(getErrorMessage(error));
+      void reportError('hook_error', getErrorMessage(error), 'useRecurring', { originalError: String(error) });
       return false;
     }
 
@@ -416,6 +419,7 @@ export function useRecurring() {
     if (error) {
       console.error("Error skipping task:", error);
       toast.error(getErrorMessage(error));
+      void reportError('hook_error', getErrorMessage(error), 'useRecurring', { originalError: String(error) });
       return false;
     }
 
@@ -440,6 +444,7 @@ export function useRecurring() {
     if (error) {
       console.error("Error reopening task:", error);
       toast.error(getErrorMessage(error));
+      void reportError('hook_error', getErrorMessage(error), 'useRecurring', { originalError: String(error) });
       return false;
     }
 
@@ -463,6 +468,7 @@ export function useRecurring() {
       requireAgencyId(currentAgencyId);
     } catch (err) {
       toast.error(getErrorMessage(err));
+      void reportError('hook_error', getErrorMessage(err), 'useRecurring', { originalError: String(err) });
       return null;
     }
 
@@ -590,6 +596,7 @@ export function useRecurring() {
     } catch (err) {
       console.error("Error adding recurring client:", err);
       toast.error(getErrorMessage(err));
+      void reportError('hook_error', getErrorMessage(err), 'useRecurring', { originalError: String(err) });
       return null;
     }
   }, [user, currentAgencyId, fetchData, routines, ensureDefaultRoutines]);
@@ -625,6 +632,7 @@ export function useRecurring() {
     if (error) {
       console.error("Error creating routine:", error);
       toast.error(getErrorMessage(error));
+      void reportError('hook_error', getErrorMessage(error), 'useRecurring', { originalError: String(error) });
       return null;
     }
 
@@ -657,6 +665,7 @@ export function useRecurring() {
     if (error) {
       console.error("Error updating routine:", error);
       toast.error(getErrorMessage(error));
+      void reportError('hook_error', getErrorMessage(error), 'useRecurring', { originalError: String(error) });
       return false;
     }
 
@@ -676,6 +685,7 @@ export function useRecurring() {
     if (error) {
       console.error("Error deleting routine:", error);
       toast.error(getErrorMessage(error));
+      void reportError('hook_error', getErrorMessage(error), 'useRecurring', { originalError: String(error) });
       return false;
     }
 
@@ -699,6 +709,7 @@ export function useRecurring() {
     if (error) {
       console.error("Error updating recurring client:", error);
       toast.error(getErrorMessage(error));
+      void reportError('hook_error', getErrorMessage(error), 'useRecurring', { originalError: String(error) });
       return false;
     }
 
