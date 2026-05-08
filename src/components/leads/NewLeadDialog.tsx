@@ -22,6 +22,16 @@ import {
   AlertDescription,
   AlertTitle,
 } from '@/components/ui/alert';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { useLeads, useLeadSources } from '@/hooks/useLeads';
 import { useLeadDuplicates } from '@/hooks/useLeadDuplicates';
 import { LeadTemperature, TEMPERATURE_CONFIG } from '@/types/lead';
@@ -71,6 +81,11 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
   const [newSourceInput, setNewSourceInput] = useState('');
   const [showNewSource, setShowNewSource] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [confirmDialog, setConfirmDialog] = useState<
+    | { type: 'close'; onConfirm: () => void }
+    | { type: 'duplicate'; companyName: string; onConfirm: () => void }
+    | null
+  >(null);
   
   const [validation, setValidation] = useState<ValidationState>({
     whatsapp: { valid: true },
@@ -105,10 +120,8 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
   // Warn before closing with unsaved changes
   const handleOpenChange = useCallback((newOpen: boolean) => {
     if (!newOpen && isDirty) {
-      const confirmClose = window.confirm(
-        'Você tem alterações não salvas. Deseja realmente fechar e perder os dados?'
-      );
-      if (!confirmClose) return;
+      setConfirmDialog({ type: 'close', onConfirm: () => onOpenChange(false) });
+      return;
     }
     onOpenChange(newOpen);
   }, [isDirty, onOpenChange]);
@@ -201,43 +214,8 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Validate with Zod
-    const result = leadFormSchema.safeParse(formData);
-    
-    if (!result.success) {
-      const errors: Record<string, string> = {};
-      result.error.errors.forEach(err => {
-        if (err.path[0]) {
-          errors[err.path[0].toString()] = err.message;
-        }
-      });
-      setFormErrors(errors);
-      toast.error('Por favor, corrija os erros no formulário');
-      return;
-    }
-    
-    // Check for validation errors
-    if (!validation.whatsapp.valid || !validation.email.valid || !validation.instagram.valid) {
-      toast.error('Por favor, corrija os dados inválidos');
-      return;
-    }
-
-    // Warn about duplicates but allow creation
-    if (duplicates.length > 0) {
-      const exactMatch = duplicates.find(d => d.similarity === 1);
-      if (exactMatch) {
-        const confirmCreate = window.confirm(
-          `Já existe um lead com dados idênticos: "${exactMatch.company_name}"\n\nDeseja criar mesmo assim?`
-        );
-        if (!confirmCreate) return;
-      }
-    }
-
+  const performSubmit = async () => {
     setIsSubmitting(true);
-    
     try {
       const lead = await createLead({
         ...formData,
@@ -255,6 +233,43 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const result = leadFormSchema.safeParse(formData);
+
+    if (!result.success) {
+      const errors: Record<string, string> = {};
+      result.error.errors.forEach(err => {
+        if (err.path[0]) {
+          errors[err.path[0].toString()] = err.message;
+        }
+      });
+      setFormErrors(errors);
+      toast.error('Por favor, corrija os erros no formulário');
+      return;
+    }
+
+    if (!validation.whatsapp.valid || !validation.email.valid || !validation.instagram.valid) {
+      toast.error('Por favor, corrija os dados inválidos');
+      return;
+    }
+
+    if (duplicates.length > 0) {
+      const exactMatch = duplicates.find(d => d.similarity === 1);
+      if (exactMatch) {
+        setConfirmDialog({
+          type: 'duplicate',
+          companyName: exactMatch.company_name,
+          onConfirm: () => { void performSubmit(); },
+        });
+        return;
+      }
+    }
+
+    await performSubmit();
   };
 
   const resetForm = () => {
@@ -308,12 +323,14 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
   };
 
   return (
+    <>
     <Dialog open={open} onOpenChange={(value) => {
       if (!value && isDirty) {
-        const confirmClose = window.confirm(
-          'Você tem alterações não salvas. Deseja realmente fechar e perder os dados?'
-        );
-        if (!confirmClose) return;
+        setConfirmDialog({
+          type: 'close',
+          onConfirm: () => { resetForm(); onOpenChange(false); },
+        });
+        return;
       }
       if (!value) resetForm();
       onOpenChange(value);
@@ -602,5 +619,35 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
         </form>
       </DialogContent>
     </Dialog>
+
+    <AlertDialog open={!!confirmDialog} onOpenChange={(o) => { if (!o) setConfirmDialog(null); }}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>
+            {confirmDialog?.type === 'close' ? 'Descartar alterações?' : 'Lead duplicado'}
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            {confirmDialog?.type === 'close'
+              ? 'Você tem alterações não salvas. Deseja realmente fechar e perder os dados?'
+              : confirmDialog?.type === 'duplicate'
+                ? `Já existe um lead com dados idênticos: "${confirmDialog.companyName}". Deseja criar mesmo assim?`
+                : ''}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => {
+              const cb = confirmDialog?.onConfirm;
+              setConfirmDialog(null);
+              cb?.();
+            }}
+          >
+            Confirmar
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }
