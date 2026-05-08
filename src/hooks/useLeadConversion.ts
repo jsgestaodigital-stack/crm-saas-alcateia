@@ -2,6 +2,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { Lead } from '@/types/lead';
+import { getErrorMessage } from '@/lib/errorHandler';
 
 export function useLeadConversion() {
   const { user, derived } = useAuth();
@@ -30,7 +31,7 @@ export function useLeadConversion() {
 
       if (error) {
         console.error('Edge function error:', error);
-        toast.error('Erro ao converter lead');
+        toast.error(getErrorMessage(error));
         return null;
       }
 
@@ -48,7 +49,7 @@ export function useLeadConversion() {
       return data.client;
     } catch (error) {
       console.error('Error converting lead:', error);
-      toast.error('Erro ao converter lead');
+      toast.error(getErrorMessage(error));
       return null;
     }
   };
@@ -104,7 +105,7 @@ export function useLeadConversion() {
       return true;
     } catch (error) {
       console.error('Error marking lead as lost:', error);
-      toast.error('Erro ao marcar lead como perdido');
+      toast.error(getErrorMessage(error));
       return false;
     }
   };
