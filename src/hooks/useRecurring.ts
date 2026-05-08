@@ -624,6 +624,7 @@ export function useRecurring() {
 
     if (error) {
       console.error("Error creating routine:", error);
+      toast.error(getErrorMessage(error));
       return null;
     }
 
@@ -655,6 +656,7 @@ export function useRecurring() {
 
     if (error) {
       console.error("Error updating routine:", error);
+      toast.error(getErrorMessage(error));
       return false;
     }
 
@@ -673,6 +675,7 @@ export function useRecurring() {
 
     if (error) {
       console.error("Error deleting routine:", error);
+      toast.error(getErrorMessage(error));
       return false;
     }
 
@@ -695,6 +698,7 @@ export function useRecurring() {
 
     if (error) {
       console.error("Error updating recurring client:", error);
+      toast.error(getErrorMessage(error));
       return false;
     }
 
