@@ -238,7 +238,8 @@ export function useRecurring() {
         .select("*")
         .gte("due_date", format(pastStart, "yyyy-MM-dd"))
         .lte("due_date", format(weekEnd, "yyyy-MM-dd"))
-        .order("due_date");
+        .order("due_date")
+        .limit(2000);
       
       if (tasksError) throw tasksError;
       
