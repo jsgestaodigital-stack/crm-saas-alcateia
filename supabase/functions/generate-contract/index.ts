@@ -95,6 +95,28 @@ serve(async (req) => {
   if (corsResponse) return corsResponse;
 
   try {
+    // Require authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    {
+      const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+      const authClient = createClient(
+        Deno.env.get('SUPABASE_URL')!,
+        Deno.env.get('SUPABASE_ANON_KEY')!
+      );
+      const token = authHeader.replace('Bearer ', '');
+      const { data: authData, error: authError } = await authClient.auth.getUser(token);
+      if (authError || !authData?.user) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    }
+
     // Parse and validate input
     let rawInput: unknown;
     try {
