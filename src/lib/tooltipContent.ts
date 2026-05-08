@@ -12,7 +12,7 @@ export const TOOLTIP_CONTENT = {
     calendar: "Visualização por datas importantes: entrada do cliente, prazos e entregas. Ajuda no planejamento semanal e mensal da equipe.",
     cards: "Cartões visuais compactos dos clientes com informações resumidas. Prioriza automaticamente clientes parados ou com baixo progresso no topo.",
     newClient: "Cadastra um novo cliente no sistema. Preencha as informações básicas e o cliente será adicionado na coluna inicial do Kanban.",
-    newLead: "Cadastra uma nova lead. Preencha os dados do contato e a oportunidade será adicionada no funil de vendas.",
+    newLead: "Cadastra um novo lead. Preencha os dados do contato e o lead será adicionado no funil de vendas.",
     questions: "Central de dúvidas da equipe. Aqui você pode ver, responder e gerenciar todas as perguntas feitas sobre os clientes. Dúvidas pendentes aparecem em destaque.",
     commissions: "Gerenciamento de comissões da equipe. Acompanhe valores a pagar, pagos e histórico mensal. As comissões são criadas automaticamente ao entregar um cliente.",
     admin: "Painel administrativo para gerenciar usuários, permissões e configurações do sistema. Apenas administradores têm acesso a esta área.",
@@ -56,7 +56,7 @@ export const TOOLTIP_CONTENT = {
   leadCard: {
     card: "Card do lead com informações resumidas. Clique para abrir detalhes e histórico de atividades.",
     temperature: "Temperatura indica a probabilidade de fechamento: Frio (baixa), Morno (média), Quente (alta).",
-    nextAction: "Próxima ação a ser tomada com esta oportunidade. Data em vermelho = atrasado.",
+    nextAction: "Próxima ação a ser tomada com este lead. Data em vermelho = atrasado.",
     estimatedValue: "Valor estimado do negócio se fechar. Usado para calcular previsão de vendas.",
     probability: "Chance percentual de fechar o negócio. Quanto maior, mais quente o lead.",
   },

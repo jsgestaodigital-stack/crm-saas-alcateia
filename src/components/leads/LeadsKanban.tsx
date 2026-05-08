@@ -199,7 +199,7 @@ export function LeadsKanban({ leads, onLeadClick, onMoveLead, onRefresh, onAddLe
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Importar oportunidades de planilha CSV ou Excel</p>
+              <p>Importar leads de planilha CSV ou Excel</p>
             </TooltipContent>
           </Tooltip>
           
