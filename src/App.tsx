@@ -17,6 +17,7 @@ import { OfflineBanner } from "@/components/OfflineBanner";
 import { SessionRefreshOnFocus } from "@/components/SessionRefreshOnFocus";
 import { PendingRegistrationsBanner } from "@/components/admin/PendingRegistrationsBanner";
 import { ErrorBoundaryLogger } from "@/components/ErrorBoundaryLogger";
+import { GlobalErrorBoundary } from "@/components/GlobalErrorBoundary";
 import { NPSModal } from "@/components/nps";
 import { EngagementTracker } from "@/components/EngagementTracker";
 import { GlobalUndoRedoKeyboard } from "@/components/GlobalUndoRedoKeyboard";
@@ -91,6 +92,7 @@ const queryClient = new QueryClient({
 });
 
 const App = () => (
+  <GlobalErrorBoundary>
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
@@ -233,6 +235,7 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
+  </GlobalErrorBoundary>
 );
 
 export default App;

@@ -2896,6 +2896,39 @@ export type Database = {
         }
         Relationships: []
       }
+      production_errors: {
+        Row: {
+          agency_id: string | null
+          component: string | null
+          created_at: string
+          error_message: string
+          error_type: string
+          id: string
+          metadata: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          agency_id?: string | null
+          component?: string | null
+          created_at?: string
+          error_message: string
+          error_type: string
+          id?: string
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          agency_id?: string | null
+          component?: string | null
+          created_at?: string
+          error_message?: string
+          error_type?: string
+          id?: string
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           alcateia_member: boolean
