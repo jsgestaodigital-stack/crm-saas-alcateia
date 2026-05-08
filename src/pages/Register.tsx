@@ -187,7 +187,10 @@ export default function Register() {
       
     } catch (err) {
       console.error("Unexpected error:", err);
-      toast.error("Erro inesperado. Verifique sua conexão e tente novamente.");
+      toast.error("Não conseguimos criar sua conta agora. Verifique sua internet e tente novamente.", {
+        duration: 8000,
+        action: { label: "Tentar novamente", onClick: () => handleSubmit(e) },
+      });
     } finally {
       setIsLoading(false);
     }
