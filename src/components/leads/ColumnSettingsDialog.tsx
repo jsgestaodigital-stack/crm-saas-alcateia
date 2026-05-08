@@ -391,5 +391,42 @@ export function ColumnSettingsDialog({ open, onOpenChange }: ColumnSettingsDialo
         </div>
       </DialogContent>
     </Dialog>
+
+    <AlertDialog open={!!confirmDeleteId} onOpenChange={(o) => !o && setConfirmDeleteId(null)}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Excluir coluna?</AlertDialogTitle>
+          <AlertDialogDescription>
+            {columns.find(c => c.id === confirmDeleteId)?.isDefault
+              ? '⚠️ Esta é uma coluna padrão do pipeline. Tem certeza?'
+              : 'Esta ação não pode ser desfeita.'}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction onClick={performDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            Excluir coluna
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
+    <AlertDialog open={confirmReset} onOpenChange={setConfirmReset}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Restaurar colunas padrão?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Todas as colunas personalizadas serão removidas.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction onClick={performReset} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            Restaurar
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }
