@@ -219,7 +219,7 @@ export function NewClientWizard({ open, onOpenChange, initialColumnId }: NewClie
 
           {/* Quick Select: Stage - All stages available for importing existing clients */}
           <div>
-            <Label className="text-sm font-medium mb-1.5 block">Estágio Inicial</Label>
+            <Label className="text-sm font-medium mb-1.5 block">Etapa Inicial</Label>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"

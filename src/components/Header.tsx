@@ -22,7 +22,7 @@ import { ThemeLogo } from "@/components/ThemeLogo";
 import { cn } from "@/lib/utils";
 
 const VIEW_OPTIONS = [
-  { id: "kanban", label: "Kanban", icon: LayoutGrid, tooltip: "Visualização em colunas por estágio do cliente" },
+  { id: "kanban", label: "Kanban", icon: LayoutGrid, tooltip: "Visualização em colunas por etapa do cliente" },
   { id: "table", label: "Tabela", icon: Table, tooltip: "Lista estruturada com todas as informações" },
   { id: "checklist", label: "Execução", icon: ClipboardList, tooltip: "Acompanhamento de tarefas e progresso" },
   { id: "mytasks", label: "Tarefas", icon: ListChecks, tooltip: "Minhas tarefas pendentes de todos os clientes" },
