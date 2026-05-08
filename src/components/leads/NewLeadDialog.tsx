@@ -596,8 +596,9 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
               className="mt-1"
             />
           </div>
+          </DialogBody>
 
-          <div className="flex gap-2 pt-2">
+          <DialogFooter className="flex-row gap-2">
             <Button 
               type="button" 
               variant="outline" 
@@ -620,7 +621,7 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
                 'Criar Lead'
               )}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
