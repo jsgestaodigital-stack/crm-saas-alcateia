@@ -13,7 +13,10 @@ export function useProposals() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchProposals = useCallback(async () => {
-    if (!agencyId) return;
+    if (!agencyId) {
+      setLoading(false);
+      return;
+    }
     
     try {
       setLoading(true);
