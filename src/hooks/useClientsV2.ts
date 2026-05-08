@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { getErrorMessage } from '@/lib/errorHandler';
+import { reportError } from '@/lib/reportError';
 import { requireAgencyId } from '@/lib/guardAgency';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -121,6 +122,7 @@ export function useClientsV2(options: UseClientsV2Options = {}) {
     } catch (err) {
       console.error('Error fetching clients:', err);
       toast({ title: getErrorMessage(err), variant: 'destructive' });
+      void reportError('hook_error', getErrorMessage(err), 'useClientsV2', { originalError: String(err) });
     } finally {
       setLoading(false);
     }
@@ -156,6 +158,7 @@ export function useClientsV2(options: UseClientsV2Options = {}) {
     } catch (err) {
       console.error('Error creating client:', err);
       toast({ title: getErrorMessage(err), variant: 'destructive' });
+      void reportError('hook_error', getErrorMessage(err), 'useClientsV2', { originalError: String(err) });
       return null;
     }
   };
@@ -181,6 +184,7 @@ export function useClientsV2(options: UseClientsV2Options = {}) {
     } catch (err) {
       console.error('Error updating client:', err);
       toast({ title: getErrorMessage(err), variant: 'destructive' });
+      void reportError('hook_error', getErrorMessage(err), 'useClientsV2', { originalError: String(err) });
       return false;
     }
   };
@@ -199,6 +203,7 @@ export function useClientsV2(options: UseClientsV2Options = {}) {
     } catch (err) {
       console.error('Error deleting client:', err);
       toast({ title: getErrorMessage(err), variant: 'destructive' });
+      void reportError('hook_error', getErrorMessage(err), 'useClientsV2', { originalError: String(err) });
       return false;
     }
   };

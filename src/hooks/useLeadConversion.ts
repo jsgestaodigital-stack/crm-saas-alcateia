@@ -3,6 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { Lead } from '@/types/lead';
 import { getErrorMessage } from '@/lib/errorHandler';
+import { reportError } from '@/lib/reportError';
 
 export function useLeadConversion() {
   const { user, derived } = useAuth();
@@ -32,6 +33,7 @@ export function useLeadConversion() {
       if (error) {
         console.error('Edge function error:', error);
         toast.error(getErrorMessage(error));
+        void reportError('hook_error', getErrorMessage(error), 'useLeadConversion', { originalError: String(error) });
         return null;
       }
 
@@ -50,6 +52,7 @@ export function useLeadConversion() {
     } catch (error) {
       console.error('Error converting lead:', error);
       toast.error(getErrorMessage(error));
+      void reportError('hook_error', getErrorMessage(error), 'useLeadConversion', { originalError: String(error) });
       return null;
     }
   };
@@ -106,6 +109,7 @@ export function useLeadConversion() {
     } catch (error) {
       console.error('Error marking lead as lost:', error);
       toast.error(getErrorMessage(error));
+      void reportError('hook_error', getErrorMessage(error), 'useLeadConversion', { originalError: String(error) });
       return false;
     }
   };
