@@ -119,14 +119,10 @@ export default function Register() {
       // Handle edge function errors
       if (error) {
         console.error("Registration error:", error);
-        // Parse error message for better UX
-        let errorMessage = "Erro ao criar conta. Tente novamente.";
-        if (error.message?.includes("non-2xx")) {
-          errorMessage = "Erro de conexão. Verifique sua internet e tente novamente.";
-        } else if (error.message) {
-          errorMessage = error.message;
-        }
-        toast.error(errorMessage);
+        toast.error("Não conseguimos criar sua conta agora. Verifique sua internet e tente novamente.", {
+          duration: 8000,
+          action: { label: "Tentar novamente", onClick: () => handleSubmit(e) },
+        });
         setIsLoading(false);
         return;
       }
