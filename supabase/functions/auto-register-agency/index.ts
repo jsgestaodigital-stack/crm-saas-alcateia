@@ -539,7 +539,7 @@ Deno.serve(async (req) => {
     console.log("[auto-register-agency] Creating subscription...");
     const { error: subscriptionError } = await supabaseClient
       .from("subscriptions")
-      .insert({
+      .upsert({
         agency_id: newAgency.id,
         plan_id: effectivePlan.id,
         status: subscriptionStatus,
@@ -547,7 +547,7 @@ Deno.serve(async (req) => {
         current_period_start: new Date().toISOString(),
         current_period_end: endDate.toISOString(),
         metadata: { source: "auto-register-agency" },
-      });
+      }, { onConflict: "agency_id" });
 
     if (subscriptionError) {
       console.error("[auto-register-agency] Subscription creation error:", subscriptionError);
