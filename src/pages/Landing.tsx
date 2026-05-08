@@ -276,7 +276,7 @@ const Landing = () => {
 
             {/* Subheadline */}
             <p className="text-xs sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto mb-4 sm:mb-5 leading-relaxed px-2">
-              Da prospecção à execução recorrente. O único sistema que gerencia <strong className="text-foreground">todo o ciclo operacional</strong> de perfis Google.
+              Da prospecção à execução recorrente. Gerencie leads, propostas, otimização, entregas, relatórios e recorrências — em um único sistema feito 100% para agências de Google Meu Negócio.
             </p>
 
             {/* CTA Principal - Only Testar Grátis */}
@@ -662,9 +662,9 @@ const Landing = () => {
           {/* 4 Stats Cards */}
           <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-4 sm:mb-6">
             {[
-              { icon: MapPin, value: 500, suffix: "+", label: "Perfis Gerenciados", description: "Na nossa própria agência." },
+              { icon: MapPin, value: 600, suffix: "+", label: "Perfis Otimizados", description: "Na nossa própria agência." },
               { icon: Calendar, value: 4, suffix: " anos", label: "Experiência", description: "Vendendo Google Meu Negócio." },
-              { icon: Users, value: 350, suffix: "+", label: "Alunos Formados", description: "Na metodologia Alcateia." },
+              { icon: Users, value: 500, suffix: "+", label: "Alunos Formados", description: "Na metodologia Alcateia." },
               { icon: CheckCircle2, value: 32, suffix: "", label: "Pontos de Otimização", description: "Checklist testado." }
             ].map((stat, i) => (
               <motion.div
