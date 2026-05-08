@@ -449,78 +449,70 @@ export function useRecurring() {
     monthly_value?: number;
   }): Promise<RecurringClient | null> => {
     if (!user) {
-      console.error("No user authenticated");
+      toast.error("Você precisa estar logado");
       return null;
     }
 
-    // Idempotência: se já existe um recorrente para este client_id, reaproveitar
-    if (data.client_id) {
-      const { data: existing, error: existingError } = await supabase
+    try {
+      requireAgencyId(currentAgencyId);
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+      return null;
+    }
+
+    try {
+      // Idempotência: se já existe um recorrente para este client_id, reaproveitar
+      if (data.client_id) {
+        const { data: existing, error: existingError } = await supabase
+          .from("recurring_clients")
+          .select("*")
+          .eq("client_id", data.client_id)
+          .maybeSingle();
+
+        if (existingError) {
+          console.error("Error checking existing recurring client:", existingError);
+        } else if (existing) {
+          await fetchData();
+          return existing as RecurringClient;
+        }
+      }
+
+      // CRITICAL: Ensure routines exist before creating client
+      let currentRoutines = routines;
+      if (currentRoutines.length === 0) {
+        await ensureDefaultRoutines();
+        const { data: freshRoutines } = await supabase
+          .from("recurring_routines")
+          .select("*")
+          .eq("active", true)
+          .order("sort_order");
+        currentRoutines = (freshRoutines as RecurringRoutine[]) || [];
+        setRoutines(currentRoutines);
+      }
+
+      const variants = ['A', 'B', 'C', 'D'];
+      const randomVariant = variants[Math.floor(Math.random() * variants.length)];
+
+      const insertData = {
+        client_id: data.client_id || null,
+        company_name: data.company_name,
+        responsible_name: data.responsible_name,
+        schedule_variant: randomVariant,
+        responsible_user_id: user.id,
+        start_date: format(new Date(), "yyyy-MM-dd"),
+        monthly_value: data.monthly_value && data.monthly_value > 0 ? data.monthly_value : undefined,
+      };
+
+      const { data: newClient, error } = await supabase
         .from("recurring_clients")
-        .select("*")
-        .eq("client_id", data.client_id)
-        .maybeSingle();
+        .insert(insertData)
+        .select()
+        .single();
 
-      if (existingError) {
-        console.error("Error checking existing recurring client:", existingError);
-      } else if (existing) {
-        await fetchData();
-        return existing as RecurringClient;
-      }
-    }
+      if (error) throw error;
+      if (!newClient) throw new Error("Cliente recorrente não retornou após criação");
 
-    // CRITICAL: Ensure routines exist before creating client
-    // This fixes the issue where clients are created but no tasks appear
-    let currentRoutines = routines;
-    if (currentRoutines.length === 0) {
-      console.log("No routines found, creating defaults before adding client...");
-      await ensureDefaultRoutines();
-      // Re-fetch routines
-      const { data: freshRoutines } = await supabase
-        .from("recurring_routines")
-        .select("*")
-        .eq("active", true)
-        .order("sort_order");
-      currentRoutines = (freshRoutines as RecurringRoutine[]) || [];
-      setRoutines(currentRoutines);
-    }
-
-    // Assign random schedule variant
-    const variants = ['A', 'B', 'C', 'D'];
-    const randomVariant = variants[Math.floor(Math.random() * variants.length)];
-
-    // Build insert data
-    const insertData = {
-      client_id: data.client_id || null,
-      company_name: data.company_name,
-      responsible_name: data.responsible_name,
-      schedule_variant: randomVariant,
-      responsible_user_id: user.id,
-      start_date: format(new Date(), "yyyy-MM-dd"),
-      monthly_value: data.monthly_value && data.monthly_value > 0 ? data.monthly_value : undefined,
-    };
-
-    const { data: newClient, error } = await supabase
-      .from("recurring_clients")
-      .insert(insertData)
-      .select()
-      .single();
-
-    if (error) {
-      console.error("Error adding recurring client:", error);
-      // Provide more specific error messages
-      if (error.message.includes('agency')) {
-        console.error("Agency ID issue - user may not have an agency selected");
-      }
-      return null;
-    }
-
-    if (!newClient) {
-      console.error("Client inserted but no data returned");
-      return null;
-    }
-
-    console.log("Recurring client created successfully:", newClient.id);
+      console.log("Recurring client created successfully:", newClient.id);
 
     // Generate tasks for the new client
     if (currentRoutines.length > 0) {
