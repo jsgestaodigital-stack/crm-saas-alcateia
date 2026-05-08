@@ -73,7 +73,10 @@ export function useCommissions(options: UseCommissionsOptions = {}) {
 
   // Fetch commissions
   const fetchCommissions = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
     try {
       let query = supabase
