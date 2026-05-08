@@ -120,7 +120,7 @@ export function useClientsV2(options: UseClientsV2Options = {}) {
       setTotalCount(count || 0);
     } catch (err) {
       console.error('Error fetching clients:', err);
-      toast({ title: 'Erro ao carregar clientes', variant: 'destructive' });
+      toast({ title: getErrorMessage(err), variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -132,6 +132,8 @@ export function useClientsV2(options: UseClientsV2Options = {}) {
 
   const createClient = async (data: Partial<ClientV2>) => {
     try {
+      requireAgencyId(currentAgencyId);
+
       const { data: result, error } = await supabase
         .from('clients')
         .insert({
@@ -153,7 +155,7 @@ export function useClientsV2(options: UseClientsV2Options = {}) {
       return result;
     } catch (err) {
       console.error('Error creating client:', err);
-      toast({ title: 'Erro ao criar cliente', variant: 'destructive' });
+      toast({ title: getErrorMessage(err), variant: 'destructive' });
       return null;
     }
   };
@@ -178,7 +180,7 @@ export function useClientsV2(options: UseClientsV2Options = {}) {
       return true;
     } catch (err) {
       console.error('Error updating client:', err);
-      toast({ title: 'Erro ao atualizar cliente', variant: 'destructive' });
+      toast({ title: getErrorMessage(err), variant: 'destructive' });
       return false;
     }
   };
@@ -196,7 +198,7 @@ export function useClientsV2(options: UseClientsV2Options = {}) {
       return true;
     } catch (err) {
       console.error('Error deleting client:', err);
-      toast({ title: 'Erro ao remover cliente', variant: 'destructive' });
+      toast({ title: getErrorMessage(err), variant: 'destructive' });
       return false;
     }
   };
