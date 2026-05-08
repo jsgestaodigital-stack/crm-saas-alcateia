@@ -573,14 +573,7 @@ export function AppSidebar({
       {/* Footer - Quick actions */}
       <div className="shrink-0 p-3 border-t border-border/50 space-y-1 bg-gradient-to-t from-muted/30 to-transparent">
         <TooltipProvider delayDuration={800}>
-          <NavItem
-            icon={Bell}
-            label="Notificações"
-            isActive={location.pathname === "/notifications"}
-            onClick={() => { navigate("/notifications"); onMobileOpenChange(false); }}
-            color="amber"
-          />
-          {canAccessAdmin && (
+          {/* Notificações removed — NotificationBell in Header covers this */}
             <NavItem
               icon={Lightbulb}
               label="Sugestões"
