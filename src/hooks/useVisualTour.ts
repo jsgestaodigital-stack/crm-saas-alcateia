@@ -120,41 +120,7 @@ export const TOUR_STEPS: TourStep[] = [
     disableBeacon: true,
   },
 
-  // === SEÇÃO FERRAMENTAS ===
-  {
-    id: 'section-tools',
-    target: '[data-tour="section-ferramentas"]',
-    content: '🛠️ FERRAMENTAS DE IA: Agentes especializados que automatizam tarefas complexas. SEO, Suspensões, Relatórios e mais.',
-    placement: 'right',
-    disableBeacon: true,
-  },
 
-  // === AGENTE SEO ===
-  {
-    id: 'agent-seo',
-    target: '[data-tour="nav-agente-seo"]',
-    content: '🔍 AGENTE SEO: ChatGPT especializado em Google Meu Negócio! Cole dados do perfil e receba sugestões de categoria, descrição, atributos e mais. Copie e cole direto no GMB.',
-    placement: 'right',
-    disableBeacon: true,
-  },
-
-  // === AGENTE SUSPENSÕES ===
-  {
-    id: 'agent-suspensions',
-    target: '[data-tour="nav-agente-suspensoes"]',
-    content: '⚠️ AGENTE SUSPENSÕES: Perfil do cliente foi suspenso? Cole os dados e a IA identifica possíveis causas e dá o passo-a-passo para recuperação.',
-    placement: 'right',
-    disableBeacon: true,
-  },
-
-  // === AGENTE RELATÓRIOS ===
-  {
-    id: 'agent-reports',
-    target: '[data-tour="nav-agente-relatorios"]',
-    content: '📈 AGENTE RELATÓRIOS: Gere relatórios profissionais para seus clientes! Cole as métricas do GMB e receba um relatório completo pronto para enviar.',
-    placement: 'right',
-    disableBeacon: true,
-  },
 
   // === CENTRAL OPERACIONAL ===
   {
