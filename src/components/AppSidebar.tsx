@@ -89,7 +89,7 @@ export function AppSidebar({
     if (location.pathname === "/propostas" || location.pathname === "/contratos") {
       setComercialOpen(true);
     }
-    if (location.pathname === "/agente-seo" || location.pathname === "/agente-suspensoes" || location.pathname === "/duvidas" || location.pathname === "/agentes-ia") {
+    if (location.pathname === "/duvidas") {
       setFerramentasOpen(true);
     }
     if (location.pathname.includes("/admin") || location.pathname === "/equipe" || location.pathname === "/relatorio-gestor") {
