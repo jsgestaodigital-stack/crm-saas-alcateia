@@ -85,10 +85,40 @@ export function classifyError(error: unknown): ClassifiedError {
       };
     }
 
-    // Validação (constraint violation)
-    if (code === 400 || code === '23505' || code === '23503' || 
-        message.includes('duplicate') || message.includes('constraint') ||
-        message.includes('invalid')) {
+    // Unique constraint violation
+    if (code === '23505') {
+      let userMessage = 'Este registro já existe.';
+      if (message.includes('email')) userMessage = 'Este email já está cadastrado.';
+      else if (message.includes('cpf') || message.includes('cnpj')) userMessage = 'Este CPF/CNPJ já está cadastrado.';
+      else if (message.includes('phone') || message.includes('whatsapp')) userMessage = 'Este telefone já está cadastrado.';
+      else if (message.includes('name')) userMessage = 'Já existe um registro com este nome.';
+      return { type: ErrorType.Validation, userMessage, technicalMessage: message, retryable: false, statusCode: 400 };
+    }
+
+    // Foreign key violation
+    if (code === '23503') {
+      return {
+        type: ErrorType.Validation,
+        userMessage: 'Não é possível remover — existem registros vinculados.',
+        technicalMessage: message,
+        retryable: false,
+        statusCode: 400,
+      };
+    }
+
+    // Not null violation
+    if (code === '23502') {
+      return {
+        type: ErrorType.Validation,
+        userMessage: 'Campo obrigatório não preenchido.',
+        technicalMessage: message,
+        retryable: false,
+        statusCode: 400,
+      };
+    }
+
+    // Check constraint / generic invalid
+    if (code === 400 || message.includes('invalid')) {
       return {
         type: ErrorType.Validation,
         userMessage: 'Dados inválidos. Verifique as informações e tente novamente.',
