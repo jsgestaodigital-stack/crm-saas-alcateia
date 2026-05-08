@@ -8,12 +8,15 @@ import { Json } from '@/integrations/supabase/types';
 export function useProposals() {
   const { user, currentAgencyId: agencyId } = useAuth();
   const [proposals, setProposals] = useState<Proposal[]>([]);
-  const [templates, setTemplates] = useState<ProposalTemplate[]>();
+  const [templates, setTemplates] = useState<ProposalTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchProposals = useCallback(async () => {
-    if (!agencyId) return;
+    if (!agencyId) {
+      setLoading(false);
+      return;
+    }
     
     try {
       setLoading(true);
@@ -40,7 +43,10 @@ export function useProposals() {
   }, [agencyId]);
 
   const fetchTemplates = useCallback(async () => {
-    if (!agencyId) return;
+    if (!agencyId) {
+      setTemplates([]);
+      return;
+    }
     
     try {
       const { data, error: fetchError } = await supabase
