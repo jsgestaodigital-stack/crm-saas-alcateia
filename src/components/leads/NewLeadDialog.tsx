@@ -3,8 +3,11 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogBody,
+  DialogFooter,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { scrollToFirstError } from '@/lib/scrollToError';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -249,6 +252,7 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
       });
       setFormErrors(errors);
       toast.error('Por favor, corrija os erros no formulário');
+      scrollToFirstError();
       return;
     }
 
@@ -335,7 +339,7 @@ export function NewLeadDialog({ open, onOpenChange, initialStage }: NewLeadDialo
       if (!value) resetForm();
       onOpenChange(value);
     }}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Building2 className="h-5 w-5 text-primary" />
