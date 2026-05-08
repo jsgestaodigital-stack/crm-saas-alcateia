@@ -21,10 +21,12 @@ import { GlobalUndoRedoKeyboard } from "@/components/GlobalUndoRedoKeyboard";
 import { Loader2 } from "lucide-react";
 
 // ============ LAZY LOADED PAGES ============
-// Critical path - loaded immediately
-import Landing from "./pages/Landing";
+// Critical path - Auth and NotFound stay eager (small + needed for redirects)
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+
+// Landing is heavy and not needed for already-logged-in users
+const Landing = lazy(() => import("./pages/Landing"));
 
 // Heavy pages - lazy loaded for code splitting
 const Dashboard = lazy(() => import("./pages/Dashboard"));
