@@ -38,8 +38,10 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%]",
-        "gap-4 border border-border/50 bg-background/95 backdrop-blur-xl p-6 rounded-2xl",
+        "fixed left-[50%] top-[50%] z-50 flex flex-col w-full max-w-lg translate-x-[-50%] translate-y-[-50%]",
+        // Mobile-safe height: respect dynamic viewport (keyboard) and allow internal scroll
+        "max-h-[100dvh] sm:max-h-[90dvh] overflow-hidden",
+        "border border-border/50 bg-background/95 backdrop-blur-xl rounded-2xl",
         "shadow-[0_16px_64px_rgba(0,252,168,0.1),0_0_1px_rgba(55,0,249,0.15)]",
         "duration-300",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
@@ -47,6 +49,8 @@ const DialogContent = React.forwardRef<
         "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
         "data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%]",
         "data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]",
+        // Default padding becomes inner concern via DialogBody — keep small outer padding for headers/footers
+        "p-6 gap-4",
         className,
       )}
       {...props}
@@ -62,12 +66,30 @@ const DialogContent = React.forwardRef<
 DialogContent.displayName = DialogPrimitive.Content.displayName;
 
 const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("flex flex-col space-y-2 text-center sm:text-left", className)} {...props} />
+  <div className={cn("flex flex-col space-y-2 text-center sm:text-left flex-shrink-0", className)} {...props} />
 );
 DialogHeader.displayName = "DialogHeader";
 
+/**
+ * Scrollable middle area of the dialog. Use this to wrap form fields so the
+ * footer (e.g. Save/Cancel) stays visible above the mobile keyboard.
+ */
+const DialogBody = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+  <div className={cn("flex-1 min-h-0 overflow-y-auto -mx-6 px-6", className)} {...props} />
+);
+DialogBody.displayName = "DialogBody";
+
 const DialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3 pt-4", className)} {...props} />
+  <div
+    className={cn(
+      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3 pt-4 flex-shrink-0",
+      // Sticky on mobile so the action button never hides behind the keyboard
+      "sticky bottom-0 -mx-6 -mb-6 px-6 pb-[max(1rem,env(safe-area-inset-bottom))] bg-background/95 backdrop-blur-sm border-t border-border/40",
+      "sm:static sm:m-0 sm:p-0 sm:border-0 sm:bg-transparent sm:backdrop-blur-none",
+      className,
+    )}
+    {...props}
+  />
 );
 DialogFooter.displayName = "DialogFooter";
 
@@ -99,6 +121,7 @@ export {
   DialogTrigger,
   DialogContent,
   DialogHeader,
+  DialogBody,
   DialogFooter,
   DialogTitle,
   DialogDescription,
