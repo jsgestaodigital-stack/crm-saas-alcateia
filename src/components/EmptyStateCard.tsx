@@ -45,11 +45,11 @@ const EMPTY_STATE_CONFIG: Record<EmptyStateType, {
   leads: {
     icon: Target,
     emoji: '🎯',
-    title: 'Nenhuma oportunidade no funil',
+    title: 'Nenhum lead no funil',
     description: 'Comece adicionando leads para acompanhar seu pipeline de vendas.',
     actionLabel: 'Adicionar Lead',
     tips: [
-      'Leads são oportunidades em negociação',
+      'Leads são contatos em negociação',
       'Use a temperatura para priorizar contatos',
       'Converta leads em clientes ao fechar'
     ],

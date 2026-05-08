@@ -121,7 +121,7 @@ export function classifyError(error: unknown): ClassifiedError {
     if (code === 400 || message.includes('invalid')) {
       return {
         type: ErrorType.Validation,
-        userMessage: 'Dados inválidos. Verifique as informações e tente novamente.',
+        userMessage: 'Algum campo não foi aceito. Revise os destaques em vermelho e tente salvar novamente.',
         technicalMessage: message,
         retryable: false,
         statusCode: 400,

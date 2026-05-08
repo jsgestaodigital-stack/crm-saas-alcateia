@@ -80,7 +80,7 @@ export function FunnelToggle() {
               </button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Gerenciar oportunidades e negociações</p>
+              <p>Gerenciar leads e negociações</p>
             </TooltipContent>
           </Tooltip>
         )}
@@ -183,7 +183,7 @@ export function FunnelToggleCompact() {
                 <Briefcase className="h-5 w-5" />
                 <div className="flex flex-col items-start">
                   <span className="text-sm font-semibold">Vendas</span>
-                  <span className="text-[10px] opacity-70">Novas Oportunidades</span>
+                  <span className="text-[10px] opacity-70">Novos Leads</span>
                 </div>
                 {isSalesMode && (
                   <div className="ml-auto w-2 h-2 rounded-full bg-amber-400 animate-pulse" />

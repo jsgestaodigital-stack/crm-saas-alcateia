@@ -394,7 +394,7 @@ const Dashboard = () => {
               </h1>
               <span className="text-xs sm:text-sm text-muted-foreground">
                 {isSalesMode 
-                  ? `${activeLeads.length} oportunidades ativas` 
+                  ? `${activeLeads.length} leads ativos` 
                   : isRecurringMode
                   ? "Tarefas periódicas"
                   : `${activeClients.length} clientes ativos`}

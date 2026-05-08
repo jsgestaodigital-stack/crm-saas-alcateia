@@ -106,7 +106,7 @@ export const permissionDescriptions: Record<keyof GranularPermissions, string> =
   can_view_reports: "Visualizar relatórios e métricas",
   can_edit_clients: "Criar e editar informações de clientes",
   can_delete_clients: "Excluir clientes permanentemente",
-  can_view_leads: "Visualizar leads e oportunidades",
+  can_view_leads: "Visualizar leads",
   can_edit_leads: "Criar e editar leads",
   can_delete_leads: "Excluir leads permanentemente",
   can_manage_team: "Adicionar, remover e gerenciar membros da equipe",

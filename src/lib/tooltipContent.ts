@@ -12,7 +12,7 @@ export const TOOLTIP_CONTENT = {
     calendar: "Visualização por datas importantes: entrada do cliente, prazos e entregas. Ajuda no planejamento semanal e mensal da equipe.",
     cards: "Cartões visuais compactos dos clientes com informações resumidas. Prioriza automaticamente clientes parados ou com baixo progresso no topo.",
     newClient: "Cadastra um novo cliente no sistema. Preencha as informações básicas e o cliente será adicionado na coluna inicial do Kanban.",
-    newLead: "Cadastra uma nova oportunidade de venda. Preencha os dados do contato e a oportunidade será adicionada no funil de vendas.",
+    newLead: "Cadastra um novo lead. Preencha os dados do contato e o lead será adicionado no funil de vendas.",
     questions: "Central de dúvidas da equipe. Aqui você pode ver, responder e gerenciar todas as perguntas feitas sobre os clientes. Dúvidas pendentes aparecem em destaque.",
     commissions: "Gerenciamento de comissões da equipe. Acompanhe valores a pagar, pagos e histórico mensal. As comissões são criadas automaticamente ao entregar um cliente.",
     admin: "Painel administrativo para gerenciar usuários, permissões e configurações do sistema. Apenas administradores têm acesso a esta área.",
@@ -31,11 +31,11 @@ export const TOOLTIP_CONTENT = {
 
   // === SALES STATS ===
   sales: {
-    pipelineValue: "Soma de todos os valores estimados das oportunidades em negociação. Representa o potencial total de vendas.",
+    pipelineValue: "Soma de todos os valores estimados das leads em negociação. Representa o potencial total de vendas.",
     forecast: "Previsão de fechamento ponderada (valor × chance de fechar). Indica o valor esperado de receita.",
-    hotLeads: "Oportunidades com alta probabilidade de fechar negócio. Priorize contato com estes.",
-    conversionRate: "Porcentagem de oportunidades que viraram clientes este mês. Meta: acima de 30%.",
-    overdue: "Oportunidades com data de retorno vencida. Precisam de contato urgente.",
+    hotLeads: "Leads com alta probabilidade de fechar negócio. Priorize contato com estes.",
+    conversionRate: "Porcentagem de leads que viraram clientes este mês. Meta: acima de 30%.",
+    overdue: "Leads com data de retorno vencida. Precisam de contato urgente.",
     meetings: "Reuniões agendadas com potenciais clientes. Próximos compromissos importantes.",
     proposals: "Propostas comerciais enviadas aguardando resposta do cliente.",
     wonThisMonth: "Negócios fechados no mês atual. Celebre cada conquista!",
@@ -54,11 +54,11 @@ export const TOOLTIP_CONTENT = {
 
   // === LEAD CARD ===
   leadCard: {
-    card: "Card da oportunidade com informações resumidas. Clique para abrir detalhes e histórico de atividades.",
+    card: "Card do lead com informações resumidas. Clique para abrir detalhes e histórico de atividades.",
     temperature: "Temperatura indica a probabilidade de fechamento: Frio (baixa), Morno (média), Quente (alta).",
-    nextAction: "Próxima ação a ser tomada com esta oportunidade. Data em vermelho = atrasado.",
+    nextAction: "Próxima ação a ser tomada com este lead. Data em vermelho = atrasado.",
     estimatedValue: "Valor estimado do negócio se fechar. Usado para calcular previsão de vendas.",
-    probability: "Chance percentual de fechar o negócio. Quanto maior, mais quente a oportunidade.",
+    probability: "Chance percentual de fechar o negócio. Quanto maior, mais quente o lead.",
   },
 
   // === CHECKLIST ===
@@ -108,7 +108,7 @@ export const TOOLTIP_CONTENT = {
     themeToggle: "Alternar entre modo claro e escuro. O sistema lembra sua preferência.",
     notifications: "Central de notificações e dúvidas pendentes. Número em vermelho indica itens que precisam de atenção.",
     userMenu: "Menu do usuário com opções de perfil e logout. Clique para ver suas informações ou sair do sistema.",
-    importLeads: "Importar oportunidades de uma planilha CSV ou Excel. Preencha os dados no formato correto e importe em massa.",
+    importLeads: "Importar leads de uma planilha CSV ou Excel. Preencha os dados no formato correto e importe em massa.",
     columnSettings: "Personalizar as etapas do funil de vendas. Adicione, remova ou reordene as colunas conforme sua necessidade.",
   },
 

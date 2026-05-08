@@ -470,7 +470,7 @@ export function VoiceCommandButton() {
 
         const targetColumn = resolveColumnId(params.targetColumn);
         if (!targetColumn) {
-          toast.warning("Coluna de destino não identificada");
+          toast.warning("Etapa de destino não identificada");
           return false;
         }
 
@@ -686,7 +686,7 @@ export function VoiceCommandButton() {
 
         const targetStage = resolvePipelineStage(params.targetStage);
         if (!targetStage) {
-          toast.warning("Estágio de destino não identificado");
+          toast.warning("Etapa de destino não identificada");
           return false;
         }
 

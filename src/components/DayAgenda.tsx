@@ -251,7 +251,9 @@ export function DayAgenda() {
       toast.success("Compromisso adicionado!");
     } catch (error) {
       console.error("Error creating appointment:", error);
-      toast.error("Erro ao criar compromisso");
+      toast.error("Não foi possível criar o compromisso. Verifique os dados e tente novamente.", {
+        action: { label: 'Tentar novamente', onClick: () => { void handleAddAppointment(); } },
+      });
     }
   };
 
