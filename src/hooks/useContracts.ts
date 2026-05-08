@@ -63,11 +63,13 @@ export function useContracts() {
   }, [currentAgencyId]);
 
   useEffect(() => {
-    if (currentAgencyId) {
-      setLoading(true);
-      Promise.all([fetchContracts(), fetchTemplates()])
-        .finally(() => setLoading(false));
+    if (!currentAgencyId) {
+      setLoading(false);
+      return;
     }
+    setLoading(true);
+    Promise.all([fetchContracts(), fetchTemplates()])
+      .finally(() => setLoading(false));
   }, [currentAgencyId, fetchContracts, fetchTemplates]);
 
   const createContract = async (data: Partial<Contract>): Promise<Contract | null> => {

@@ -47,7 +47,10 @@ export function useNotifications() {
   const [unreadCount, setUnreadCount] = useState(0);
 
   const fetchNotifications = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     
     try {
       const { data, error } = await supabase
@@ -202,7 +205,10 @@ export function useNotificationPreferences() {
   const [loading, setLoading] = useState(true);
 
   const fetchPreferences = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
     try {
       const { data, error } = await supabase
