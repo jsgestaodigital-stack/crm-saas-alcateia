@@ -2,6 +2,9 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { format, startOfWeek, endOfWeek, addDays, subDays, isToday, isBefore, parseISO, startOfDay, differenceInDays } from "date-fns";
+import { requireAgencyId } from "@/lib/guardAgency";
+import { getErrorMessage } from "@/lib/errorHandler";
+import { toast } from "sonner";
 
 // Types
 export interface RecurringRoutine {
