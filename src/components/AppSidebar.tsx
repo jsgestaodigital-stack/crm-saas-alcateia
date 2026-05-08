@@ -574,6 +574,7 @@ export function AppSidebar({
       <div className="shrink-0 p-3 border-t border-border/50 space-y-1 bg-gradient-to-t from-muted/30 to-transparent">
         <TooltipProvider delayDuration={800}>
           {/* Notificações removed — NotificationBell in Header covers this */}
+          {canAccessAdmin && (
             <NavItem
               icon={Lightbulb}
               label="Sugestões"
